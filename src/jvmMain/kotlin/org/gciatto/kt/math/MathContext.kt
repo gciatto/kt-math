@@ -27,7 +27,7 @@
  * Portions Copyright IBM Corporation, 1997, 2001. All Rights Reserved.
  */
 
-package kotlin.math
+package org.gciatto.kt.math
 
 /**
  * Immutable objects which encapsulate the context settings which

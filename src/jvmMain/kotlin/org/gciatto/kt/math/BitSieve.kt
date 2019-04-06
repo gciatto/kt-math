@@ -23,7 +23,7 @@
  * questions.
  */
 
-package kotlin.math
+package org.gciatto.kt.math
 
 import kotlin.random.Random
 

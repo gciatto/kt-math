@@ -23,7 +23,7 @@
  * questions.
  */
 
-package kotlin.math
+package org.gciatto.kt.math
 
 /**
  * A class used to represent multiprecision integers that makes efficient

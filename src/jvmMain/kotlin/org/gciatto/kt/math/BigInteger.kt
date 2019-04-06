@@ -27,7 +27,7 @@
  * Portions Copyright (c) 1995  Colin Plumb.  All rights reserved.
  */
 
-package kotlin.math
+package org.gciatto.kt.math
 
 import kotlin.random.Random
 import kotlin.experimental.and

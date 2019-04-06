@@ -26,7 +26,7 @@
 /*
  * Portions Copyright IBM Corporation, 2001. All Rights Reserved.
  */
-package kotlin.math
+package org.gciatto.kt.math
 
 /**
  * Specifies a *rounding behavior* for numerical operations

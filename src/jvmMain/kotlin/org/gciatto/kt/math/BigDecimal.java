@@ -1,3 +1,5 @@
+package org.gciatto.kt.math;
+
 /*
  * Copyright (c) 1996, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -26,8 +28,6 @@
 /*
  * Portions Copyright IBM Corporation, 2001. All Rights Reserved.
  */
-
-package kotlin.math;
 
 import java.util.Arrays;
 

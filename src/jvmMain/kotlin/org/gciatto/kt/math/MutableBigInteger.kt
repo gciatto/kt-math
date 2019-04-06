@@ -23,7 +23,7 @@
  * questions.
  */
 
-package kotlin.math
+package org.gciatto.kt.math
 
 /**
  * A class used to represent multiprecision integers that makes efficient
@@ -43,8 +43,8 @@ package kotlin.math
  * @since   1.3
  */
 
-import kotlin.math.BigDecimal.INFLATED
-import kotlin.math.BigInteger.Companion.LONG_MASK
+import org.gciatto.kt.math.BigDecimal.INFLATED
+import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
 
 internal open class MutableBigInteger {
     /**
