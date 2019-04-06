@@ -1454,7 +1454,7 @@ internal open class MutableBigInteger {
         quotient.clear()
         // Special case on word divisor
         return if (d == 0)
-            divideOneWord(v.toInt(), quotient) and LONG_MASK
+            divideOneWord(v.toInt(), quotient).toLong() and LONG_MASK
         else {
             divideLongMagnitude(v, quotient).toLong()
         }
@@ -1574,7 +1574,7 @@ internal open class MutableBigInteger {
                     qhat--
                     qrem = ((qrem.toLong() and LONG_MASK) + dhLong).toInt()
                     if (qrem.toLong() and LONG_MASK >= dhLong) {
-                        estProduct -= dl and LONG_MASK
+                        estProduct -= dl.toLong() and LONG_MASK
                         rs = qrem.toLong() and LONG_MASK shl 32 or nl
                         if (unsignedLongCompare(estProduct, rs))
                             qhat--
@@ -1793,7 +1793,7 @@ internal open class MutableBigInteger {
         var sum = (dl.toLong() and LONG_MASK) + (result[1 + offset].toLong() and LONG_MASK)
         result[1 + offset] = sum.toInt()
 
-        sum = (dh and LONG_MASK) + (result[offset].toLong() and LONG_MASK) + carry
+        sum = (dh.toLong() and LONG_MASK) + (result[offset].toLong() and LONG_MASK) + carry
         result[offset] = sum.toInt()
         carry = sum.ushr(32)
         return carry.toInt()
@@ -1806,23 +1806,23 @@ internal open class MutableBigInteger {
      */
     private fun mulsubLong(q: IntArray, dh: Int, dl: Int, x: Int, offset: Int): Int {
         var offset = offset
-        val xLong = x and LONG_MASK
+        val xLong = x.toLong()and LONG_MASK
         offset += 2
-        var product = (dl and LONG_MASK) * xLong
+        var product = (dl.toLong()and LONG_MASK) * xLong
         var difference = q[offset] - product
-        q[offset--] = difference
-        var carry = product.ushr(32) + if (difference and LONG_MASK > product.inv() and LONG_MASK)
+        q[offset--] = difference.toInt()
+        var carry = product.ushr(32) + if (difference.toLong()and LONG_MASK > product.inv().toLong()and LONG_MASK)
             1
         else
             0
-        product = (dh and LONG_MASK) * xLong + carry
+        product = (dh.toLong()and LONG_MASK) * xLong + carry
         difference = q[offset] - product
-        q[offset--] = difference
-        carry = product.ushr(32) + if (difference and LONG_MASK > product.inv() and LONG_MASK)
+        q[offset--] = difference.toInt()
+        carry = product.ushr(32) + if (difference.toLong()and LONG_MASK > product.inv().toLong()and LONG_MASK)
             1
         else
             0
-        return carry
+        return carry.toInt()
     }
 
     /**
@@ -1965,8 +1965,8 @@ internal open class MutableBigInteger {
         var t = if (uOdd) v else u
         var tsign = if (uOdd) -1 else 1
 
-        var lb: Int
-        while ((lb = t.lowestSetBit) >= 0) {
+        var lb: Int = t.lowestSetBit
+        while (lb >= 0) {
             // steps B3 and B4
             t.rightShift(lb)
             // step B5
@@ -1989,9 +1989,13 @@ internal open class MutableBigInteger {
             }
 
             // step B6
-            if ((tsign = u.difference(v)) == 0)
+            tsign = u.difference(v)
+            if (tsign == 0) {
+                lb = t.lowestSetBit
                 break
+            }
             t = if (tsign >= 0) u else v
+            lb = t.lowestSetBit
         }
 
         if (k > 0)
@@ -2256,7 +2260,7 @@ internal open class MutableBigInteger {
          * low 32 bits contain quotient value.
          */
         fun divWord(n: Long, d: Int): Long {
-            val dLong = d and LONG_MASK
+            val dLong = d.toLong() and LONG_MASK
             var r: Long
             var q: Long
             if (dLong == 1L) {
