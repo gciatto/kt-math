@@ -1696,7 +1696,7 @@ internal open class MutableBigInteger {
         val q = quotient.value
 
         // D1 normalize the divisor
-        val shift = java.lang.Long.numberOfLeadingZeros(ldivisor)
+        val shift = ldivisor.numberOfLeadingZeros()
         if (shift > 0) {
             ldivisor = ldivisor shl shift
             rem.leftShift(shift)
@@ -1832,7 +1832,7 @@ internal open class MutableBigInteger {
      * Returns true iff one is bigger than two.
      */
     private fun unsignedLongCompare(one: Long, two: Long): Boolean {
-        return one + java.lang.Long.MIN_VALUE > two + java.lang.Long.MIN_VALUE
+        return one + Long.MIN_VALUE > two + Long.MIN_VALUE
     }
 
     /**

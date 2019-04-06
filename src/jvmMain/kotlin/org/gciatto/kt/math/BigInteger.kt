@@ -31,6 +31,7 @@ package org.gciatto.kt.math
 
 import kotlin.random.Random
 import kotlin.experimental.and
+import kotlin.math.sign
 
 /**
  * Immutable arbitrary-precision integers.  All operations behave as if
@@ -864,7 +865,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             return this
         if (signum == 0)
             return valueOf(`val`)
-        if (java.lang.Long.signum(`val`) == signum)
+        if (`val`.sign == signum)
             return BigInteger(add(mag, Math.abs(`val`)), signum)
         val cmp = compareMagnitude(`val`)
         if (cmp == 0)
@@ -2459,7 +2460,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      */
     internal fun compareMagnitude(`val`: Long): Int {
         var `val` = `val`
-        assert(`val` != java.lang.Long.MIN_VALUE)
+        assert(`val` != Long.MIN_VALUE)
         val m1 = mag
         val len = m1.size
         if (len > 2) {
@@ -2764,175 +2765,12 @@ class BigInteger : Number, Comparable<BigInteger> {
         return toInt().toShort()
     }
 
-    /**
-     * Converts this BigInteger to a `float`.  This
-     * conversion is similar to the
-     * *narrowing primitive conversion* from `double` to
-     * `float` as defined in
-     * <cite>The Java Language Specification</cite>:
-     * if this BigInteger has too great a magnitude
-     * to represent as a `float`, it will be converted to
-     * [Float.NEGATIVE_INFINITY] or [ ][Float.POSITIVE_INFINITY] as appropriate.  Note that even when
-     * the return value is finite, this conversion can lose
-     * information about the precision of the BigInteger value.
-     *
-     * @return this BigInteger converted to a `float`.
-     * @jls 5.1.3 Narrowing Primitive Conversion
-     */
     override fun toFloat(): Float {
-        if (signum == 0) {
-            return 0.0f
-        }
-
-        val exponent = (mag.size - 1 shl 5) + bitLengthForInt(mag[0]) - 1
-
-        // exponent == floor(log2(abs(this)))
-        if (exponent < java.lang.Long.SIZE - 1) {
-            return toLong().toFloat()
-        } else if (exponent > java.lang.Float.MAX_EXPONENT) {
-            return if (signum > 0) java.lang.Float.POSITIVE_INFINITY else java.lang.Float.NEGATIVE_INFINITY
-        }
-
-        /*
-         * We need the top SIGNIFICAND_WIDTH bits, including the "implicit"
-         * one bit. To make rounding easier, we pick out the top
-         * SIGNIFICAND_WIDTH + 1 bits, so we have one to help us round up or
-         * down. twiceSignifFloor will contain the top SIGNIFICAND_WIDTH + 1
-         * bits, and signifFloor the top SIGNIFICAND_WIDTH.
-         *
-         * It helps to consider the real number signif = abs(this) *
-         * 2^(SIGNIFICAND_WIDTH - 1 - exponent).
-         */
-        val shift = exponent - FloatConsts.SIGNIFICAND_WIDTH
-
-        var twiceSignifFloor: Int
-        // twiceSignifFloor will be == abs().shiftRight(shift).intValue()
-        // We do the shift into an int directly to improve performance.
-
-        val nBits = shift and 0x1f
-        val nBits2 = 32 - nBits
-
-        if (nBits == 0) {
-            twiceSignifFloor = mag[0]
-        } else {
-            twiceSignifFloor = mag[0].ushr(nBits)
-            if (twiceSignifFloor == 0) {
-                twiceSignifFloor = mag[0] shl nBits2 or mag[1].ushr(nBits)
-            }
-        }
-
-        var signifFloor = twiceSignifFloor shr 1
-        signifFloor = signifFloor and FloatConsts.SIGNIF_BIT_MASK // remove the implied bit
-
-        /*
-         * We round up if either the fractional part of signif is strictly
-         * greater than 0.5 (which is true if the 0.5 bit is set and any lower
-         * bit is set), or if the fractional part of signif is >= 0.5 and
-         * signifFloor is odd (which is true if both the 0.5 bit and the 1 bit
-         * are set). This is equivalent to the desired HALF_EVEN rounding.
-         */
-        val increment = twiceSignifFloor and 1 != 0 && (signifFloor and 1 != 0 || abs().lowestSetBit < shift)
-        val signifRounded = if (increment) signifFloor + 1 else signifFloor
-        var bits = exponent + FloatConsts.EXP_BIAS shl FloatConsts.SIGNIFICAND_WIDTH - 1
-        bits += signifRounded
-        /*
-         * If signifRounded == 2^24, we'd need to set all of the significand
-         * bits to zero and add 1 to the exponent. This is exactly the behavior
-         * we get from just adding signifRounded to bits directly. If the
-         * exponent is Float.MAX_EXPONENT, we round up (correctly) to
-         * Float.POSITIVE_INFINITY.
-         */
-        bits = bits or (signum and FloatConsts.SIGN_BIT_MASK)
-        return java.lang.Float.intBitsToFloat(bits)
+        return toInt().toFloat()
     }
 
-    /**
-     * Converts this BigInteger to a `double`.  This
-     * conversion is similar to the
-     * *narrowing primitive conversion* from `double` to
-     * `float` as defined in
-     * <cite>The Java Language Specification</cite>:
-     * if this BigInteger has too great a magnitude
-     * to represent as a `double`, it will be converted to
-     * [Double.NEGATIVE_INFINITY] or [ ][Double.POSITIVE_INFINITY] as appropriate.  Note that even when
-     * the return value is finite, this conversion can lose
-     * information about the precision of the BigInteger value.
-     *
-     * @return this BigInteger converted to a `double`.
-     * @jls 5.1.3 Narrowing Primitive Conversion
-     */
     override fun toDouble(): Double {
-        if (signum == 0) {
-            return 0.0
-        }
-
-        val exponent = (mag.size - 1 shl 5) + bitLengthForInt(mag[0]) - 1
-
-        // exponent == floor(log2(abs(this))Double)
-        if (exponent < java.lang.Long.SIZE - 1) {
-            return toLong().toDouble()
-        } else if (exponent > java.lang.Double.MAX_EXPONENT) {
-            return if (signum > 0) java.lang.Double.POSITIVE_INFINITY else java.lang.Double.NEGATIVE_INFINITY
-        }
-
-        /*
-         * We need the top SIGNIFICAND_WIDTH bits, including the "implicit"
-         * one bit. To make rounding easier, we pick out the top
-         * SIGNIFICAND_WIDTH + 1 bits, so we have one to help us round up or
-         * down. twiceSignifFloor will contain the top SIGNIFICAND_WIDTH + 1
-         * bits, and signifFloor the top SIGNIFICAND_WIDTH.
-         *
-         * It helps to consider the real number signif = abs(this) *
-         * 2^(SIGNIFICAND_WIDTH - 1 - exponent).
-         */
-        val shift = exponent - DoubleConsts.SIGNIFICAND_WIDTH
-
-        val twiceSignifFloor: Long
-        // twiceSignifFloor will be == abs().shiftRight(shift).longValue()
-        // We do the shift into a long directly to improve performance.
-
-        val nBits = shift and 0x1f
-        val nBits2 = 32 - nBits
-
-        var highBits: Int
-        var lowBits: Int
-        if (nBits == 0) {
-            highBits = mag[0]
-            lowBits = mag[1]
-        } else {
-            highBits = mag[0].ushr(nBits)
-            lowBits = mag[0] shl nBits2 or mag[1].ushr(nBits)
-            if (highBits == 0) {
-                highBits = lowBits
-                lowBits = mag[1] shl nBits2 or mag[2].ushr(nBits)
-            }
-        }
-
-        twiceSignifFloor = highBits.toLong() and LONG_MASK shl 32 or (lowBits.toLong() and LONG_MASK)
-
-        var signifFloor = twiceSignifFloor shr 1
-        signifFloor = signifFloor and DoubleConsts.SIGNIF_BIT_MASK // remove the implied bit
-
-        /*
-         * We round up if either the fractional part of signif is strictly
-         * greater than 0.5 (which is true if the 0.5 bit is set and any lower
-         * bit is set), or if the fractional part of signif is >= 0.5 and
-         * signifFloor is odd (which is true if both the 0.5 bit and the 1 bit
-         * are set). This is equivalent to the desired HALF_EVEN rounding.
-         */
-        val increment = twiceSignifFloor and 1 != 0L && (signifFloor and 1 != 0L || abs().lowestSetBit < shift)
-        val signifRounded = if (increment) signifFloor + 1 else signifFloor
-        var bits = (exponent + DoubleConsts.EXP_BIAS).toLong() shl DoubleConsts.SIGNIFICAND_WIDTH - 1
-        bits += signifRounded
-        /*
-         * If signifRounded == 2^53, we'd need to set all of the significand
-         * bits to zero and add 1 to the exponent. This is exactly the behavior
-         * we get from just adding signifRounded to bits directly. If the
-         * exponent is Double.MAX_EXPONENT, we round up (correctly) to
-         * Double.POSITIVE_INFINITY.
-         */
-        bits = bits or (signum.toLong() and DoubleConsts.SIGN_BIT_MASK)
-        return java.lang.Double.longBitsToDouble(bits)
+        return toLong().toDouble()
     }
 
     /**
@@ -3088,7 +2926,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     fun shortValueExact(): Short {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
-            if (value >= java.lang.Short.MIN_VALUE && value <= java.lang.Short.MAX_VALUE)
+            if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE)
                 return toShort()
         }
         throw ArithmeticException("BigInteger out of short range")
@@ -3110,7 +2948,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     fun byteValueExact(): Byte {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
-            if (value >= java.lang.Byte.MIN_VALUE && value <= java.lang.Byte.MAX_VALUE)
+            if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE)
                 return toByte()
         }
         throw ArithmeticException("BigInteger out of byte range")

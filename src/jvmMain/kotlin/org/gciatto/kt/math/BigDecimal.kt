@@ -4065,6 +4065,14 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             return BigDecimal(`val`.toString())
         }
 
+        fun valueOf(`val`: Float): BigDecimal {
+            // Reminder: a zero double returns '0.0', so we cannot fastpath
+            // to use the constant ZERO.  This might be important enough to
+            // justify a factory approach, a cache, or a few private
+            // constants, later.
+            return BigDecimal(`val`.toString())
+        }
+
         // Rounding Modes
 
         /**
@@ -4383,40 +4391,10 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             if (x < 10)
             // must screen for 0, might as well 10
                 return 1
-            val r = ((64 - numberOfLeadingZeros(x) + 1) * 1233).ushr(12)
+            val r = ((64 - x.numberOfLeadingZeros() + 1) * 1233).ushr(12)
             val tab = LONG_TEN_POWERS_TABLE
             // if r >= length, must have max possible digits for long
             return if (r >= tab.size || x < tab[r]) r else r + 1
-        }
-
-        fun numberOfLeadingZeros(i: Long): Int {
-            // HD, Figure 5-6
-            if (i == 0L)
-                return 64
-            var n = 1
-            var x = i.ushr(32).toInt()
-            if (x == 0) {
-                n += 32
-                x = i.toInt()
-            }
-            if (x.ushr(16) == 0) {
-                n += 16
-                x = x shl 16
-            }
-            if (x.ushr(24) == 0) {
-                n += 8
-                x = x shl 8
-            }
-            if (x.ushr(28) == 0) {
-                n += 4
-                x = x shl 4
-            }
-            if (x.ushr(30) == 0) {
-                n += 2
-                x = x shl 2
-            }
-            n -= x.ushr(31)
-            return n
         }
 
         /**
@@ -5463,7 +5441,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                 return null
             }
 
-            val shift = numberOfLeadingZeros(divisor)
+            val shift = divisor.numberOfLeadingZeros()
             divisor = divisor shl shift.toInt()
 
             val v1 = divisor.ushr(32)
@@ -5826,7 +5804,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                 return if (unsignedLongCompareEq(lo, LONGLONG_TEN_POWERS_TABLE[0][1])) 20 else 19
                 // 0x8AC7230489E80000L  = unsigned 2^19
             }
-            val r = ((128 - numberOfLeadingZeros(hi) + 1) * 1233).ushr(12)
+            val r = ((128 - hi.numberOfLeadingZeros() + 1) * 1233).ushr(12)
             val idx = r - 19
             return if (idx >= LONGLONG_TEN_POWERS_TABLE.size || longLongCompareMagnitude(
                     hi, lo,

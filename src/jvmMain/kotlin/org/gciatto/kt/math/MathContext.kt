@@ -249,28 +249,6 @@ class MathContext {
                 "roundingMode=" + roundingMode!!.toString()
     }
 
-    // Private methods
-
-    /**
-     * Reconstitute the `MathContext` instance from a stream (that is,
-     * deserialize it).
-     *
-     * @param s the stream being read.
-     */
-    @Throws(java.io.IOException::class, ClassNotFoundException::class)
-    private fun readObject(s: java.io.ObjectInputStream) {
-        s.defaultReadObject()     // read in all fields
-        // validate possibly bad fields
-        if (precision < MIN_DIGITS) {
-            val message = "MathContext: invalid digits in stream"
-            throw java.io.StreamCorruptedException(message)
-        }
-        if (roundingMode == null) {
-            val message = "MathContext: null roundingMode in stream"
-            throw java.io.StreamCorruptedException(message)
-        }
-    }
-
     companion object {
 
         /* ----- Constants ----- */
