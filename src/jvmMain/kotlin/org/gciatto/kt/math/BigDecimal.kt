@@ -30,7 +30,8 @@ package org.gciatto.kt.math
  */
 
 import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
-import java.util.Arrays
+import kotlin.math.absoluteValue
+import kotlin.math.sign
 
 /**
  * Immutable, arbitrary-precision signed decimal numbers.  A
@@ -720,11 +721,11 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      */
     @JvmOverloads
     constructor(`val`: Double, mc: MathContext = MathContext.UNLIMITED) {
-        if (java.lang.Double.isInfinite(`val`) || java.lang.Double.isNaN(`val`))
+        if (`val`.isInfinite() || `val`.isInfinite())
             throw NumberFormatException("Infinite or NaN")
         // Translate the double into sign, exponent and significand, according
         // to the formulae in JLS, Section 20.10.22.
-        val valBits = java.lang.Double.doubleToLongBits(`val`)
+        val valBits = `val`.toBits()
         val sign = if (valBits shr 63 == 0L) 1 else -1
         var exponent = (valBits shr 52 and 0x7ffL).toInt()
         var significand = if (exponent == 0)
@@ -2276,7 +2277,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      */
     fun signum(): Int {
         return if (intCompact != INFLATED)
-            java.lang.Long.signum(intCompact)
+            intCompact.sign
         else
             intVal!!.signum()
     }
@@ -2618,9 +2619,9 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         return if (intCompact == 0L || intVal != null && intVal.signum() == 0) {
             BigDecimal.ZERO
         } else if (intCompact != INFLATED) {
-            createAndStripZerosToMatchScale(intCompact, scale, java.lang.Long.MIN_VALUE)
+            createAndStripZerosToMatchScale(intCompact, scale, Long.MIN_VALUE)
         } else {
-            createAndStripZerosToMatchScale(intVal!!, scale, java.lang.Long.MIN_VALUE)
+            createAndStripZerosToMatchScale(intVal!!, scale, Long.MIN_VALUE)
         }
     }
 
@@ -2975,7 +2976,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
     fun toPlainString(): String {
         if (scale == 0) {
             return if (intCompact != INFLATED) {
-                java.lang.Long.toString(intCompact)
+                intCompact.toString()
             } else {
                 intVal!!.toString()
             }
@@ -3001,7 +3002,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         }
         val str: String
         if (intCompact != INFLATED) {
-            str = java.lang.Long.toString(Math.abs(intCompact))
+            str = intCompact.absoluteValue.toString() // java.lang.Long.toString(Math.abs(intCompact))
         } else {
             str = intVal!!.abs().toString()
         }
@@ -3193,7 +3194,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         val num: Long = this.toLongExact() // will check decimal part
 
         if (num.toInt().toLong() != num)
-            throw java.lang.ArithmeticException("Overflow")
+            throw ArithmeticException("Overflow")
         return num.toInt()
     }
 
@@ -3630,7 +3631,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         if (scale == 0)
         // zero scale is trivial
             return if (intCompact != INFLATED)
-                java.lang.Long.toString(intCompact)
+                intCompact.toString()
             else
                 intVal!!.toString()
         if (scale == 2 &&
@@ -3644,7 +3645,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                     StringBuilderHelper.DIGIT_ONES[lowInt]
         }
 
-        val sbHelper = threadLocalStringBuilderHelper.get()
+        val sbHelper = StringBuilderHelper()
         val coeff: CharArray
         val offset: Int  // offset is the starting index for coeff array
         // Get the significand as an absolute value
@@ -3830,22 +3831,13 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Sentinel value for [.intCompact] indicating the
          * significand information is only available from `intVal`.
          */
-        internal val INFLATED = java.lang.Long.MIN_VALUE
+        internal const val INFLATED = Long.MIN_VALUE
 
         private val INFLATED_BIGINT = BigInteger.valueOf(INFLATED)
 
         // All 18-digit base ten strings fit into a long; not all 19-digit
         // strings will
-        private val MAX_COMPACT_DIGITS = 18
-
-        /* Appease the serialization gods */
-        private val serialVersionUID = 6108874887143696463L
-
-        private val threadLocalStringBuilderHelper = object : ThreadLocal<StringBuilderHelper>() {
-            override fun initialValue(): StringBuilderHelper {
-                return StringBuilderHelper()
-            }
-        }
+        private const val MAX_COMPACT_DIGITS = 18
 
         // Cache of common small BigDecimal values.
         private val ZERO_THROUGH_TEN = arrayOf(
@@ -3883,8 +3875,8 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         )
 
         // Half of Long.MIN_VALUE & Long.MAX_VALUE.
-        private val HALF_LONG_MAX_VALUE = java.lang.Long.MAX_VALUE / 2
-        private val HALF_LONG_MIN_VALUE = java.lang.Long.MIN_VALUE / 2
+        private const val HALF_LONG_MAX_VALUE = Long.MAX_VALUE / 2
+        private const val HALF_LONG_MIN_VALUE = Long.MIN_VALUE / 2
 
         // Constants
         /**
@@ -4210,7 +4202,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             if (n < BIG_TEN_POWERS_TABLE_MAX) {
                 val pows = BIG_TEN_POWERS_TABLE
                 return if (n < pows.size)
-                    pows[n]
+                    pows[n]!!
                 else
                     expandBigIntegerTenPowers(n)
             }
@@ -4227,8 +4219,8 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * expanded to the size greater than n.
          */
         private fun expandBigIntegerTenPowers(n: Int): BigInteger {
-            synchronized(BigDecimal::class.java) {
-                var pows = BIG_TEN_POWERS_TABLE
+            synchronized(this) {
+                var pows: Array<BigInteger?> = BIG_TEN_POWERS_TABLE
                 val curLen = pows.size
                 // The following comparison and the above synchronized statement is
                 // to prevent multiple threads from expanding the same array.
@@ -4237,9 +4229,10 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                     while (newLen <= n) {
                         newLen = newLen shl 1
                     }
-                    pows = Arrays.copyOf(pows, newLen)
+                    pows = //(0 until newLen).map{ i -> if (i < pows.size) pows[i] else null }.toTypedArray()
+                            pows.copyOf(newLen)
                     for (i in curLen until newLen) {
-                        pows[i] = pows[i - 1].multiply(BigInteger.TEN)
+                        pows[i] = pows[i - 1]!!.multiply(BigInteger.TEN)
                     }
                     // Based on the following facts:
                     // 1. pows is a private local varible;
@@ -4247,7 +4240,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                     // the newly created array elements can be safely published.
                     BIG_TEN_POWERS_TABLE = pows
                 }
-                return pows[n]
+                return pows[n]!!
             }
         }
 
@@ -4274,7 +4267,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         )
 
         @Volatile
-        private var BIG_TEN_POWERS_TABLE = arrayOf(
+        private var BIG_TEN_POWERS_TABLE = arrayOf<BigInteger?>(
             BigInteger.ONE,
             BigInteger.valueOf(10),
             BigInteger.valueOf(100),
@@ -5054,7 +5047,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             var snd = snd
             var rscale = scale1
             val sdiff = rscale.toLong() - scale2
-            val sameSigns = java.lang.Long.signum(xs) == snd.signum
+            val sameSigns = xs.sign == snd.signum
             val sum: BigInteger
             if (sdiff < 0) {
                 val raise = checkScale(xs, -sdiff)
@@ -5425,8 +5418,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             var dividend0 = dividend0
             var dividend1 = dividend1
             var divisor = divisor
-            val qsign =
-                java.lang.Long.signum(dividend0) * java.lang.Long.signum(dividend1) * java.lang.Long.signum(divisor)
+            val qsign = dividend0.sign * dividend1.sign * divisor.sign
             dividend0 = Math.abs(dividend0)
             dividend1 = Math.abs(dividend1)
             divisor = Math.abs(divisor)
@@ -5471,7 +5463,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                 return null
             }
 
-            val shift = java.lang.Long.numberOfLeadingZeros(divisor)
+            val shift = numberOfLeadingZeros(divisor)
             divisor = divisor shl shift.toInt()
 
             val v1 = divisor.ushr(32)
@@ -5638,11 +5630,11 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         }
 
         private fun unsignedLongCompare(one: Long, two: Long): Boolean {
-            return one + java.lang.Long.MIN_VALUE > two + java.lang.Long.MIN_VALUE
+            return one + Long.MIN_VALUE > two + Long.MIN_VALUE
         }
 
         private fun unsignedLongCompareEq(one: Long, two: Long): Boolean {
-            return one + java.lang.Long.MIN_VALUE >= two + java.lang.Long.MIN_VALUE
+            return one + Long.MIN_VALUE >= two + Long.MIN_VALUE
         }
 
 
@@ -5834,7 +5826,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                 return if (unsignedLongCompareEq(lo, LONGLONG_TEN_POWERS_TABLE[0][1])) 20 else 19
                 // 0x8AC7230489E80000L  = unsigned 2^19
             }
-            val r = ((128 - java.lang.Long.numberOfLeadingZeros(hi) + 1) * 1233).ushr(12)
+            val r = ((128 - numberOfLeadingZeros(hi) + 1) * 1233).ushr(12)
             val idx = r - 19
             return if (idx >= LONGLONG_TEN_POWERS_TABLE.size || longLongCompareMagnitude(
                     hi, lo,
@@ -5853,7 +5845,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         private fun longLongCompareMagnitude(hi0: Long, lo0: Long, hi1: Long, lo1: Long): Boolean {
             return if (hi0 != hi1) {
                 hi0 < hi1
-            } else lo0 + java.lang.Long.MIN_VALUE < lo1 + java.lang.Long.MIN_VALUE
+            } else lo0 + Long.MIN_VALUE < lo1 + Long.MIN_VALUE
         }
 
         private fun divide(
