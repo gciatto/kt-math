@@ -43,7 +43,7 @@ package org.gciatto.kt.math
  * @since   1.3
  */
 
-import org.gciatto.kt.math.BigDecimal.INFLATED
+import org.gciatto.kt.math.BigDecimal.Companion.INFLATED
 import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
 
 internal open class MutableBigInteger {
