@@ -23,52 +23,47 @@
  * questions.
  */
 
-package java2.math
+package kotlin.math
 
 /**
  * This class contains additional constants documenting limits of the
- * `float` type.
+ * `double` type.
  *
  * @author Joseph D. Darcy
  */
 
-object FloatConsts {
+object DoubleConsts {
 
     /**
      * The number of logical bits in the significand of a
-     * `float` number, including the implicit bit.
+     * `double` number, including the implicit bit.
      */
-    val SIGNIFICAND_WIDTH = 24
+    const val SIGNIFICAND_WIDTH = 53
 
     /**
-     * The exponent the smallest positive `float` subnormal
-     * value would have if it could be normalized.
+     * Bias used in representing a `double` exponent.
      */
-    val MIN_SUB_EXPONENT = java.lang.Float.MIN_EXPONENT - (SIGNIFICAND_WIDTH - 1)
+    const val EXP_BIAS = 1023
 
     /**
-     * Bias used in representing a `float` exponent.
+     * Bit mask to isolate the sign bit of a `double`.
      */
-    val EXP_BIAS = 127
-
-    /**
-     * Bit mask to isolate the sign bit of a `float`.
-     */
-    val SIGN_BIT_MASK = -0x80000000
+    const val SIGN_BIT_MASK = 1L shl 63
 
     /**
      * Bit mask to isolate the exponent field of a
-     * `float`.
+     * `double`.
      */
-    val EXP_BIT_MASK = 0x7F800000
+    const val EXP_BIT_MASK = 0x7FF0000000000000L
 
     /**
      * Bit mask to isolate the significand field of a
-     * `float`.
+     * `double`.
      */
-    val SIGNIF_BIT_MASK = 0x007FFFFF
+    const val SIGNIF_BIT_MASK = 0x000FFFFFFFFFFFFFL
 
 }
 /**
  * Don't let anyone instantiate this class.
  */
+

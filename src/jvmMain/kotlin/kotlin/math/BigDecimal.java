@@ -27,9 +27,8 @@
  * Portions Copyright IBM Corporation, 2001. All Rights Reserved.
  */
 
-package java2.math;
+package kotlin.math;
 
-import static java2.math.BigInteger.LONG_MASK;
 import java.util.Arrays;
 
 /**
@@ -265,7 +264,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
      */
     static final long INFLATED = Long.MIN_VALUE;
 
-    private static final BigInteger INFLATED_BIGINT = BigInteger.valueOf(INFLATED);
+    private static final BigInteger INFLATED_BIGINT = BigInteger.Companion.valueOf(INFLATED);
 
     /**
      * If the absolute value of the significand of this BigDecimal is
@@ -291,37 +290,37 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
 
     // Cache of common small BigDecimal values.
     private static final BigDecimal ZERO_THROUGH_TEN[] = {
-            new BigDecimal(BigInteger.ZERO,       0,  0, 1),
-            new BigDecimal(BigInteger.ONE,        1,  0, 1),
-            new BigDecimal(BigInteger.TWO,        2,  0, 1),
-            new BigDecimal(BigInteger.valueOf(3), 3,  0, 1),
-            new BigDecimal(BigInteger.valueOf(4), 4,  0, 1),
-            new BigDecimal(BigInteger.valueOf(5), 5,  0, 1),
-            new BigDecimal(BigInteger.valueOf(6), 6,  0, 1),
-            new BigDecimal(BigInteger.valueOf(7), 7,  0, 1),
-            new BigDecimal(BigInteger.valueOf(8), 8,  0, 1),
-            new BigDecimal(BigInteger.valueOf(9), 9,  0, 1),
-            new BigDecimal(BigInteger.TEN,        10, 0, 2),
+            new BigDecimal(BigInteger.Companion.getZERO(),       0,  0, 1),
+            new BigDecimal(BigInteger.Companion.getONE(),        1,  0, 1),
+            new BigDecimal(BigInteger.Companion.getTWO(),        2,  0, 1),
+            new BigDecimal(BigInteger.Companion.valueOf(3), 3,  0, 1),
+            new BigDecimal(BigInteger.Companion.valueOf(4), 4,  0, 1),
+            new BigDecimal(BigInteger.Companion.valueOf(5), 5,  0, 1),
+            new BigDecimal(BigInteger.Companion.valueOf(6), 6,  0, 1),
+            new BigDecimal(BigInteger.Companion.valueOf(7), 7,  0, 1),
+            new BigDecimal(BigInteger.Companion.valueOf(8), 8,  0, 1),
+            new BigDecimal(BigInteger.Companion.valueOf(9), 9,  0, 1),
+            new BigDecimal(BigInteger.Companion.getTEN(),        10, 0, 2),
     };
 
     // Cache of zero scaled by 0 - 15
     private static final BigDecimal[] ZERO_SCALED_BY = {
             ZERO_THROUGH_TEN[0],
-            new BigDecimal(BigInteger.ZERO, 0, 1, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 2, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 3, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 4, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 5, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 6, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 7, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 8, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 9, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 10, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 11, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 12, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 13, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 14, 1),
-            new BigDecimal(BigInteger.ZERO, 0, 15, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 1, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 2, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 3, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 4, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 5, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 6, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 7, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 8, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 9, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 10, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 11, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 12, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 13, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 14, 1),
+            new BigDecimal(BigInteger.Companion.getZERO(), 0, 15, 1),
     };
 
     // Half of Long.MIN_VALUE & Long.MAX_VALUE.
@@ -931,7 +930,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
          * scale calculation.
          */
         if (significand == 0) {
-            this.intVal = BigInteger.ZERO;
+            this.intVal = BigInteger.Companion.getZERO();
             this.scale = 0;
             this.intCompact = 0;
             this.precision = 1;
@@ -950,10 +949,10 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             rb = (compactVal == INFLATED) ? INFLATED_BIGINT : null;
         } else {
             if (exponent < 0) {
-                rb = BigInteger.valueOf(5).pow(-exponent).multiply(compactVal);
+                rb = BigInteger.Companion.valueOf(5).pow(-exponent).multiply(compactVal);
                 scl = -exponent;
             } else { //  (exponent > 0)
-                rb = BigInteger.TWO.pow(exponent).multiply(compactVal);
+                rb = BigInteger.Companion.getTWO().pow(exponent).multiply(compactVal);
             }
             compactVal = compactValFor(rb);
         }
@@ -1270,7 +1269,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         if (scale >= 0 && scale < ZERO_SCALED_BY.length)
             return ZERO_SCALED_BY[scale];
         else
-            return new BigDecimal(BigInteger.ZERO, 0, scale, 1);
+            return new BigDecimal(BigInteger.Companion.getZERO(), 0, scale, 1);
     }
 
     /**
@@ -2227,7 +2226,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     }
 
     private boolean isPowerOfTen() {
-        return BigInteger.ONE.equals(this.unscaledValue());
+        return BigInteger.Companion.getONE().equals(this.unscaledValue());
     }
 
     /**
@@ -3111,7 +3110,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         if (intCompact != INFLATED) {
             long val2 = (intCompact < 0)? -intCompact : intCompact;
             int temp = (int)( ((int)(val2 >>> 32)) * 31  +
-                    (val2 & LONG_MASK));
+                    (val2 & Companion.getLONG_MASK()));
             return 31*((intCompact < 0) ?-temp:temp) + scale;
         } else
             return 31*intVal.hashCode() + scale;
@@ -3442,10 +3441,10 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
 
     private static class LongOverflow {
         /** BigInteger equal to Long.MIN_VALUE. */
-        private static final BigInteger LONGMIN = BigInteger.valueOf(Long.MIN_VALUE);
+        private static final BigInteger LONGMIN = BigInteger.Companion.valueOf(Long.MIN_VALUE);
 
         /** BigInteger equal to Long.MAX_VALUE. */
-        private static final BigInteger LONGMAX = BigInteger.valueOf(Long.MAX_VALUE);
+        private static final BigInteger LONGMAX = BigInteger.Companion.valueOf(Long.MAX_VALUE);
 
         public static void check(BigDecimal num) {
             BigInteger intVal = num.inflated();
@@ -3884,7 +3883,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
      */
     private static BigInteger bigTenToThe(int n) {
         if (n < 0)
-            return BigInteger.ZERO;
+            return BigInteger.Companion.getZERO();
 
         if (n < BIG_TEN_POWERS_TABLE_MAX) {
             BigInteger[] pows = BIG_TEN_POWERS_TABLE;
@@ -3894,7 +3893,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
                 return expandBigIntegerTenPowers(n);
         }
 
-        return BigInteger.TEN.pow(n);
+        return BigInteger.Companion.getTEN().pow(n);
     }
 
     /**
@@ -3918,7 +3917,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
                 }
                 pows = Arrays.copyOf(pows, newLen);
                 for (int i = curLen; i < newLen; i++) {
-                    pows[i] = pows[i - 1].multiply(BigInteger.TEN);
+                    pows[i] = pows[i - 1].multiply(BigInteger.Companion.getTEN());
                 }
                 // Based on the following facts:
                 // 1. pows is a private local varible;
@@ -3953,25 +3952,25 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     };
 
     private static volatile BigInteger BIG_TEN_POWERS_TABLE[] = {
-            BigInteger.ONE,
-            BigInteger.valueOf(10),
-            BigInteger.valueOf(100),
-            BigInteger.valueOf(1000),
-            BigInteger.valueOf(10000),
-            BigInteger.valueOf(100000),
-            BigInteger.valueOf(1000000),
-            BigInteger.valueOf(10000000),
-            BigInteger.valueOf(100000000),
-            BigInteger.valueOf(1000000000),
-            BigInteger.valueOf(10000000000L),
-            BigInteger.valueOf(100000000000L),
-            BigInteger.valueOf(1000000000000L),
-            BigInteger.valueOf(10000000000000L),
-            BigInteger.valueOf(100000000000000L),
-            BigInteger.valueOf(1000000000000000L),
-            BigInteger.valueOf(10000000000000000L),
-            BigInteger.valueOf(100000000000000000L),
-            BigInteger.valueOf(1000000000000000000L)
+            BigInteger.Companion.getONE(),
+            BigInteger.Companion.valueOf(10),
+            BigInteger.Companion.valueOf(100),
+            BigInteger.Companion.valueOf(1000),
+            BigInteger.Companion.valueOf(10000),
+            BigInteger.Companion.valueOf(100000),
+            BigInteger.Companion.valueOf(1000000),
+            BigInteger.Companion.valueOf(10000000),
+            BigInteger.Companion.valueOf(100000000),
+            BigInteger.Companion.valueOf(1000000000),
+            BigInteger.Companion.valueOf(10000000000L),
+            BigInteger.Companion.valueOf(100000000000L),
+            BigInteger.Companion.valueOf(1000000000000L),
+            BigInteger.Companion.valueOf(10000000000000L),
+            BigInteger.Companion.valueOf(100000000000000L),
+            BigInteger.Companion.valueOf(1000000000000000L),
+            BigInteger.Companion.valueOf(10000000000000000L),
+            BigInteger.Companion.valueOf(100000000000000000L),
+            BigInteger.Companion.valueOf(1000000000000000000L)
     };
 
     private static final int BIG_TEN_POWERS_TABLE_INITLEN =
@@ -4040,7 +4039,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
      */
     private BigInteger inflated() {
         if (intVal == null) {
-            return BigInteger.valueOf(intCompact);
+            return BigInteger.Companion.valueOf(intCompact);
         }
         return intVal;
     }
@@ -4111,7 +4110,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
          * approximation of log10(2). Using 646456993/2^31
          * is accurate up to max possible reported bitLength.
          */
-        if (b.signum == 0)
+        if (b.getSignum() == 0)
             return 1;
         int r = (int)((((long)b.bitLength() + 1) * 646456993) >>> 31);
         return b.compareMagnitude(bigTenToThe(r)) < 0? r : r+1;
@@ -4146,7 +4145,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
      * {@code BigInteger}.
      */
     private static long compactValFor(BigInteger b) {
-        int[] m = b.mag;
+        int[] m = b.getMag();
         int len = m.length;
         if (len == 0)
             return 0;
@@ -4155,9 +4154,9 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             return INFLATED;
 
         long u = (len == 2)?
-                (((long) m[1] & LONG_MASK) + (((long)d) << 32)) :
-                (((long)d)   & LONG_MASK);
-        return (b.signum < 0)? -u : u;
+                (((long) m[1] & Companion.getLONG_MASK()) + (((long)d) << 32)) :
+                (((long)d)   & Companion.getLONG_MASK());
+        return (b.getSignum() < 0)? -u : u;
     }
 
     private static int longCompareMagnitude(long x, long y) {
@@ -4507,7 +4506,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
      */
     private static BigInteger divideAndRound(BigInteger bdividend, long ldivisor, int roundingMode) {
         // Descend into mutables for faster remainder checks
-        MutableBigInteger mdividend = new MutableBigInteger(bdividend.mag);
+        MutableBigInteger mdividend = new MutableBigInteger(bdividend.getMag());
         // store quotient
         MutableBigInteger mq = new MutableBigInteger();
         // store quotient & remainder in long
@@ -4515,7 +4514,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         // record remainder is zero or not
         boolean isRemainderZero = (r == 0);
         // quotient sign
-        int qsign = (ldivisor < 0) ? -bdividend.signum : bdividend.signum;
+        int qsign = (ldivisor < 0) ? -bdividend.getSignum() : bdividend.getSignum();
         if (!isRemainderZero) {
             if(needIncrement(ldivisor, roundingMode, qsign, mq, r)) {
                 mq.add(MutableBigInteger.Companion.getONE());
@@ -4536,7 +4535,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     private static BigDecimal divideAndRound(BigInteger bdividend,
                                              long ldivisor, int scale, int roundingMode, int preferredScale) {
         // Descend into mutables for faster remainder checks
-        MutableBigInteger mdividend = new MutableBigInteger(bdividend.mag);
+        MutableBigInteger mdividend = new MutableBigInteger(bdividend.getMag());
         // store quotient
         MutableBigInteger mq = new MutableBigInteger();
         // store quotient & remainder in long
@@ -4544,7 +4543,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         // record remainder is zero or not
         boolean isRemainderZero = (r == 0);
         // quotient sign
-        int qsign = (ldivisor < 0) ? -bdividend.signum : bdividend.signum;
+        int qsign = (ldivisor < 0) ? -bdividend.getSignum() : bdividend.getSignum();
         if (!isRemainderZero) {
             if(needIncrement(ldivisor, roundingMode, qsign, mq, r)) {
                 mq.add(MutableBigInteger.Companion.getONE());
@@ -4589,12 +4588,12 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         boolean isRemainderZero; // record remainder is zero or not
         int qsign; // quotient sign
         // Descend into mutables for faster remainder checks
-        MutableBigInteger mdividend = new MutableBigInteger(bdividend.mag);
+        MutableBigInteger mdividend = new MutableBigInteger(bdividend.getMag());
         MutableBigInteger mq = new MutableBigInteger();
-        MutableBigInteger mdivisor = new MutableBigInteger(bdivisor.mag);
+        MutableBigInteger mdivisor = new MutableBigInteger(bdivisor.getMag());
         MutableBigInteger mr = mdividend.divide(mdivisor, mq);
         isRemainderZero = mr.isZero();
-        qsign = (bdividend.signum != bdivisor.signum) ? -1 : 1;
+        qsign = (bdividend.getSignum() != bdivisor.getSignum()) ? -1 : 1;
         if (!isRemainderZero) {
             if (needIncrement(mdivisor, roundingMode, qsign, mq, mr)) {
                 mq.add(MutableBigInteger.Companion.getONE());
@@ -4617,12 +4616,12 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         boolean isRemainderZero; // record remainder is zero or not
         int qsign; // quotient sign
         // Descend into mutables for faster remainder checks
-        MutableBigInteger mdividend = new MutableBigInteger(bdividend.mag);
+        MutableBigInteger mdividend = new MutableBigInteger(bdividend.getMag());
         MutableBigInteger mq = new MutableBigInteger();
-        MutableBigInteger mdivisor = new MutableBigInteger(bdivisor.mag);
+        MutableBigInteger mdivisor = new MutableBigInteger(bdivisor.getMag());
         MutableBigInteger mr = mdividend.divide(mdivisor, mq);
         isRemainderZero = mr.isZero();
-        qsign = (bdividend.signum != bdivisor.signum) ? -1 : 1;
+        qsign = (bdividend.getSignum() != bdivisor.getSignum()) ? -1 : 1;
         if (!isRemainderZero) {
             if (needIncrement(mdivisor, roundingMode, qsign, mq, mr)) {
                 mq.add(MutableBigInteger.Companion.getONE());
@@ -4663,11 +4662,11 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
      */
     private static BigDecimal createAndStripZerosToMatchScale(BigInteger intVal, int scale, long preferredScale) {
         BigInteger qr[]; // quotient-remainder pair
-        while (intVal.compareMagnitude(BigInteger.TEN) >= 0
+        while (intVal.compareMagnitude(BigInteger.Companion.getTEN()) >= 0
                 && scale > preferredScale) {
             if (intVal.testBit(0))
                 break; // odd number cannot end in 0
-            qr = intVal.divideAndRemainder(BigInteger.TEN);
+            qr = intVal.divideAndRemainder(BigInteger.Companion.getTEN());
             if (qr[1].signum() != 0)
                 break; // non-0 remainder
             intVal = qr[0];
@@ -4724,7 +4723,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         long sum = add(xs, ys);
         if (sum!=INFLATED)
             return BigDecimal.valueOf(sum, scale);
-        return new BigDecimal(BigInteger.valueOf(xs).add(ys), scale);
+        return new BigDecimal(BigInteger.Companion.valueOf(xs).add(ys), scale);
     }
 
     private static BigDecimal add(final long xs, int scale1, final long ys, int scale2) {
@@ -4759,7 +4758,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     private static BigDecimal add(final long xs, int scale1, BigInteger snd, int scale2) {
         int rscale = scale1;
         long sdiff = (long)rscale - scale2;
-        boolean sameSigns =  (Long.signum(xs) == snd.signum);
+        boolean sameSigns =  (Long.signum(xs) == snd.getSignum());
         BigInteger sum;
         if (sdiff < 0) {
             int raise = checkScale(xs,-sdiff);
@@ -4794,14 +4793,14 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             }
         }
         BigInteger sum = fst.add(snd);
-        return (fst.signum == snd.signum) ?
+        return (fst.getSignum() == snd.getSignum()) ?
                 new BigDecimal(sum, INFLATED, rscale, 0) :
                 valueOf(sum, rscale, 0);
     }
 
     private static BigInteger bigMultiplyPowerTen(long value, int n) {
         if (n <= 0)
-            return BigInteger.valueOf(value);
+            return BigInteger.Companion.valueOf(value);
         return bigTenToThe(n).multiply(value);
     }
 
@@ -4864,7 +4863,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
                     long scaledYs;
                     if ((scaledYs = longMultiplyPowerTen(ys, raise)) == INFLATED) {
                         BigInteger rb = bigMultiplyPowerTen(ys,raise);
-                        quotient = divideAndRound(BigInteger.valueOf(xs),
+                        quotient = divideAndRound(BigInteger.Companion.valueOf(xs),
                                 rb, scl, roundingMode,checkScaleNonZero(preferredScale));
                     } else {
                         quotient = divideAndRound(xs, scaledYs, scl, roundingMode,checkScaleNonZero(preferredScale));
@@ -4937,7 +4936,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
                 long scaledYs;
                 if ((scaledYs = longMultiplyPowerTen(ys, raise)) == INFLATED) {
                     BigInteger rb = bigMultiplyPowerTen(ys,raise);
-                    quotient = divideAndRound(BigInteger.valueOf(xs),
+                    quotient = divideAndRound(BigInteger.Companion.valueOf(xs),
                             rb, scl, roundingMode,checkScaleNonZero(preferredScale));
                 } else {
                     quotient = divideAndRound(xs, scaledYs, scl, roundingMode,checkScaleNonZero(preferredScale));
@@ -5014,7 +5013,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             int newScale = checkScaleNonZero((long) xscale - mcp);
             int raise = checkScaleNonZero((long) newScale - yscale);
             BigInteger rb = bigMultiplyPowerTen(ys,raise);
-            quotient = divideAndRound(BigInteger.valueOf(xs), rb, scl, roundingMode,checkScaleNonZero(preferredScale));
+            quotient = divideAndRound(BigInteger.Companion.valueOf(xs), rb, scl, roundingMode,checkScaleNonZero(preferredScale));
         }
         // doRound, here, only affects 1000000000 case.
         return doRound(quotient, mc);
@@ -5063,23 +5062,23 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         divisor = Math.abs(divisor);
         // multiply dividend0 * dividend1
         long d0_hi = dividend0 >>> 32;
-        long d0_lo = dividend0 & LONG_MASK;
+        long d0_lo = dividend0 & Companion.getLONG_MASK();
         long d1_hi = dividend1 >>> 32;
-        long d1_lo = dividend1 & LONG_MASK;
+        long d1_lo = dividend1 & Companion.getLONG_MASK();
         long product = d0_lo * d1_lo;
-        long d0 = product & LONG_MASK;
+        long d0 = product & Companion.getLONG_MASK();
         long d1 = product >>> 32;
         product = d0_hi * d1_lo + d1;
-        d1 = product & LONG_MASK;
+        d1 = product & Companion.getLONG_MASK();
         long d2 = product >>> 32;
         product = d0_lo * d1_hi + d1;
-        d1 = product & LONG_MASK;
+        d1 = product & Companion.getLONG_MASK();
         d2 += product >>> 32;
         long d3 = d2>>>32;
-        d2 &= LONG_MASK;
+        d2 &= Companion.getLONG_MASK();
         product = d0_hi*d1_hi + d2;
-        d2 = product & LONG_MASK;
-        d3 = ((product>>>32) + d3) & LONG_MASK;
+        d2 = product & Companion.getLONG_MASK();
+        d3 = ((product>>>32) + d3) & Companion.getLONG_MASK();
         final long dividendHi = make64(d3,d2);
         final long dividendLo = make64(d1,d0);
         // divide
@@ -5103,14 +5102,14 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         divisor <<= shift;
 
         final long v1 = divisor >>> 32;
-        final long v0 = divisor & LONG_MASK;
+        final long v0 = divisor & Companion.getLONG_MASK();
 
         long tmp = dividendLo << shift;
         long u1 = tmp >>> 32;
-        long u0 = tmp & LONG_MASK;
+        long u0 = tmp & Companion.getLONG_MASK();
 
         tmp = (dividendHi << shift) | (dividendLo >>> 64 - shift);
-        long u2 = tmp & LONG_MASK;
+        long u2 = tmp & Companion.getLONG_MASK();
         long q1, r_tmp;
         if (v1 == 1) {
             q1 = tmp;
@@ -5132,7 +5131,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         }
 
         tmp = mulsub(u2,u1,v1,v0,q1);
-        u1 = tmp & LONG_MASK;
+        u1 = tmp & Companion.getLONG_MASK();
         long q0;
         if (v1 == 1) {
             q0 = tmp;
@@ -5261,7 +5260,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
 
     private static long mulsub(long u1, long u0, final long v1, final long v0, long q0) {
         long tmp = u0 - q0*v0;
-        return make64(u1 + (tmp>>>32) - q0*v1,tmp & LONG_MASK);
+        return make64(u1 + (tmp>>>32) - q0*v1,tmp & Companion.getLONG_MASK());
     }
 
     private static boolean unsignedLongCompare(long one, long two) {
@@ -5329,7 +5328,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         if(product!=INFLATED) {
             return valueOf(product,scale);
         }
-        return new BigDecimal(BigInteger.valueOf(x).multiply(y),INFLATED,scale,0);
+        return new BigDecimal(BigInteger.Companion.valueOf(x).multiply(y),INFLATED,scale,0);
     }
 
     private static BigDecimal multiply(long x, BigInteger y, int scale) {
@@ -5363,30 +5362,30 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         }
         // multiply dividend0 * dividend1
         long m0_hi = x >>> 32;
-        long m0_lo = x & LONG_MASK;
+        long m0_lo = x & Companion.getLONG_MASK();
         long m1_hi = y >>> 32;
-        long m1_lo = y & LONG_MASK;
+        long m1_lo = y & Companion.getLONG_MASK();
         product = m0_lo * m1_lo;
-        long m0 = product & LONG_MASK;
+        long m0 = product & Companion.getLONG_MASK();
         long m1 = product >>> 32;
         product = m0_hi * m1_lo + m1;
-        m1 = product & LONG_MASK;
+        m1 = product & Companion.getLONG_MASK();
         long m2 = product >>> 32;
         product = m0_lo * m1_hi + m1;
-        m1 = product & LONG_MASK;
+        m1 = product & Companion.getLONG_MASK();
         m2 += product >>> 32;
         long m3 = m2>>>32;
-        m2 &= LONG_MASK;
+        m2 &= Companion.getLONG_MASK();
         product = m0_hi*m1_hi + m2;
-        m2 = product & LONG_MASK;
-        m3 = ((product>>>32) + m3) & LONG_MASK;
+        m2 = product & Companion.getLONG_MASK();
+        m3 = ((product>>>32) + m3) & Companion.getLONG_MASK();
         final long mHi = make64(m3,m2);
         final long mLo = make64(m1,m0);
         BigDecimal res = doRound128(mHi, mLo, rsign, scale, mc);
         if(res!=null) {
             return res;
         }
-        res = new BigDecimal(BigInteger.valueOf(x).multiply(y*rsign), INFLATED, scale, 0);
+        res = new BigDecimal(BigInteger.Companion.valueOf(x).multiply(y*rsign), INFLATED, scale, 0);
         return doRound(res,mc);
     }
 
@@ -5496,7 +5495,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
                 }
             }
             BigInteger scaledDivisor = bigMultiplyPowerTen(divisor, raise);
-            return divideAndRound(BigInteger.valueOf(dividend), scaledDivisor, scale, roundingMode, scale);
+            return divideAndRound(BigInteger.Companion.valueOf(dividend), scaledDivisor, scale, roundingMode, scale);
         }
     }
 
@@ -5530,7 +5529,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             int newScale = checkScale(divisor,(long)dividendScale - scale);
             int raise = newScale - divisorScale;
             BigInteger scaledDivisor = bigMultiplyPowerTen(divisor, raise);
-            return divideAndRound(BigInteger.valueOf(dividend), scaledDivisor, scale, roundingMode, scale);
+            return divideAndRound(BigInteger.Companion.valueOf(dividend), scaledDivisor, scale, roundingMode, scale);
         }
     }
 

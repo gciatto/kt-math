@@ -27,7 +27,7 @@
  * Portions Copyright IBM Corporation, 1997, 2001. All Rights Reserved.
  */
 
-package java2.math
+package kotlin.math
 
 /**
  * Immutable objects which encapsulate the context settings which
@@ -276,10 +276,10 @@ class MathContext {
         /* ----- Constants ----- */
 
         // defaults for constructors
-        private val DEFAULT_DIGITS = 9
+        private const val DEFAULT_DIGITS = 9
         private val DEFAULT_ROUNDINGMODE = RoundingMode.HALF_UP
         // Smallest values for digits (Maximum is Integer.MAX_VALUE)
-        private val MIN_DIGITS = 0
+        private const val MIN_DIGITS = 0
 
         // Serialization version
         private const val serialVersionUID = 5579720004786848255L

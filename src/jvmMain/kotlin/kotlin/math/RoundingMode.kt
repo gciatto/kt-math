@@ -26,7 +26,7 @@
 /*
  * Portions Copyright IBM Corporation, 2001. All Rights Reserved.
  */
-package java2.math
+package kotlin.math
 
 /**
  * Specifies a *rounding behavior* for numerical operations

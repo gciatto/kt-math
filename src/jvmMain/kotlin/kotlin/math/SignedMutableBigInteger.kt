@@ -23,7 +23,7 @@
  * questions.
  */
 
-package java2.math
+package kotlin.math
 
 /**
  * A class used to represent multiprecision integers that makes efficient

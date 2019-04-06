@@ -23,7 +23,9 @@
  * questions.
  */
 
-package java2.math
+package kotlin.math
+
+import kotlin.random.Random
 
 /**
  * A simple bit sieve used for finding prime number candidates. Allows setting
@@ -108,7 +110,7 @@ internal class BitSieve {
         val b = MutableBigInteger(base)
         val q = MutableBigInteger()
         do {
-            // Calculate base mod convertedStep
+            // Calculate base rem convertedStep
             start = b.divideOneWord(convertedStep, q)
 
             // Take each multiple of step out of sieve
@@ -173,7 +175,7 @@ internal class BitSieve {
     /**
      * Test probable primes in the sieve and return successful candidates.
      */
-    fun retrieve(initValue: BigInteger, certainty: Int, random: java.util.Random): BigInteger? {
+    fun retrieve(initValue: BigInteger, certainty: Int, random: Random): BigInteger? {
         // Examine the sieve one long at a time to find possible primes
         var offset = 1
         for (i in bits!!.indices) {

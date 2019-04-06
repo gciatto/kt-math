@@ -23,7 +23,7 @@
  * questions.
  */
 
-package java2.math
+package kotlin.math
 
 /**
  * A class used to represent multiprecision integers that makes efficient
@@ -43,9 +43,8 @@ package java2.math
  * @since   1.3
  */
 
-import java2.math.BigDecimal.INFLATED
-import java2.math.BigInteger.LONG_MASK
-import java.util.Arrays
+import kotlin.math.BigDecimal.INFLATED
+import kotlin.math.BigInteger.Companion.LONG_MASK
 
 internal open class MutableBigInteger {
     /**
@@ -73,7 +72,7 @@ internal open class MutableBigInteger {
      * supposed to modify the returned array.
      */
     private val magnitudeArray: IntArray
-        get() = if (offset > 0 || value.size != intLen) Arrays.copyOfRange(value, offset, offset + intLen) else value
+        get() = if (offset > 0 || value.size != intLen) value.copyOfRange(offset, offset + intLen) else value
 
     /**
      * Return the index of the lowest set bit in this MutableBigInteger. If the
@@ -165,7 +164,7 @@ internal open class MutableBigInteger {
      */
     constructor(b: BigInteger) {
         intLen = b.mag.size
-        value = Arrays.copyOf(b.mag, intLen)
+        value = b.mag.copyOf(intLen)
     }
 
     /**
@@ -174,7 +173,7 @@ internal open class MutableBigInteger {
      */
     constructor(`val`: MutableBigInteger) {
         intLen = `val`.intLen
-        value = Arrays.copyOfRange(`val`.value, `val`.offset, `val`.offset + intLen)
+        value = `val`.value.copyOfRange(`val`.offset, `val`.offset + intLen)
     }
 
     /**
@@ -186,7 +185,7 @@ internal open class MutableBigInteger {
     private fun ones(n: Int) {
         if (n > value.size)
             value = IntArray(n)
-        Arrays.fill(value, -1)
+        value.fill(-1)
         offset = 0
         intLen = n
     }
@@ -207,7 +206,10 @@ internal open class MutableBigInteger {
      * Convert this MutableBigInteger to a BigInteger object.
      */
     fun toBigInteger(sign: Int): BigInteger {
-        return if (intLen == 0 || sign == 0) BigInteger.ZERO else BigInteger(magnitudeArray, sign)
+        return if (intLen == 0 || sign == 0) BigInteger.ZERO else BigInteger(
+            magnitudeArray,
+            sign
+        )
     }
 
     /**
@@ -711,7 +713,7 @@ internal open class MutableBigInteger {
             while (len > 0 && value[offset + intLen - len] == 0)
                 len--
             val sign = if (len > 0) 1 else 0
-            return BigInteger(Arrays.copyOfRange(value, offset + intLen - len, offset + intLen), sign)
+            return BigInteger(value.copyOfRange(offset + intLen - len, offset + intLen), sign)
         }
     }
 
@@ -869,7 +871,7 @@ internal open class MutableBigInteger {
             result = IntArray(resultLen)
         else {
             result = value
-            Arrays.fill(value, offset + intLen, value.size, 0)
+            value.fill(offset + intLen, value.size, 0)
         }
 
         var rstart = result.size - 1
@@ -1387,7 +1389,7 @@ internal open class MutableBigInteger {
         // step 6: add b until r>=d
         while (r.compare(d) < 0) {
             r.add(b)
-            quotient.subtract(MutableBigInteger.ONE)
+            quotient.subtract(ONE)
         }
         r.subtract(d)
 
@@ -1419,7 +1421,7 @@ internal open class MutableBigInteger {
             return MutableBigInteger()
         }
 
-        val newVal = Arrays.copyOfRange(value, offset + intLen - blockEnd, offset + intLen - blockStart)
+        val newVal = value.copyOfRange(offset + intLen - blockEnd, offset + intLen - blockStart)
         return MutableBigInteger(newVal)
     }
 
@@ -1505,7 +1507,7 @@ internal open class MutableBigInteger {
                 remarr[intLen + 1] = c shl shift
             }
         } else {
-            divisor = Arrays.copyOfRange(div.value, div.offset, div.offset + div.intLen)
+            divisor = div.value.copyOfRange(div.offset, div.offset + div.intLen)
             rem = MutableBigInteger(IntArray(intLen + 1))
             System.arraycopy(value, offset, rem.value, 1, intLen)
             rem.intLen = intLen
@@ -1866,7 +1868,12 @@ internal open class MutableBigInteger {
 
                 // Terminate when non-decreasing.
                 if (xk1 >= xk) {
-                    return MutableBigInteger(intArrayOf(xk.ushr(32).toInt(), (xk.toLong() and LONG_MASK).toInt()))
+                    return MutableBigInteger(
+                        intArrayOf(
+                            xk.ushr(32).toInt(),
+                            (xk.toLong() and LONG_MASK).toInt()
+                        )
+                    )
                 }
 
                 xk = xk1
@@ -2004,7 +2011,7 @@ internal open class MutableBigInteger {
     }
 
     /**
-     * Returns the modInverse of this mod p. This and p are not affected by
+     * Returns the modInverse of this rem p. This and p are not affected by
      * the operation.
      */
     fun mutableModInverse(p: MutableBigInteger): MutableBigInteger? {
@@ -2026,10 +2033,10 @@ internal open class MutableBigInteger {
         if (oddMod.isOne)
             return modInverseMP2(powersOf2)
 
-        // Calculate 1/a mod oddMod
+        // Calculate 1/a rem oddMod
         val oddPart = modInverse(oddMod)
 
-        // Calculate 1/a mod evenMod
+        // Calculate 1/a rem evenMod
         val evenPart = modInverseMP2(powersOf2)
 
         // Combine the results using Chinese Remainder Theorem
@@ -2051,7 +2058,7 @@ internal open class MutableBigInteger {
     }
 
     /*
-     * Calculate the multiplicative inverse of this mod 2^k.
+     * Calculate the multiplicative inverse of this rem 2^k.
      */
     fun modInverseMP2(k: Int): MutableBigInteger {
         if (isEven)
@@ -2083,8 +2090,8 @@ internal open class MutableBigInteger {
     }
 
     /**
-     * Calculate the multiplicative inverse of this mod mod, where mod is odd.
-     * This and mod are not changed by the calculation.
+     * Calculate the multiplicative inverse of this rem rem, where rem is odd.
+     * This and rem are not changed by the calculation.
      *
      * This method implements an algorithm due to Richard Schroeppel, that uses
      * the same intermediate representation as Montgomery Reduction
@@ -2111,7 +2118,7 @@ internal open class MutableBigInteger {
 
         // The Almost Inverse Algorithm
         while (!f.isOne) {
-            // If gcd(f, g) != 1, number is not invertible modulo mod
+            // If gcd(f, g) != 1, number is not invertible modulo rem
             if (f.isZero)
                 throw ArithmeticException("BigInteger not invertible.")
 
@@ -2125,11 +2132,11 @@ internal open class MutableBigInteger {
                 c = sTemp
             }
 
-            // If f == g (mod 4)
+            // If f == g (rem 4)
             if (f.value[f.offset + f.intLen - 1] xor g.value[g.offset + g.intLen - 1] and 3 == 0) {
                 f.subtract(g)
                 c.signedSubtract(d)
-            } else { // If f != g (mod 4)
+            } else { // If f != g (rem 4)
                 f.add(g)
                 c.signedAdd(d)
             }
@@ -2149,7 +2156,7 @@ internal open class MutableBigInteger {
 
     /**
      * Uses the extended Euclidean algorithm to compute the modInverse of base
-     * mod a modulus that is a power of 2. The modulus is 2^k.
+     * rem a modulus that is a power of 2. The modulus is 2^k.
      */
     fun euclidModInverse(k: Int): MutableBigInteger {
         var b: MutableBigInteger? = MutableBigInteger(1)
@@ -2318,7 +2325,7 @@ internal open class MutableBigInteger {
         }
 
         /**
-         * Returns the multiplicative inverse of val mod 2^32.  Assumes val is odd.
+         * Returns the multiplicative inverse of val rem 2^32.  Assumes val is odd.
          */
         fun inverseMod32(`val`: Int): Int {
             // Newton's iteration!
@@ -2331,7 +2338,7 @@ internal open class MutableBigInteger {
         }
 
         /**
-         * Returns the multiplicative inverse of val mod 2^64.  Assumes val is odd.
+         * Returns the multiplicative inverse of val rem 2^64.  Assumes val is odd.
          */
         fun inverseMod64(`val`: Long): Long {
             // Newton's iteration!
@@ -2346,16 +2353,20 @@ internal open class MutableBigInteger {
         }
 
         /**
-         * Calculate the multiplicative inverse of 2^k mod mod, where mod is odd.
+         * Calculate the multiplicative inverse of 2^k rem rem, where rem is odd.
          */
         fun modInverseBP2(mod: MutableBigInteger, k: Int): MutableBigInteger {
-            // Copy the mod to protect original
-            return fixup(MutableBigInteger(1), MutableBigInteger(mod), k)
+            // Copy the rem to protect original
+            return fixup(
+                MutableBigInteger(1),
+                MutableBigInteger(mod),
+                k
+            )
         }
 
         /**
          * The Fixup Algorithm
-         * Calculates X such that X = C * 2^(-k) (mod P)
+         * Calculates X such that X = C * 2^(-k) (rem P)
          * Assumes C<P and P is odd.></P>
          */
         fun fixup(
@@ -2363,13 +2374,13 @@ internal open class MutableBigInteger {
             k: Int
         ): MutableBigInteger {
             val temp = MutableBigInteger()
-            // Set r to the multiplicative inverse of p mod 2^32
+            // Set r to the multiplicative inverse of p rem 2^32
             val r = -inverseMod32(p.value[p.offset + p.intLen - 1])
 
             var i = 0
             val numWords = k shr 5
             while (i < numWords) {
-                // V = R * c (mod 2^j)
+                // V = R * c (rem 2^j)
                 val v = r * c.value[c.offset + c.intLen - 1]
                 // c = c + (v * p)
                 p.mul(v, temp)
@@ -2380,7 +2391,7 @@ internal open class MutableBigInteger {
             }
             val numBits = k and 0x1f
             if (numBits != 0) {
-                // V = R * c (mod 2^j)
+                // V = R * c (rem 2^j)
                 var v = r * c.value[c.offset + c.intLen - 1]
                 v = v and (1 shl numBits) - 1
                 // c = c + (v * p)
