@@ -658,7 +658,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             )
             if (candidate != null)
                 return candidate
-            result = result.add(valueOf((2 * searchLen).toLong()))
+            result = result.add(invoke((2 * searchLen).toLong()))
         }
     }
 
@@ -864,7 +864,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         if (`val` == 0L)
             return this
         if (signum == 0)
-            return valueOf(`val`)
+            return invoke(`val`)
         if (`val`.sign == signum)
             return BigInteger(add(mag, Math.abs(`val`)), signum)
         val cmp = compareMagnitude(`val`)
@@ -956,7 +956,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         if (v == 0L || signum == 0)
             return ZERO
         if (v == BigDecimal.INFLATED)
-            return multiply(valueOf(v))
+            return multiply(invoke(v))
         val rsign = if (v > 0) signum else -signum
         if (v < 0)
             v = -v
@@ -1446,12 +1446,12 @@ class BigInteger : Number, Comparable<BigInteger> {
             // Multiply back the powers of two (quickly, by shifting left)
             return if (powersOfTwo > 0) {
                 if (bitsToShift + scaleFactor <= 62) { // Fits in long?
-                    valueOf((result shl bitsToShift.toInt()) * newSign)
+                    invoke((result shl bitsToShift.toInt()) * newSign)
                 } else {
-                    valueOf(result * newSign).shiftLeft(bitsToShift.toInt())
+                    invoke(result * newSign).shiftLeft(bitsToShift.toInt())
                 }
             } else {
-                valueOf(result * newSign)
+                invoke(result * newSign)
             }
         } else {
             // Large number algorithm.  This is basically identical to
@@ -2146,7 +2146,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) and `val`.getInt(result.size - i - 1)
 
-        return valueOf(result)
+        return invoke(result)
     }
 
     /**
@@ -2162,7 +2162,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) or `val`.getInt(result.size - i - 1)
 
-        return valueOf(result)
+        return invoke(result)
     }
 
     /**
@@ -2178,7 +2178,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) xor `val`.getInt(result.size - i - 1)
 
-        return valueOf(result)
+        return invoke(result)
     }
 
     /**
@@ -2193,7 +2193,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1).inv()
 
-        return valueOf(result)
+        return invoke(result)
     }
 
     /**
@@ -2211,7 +2211,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) and `val`.getInt(result.size - i - 1).inv()
 
-        return valueOf(result)
+        return invoke(result)
     }
 
 
@@ -2252,7 +2252,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] or (1 shl (n and 31))
 
-        return valueOf(result)
+        return invoke(result)
     }
 
     /**
@@ -2276,7 +2276,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] and (1 shl (n and 31)).inv()
 
-        return valueOf(result)
+        return invoke(result)
     }
 
     /**
@@ -2300,7 +2300,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] xor (1 shl (n and 31))
 
-        return valueOf(result)
+        return invoke(result)
     }
 
 
@@ -3214,7 +3214,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         }
 
         private val SMALL_PRIME_PRODUCT =
-            valueOf(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
+            invoke(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
 
         /**
          * Find a random number of the specified bitLength that is probably prime.
@@ -3233,7 +3233,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             var candidate = searchSieve.retrieve(p, certainty, rnd)
 
             while (candidate == null || candidate.bitLength() != bitLength) {
-                p = p.add(valueOf((2 * searchLen).toLong()))
+                p = p.add(invoke((2 * searchLen).toLong()))
                 if (p.bitLength() != bitLength)
                     p = BigInteger(bitLength, rnd).setBit(bitLength - 1)
                 p.mag[p.mag.size - 1] = p.mag[p.mag.size - 1] and -0x2
@@ -3286,7 +3286,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             // p = u = 3 (rem 4)?
                 j = -j
             // And reduce u rem p
-            u = n.rem(valueOf(p.toLong())).toInt()
+            u = n.rem(invoke(p.toLong())).toInt()
 
             // Now compute Jacobi(u,p), u < p
             while (u != 0) {
@@ -3314,7 +3314,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         }
 
         private fun lucasLehmerSequence(z: Int, k: BigInteger, n: BigInteger): BigInteger {
-            val d = valueOf(z.toLong())
+            val d = invoke(z.toLong())
             var u = ONE
             var u2: BigInteger
             var v = ONE
@@ -3366,11 +3366,11 @@ class BigInteger : Number, Comparable<BigInteger> {
          * @param  val value of the BigInteger to return.
          * @return a BigInteger with the specified value.
          */
-        fun valueOf(`val`: Long): BigInteger {
+        operator fun invoke(`val`: Long): BigInteger {
             // If -MAX_CONSTANT < val < MAX_CONSTANT, return stashed constant
             if (`val` == 0L)
                 return ZERO
-            if (`val` > 0 && `val` <= MAX_CONSTANT)
+            if (`val` in 1..MAX_CONSTANT)
                 return posConst[`val`.toInt()] ?: throw IllegalStateException()
             else if (`val` < 0 && `val` >= -MAX_CONSTANT)
                 return negConst[(-`val`).toInt()] ?: throw IllegalStateException()
@@ -3378,12 +3378,16 @@ class BigInteger : Number, Comparable<BigInteger> {
             return BigInteger(`val`)
         }
 
+        operator fun invoke(value: Int): BigInteger {
+            return invoke(value.toLong())
+        }
+
         /**
          * Returns a BigInteger with the given two's complement representation.
          * Assumes that the input array will not be modified (the returned
          * BigInteger will reference the input array if feasible).
          */
-        private fun valueOf(`val`: IntArray): BigInteger {
+        private fun invoke(`val`: IntArray): BigInteger {
             return if (`val`[0] > 0) BigInteger(`val`, 1) else BigInteger(`val`)
         }
 
@@ -3427,7 +3431,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             logCache = DoubleArray(Character.MAX_RADIX + 1)
 
             for (i in Character.MIN_RADIX .. Character.MAX_RADIX) {
-                powerCache[i] = arrayOf(valueOf(i.toLong()))
+                powerCache[i] = arrayOf(invoke(i.toLong()))
                 logCache[i] = Math.log(i.toDouble())
             }
         }
@@ -3444,26 +3448,26 @@ class BigInteger : Number, Comparable<BigInteger> {
          *
          * @since   1.2
          */
-        val ONE = valueOf(1)
+        val ONE = invoke(1)
 
         /**
          * The BigInteger constant two.
          *
          * @since   9
          */
-        val TWO = valueOf(2)
+        val TWO = invoke(2)
 
         /**
          * The BigInteger constant -1.  (Not exported.)
          */
-        private val NEGATIVE_ONE = valueOf(-1)
+        private val NEGATIVE_ONE = invoke(-1)
 
         /**
          * The BigInteger constant ten.
          *
          * @since   1.5
          */
-        val TEN = valueOf(10)
+        val TEN = invoke(10)
 
         /**
          * Adds the contents of the int array x and long value val. This
@@ -3535,7 +3539,8 @@ class BigInteger : Number, Comparable<BigInteger> {
             val result = IntArray(xIndex)
             var sum: Long = 0
             if (yIndex == 1) {
-                sum = (x[--xIndex].toLong()and LONG_MASK) + (y[0].toLong()and LONG_MASK)
+                xIndex--
+                sum = (x[xIndex].toLong()and LONG_MASK) + (y[0].toLong()and LONG_MASK)
                 result[xIndex] = sum.toInt()
             } else {
                 // Add common parts of both numbers
@@ -3548,8 +3553,9 @@ class BigInteger : Number, Comparable<BigInteger> {
             // Copy remainder of longer number while carry propagation is required
             var carry = sum.ushr(32) != 0L
             while (xIndex > 0 && carry) {
-                result[xIndex - 1] = x[xIndex] + 1
-                carry = result[--xIndex] == 0
+                //carry = ((result[--xIndex] = x[xIndex] + 1) == 0)
+                result[--xIndex] = x[xIndex] + 1
+                carry = result[xIndex] == 0
             }
 
             // Copy remainder of longer number
@@ -4659,41 +4665,41 @@ class BigInteger : Number, Comparable<BigInteger> {
         private val longRadix = arrayOf(
             null,
             null,
-            valueOf(0x4000000000000000L),
-            valueOf(0x383d9170b85ff80bL),
-            valueOf(0x4000000000000000L),
-            valueOf(0x6765c793fa10079dL),
-            valueOf(0x41c21cb8e1000000L),
-            valueOf(0x3642798750226111L),
-            valueOf(0x1000000000000000L),
-            valueOf(0x12bf307ae81ffd59L),
-            valueOf(0xde0b6b3a7640000L),
-            valueOf(0x4d28cb56c33fa539L),
-            valueOf(0x1eca170c00000000L),
-            valueOf(0x780c7372621bd74dL),
-            valueOf(0x1e39a5057d810000L),
-            valueOf(0x5b27ac993df97701L),
-            valueOf(0x1000000000000000L),
-            valueOf(0x27b95e997e21d9f1L),
-            valueOf(0x5da0e1e53c5c8000L),
-            valueOf(0xb16a458ef403f19L),
-            valueOf(0x16bcc41e90000000L),
-            valueOf(0x2d04b7fdd9c0ef49L),
-            valueOf(0x5658597bcaa24000L),
-            valueOf(0x6feb266931a75b7L),
-            valueOf(0xc29e98000000000L),
-            valueOf(0x14adf4b7320334b9L),
-            valueOf(0x226ed36478bfa000L),
-            valueOf(0x383d9170b85ff80bL),
-            valueOf(0x5a3c23e39c000000L),
-            valueOf(0x4e900abb53e6b71L),
-            valueOf(0x7600ec618141000L),
-            valueOf(0xaee5720ee830681L),
-            valueOf(0x1000000000000000L),
-            valueOf(0x172588ad4f5f0981L),
-            valueOf(0x211e44f7d02c1000L),
-            valueOf(0x2ee56725f06e5c71L),
-            valueOf(0x41c21cb8e1000000L)
+            invoke(0x4000000000000000L),
+            invoke(0x383d9170b85ff80bL),
+            invoke(0x4000000000000000L),
+            invoke(0x6765c793fa10079dL),
+            invoke(0x41c21cb8e1000000L),
+            invoke(0x3642798750226111L),
+            invoke(0x1000000000000000L),
+            invoke(0x12bf307ae81ffd59L),
+            invoke(0xde0b6b3a7640000L),
+            invoke(0x4d28cb56c33fa539L),
+            invoke(0x1eca170c00000000L),
+            invoke(0x780c7372621bd74dL),
+            invoke(0x1e39a5057d810000L),
+            invoke(0x5b27ac993df97701L),
+            invoke(0x1000000000000000L),
+            invoke(0x27b95e997e21d9f1L),
+            invoke(0x5da0e1e53c5c8000L),
+            invoke(0xb16a458ef403f19L),
+            invoke(0x16bcc41e90000000L),
+            invoke(0x2d04b7fdd9c0ef49L),
+            invoke(0x5658597bcaa24000L),
+            invoke(0x6feb266931a75b7L),
+            invoke(0xc29e98000000000L),
+            invoke(0x14adf4b7320334b9L),
+            invoke(0x226ed36478bfa000L),
+            invoke(0x383d9170b85ff80bL),
+            invoke(0x5a3c23e39c000000L),
+            invoke(0x4e900abb53e6b71L),
+            invoke(0x7600ec618141000L),
+            invoke(0xaee5720ee830681L),
+            invoke(0x1000000000000000L),
+            invoke(0x172588ad4f5f0981L),
+            invoke(0x211e44f7d02c1000L),
+            invoke(0x2ee56725f06e5c71L),
+            invoke(0x41c21cb8e1000000L)
         )
 
         /*

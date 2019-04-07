@@ -1900,7 +1900,7 @@ internal open class MutableBigInteger {
 
             // Use the square root of the shifted value as an approximation.
             val d = BigInteger(xk.value, 1).toDouble()
-            val bi = BigInteger.valueOf(Math.ceil(Math.sqrt(d)).toLong())
+            val bi = BigInteger.invoke(Math.ceil(Math.sqrt(d)).toLong())
             xk = MutableBigInteger(bi.mag)
 
             // Shift the approximate square root back into the original range.
