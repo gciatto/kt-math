@@ -167,7 +167,7 @@ class MathContext {
             if (!`val`.startsWith("precision=")) throw RuntimeException()
             val fence = `val`.indexOf(' ')    // could be -1
             var off = 10                     // where value starts
-            setPrecision = Integer.parseInt(`val`.substring(10, fence))
+            setPrecision = `val`.substring(10, fence).toInt()
 
             if (!`val`.startsWith("roundingMode=", fence + 1))
                 throw RuntimeException()
