@@ -168,8 +168,8 @@ fun arrayCopy(src: IntArray, srcIndex: Int, dest: IntArray, destIndex: Int, size
     }
 }
 
-fun <T> Array<T>.clone(): Array<T> {
-    return Array(this.size) { i -> this[i] }
+inline fun <reified T> Array<T>.clone(): Array<T> {
+    return Array<T>(this.size) { i -> this[i] }
 }
 
 fun IntArray.clone(): IntArray {
@@ -206,4 +206,15 @@ fun StringBuilder.insert(index: Int, string: CharSequence): StringBuilder {
 
 fun CharSequence.toCharArray(): CharArray {
     return CharArray(this.length) { this[it] }
+}
+
+fun IntArray.fill(x: Int): IntArray {
+    return this.fill(0, this.size, x)
+}
+
+fun IntArray.fill(from: Int, to: Int, x: Int): IntArray {
+    for (i in from until to) {
+        this[i] = x
+    }
+    return this
 }

@@ -45,6 +45,7 @@ package org.gciatto.kt.math
 
 import org.gciatto.kt.math.BigDecimal.Companion.INFLATED
 import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
+import kotlin.math.*
 
 internal open class MutableBigInteger {
     /**
@@ -89,7 +90,7 @@ internal open class MutableBigInteger {
                 j--
             }
             b = value[j + offset]
-            return if (b == 0) -1 else (intLen - 1 - j shl 5) + Integer.numberOfTrailingZeros(b)
+            return if (b == 0) -1 else (intLen - 1 - j shl 5) + b.numberOfTrailingZeros()
         }
 
     /**
@@ -195,7 +196,7 @@ internal open class MutableBigInteger {
      * sure this MutableBigInteger can be fit into long.
      */
     private fun toLong(): Long {
-        assert(intLen <= 2) { "this MutableBigInteger exceeds the range of long" }
+        require(intLen <= 2) { "this MutableBigInteger exceeds the range of long" }
         if (intLen == 0)
             return 0
         val d = value[offset].toLong() and LONG_MASK
@@ -480,7 +481,7 @@ internal open class MutableBigInteger {
         val len = src.intLen
         if (value.size < len)
             value = IntArray(len)
-        System.arraycopy(src.value, src.offset, value, 0, len)
+        arrayCopy(src.value, src.offset, value, 0, len)
         intLen = len
         offset = 0
     }
@@ -493,7 +494,7 @@ internal open class MutableBigInteger {
         val len = `val`.size
         if (value.size < len)
             value = IntArray(len)
-        System.arraycopy(`val`, 0, value, 0, len)
+        arrayCopy(`val`, 0, value, 0, len)
         intLen = len
         offset = 0
     }
@@ -774,7 +775,7 @@ internal open class MutableBigInteger {
                 val temp = IntArray(resultLen)
                 // Result one word longer from carry-out; copy low-order
                 // bits into new result.
-                System.arraycopy(result, 0, temp, 1, result.size)
+                arrayCopy(result, 0, temp, 1, result.size)
                 temp[0] = 1
                 result = temp
             } else {
@@ -841,7 +842,7 @@ internal open class MutableBigInteger {
                 val temp = IntArray(resultLen)
                 // Result one word longer from carry-out; copy low-order
                 // bits into new result.
-                System.arraycopy(result, 0, temp, 1, result.size)
+                arrayCopy(result, 0, temp, 1, result.size)
                 temp[0] = 1
                 result = temp
             } else {
@@ -874,15 +875,17 @@ internal open class MutableBigInteger {
             value.fill(offset + intLen, value.size, 0)
         }
 
+
+
         var rstart = result.size - 1
 
         // copy from this if needed
-        System.arraycopy(value, offset, result, rstart + 1 - x, x)
+        arrayCopy(value, offset, result, rstart + 1 - x, x)
         y -= x
         rstart -= x
 
-        val len = Math.min(y, addend.value.size - addend.offset)
-        System.arraycopy(addend.value, addend.offset, result, rstart + 1 - y, len)
+        val len = min(y, addend.value.size - addend.offset)
+        arrayCopy(addend.value, addend.offset, result, rstart + 1 - y, len)
 
         // zero the gap
         for (i in rstart + 1 - y + len until rstart + 1)
@@ -1115,7 +1118,7 @@ internal open class MutableBigInteger {
         quotient.intLen = intLen
 
         // Normalize the divisor
-        val shift = Integer.numberOfLeadingZeros(divisor)
+        val shift = divisor.numberOfLeadingZeros()
 
         var rem = value[offset]
         var remLong = rem.toLong() and LONG_MASK
@@ -1150,7 +1153,6 @@ internal open class MutableBigInteger {
             rem
     }
 
-    @JvmOverloads
     fun divide(b: MutableBigInteger, quotient: MutableBigInteger, needRemainder: Boolean = true): MutableBigInteger? {
         return if (b.intLen < BigInteger.BURNIKEL_ZIEGLER_THRESHOLD || intLen - b.intLen < BigInteger.BURNIKEL_ZIEGLER_OFFSET) {
             divideKnuth(b, quotient, needRemainder)
@@ -1170,7 +1172,6 @@ internal open class MutableBigInteger {
      * changed.
      *
      */
-    @JvmOverloads
     fun divideKnuth(
         b: MutableBigInteger,
         quotient: MutableBigInteger,
@@ -1215,7 +1216,7 @@ internal open class MutableBigInteger {
 
         // Cancel common powers of two if we're above the KNUTH_POW2_* thresholds
         if (intLen >= KNUTH_POW2_THRESH_LEN) {
-            val trailingZeroBits = Math.min(lowestSetBit, b.lowestSetBit)
+            val trailingZeroBits = min(lowestSetBit, b.lowestSetBit)
             if (trailingZeroBits >= KNUTH_POW2_THRESH_ZEROS * 32) {
                 val a = MutableBigInteger(this)
                 b = MutableBigInteger(b)
@@ -1257,12 +1258,12 @@ internal open class MutableBigInteger {
             // additional benefit.
 
             // step 1: let m = min{2^k | (2^k)*BURNIKEL_ZIEGLER_THRESHOLD > s}
-            val m = 1 shl 32 - Integer.numberOfLeadingZeros(s / BigInteger.BURNIKEL_ZIEGLER_THRESHOLD)
+            val m = 1 shl 32 - (s / BigInteger.BURNIKEL_ZIEGLER_THRESHOLD).numberOfLeadingZeros()
 
             val j = (s + m - 1) / m      // step 2a: j = ceil(s/m)
             val n = j * m            // step 2b: block length in 32-bit units
             val n32 = 32L * n         // block length in bits
-            val sigma = Math.max(0, n32 - b.bitLength()).toInt()   // step 3: sigma = max{T | (2^T)*B < beta^n}
+            val sigma = max(0, n32 - b.bitLength()).toInt()   // step 3: sigma = max{T | (2^T)*B < beta^n}
             val bShifted = MutableBigInteger(b)
             bShifted.safeLeftShift(sigma)   // step 4a: shift b so its length is a multiple of n
             val aShifted = MutableBigInteger(this)
@@ -1428,7 +1429,7 @@ internal open class MutableBigInteger {
     /** @see BigInteger.bitLength
      */
     fun bitLength(): Long {
-        return if (intLen == 0) 0 else intLen * 32L - Integer.numberOfLeadingZeros(value[offset])
+        return if (intLen == 0) 0 else intLen * 32L - value[offset].numberOfLeadingZeros()
     }
 
     /**
@@ -1474,7 +1475,7 @@ internal open class MutableBigInteger {
     ): MutableBigInteger? {
         // assert div.intLen > 1
         // D1 normalize the divisor
-        val shift = Integer.numberOfLeadingZeros(div.value[div.offset])
+        val shift = div.value[div.offset].numberOfLeadingZeros()
         // Copy divisor value to protect divisor
         val dlen = div.intLen
         val divisor: IntArray
@@ -1482,7 +1483,7 @@ internal open class MutableBigInteger {
         if (shift > 0) {
             divisor = IntArray(dlen)
             copyAndShift(div.value, div.offset, dlen, divisor, 0, shift)
-            if (Integer.numberOfLeadingZeros(value[offset]) >= shift) {
+            if (value[offset].numberOfLeadingZeros() >= shift) {
                 val remarr = IntArray(intLen + 1)
                 rem = MutableBigInteger(remarr)
                 rem.intLen = intLen
@@ -1509,7 +1510,7 @@ internal open class MutableBigInteger {
         } else {
             divisor = div.value.copyOfRange(div.offset, div.offset + div.intLen)
             rem = MutableBigInteger(IntArray(intLen + 1))
-            System.arraycopy(value, offset, rem.value, 1, intLen)
+            arrayCopy(value, offset, rem.value, 1, intLen)
             rem.intLen = intLen
             rem.offset = 1
         }
@@ -1681,7 +1682,7 @@ internal open class MutableBigInteger {
         var ldivisor = ldivisor
         // Remainder starts as dividend with space for a leading zero
         val rem = MutableBigInteger(IntArray(intLen + 1))
-        System.arraycopy(value, offset, rem.value, 1, intLen)
+        arrayCopy(value, offset, rem.value, 1, intLen)
         rem.intLen = intLen
         rem.offset = 1
 
@@ -1860,7 +1861,7 @@ internal open class MutableBigInteger {
         if (bitLength() <= 63) {
             // Initial estimate is the square root of the positive long value.
             val v = BigInteger(this.value, 1).longValueExact()
-            var xk = Math.floor(Math.sqrt(v.toDouble())).toLong()
+            var xk = floor(sqrt(v.toDouble())).toLong()
 
             // Refine the estimate.
             do {
@@ -1900,7 +1901,7 @@ internal open class MutableBigInteger {
 
             // Use the square root of the shifted value as an approximation.
             val d = BigInteger(xk.value, 1).toDouble()
-            val bi = BigInteger.invoke(Math.ceil(Math.sqrt(d)).toLong())
+            val bi = BigInteger.invoke(ceil(sqrt(d)).toLong())
             xk = MutableBigInteger(bi.mag)
 
             // Shift the approximate square root back into the original range.
@@ -1938,7 +1939,7 @@ internal open class MutableBigInteger {
         val q = MutableBigInteger()
 
         while (b!!.intLen != 0) {
-            if (Math.abs(a.intLen - b.intLen) < 2)
+            if (abs(a.intLen - b.intLen) < 2)
                 return a.binaryGCD(b)
 
             val r = a.divide(b, q)
@@ -2305,8 +2306,8 @@ internal open class MutableBigInteger {
                 return b
 
             // Right shift a & b till their last bits equal to 1.
-            val aZeros = Integer.numberOfTrailingZeros(a)
-            val bZeros = Integer.numberOfTrailingZeros(b)
+            val aZeros = a.numberOfTrailingZeros()
+            val bZeros = b.numberOfTrailingZeros()
             a = a ushr aZeros
             b = b ushr bZeros
 
@@ -2315,10 +2316,10 @@ internal open class MutableBigInteger {
             while (a != b) {
                 if (a + -0x80000000 > b + -0x80000000) {  // a > b as unsigned
                     a -= b
-                    a = a ushr Integer.numberOfTrailingZeros(a)
+                    a = a ushr a.numberOfTrailingZeros()
                 } else {
                     b -= a
-                    b = b ushr Integer.numberOfTrailingZeros(b)
+                    b = b ushr b.numberOfTrailingZeros()
                 }
             }
             return a shl t
@@ -2348,7 +2349,7 @@ internal open class MutableBigInteger {
             t *= 2 - `val` * t
             t *= 2 - `val` * t
             t *= 2 - `val` * t
-            assert(t * `val` == 1L)
+            require(t * `val` == 1L)
             return t
         }
 
