@@ -243,27 +243,26 @@ class BigInteger : Number, Comparable<BigInteger> {
      * negative or greater than or equal to the array length.
      * @since 9
      */
-//    @JvmOverloads
-//    constructor(`val`: ByteArray, off: Int = 0, len: Int = `val`.size) {
-//        if (`val`.size == 0) {
-//            throw NumberFormatException("Zero length BigInteger")
-//        } else if (off < 0 || off >= `val`.size || len < 0 ||
-//            len > `val`.size - off
-//        ) { // 0 <= off < val.length
-//            throw IndexOutOfBoundsException()
-//        }
-//
-//        if (`val`[off] < 0) {
-//            mag = makePositive(`val`, off, len)
-//            signum = -1
-//        } else {
-//            mag = stripLeadingZeroBytes(`val`, off, len)
-//            signum = if (mag.size == 0) 0 else 1
-//        }
-//        if (mag.size >= MAX_MAG_LENGTH) {
-//            checkRange()
-//        }
-//    }
+    constructor(`val`: ByteArray, off: Int = 0, len: Int = `val`.size) {
+        if (`val`.size == 0) {
+            throw NumberFormatException("Zero length BigInteger")
+        } else if (off < 0 || off >= `val`.size || len < 0 ||
+            len > `val`.size - off
+        ) { // 0 <= off < val.length
+            throw IndexOutOfBoundsException()
+        }
+
+        if (`val`[off] < 0) {
+            mag = makePositive(`val`, off, len)
+            signum = -1
+        } else {
+            mag = stripLeadingZeroBytes(`val`, off, len)
+            signum = if (mag.size == 0) 0 else 1
+        }
+        if (mag.size >= MAX_MAG_LENGTH) {
+            checkRange()
+        }
+    }
 
     /**
      * This private constructor translates an int array containing the
@@ -607,14 +606,14 @@ class BigInteger : Number, Comparable<BigInteger> {
         if (this.signum == 0 || this == ONE)
             return TWO
 
-        var result = this.add(ONE)
+        var result = this.plus(ONE)
 
         // Fastpath for small numbers
         if (result.bitLength() < SMALL_PRIME_THRESHOLD) {
 
             // Ensure an odd number
             if (!result.testBit(0))
-                result = result.add(ONE)
+                result = result.plus(ONE)
 
             while (true) {
                 // Do cheap "pre-test" if applicable
@@ -624,7 +623,7 @@ class BigInteger : Number, Comparable<BigInteger> {
                         r % 13 == 0L || r % 17 == 0L || r % 19 == 0L || r % 23 == 0L ||
                         r % 29 == 0L || r % 31 == 0L || r % 37 == 0L || r % 41 == 0L
                     ) {
-                        result = result.add(TWO)
+                        result = result.plus(TWO)
                         continue // Candidate is composite; try another
                     }
                 }
@@ -637,13 +636,13 @@ class BigInteger : Number, Comparable<BigInteger> {
                 if (result.primeToCertainty(DEFAULT_PRIME_CERTAINTY, null))
                     return result
 
-                result = result.add(TWO)
+                result = result.plus(TWO)
             }
         }
 
         // Start at previous even number
         if (result.testBit(0))
-            result = result.subtract(ONE)
+            result = result.minus(ONE)
 
         // Looking for the next large prime
         val searchLen = getPrimeSearchLen(result.bitLength())
@@ -656,7 +655,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             )
             if (candidate != null)
                 return candidate
-            result = result.add(invoke((2 * searchLen).toLong()))
+            result = result.plus(bigInteger((2 * searchLen).toLong()))
         }
     }
 
@@ -711,7 +710,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * This BigInteger is a positive, odd number.
      */
     private fun passesLucasLehmer(): Boolean {
-        val thisPlusOne = this.add(ONE)
+        val thisPlusOne = this.plus(ONE)
 
         // Step 1
         var d = 5
@@ -739,10 +738,10 @@ class BigInteger : Number, Comparable<BigInteger> {
     private fun passesMillerRabin(iterations: Int, rnd: Random?): Boolean {
         var rnd = rnd
         // Find a and m such that m is odd and this == 1 + 2**a * m
-        val thisMinusOne = this.subtract(ONE)
+        val thisMinusOne = this.minus(ONE)
         var m = thisMinusOne
         val a = m.lowestSetBit
-        m = m.shiftRight(a)
+        m = m.shr(a)
 
         if (rnd == null)
             rnd = Random.Default
@@ -834,44 +833,44 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  val value to be added to this BigInteger.
      * @return `this + val`
      */
-    fun add(`val`: BigInteger): BigInteger {
+    operator fun plus(`val`: BigInteger): BigInteger {
         if (`val`.signum == 0)
             return this
         if (signum == 0)
             return `val`
         if (`val`.signum == signum)
-            return BigInteger(add(mag, `val`.mag), signum)
+            return BigInteger(plus(mag, `val`.mag), signum)
 
         val cmp = compareMagnitude(`val`)
         if (cmp == 0)
             return ZERO
         var resultMag = if (cmp > 0)
-            subtract(mag, `val`.mag)
+            minus(mag, `val`.mag)
         else
-            subtract(`val`.mag, mag)
+            minus(`val`.mag, mag)
         resultMag = trustedStripLeadingZeroInts(resultMag)
 
         return BigInteger(resultMag, if (cmp == signum) 1 else -1)
     }
 
     /**
-     * Package private methods used by BigDecimal code to add a BigInteger
+     * Package private methods used by BigDecimal code to plus a BigInteger
      * with a long. Assumes val is not equal to INFLATED.
      */
-    internal fun add(`val`: Long): BigInteger {
+    internal fun plus(`val`: Long): BigInteger {
         if (`val` == 0L)
             return this
         if (signum == 0)
-            return invoke(`val`)
+            return bigInteger(`val`)
         if (`val`.sign == signum)
-            return BigInteger(add(mag, `val`.absoluteValue), signum)
+            return BigInteger(plus(mag, `val`.absoluteValue), signum)
         val cmp = compareMagnitude(`val`)
         if (cmp == 0)
             return ZERO
-        var resultMag = if (cmp > 0) subtract(
+        var resultMag = if (cmp > 0) minus(
             mag,
             `val`.absoluteValue
-        ) else subtract(`val`.absoluteValue, mag)
+        ) else minus(`val`.absoluteValue, mag)
         resultMag = trustedStripLeadingZeroInts(resultMag)
         return BigInteger(resultMag, if (cmp == signum) 1 else -1)
     }
@@ -882,21 +881,21 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  val value to be subtracted from this BigInteger.
      * @return `this - val`
      */
-    fun subtract(`val`: BigInteger): BigInteger {
+    operator fun minus(`val`: BigInteger): BigInteger {
         if (`val`.signum == 0)
             return this
         if (signum == 0)
-            return `val`.negate()
+            return `val`.unaryMinus()
         if (`val`.signum != signum)
-            return BigInteger(add(mag, `val`.mag), signum)
+            return BigInteger(plus(mag, `val`.mag), signum)
 
         val cmp = compareMagnitude(`val`)
         if (cmp == 0)
             return ZERO
         var resultMag = if (cmp > 0)
-            subtract(mag, `val`.mag)
+            minus(mag, `val`.mag)
         else
-            subtract(`val`.mag, mag)
+            minus(`val`.mag, mag)
         resultMag = trustedStripLeadingZeroInts(resultMag)
         return BigInteger(resultMag, if (cmp == signum) 1 else -1)
     }
@@ -910,7 +909,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  val value to be multiplied by this BigInteger.
      * @return `this * val`
      */
-    fun multiply(`val`: BigInteger): BigInteger {
+    operator fun times(`val`: BigInteger): BigInteger {
         if (`val`.signum == 0 || signum == 0)
             return ZERO
 
@@ -946,15 +945,15 @@ class BigInteger : Number, Comparable<BigInteger> {
     }
 
     /**
-     * Package private methods used by BigDecimal code to multiply a BigInteger
+     * Package private methods used by BigDecimal code to times a BigInteger
      * with a long. Assumes v is not equal to INFLATED.
      */
-    internal fun multiply(v: Long): BigInteger {
+    internal fun times(v: Long): BigInteger {
         var v = v
         if (v == 0L || signum == 0)
             return ZERO
         if (v == BigDecimal.INFLATED)
-            return multiply(invoke(v))
+            return times(bigInteger(v))
         val rsign = if (v > 0) signum else -signum
         if (v < 0)
             v = -v
@@ -1074,7 +1073,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             }
 
             // 0xAAAAAAAB is the modular inverse of 3 (rem 2^32).  Thus,
-            // the effect of this is to divide by 3 (rem 2^32).
+            // the effect of this is to div by 3 (rem 2^32).
             // This is much faster than division on most architectures.
             q = w * 0xAAAAAAABL and LONG_MASK
             result[i] = q.toInt()
@@ -1155,7 +1154,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     /**
      * Squares a BigInteger using the Karatsuba squaring algorithm.  It should
      * be used when both numbers are larger than a certain threshold (found
-     * experimentally).  It is a recursive divide-and-conquer algorithm that
+     * experimentally).  It is a recursive div-and-conquer algorithm that
      * has better asymptotic performance than the algorithm used in
      * squareToLen.
      */
@@ -1169,13 +1168,13 @@ class BigInteger : Number, Comparable<BigInteger> {
         val xls = xl.square()  // xls = xl^2
 
         // xh^2 << 64  +  (((xl+xh)^2 - (xh^2 + xl^2)) << 32) + xl^2
-        return xhs.shiftLeft(half * 32).add(xl.add(xh).square().subtract(xhs.add(xls))).shiftLeft(half * 32).add(xls)
+        return xhs.shl(half * 32).plus(xl.plus(xh).square().minus(xhs.plus(xls))).shl(half * 32).plus(xls)
     }
 
     /**
      * Squares a BigInteger using the 3-way Toom-Cook squaring algorithm.  It
      * should be used when both numbers are larger than a certain threshold
-     * (found experimentally).  It is a recursive divide-and-conquer algorithm
+     * (found experimentally).  It is a recursive div-and-conquer algorithm
      * that has better asymptotic performance than the algorithm used in
      * squareToLen or squareKaratsuba.
      */
@@ -1207,12 +1206,12 @@ class BigInteger : Number, Comparable<BigInteger> {
         var da1: BigInteger
 
         v0 = a0.square()
-        da1 = a2.add(a0)
-        vm1 = da1.subtract(a1).square()
-        da1 = da1.add(a1)
+        da1 = a2.plus(a0)
+        vm1 = da1.minus(a1).square()
+        da1 = da1.plus(a1)
         v1 = da1.square()
         vinf = a2.square()
-        v2 = da1.add(a2).shiftLeft(1).subtract(a0).square()
+        v2 = da1.plus(a2).shl(1).minus(a0).square()
 
         // The algorithm requires two divisions by 2 and one by 3.
         // All divisions are known to be exact, that is, they do not produce
@@ -1220,18 +1219,18 @@ class BigInteger : Number, Comparable<BigInteger> {
         // implemented as right shifts which are relatively efficient, leaving
         // only a division by 3.
         // The division by 3 is done by an optimized algorithm for this case.
-        t2 = v2.subtract(vm1).exactDivideBy3()
-        tm1 = v1.subtract(vm1).shiftRight(1)
-        t1 = v1.subtract(v0)
-        t2 = t2.subtract(t1).shiftRight(1)
-        t1 = t1.subtract(tm1).subtract(vinf)
-        t2 = t2.subtract(vinf.shiftLeft(1))
-        tm1 = tm1.subtract(t2)
+        t2 = v2.minus(vm1).exactDivideBy3()
+        tm1 = v1.minus(vm1).shr(1)
+        t1 = v1.minus(v0)
+        t2 = t2.minus(t1).shr(1)
+        t1 = t1.minus(tm1).minus(vinf)
+        t2 = t2.minus(vinf.shl(1))
+        tm1 = tm1.minus(t2)
 
         // Number of bits to shift left.
         val ss = k * 32
 
-        return vinf.shiftLeft(ss).add(t2).shiftLeft(ss).add(t1).shiftLeft(ss).add(tm1).shiftLeft(ss).add(v0)
+        return vinf.shl(ss).plus(t2).shl(ss).plus(t1).shl(ss).plus(tm1).shl(ss).plus(v0)
     }
 
     // Division
@@ -1243,7 +1242,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `this / val`
      * @throws ArithmeticException if `val` is zero.
      */
-    fun divide(`val`: BigInteger): BigInteger {
+    operator fun div(`val`: BigInteger): BigInteger {
         return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD || mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET) {
             divideKnuth(`val`)
         } else {
@@ -1394,13 +1393,13 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         // Factor the powers of two out quickly by shifting right, if needed.
         if (powersOfTwo > 0) {
-            partToSquare = partToSquare.shiftRight(powersOfTwo)
+            partToSquare = partToSquare.shr(powersOfTwo)
             remainingBits = partToSquare.bitLength()
             if (remainingBits == 1) {  // Nothing left but +/- 1?
                 return if (signum < 0 && exponent and 1 == 1) {
-                    NEGATIVE_ONE.shiftLeft(powersOfTwo * exponent)
+                    NEGATIVE_ONE.shl(powersOfTwo * exponent)
                 } else {
-                    ONE.shiftLeft(powersOfTwo * exponent)
+                    ONE.shl(powersOfTwo * exponent)
                 }
             }
         } else {
@@ -1444,16 +1443,16 @@ class BigInteger : Number, Comparable<BigInteger> {
             // Multiply back the powers of two (quickly, by shifting left)
             return if (powersOfTwo > 0) {
                 if (bitsToShift + scaleFactor <= 62) { // Fits in long?
-                    invoke((result shl bitsToShift.toInt()) * newSign)
+                    bigInteger((result shl bitsToShift.toInt()) * newSign)
                 } else {
-                    invoke(result * newSign).shiftLeft(bitsToShift.toInt())
+                    bigInteger(result * newSign).shl(bitsToShift.toInt())
                 }
             } else {
-                invoke(result * newSign)
+                bigInteger(result * newSign)
             }
         } else {
             // Large number algorithm.  This is basically identical to
-            // the algorithm above, but calls multiply() and square()
+            // the algorithm above, but calls times() and square()
             // which may use more efficient algorithms for large numbers.
             var answer = ONE
 
@@ -1461,7 +1460,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             // Perform exponentiation using repeated squaring trick
             while (workingExponent != 0) {
                 if (workingExponent and 1 == 1) {
-                    answer = answer.multiply(partToSquare)
+                    answer = answer.times(partToSquare)
                 }
 
                 workingExponent = workingExponent ushr 1
@@ -1472,11 +1471,11 @@ class BigInteger : Number, Comparable<BigInteger> {
             // Multiply back the (exponentiated) powers of two (quickly,
             // by shifting left)
             if (powersOfTwo > 0) {
-                answer = answer.shiftLeft(powersOfTwo * exponent)
+                answer = answer.shl(powersOfTwo * exponent)
             }
 
             return if (signum < 0 && exponent and 1 == 1) {
-                answer.negate()
+                answer.unaryMinus()
             } else {
                 answer
             }
@@ -1525,7 +1524,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      */
     fun sqrtAndRemainder(): Array<BigInteger> {
         val s = sqrt()
-        val r = this.subtract(s.square())
+        val r = this.minus(s.square())
         require(r >= ZERO)
         return arrayOf(s, r)
     }
@@ -1559,7 +1558,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `abs(this)`
      */
     fun abs(): BigInteger {
-        return if (signum >= 0) this else this.negate()
+        return if (signum >= 0) this else this.unaryMinus()
     }
 
     /**
@@ -1567,7 +1566,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @return `-this`
      */
-    fun negate(): BigInteger {
+    operator fun unaryMinus(): BigInteger {
         return BigInteger(this.mag, -this.signum)
     }
 
@@ -1598,7 +1597,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             throw ArithmeticException("BigInteger: modulus not positive")
 
         val result = this.remainder(m)
-        return if (result.signum >= 0) result else result.add(m)
+        return if (result.signum >= 0) result else result.plus(m)
     }
 
     /**
@@ -1634,7 +1633,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         val invertResult: Boolean = exponent.signum < 0
         if (invertResult)
-            exponent = exponent.negate()
+            exponent = exponent.unaryMinus()
 
         val base = if (this.signum < 0 || this.compareTo(m) >= 0)
             this.rem(m)
@@ -1653,8 +1652,8 @@ class BigInteger : Number, Comparable<BigInteger> {
             // Tear m apart into odd part (m1) and power of 2 (m2)
             val p = m.lowestSetBit   // Max pow of 2 that divides m
 
-            val m1 = m.shiftRight(p)  // m/2**p
-            val m2 = ONE.shiftLeft(p) // 2**p
+            val m1 = m.shr(p)  // m/2**p
+            val m2 = ONE.shl(p) // 2**p
 
             // Calculate new base from m1
             val base2 = if (this.signum < 0 || this.compareTo(m1) >= 0)
@@ -1676,12 +1675,12 @@ class BigInteger : Number, Comparable<BigInteger> {
             val y2 = m1.modInverse(m2)
 
             if (m.mag.size < MAX_MAG_LENGTH / 2) {
-                result = a1.multiply(m2).multiply(y1).add(a2.multiply(m1).multiply(y2)).rem(m)
+                result = a1.times(m2).times(y1).plus(a2.times(m1).times(y2)).rem(m)
             } else {
                 val t1 = MutableBigInteger()
-                MutableBigInteger(a1.multiply(m2)).multiply(MutableBigInteger(y1), t1)
+                MutableBigInteger(a1.times(m2)).multiply(MutableBigInteger(y1), t1)
                 val t2 = MutableBigInteger()
-                MutableBigInteger(a2.multiply(m1)).multiply(MutableBigInteger(y2), t2)
+                MutableBigInteger(a2.times(m1)).multiply(MutableBigInteger(y2), t2)
                 t1.add(t2)
                 val q = MutableBigInteger()
                 result = t1.divide(MutableBigInteger(m), q)!!.toBigInteger()
@@ -1704,32 +1703,32 @@ class BigInteger : Number, Comparable<BigInteger> {
          * and then keep appending exponent bits to it.  The following patterns
          * apply to a 3-bit window (k = 3):
          * To append   0: square
-         * To append   1: square, multiply by n^1
-         * To append  10: square, multiply by n^1, square
-         * To append  11: square, square, multiply by n^3
-         * To append 100: square, multiply by n^1, square, square
-         * To append 101: square, square, square, multiply by n^5
-         * To append 110: square, square, multiply by n^3, square
-         * To append 111: square, square, square, multiply by n^7
+         * To append   1: square, times by n^1
+         * To append  10: square, times by n^1, square
+         * To append  11: square, square, times by n^3
+         * To append 100: square, times by n^1, square, square
+         * To append 101: square, square, square, times by n^5
+         * To append 110: square, square, times by n^3, square
+         * To append 111: square, square, square, times by n^7
          *
-         * Since each pattern involves only one multiply, the longer the pattern
+         * Since each pattern involves only one times, the longer the pattern
          * the better, except that a 0 (no multiplies) can be appended directly.
          * We precompute a table of odd powers of n, up to 2^k, and can then
-         * multiply k bits of exponent at a time.  Actually, assuming random
+         * times k bits of exponent at a time.  Actually, assuming random
          * exponents, there is on average one zero bit between needs to
-         * multiply (1/2 of the time there's none, 1/4 of the time there's 1,
+         * times (1/2 of the time there's none, 1/4 of the time there's 1,
          * 1/8 of the time, there's 2, 1/32 of the time, there's 3, etc.), so
-         * you have to do one multiply per k+1 bits of exponent.
+         * you have to do one times per k+1 bits of exponent.
          *
          * The loop walks down the exponent, squaring the result buffer as
          * it goes.  There is a wbits+1 bit lookahead buffer, buf, that is
          * filled with the upcoming exponent bits.  (What is read after the
          * end of the exponent is unimportant, but it is filled with zero here.)
          * When the most-significant bit of this buffer becomes set, i.e.
-         * (buf & tblmask) != 0, we have to decide what pattern to multiply
+         * (buf & tblmask) != 0, we have to decide what pattern to times
          * by, and when to do it.  We decide, remember to do it in future
          * after a suitable number of squarings have passed (e.g. a pattern
-         * of "100" in the buffer requires that we multiply by n^1 immediately;
+         * of "100" in the buffer requires that we times by n^1 immediately;
          * a pattern of "110" calls for multiplying by n^3 after one more
          * squaring), clear the buffer, and continue.
          *
@@ -1804,7 +1803,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         val q = MutableBigInteger()
         val a2 = MutableBigInteger(a)
         val b2 = MutableBigInteger(mod)
-        b2.normalize() // MutableBigInteger.divide() assumes that its
+        b2.normalize() // MutableBigInteger.div() assumes that its
         // divisor is in normal form.
 
         val r = a2.divide(b2, q)
@@ -1890,7 +1889,7 @@ class BigInteger : Number, Comparable<BigInteger> {
                 buf = 0
             }
 
-            // Perform multiply
+            // Perform times
             if (ebits == multpos) {
                 if (isone) {
                     b = mult.clone()
@@ -1948,7 +1947,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         while (expOffset < limit) {
             if (exponent.testBit(expOffset))
-                result = result.multiply(baseToPow2).mod2(p)
+                result = result.times(baseToPow2).mod2(p)
             expOffset++
             if (expOffset < limit)
                 baseToPow2 = baseToPow2.square().mod2(p)
@@ -2018,13 +2017,13 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @param  n shift distance, in bits.
      * @return `this << n`
-     * @see .shiftRight
+     * @see .shr
      */
-    fun shiftLeft(n: Int): BigInteger {
+    fun shl(n: Int): BigInteger {
         if (signum == 0)
             return ZERO
         return if (n > 0) {
-            BigInteger(shiftLeft(mag, n), signum)
+            BigInteger(shl(mag, n), signum)
         } else if (n == 0) {
             this
         } else {
@@ -2042,9 +2041,9 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @param  n shift distance, in bits.
      * @return `this >> n`
-     * @see .shiftLeft
+     * @see .shl
      */
-    fun shiftRight(n: Int): BigInteger {
+    fun shr(n: Int): BigInteger {
         if (signum == 0)
             return ZERO
         return if (n > 0) {
@@ -2053,8 +2052,8 @@ class BigInteger : Number, Comparable<BigInteger> {
             this
         } else {
             // Possible int overflow in {@code -n} is not a trouble,
-            // because shiftLeft considers its argument unsigned
-            BigInteger(shiftLeft(mag, -n), signum)
+            // because shl considers its argument unsigned
+            BigInteger(shl(mag, -n), signum)
         }
     }
 
@@ -2144,7 +2143,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) and `val`.getInt(result.size - i - 1)
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
     /**
@@ -2160,7 +2159,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) or `val`.getInt(result.size - i - 1)
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
     /**
@@ -2176,7 +2175,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) xor `val`.getInt(result.size - i - 1)
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
     /**
@@ -2191,7 +2190,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1).inv()
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
     /**
@@ -2209,7 +2208,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) and `val`.getInt(result.size - i - 1).inv()
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
 
@@ -2250,7 +2249,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] or (1 shl (n and 31))
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
     /**
@@ -2274,7 +2273,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] and (1 shl (n and 31)).inv()
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
     /**
@@ -2298,7 +2297,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] xor (1 shl (n and 31))
 
-        return invoke(result)
+        return bigInteger(result)
     }
 
 
@@ -2597,7 +2596,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         // The results will be concatenated into this StringBuilder
         var sb = StringBuilder()
         if (signum < 0) {
-            toString(this.negate(), sb, radix, 0)
+            toString(this.unaryMinus(), sb, radix, 0)
             sb = sb.insert(0, '-')
         } else
             toString(this, sb, radix, 0)
@@ -2718,7 +2717,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * result with the opposite sign.
      *
      * @return this BigInteger converted to an `int`.
-     * @see .intValueExact
+     * @see .toIntExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     override fun toInt(): Int {
@@ -2740,7 +2739,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * result with the opposite sign.
      *
      * @return this BigInteger converted to a `long`.
-     * @see .longValueExact
+     * @see .toLongExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     override fun toLong(): Long {
@@ -2881,7 +2880,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun longValueExact(): Long {
+    fun toLongExact(): Long {
         return if (mag.size <= 2 && bitLength() <= 63)
             toLong()
         else
@@ -2901,7 +2900,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun intValueExact(): Int {
+    fun toIntExact(): Int {
         return if (mag.size <= 1 && bitLength() <= 31)
             toInt()
         else
@@ -2921,7 +2920,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun shortValueExact(): Short {
+    fun toShortExact(): Short {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
             if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE)
@@ -2943,7 +2942,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun byteValueExact(): Byte {
+    fun toBiteExact(): Byte {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
             if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE)
@@ -3033,7 +3032,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         /**
          * The threshold value for using squaring code to perform multiplication
          * of a `BigInteger` instance by itself.  If the number of ints in
-         * the number are larger than this value, `multiply(this)` will
+         * the number are larger than this value, `times(this)` will
          * return `square()`.
          */
         private const val MULTIPLY_SQUARE_THRESHOLD = 20
@@ -3088,7 +3087,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             5295
         )
 
-        // Multiply x array times word y in place, and add word z
+        // Multiply x array times word y in place, and plus word z
         private fun destructiveMulAdd(x: IntArray, y: Int, z: Int) {
             // Perform the multiplication word by word
             val ylong = y.toLong() and LONG_MASK
@@ -3212,7 +3211,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         }
 
         private val SMALL_PRIME_PRODUCT =
-            invoke(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
+            bigInteger(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
 
         /**
          * Find a random number of the specified bitLength that is probably prime.
@@ -3231,7 +3230,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             var candidate = searchSieve.retrieve(p, certainty, rnd)
 
             while (candidate == null || candidate.bitLength() != bitLength) {
-                p = p.add(invoke((2 * searchLen).toLong()))
+                p = p.plus(bigInteger((2 * searchLen).toLong()))
                 if (p.bitLength() != bitLength)
                     p = BigInteger(bitLength, rnd).setBit(bitLength - 1)
                 p.mag[p.mag.size - 1] = p.mag[p.mag.size - 1] and -0x2
@@ -3284,7 +3283,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             // p = u = 3 (rem 4)?
                 j = -j
             // And reduce u rem p
-            u = n.rem(invoke(p.toLong())).toInt()
+            u = n.rem(bigInteger(p.toLong())).toInt()
 
             // Now compute Jacobi(u,p), u < p
             while (u != 0) {
@@ -3312,33 +3311,33 @@ class BigInteger : Number, Comparable<BigInteger> {
         }
 
         private fun lucasLehmerSequence(z: Int, k: BigInteger, n: BigInteger): BigInteger {
-            val d = invoke(z.toLong())
+            val d = bigInteger(z.toLong())
             var u = ONE
             var u2: BigInteger
             var v = ONE
             var v2: BigInteger
 
             for (i in k.bitLength() - 2 downTo 0) {
-                u2 = u.multiply(v).rem(n)
+                u2 = u.times(v).rem(n)
 
-                v2 = v.square().add(d.multiply(u.square())).rem(n)
+                v2 = v.square().plus(d.times(u.square())).rem(n)
                 if (v2.testBit(0))
-                    v2 = v2.subtract(n)
+                    v2 = v2.minus(n)
 
-                v2 = v2.shiftRight(1)
+                v2 = v2.shr(1)
 
                 u = u2
                 v = v2
                 if (k.testBit(i)) {
-                    u2 = u.add(v).rem(n)
+                    u2 = u.plus(v).rem(n)
                     if (u2.testBit(0))
-                        u2 = u2.subtract(n)
+                        u2 = u2.minus(n)
 
-                    u2 = u2.shiftRight(1)
-                    v2 = v.add(d.multiply(u)).rem(n)
+                    u2 = u2.shr(1)
+                    v2 = v.plus(d.times(u)).rem(n)
                     if (v2.testBit(0))
-                        v2 = v2.subtract(n)
-                    v2 = v2.shiftRight(1)
+                        v2 = v2.minus(n)
+                    v2 = v2.shr(1)
 
                     u = u2
                     v = v2
@@ -3364,7 +3363,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * @param  val value of the BigInteger to return.
          * @return a BigInteger with the specified value.
          */
-        operator fun invoke(`val`: Long): BigInteger {
+        fun bigInteger(`val`: Long): BigInteger {
             // If -MAX_CONSTANT < val < MAX_CONSTANT, return stashed constant
             if (`val` == 0L)
                 return ZERO
@@ -3376,8 +3375,12 @@ class BigInteger : Number, Comparable<BigInteger> {
             return BigInteger(`val`)
         }
 
-        operator fun invoke(value: Int): BigInteger {
-            return invoke(value.toLong())
+        fun bigInteger(value: Int): BigInteger {
+            return bigInteger(value.toLong())
+        }
+
+        fun bigInteger(value: String, radix: Int = 10): BigInteger {
+            return BigInteger(value, radix)
         }
 
         /**
@@ -3385,7 +3388,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * Assumes that the input array will not be modified (the returned
          * BigInteger will reference the input array if feasible).
          */
-        private fun invoke(`val`: IntArray): BigInteger {
+        private fun bigInteger(`val`: IntArray): BigInteger {
             return if (`val`[0] > 0) BigInteger(`val`, 1) else BigInteger(`val`)
         }
 
@@ -3428,7 +3431,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             logCache = DoubleArray(CHAR_MAX_RADIX + 1)
 
             for (i in CHAR_MIN_RADIX .. CHAR_MAX_RADIX) {
-                powerCache[i] = arrayOf(invoke(i.toLong()))
+                powerCache[i] = arrayOf(bigInteger(i.toLong()))
                 logCache[i] = ln(i.toDouble())
             }
         }
@@ -3445,26 +3448,26 @@ class BigInteger : Number, Comparable<BigInteger> {
          *
          * @since   1.2
          */
-        val ONE = invoke(1)
+        val ONE = bigInteger(1)
 
         /**
          * The BigInteger constant two.
          *
          * @since   9
          */
-        val TWO = invoke(2)
+        val TWO = bigInteger(2)
 
         /**
          * The BigInteger constant -1.  (Not exported.)
          */
-        private val NEGATIVE_ONE = invoke(-1)
+        private val NEGATIVE_ONE = bigInteger(-1)
 
         /**
          * The BigInteger constant ten.
          *
          * @since   1.5
          */
-        val TEN = invoke(10)
+        val TEN = bigInteger(10)
 
         /**
          * Adds the contents of the int array x and long value val. This
@@ -3472,7 +3475,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * a reference to that array.  Assumes x.length &gt; 0 and val is
          * non-negative
          */
-        private fun add(x: IntArray, `val`: Long): IntArray {
+        private fun plus(x: IntArray, `val`: Long): IntArray {
             val y: IntArray
             var sum: Long = 0
             var xIndex = x.size
@@ -3521,7 +3524,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * a new int array to hold the answer and returns a reference to that
          * array.
          */
-        private fun add(x: IntArray, y: IntArray): IntArray {
+        private fun plus(x: IntArray, y: IntArray): IntArray {
             var x = x
             var y = y
             // If x is shorter, swap the two arrays
@@ -3569,7 +3572,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             return result
         }
 
-        private fun subtract(`val`: Long, little: IntArray): IntArray {
+        private fun minus(`val`: Long, little: IntArray): IntArray {
             val highWord = `val`.ushr(32).toInt()
             if (highWord == 0) {
                 val result = IntArray(1)
@@ -3605,7 +3608,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * answer.
          * assumes val &gt;= 0
          */
-        private fun subtract(big: IntArray, `val`: Long): IntArray {
+        private fun minus(big: IntArray, `val`: Long): IntArray {
             val highWord = `val`.ushr(32).toInt()
             var bigIndex = big.size
             val result = IntArray(bigIndex)
@@ -3641,7 +3644,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * than the second.  This method allocates the space necessary to hold the
          * answer.
          */
-        private fun subtract(big: IntArray, little: IntArray): IntArray {
+        private fun minus(big: IntArray, little: IntArray): IntArray {
             var bigIndex = big.size
             val result = IntArray(bigIndex)
             var littleIndex = little.size
@@ -3671,7 +3674,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         private fun multiplyByInt(x: IntArray, y: Int, sign: Int): BigInteger {
             if (y.bitCount() == 1) {
                 return BigInteger(
-                    shiftLeft(
+                    shl(
                         x,
                         y.numberOfTrailingZeros()
                     ), sign
@@ -3756,7 +3759,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         /**
          * Multiplies two BigIntegers using the Karatsuba multiplication
-         * algorithm.  This is a recursive divide-and-conquer algorithm which is
+         * algorithm.  This is a recursive div-and-conquer algorithm which is
          * more efficient for large numbers than what is commonly called the
          * "grade-school" algorithm used in multiplyToLen.  If the numbers to be
          * multiplied have length n, the "grade-school" algorithm has an
@@ -3783,17 +3786,17 @@ class BigInteger : Number, Comparable<BigInteger> {
             val yl = y.getLower(half)
             val yh = y.getUpper(half)
 
-            val p1 = xh.multiply(yh)  // p1 = xh*yh
-            val p2 = xl.multiply(yl)  // p2 = xl*yl
+            val p1 = xh.times(yh)  // p1 = xh*yh
+            val p2 = xl.times(yl)  // p2 = xl*yl
 
             // p3=(xh+xl)*(yh+yl)
-            val p3 = xh.add(xl).multiply(yh.add(yl))
+            val p3 = xh.plus(xl).times(yh.plus(yl))
 
             // result = p1 * 2^(32*2*half) + (p3 - p1 - p2) * 2^(32*half) + p2
-            val result = p1.shiftLeft(32 * half).add(p3.subtract(p1).subtract(p2)).shiftLeft(32 * half).add(p2)
+            val result = p1.shl(32 * half).plus(p3.minus(p1).minus(p2)).shl(32 * half).plus(p2)
 
             return if (x.signum != y.signum) {
-                result.negate()
+                result.unaryMinus()
             } else {
                 result
             }
@@ -3801,7 +3804,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         /**
          * Multiplies two BigIntegers using a 3-way Toom-Cook multiplication
-         * algorithm.  This is a recursive divide-and-conquer algorithm which is
+         * algorithm.  This is a recursive div-and-conquer algorithm which is
          * more efficient for large numbers than what is commonly called the
          * "grade-school" algorithm used in multiplyToLen.  If the numbers to be
          * multiplied have length n, the "grade-school" algorithm has an
@@ -3865,17 +3868,17 @@ class BigInteger : Number, Comparable<BigInteger> {
             var da1: BigInteger
             var db1: BigInteger
 
-            v0 = a0.multiply(b0)
-            da1 = a2.add(a0)
-            db1 = b2.add(b0)
-            vm1 = da1.subtract(a1).multiply(db1.subtract(b1))
-            da1 = da1.add(a1)
-            db1 = db1.add(b1)
-            v1 = da1.multiply(db1)
-            v2 = da1.add(a2).shiftLeft(1).subtract(a0).multiply(
-                db1.add(b2).shiftLeft(1).subtract(b0)
+            v0 = a0.times(b0)
+            da1 = a2.plus(a0)
+            db1 = b2.plus(b0)
+            vm1 = da1.minus(a1).times(db1.minus(b1))
+            da1 = da1.plus(a1)
+            db1 = db1.plus(b1)
+            v1 = da1.times(db1)
+            v2 = da1.plus(a2).shl(1).minus(a0).times(
+                db1.plus(b2).shl(1).minus(b0)
             )
-            vinf = a2.multiply(b2)
+            vinf = a2.times(b2)
 
             // The algorithm requires two divisions by 2 and one by 3.
             // All divisions are known to be exact, that is, they do not produce
@@ -3883,21 +3886,21 @@ class BigInteger : Number, Comparable<BigInteger> {
             // implemented as right shifts which are relatively efficient, leaving
             // only an exact division by 3, which is done by a specialized
             // linear-time algorithm.
-            t2 = v2.subtract(vm1).exactDivideBy3()
-            tm1 = v1.subtract(vm1).shiftRight(1)
-            t1 = v1.subtract(v0)
-            t2 = t2.subtract(t1).shiftRight(1)
-            t1 = t1.subtract(tm1).subtract(vinf)
-            t2 = t2.subtract(vinf.shiftLeft(1))
-            tm1 = tm1.subtract(t2)
+            t2 = v2.minus(vm1).exactDivideBy3()
+            tm1 = v1.minus(vm1).shr(1)
+            t1 = v1.minus(v0)
+            t2 = t2.minus(t1).shr(1)
+            t1 = t1.minus(tm1).minus(vinf)
+            t2 = t2.minus(vinf.shl(1))
+            tm1 = tm1.minus(t2)
 
             // Number of bits to shift left.
             val ss = k * 32
 
-            val result = vinf.shiftLeft(ss).add(t2).shiftLeft(ss).add(t1).shiftLeft(ss).add(tm1).shiftLeft(ss).add(v0)
+            val result = vinf.shl(ss).plus(t2).shl(ss).plus(t1).shl(ss).plus(tm1).shl(ss).plus(v0)
 
             return if (a.signum != b.signum) {
-                result.negate()
+                result.unaryMinus()
             } else {
                 result
             }
@@ -4251,7 +4254,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         }
 
         /**
-         * Multiply an array by one word k and add to result, return the carry
+         * Multiply an array by one word k and plus to result, return the carry
          */
         internal fun mulAdd(out: IntArray, `in`: IntArray, offset: Int, len: Int, k: Int): Int {
             implMulAddCheck(out, `in`, offset, len, k)
@@ -4328,7 +4331,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * @param  n unsigned shift distance, in bits.
          * @return `mag << n`
          */
-        private fun shiftLeft(mag: IntArray, n: Int): IntArray {
+        private fun shl(mag: IntArray, n: Int): IntArray {
             val nInts = n.ushr(5)
             val nBits = n and 0x1f
             val magLen = mag.size
@@ -4395,8 +4398,8 @@ class BigInteger : Number, Comparable<BigInteger> {
             b = u.bitLength()
 
             // Calculate a value for n in the equation radix^(2^n) = u
-            // and subtract 1 from that value.  This is used to find the
-            // cache index that contains the best value to divide u.
+            // and minus 1 from that value.  This is used to find the
+            // cache index that contains the best value to div u.
             n = round(ln(b * LOG_TWO / logCache[radix]) / LOG_TWO - 1.0).toInt()
             val v = getRadixConversionCache(radix, n)
             val results: Array<BigInteger>
@@ -4659,41 +4662,41 @@ class BigInteger : Number, Comparable<BigInteger> {
         private val longRadix = arrayOf(
             null,
             null,
-            invoke(0x4000000000000000L),
-            invoke(0x383d9170b85ff80bL),
-            invoke(0x4000000000000000L),
-            invoke(0x6765c793fa10079dL),
-            invoke(0x41c21cb8e1000000L),
-            invoke(0x3642798750226111L),
-            invoke(0x1000000000000000L),
-            invoke(0x12bf307ae81ffd59L),
-            invoke(0xde0b6b3a7640000L),
-            invoke(0x4d28cb56c33fa539L),
-            invoke(0x1eca170c00000000L),
-            invoke(0x780c7372621bd74dL),
-            invoke(0x1e39a5057d810000L),
-            invoke(0x5b27ac993df97701L),
-            invoke(0x1000000000000000L),
-            invoke(0x27b95e997e21d9f1L),
-            invoke(0x5da0e1e53c5c8000L),
-            invoke(0xb16a458ef403f19L),
-            invoke(0x16bcc41e90000000L),
-            invoke(0x2d04b7fdd9c0ef49L),
-            invoke(0x5658597bcaa24000L),
-            invoke(0x6feb266931a75b7L),
-            invoke(0xc29e98000000000L),
-            invoke(0x14adf4b7320334b9L),
-            invoke(0x226ed36478bfa000L),
-            invoke(0x383d9170b85ff80bL),
-            invoke(0x5a3c23e39c000000L),
-            invoke(0x4e900abb53e6b71L),
-            invoke(0x7600ec618141000L),
-            invoke(0xaee5720ee830681L),
-            invoke(0x1000000000000000L),
-            invoke(0x172588ad4f5f0981L),
-            invoke(0x211e44f7d02c1000L),
-            invoke(0x2ee56725f06e5c71L),
-            invoke(0x41c21cb8e1000000L)
+            bigInteger(0x4000000000000000L),
+            bigInteger(0x383d9170b85ff80bL),
+            bigInteger(0x4000000000000000L),
+            bigInteger(0x6765c793fa10079dL),
+            bigInteger(0x41c21cb8e1000000L),
+            bigInteger(0x3642798750226111L),
+            bigInteger(0x1000000000000000L),
+            bigInteger(0x12bf307ae81ffd59L),
+            bigInteger(0xde0b6b3a7640000L),
+            bigInteger(0x4d28cb56c33fa539L),
+            bigInteger(0x1eca170c00000000L),
+            bigInteger(0x780c7372621bd74dL),
+            bigInteger(0x1e39a5057d810000L),
+            bigInteger(0x5b27ac993df97701L),
+            bigInteger(0x1000000000000000L),
+            bigInteger(0x27b95e997e21d9f1L),
+            bigInteger(0x5da0e1e53c5c8000L),
+            bigInteger(0xb16a458ef403f19L),
+            bigInteger(0x16bcc41e90000000L),
+            bigInteger(0x2d04b7fdd9c0ef49L),
+            bigInteger(0x5658597bcaa24000L),
+            bigInteger(0x6feb266931a75b7L),
+            bigInteger(0xc29e98000000000L),
+            bigInteger(0x14adf4b7320334b9L),
+            bigInteger(0x226ed36478bfa000L),
+            bigInteger(0x383d9170b85ff80bL),
+            bigInteger(0x5a3c23e39c000000L),
+            bigInteger(0x4e900abb53e6b71L),
+            bigInteger(0x7600ec618141000L),
+            bigInteger(0xaee5720ee830681L),
+            bigInteger(0x1000000000000000L),
+            bigInteger(0x172588ad4f5f0981L),
+            bigInteger(0x211e44f7d02c1000L),
+            bigInteger(0x2ee56725f06e5c71L),
+            bigInteger(0x41c21cb8e1000000L)
         )
 
         /*

@@ -182,8 +182,8 @@ internal class BitSieve {
             var nextLong = bits!![i].inv()
             for (j in 0..63) {
                 if (nextLong and 1 == 1L) {
-                    val candidate = initValue.add(
-                        BigInteger.invoke(offset.toLong())
+                    val candidate = initValue.plus(
+                        BigInteger.bigInteger(offset.toLong())
                     )
                     if (candidate.primeToCertainty(certainty, random))
                         return candidate

@@ -1,13 +1,13 @@
 import org.gciatto.kt.math.BigDecimal
-import org.gciatto.kt.math.BigInteger
+import org.gciatto.kt.math.BigInteger.Companion.bigInteger
 
 fun main() {
-    var x = BigInteger.invoke(Long.MAX_VALUE)
+    var x = bigInteger(Long.MAX_VALUE)
     println(x)
-    x = x.multiply(BigInteger(2))
+    x *= bigInteger(2)
     println(x)
 
-    var y = BigDecimal("3.14")
+    var y = BigDecimal(kotlin.math.PI)
     println(y)
     y = y.multiply(y)
     println(y)

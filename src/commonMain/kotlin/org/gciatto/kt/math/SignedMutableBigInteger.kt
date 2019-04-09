@@ -75,7 +75,7 @@ internal class SignedMutableBigInteger : MutableBigInteger {
     // Arithmetic Operations
 
     /**
-     * Signed addition built upon unsigned add and subtract.
+     * Signed addition built upon unsigned plus and minus.
      */
     fun signedAdd(addend: SignedMutableBigInteger) {
         if (sign == addend.sign)
@@ -86,7 +86,7 @@ internal class SignedMutableBigInteger : MutableBigInteger {
     }
 
     /**
-     * Signed addition built upon unsigned add and subtract.
+     * Signed addition built upon unsigned plus and minus.
      */
     fun signedAdd(addend: MutableBigInteger) {
         if (sign == 1)
@@ -97,7 +97,7 @@ internal class SignedMutableBigInteger : MutableBigInteger {
     }
 
     /**
-     * Signed subtraction built upon unsigned add and subtract.
+     * Signed subtraction built upon unsigned plus and minus.
      */
     fun signedSubtract(addend: SignedMutableBigInteger) {
         if (sign == addend.sign)
@@ -108,7 +108,7 @@ internal class SignedMutableBigInteger : MutableBigInteger {
     }
 
     /**
-     * Signed subtraction built upon unsigned add and subtract.
+     * Signed subtraction built upon unsigned plus and minus.
      */
     fun signedSubtract(addend: MutableBigInteger) {
         if (sign == 1)

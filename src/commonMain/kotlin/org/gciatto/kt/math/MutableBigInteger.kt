@@ -350,7 +350,7 @@ internal open class MutableBigInteger {
      * Compare this against half of a MutableBigInteger object (Needed for
      * remainder tests).
      * Assumes no leading unnecessary zeros, which holds for results
-     * from divide().
+     * from div().
      */
     fun compareHalf(b: MutableBigInteger): Int {
         val blen = b.intLen
@@ -790,7 +790,7 @@ internal open class MutableBigInteger {
 
     /**
      * Adds the value of `addend` shifted `n` ints to the left.
-     * Has the same effect as `addend.leftShift(32*ints); add(addend);`
+     * Has the same effect as `addend.leftShift(32*ints); plus(addend);`
      * but doesn't change the value of `addend`.
      */
     fun addShifted(addend: MutableBigInteger, n: Int) {
@@ -1017,7 +1017,7 @@ internal open class MutableBigInteger {
         z.offset = 0
         z.intLen = newLen
 
-        // The first iteration is hoisted out of the loop to avoid extra add
+        // The first iteration is hoisted out of the loop to avoid extra plus
         var carry: Long = 0
         run {
             var j = yLen - 1
@@ -1179,7 +1179,7 @@ internal open class MutableBigInteger {
     ): MutableBigInteger? {
         var b = b
         if (b.intLen == 0)
-            throw ArithmeticException("BigInteger divide by zero")
+            throw ArithmeticException("BigInteger div by zero")
 
         // Dividend is zero
         if (intLen == 0) {
@@ -1367,7 +1367,7 @@ internal open class MutableBigInteger {
             r = a12.divide2n1n(b1, quotient)
 
             // step 4: d=quotient*b2
-            d = MutableBigInteger(quotient.toBigInteger().multiply(b2))
+            d = MutableBigInteger(quotient.toBigInteger().times(b2))
         } else {
             // step 3b: if a1>=b1, let quotient=beta^n-1 and r=a12-b1*2^n+b1
             quotient.ones(n)
@@ -1383,11 +1383,11 @@ internal open class MutableBigInteger {
         }
 
         // step 5: r = r*beta^n + a3 - d (paper says a4)
-        // However, don't subtract d until after the while loop so r doesn't become negative
+        // However, don't minus d until after the while loop so r doesn't become negative
         r!!.leftShift(32 * n)
         r.addLower(this, n)
 
-        // step 6: add b until r>=d
+        // step 6: plus b until r>=d
         while (r.compare(d) < 0) {
             r.add(b)
             quotient.subtract(ONE)
@@ -1442,7 +1442,7 @@ internal open class MutableBigInteger {
     fun divide(v: Long, quotient: MutableBigInteger): Long {
         var v = v
         if (v == 0L)
-            throw ArithmeticException("BigInteger divide by zero")
+            throw ArithmeticException("BigInteger div by zero")
 
         // Dividend is zero
         if (intLen == 0) {
@@ -1585,7 +1585,7 @@ internal open class MutableBigInteger {
                 }
             }
 
-            // D4 Multiply and subtract
+            // D4 Multiply and minus
             rem.value[j + rem.offset] = 0
             val borrow = mulsub(rem.value, divisor, qhat, dlen, j + rem.offset)
 
@@ -1642,7 +1642,7 @@ internal open class MutableBigInteger {
             }
 
 
-            // D4 Multiply and subtract
+            // D4 Multiply and minus
             val borrow: Int
             rem.value[limit - 1 + rem.offset] = 0
             if (needRemainder)
@@ -1761,7 +1761,7 @@ internal open class MutableBigInteger {
                 }
             }
 
-            // D4 Multiply and subtract
+            // D4 Multiply and minus
             rem.value[j + rem.offset] = 0
             val borrow = mulsubLong(rem.value, dh, dl, qhat, j + rem.offset)
 
@@ -1860,7 +1860,7 @@ internal open class MutableBigInteger {
 
         if (bitLength() <= 63) {
             // Initial estimate is the square root of the positive long value.
-            val v = BigInteger(this.value, 1).longValueExact()
+            val v = BigInteger(this.value, 1).toLongExact()
             var xk = floor(sqrt(v.toDouble())).toLong()
 
             // Refine the estimate.
@@ -1901,7 +1901,7 @@ internal open class MutableBigInteger {
 
             // Use the square root of the shifted value as an approximation.
             val d = BigInteger(xk.value, 1).toDouble()
-            val bi = BigInteger.invoke(ceil(sqrt(d)).toLong())
+            val bi = BigInteger.bigInteger(ceil(sqrt(d)).toLong())
             xk = MutableBigInteger(bi.mag)
 
             // Shift the approximate square root back into the original range.
