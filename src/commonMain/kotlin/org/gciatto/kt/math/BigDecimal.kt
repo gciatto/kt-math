@@ -240,7 +240,7 @@ import kotlin.math.*
  * @author  Sergey V. Kuksenko
  * @since 1.1
  */
-class BigDecimal : Number, Comparable<BigDecimal> {
+class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * The unscaled value of this BigDecimal, as returned by [ ][.unscaledValue].
@@ -3083,7 +3083,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @return this `BigDecimal` converted to a `long`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    override fun toLong(): Long {
+    /*override*/ fun toLong(): Long {
         return if (intCompact != INFLATED && scale == 0)
             intCompact
         else
@@ -3154,22 +3154,22 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @return this `BigDecimal` converted to an `int`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    override fun toInt(): Int {
+    /*override*/ fun toInt(): Int {
         return if (intCompact != INFLATED && scale == 0)
             intCompact.toInt()
         else
             toBigInteger().toInt()
     }
 
-    override fun toByte(): Byte {
+    /*override*/ fun toByte(): Byte {
         return toInt().toByte()
     }
 
-    override fun toChar(): Char {
+    /*override*/ fun toChar(): Char {
         return toInt().toChar()
     }
 
-    override fun toShort(): Short {
+    /*override*/ fun toShort(): Short {
         return toInt().toShort()
     }
 
@@ -3249,7 +3249,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @return this `BigDecimal` converted to a `float`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    override fun toFloat(): Float {
+    /*override*/ fun toFloat(): Float {
         if (intCompact != INFLATED) {
             if (scale == 0) {
                 return intCompact.toFloat()
@@ -3292,7 +3292,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @return this `BigDecimal` converted to a `double`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    override fun toDouble(): Double {
+    /*override*/ fun toDouble(): Double {
         if (intCompact != INFLATED) {
             if (scale == 0) {
                 return intCompact.toDouble()

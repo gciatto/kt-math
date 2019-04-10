@@ -124,7 +124,7 @@ import kotlin.math.*
  * @since 1.1
  */
 
-class BigInteger : Number, Comparable<BigInteger> {
+class BigInteger : Comparable<BigInteger> {
 
     /**
      * The signum of this BigInteger: -1 for negative, 0 for zero, or
@@ -2720,7 +2720,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @see .toIntExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    override fun toInt(): Int {
+    /*override*/ fun toInt(): Int {
         var result = 0
         result = getInt(0)
         return result
@@ -2742,7 +2742,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @see .toLongExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    override fun toLong(): Long {
+    /*override*/ fun toLong(): Long {
         var result: Long = 0
 
         for (i in 1 downTo 0)
@@ -2750,23 +2750,23 @@ class BigInteger : Number, Comparable<BigInteger> {
         return result
     }
 
-    override fun toByte(): Byte {
+    /*override*/ fun toByte(): Byte {
         return toInt().toByte()
     }
 
-    override fun toChar(): Char {
+    /*override*/ fun toChar(): Char {
         return toInt().toChar()
     }
 
-    override fun toShort(): Short {
+    /*override*/ fun toShort(): Short {
         return toInt().toShort()
     }
 
-    override fun toFloat(): Float {
+    /*override*/ fun toFloat(): Float {
         return toInt().toFloat()
     }
 
-    override fun toDouble(): Double {
+    /*override*/ fun toDouble(): Double {
         return toLong().toDouble()
     }
 
