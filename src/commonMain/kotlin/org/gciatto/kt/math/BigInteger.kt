@@ -3198,7 +3198,7 @@ class BigInteger : Comparable<BigInteger> {
         private const val SMALL_PRIME_THRESHOLD = 95
 
         // Certainty required to meet the spec of probablePrime
-        private val DEFAULT_PRIME_CERTAINTY = 100
+        private const val DEFAULT_PRIME_CERTAINTY = 100
 
         /**
          * Returns a positive BigInteger that is probably prime, with the
@@ -3274,8 +3274,7 @@ class BigInteger : Comparable<BigInteger> {
             }
         }
 
-        private val SMALL_PRIME_PRODUCT =
-            of(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
+        private val SMALL_PRIME_PRODUCT = of(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
 
         /**
          * Find a random number of the specified bitLength that is probably prime.
@@ -4489,27 +4488,24 @@ class BigInteger : Comparable<BigInteger> {
          */
         private fun getRadixConversionCache(radix: Int, exponent: Int): BigInteger {
             // volatile read
-            var cacheLine: Array<BigInteger> = powerCache[radix] ?: throw IllegalStateException()
-            if (exponent < cacheLine.size) {
+            var cacheLine: Array<BigInteger>? = powerCache[radix]
+            if (exponent < cacheLine!!.size) {
                 return cacheLine[exponent]
             }
 
             val oldLength = cacheLine.size
-            cacheLine = (0 .. exponent)
-                .map { i -> if (i < oldLength) cacheLine[i] else cacheLine[i - 1].pow(2) }
-                .toTypedArray()
-            //cacheLine = cacheLine.copyOf(exponent + 1)
-//            for (i in oldLength..exponent) {
-//                cacheLine[i] = cacheLine[i - 1].pow(2)
-//            }
+            val cacheLine2 = cacheLine.copyOf(exponent + 1)
+            for (i in oldLength..exponent) {
+                cacheLine2[i] = cacheLine2[i - 1]!!.pow(2)
+            }
 
             var pc = powerCache // volatile read again
             if (exponent >= pc[radix]!!.size) {
                 pc = pc.clone()
-                pc[radix] = cacheLine
+                pc[radix] = cacheLine2.requireNoNulls()
                 powerCache = pc // volatile write, publish
             }
-            return cacheLine[exponent]
+            return cacheLine2[exponent]!!
         }
 
         /* zero[i] is a string of i consecutive zeros. */

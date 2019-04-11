@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.resolve.calls.inference.TypeVariable
 
 plugins {
@@ -61,8 +62,8 @@ kotlin {
                     }
                 }
             }
-
             compilations["main"].defaultSourceSet {
+                this.kotlin
                 dependencies {
                     implementation(kotlin("stdlib-js"))
                 }
@@ -72,8 +73,6 @@ kotlin {
                     implementation(kotlin("test-js"))
                 }
             }
-
-
         }
     }
 }
