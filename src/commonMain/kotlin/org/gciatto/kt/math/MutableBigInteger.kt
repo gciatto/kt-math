@@ -223,7 +223,7 @@ internal open class MutableBigInteger {
 
     /**
      * Convert this MutableBigInteger to BigDecimal object with the specified sign
-     * and scale.
+     * and setScale.
      */
     fun toBigDecimal(sign: Int, scale: Int): BigDecimal {
         if (intLen == 0 || sign == 0)

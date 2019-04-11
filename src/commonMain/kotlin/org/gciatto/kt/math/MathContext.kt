@@ -259,9 +259,6 @@ class MathContext {
         // Smallest values for digits (Maximum is Integer.MAX_VALUE)
         private const val MIN_DIGITS = 0
 
-        // Serialization version
-        private const val serialVersionUID = 5579720004786848255L
-
         /* ----- Public Properties ----- */
         /**
          * A `MathContext` object whose settings have the values
