@@ -210,3 +210,10 @@ internal fun IntArray.fill(from: Int, to: Int, x: Int): IntArray {
     }
     return this
 }
+
+internal fun StringBuilder.append(char: CharArray, offset: Int, len: Int): StringBuilder {
+    for (i in offset until offset + len) {
+        append(char[i])
+    }
+    return this
+}
