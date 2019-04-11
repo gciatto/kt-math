@@ -164,8 +164,8 @@ internal open class MutableBigInteger {
      * specified BigInteger.
      */
     constructor(b: BigInteger) {
-        intLen = b.mag.size
-        value = b.mag.copyOf(intLen)
+        intLen = b._mag.size
+        value = b._mag.copyOf(intLen)
     }
 
     /**
@@ -1426,7 +1426,7 @@ internal open class MutableBigInteger {
         return MutableBigInteger(newVal)
     }
 
-    /** @see BigInteger.bitLength
+    /** @see BigInteger.getBitLength
      */
     fun bitLength(): Long {
         return if (intLen == 0) 0 else intLen * 32L - value[offset].numberOfLeadingZeros()
@@ -1901,8 +1901,8 @@ internal open class MutableBigInteger {
 
             // Use the square root of the shifted value as an approximation.
             val d = BigInteger(xk.value, 1).toDouble()
-            val bi = BigInteger.bigInteger(ceil(sqrt(d)).toLong())
-            xk = MutableBigInteger(bi.mag)
+            val bi = BigInteger.of(ceil(sqrt(d)).toLong())
+            xk = MutableBigInteger(bi._mag)
 
             // Shift the approximate square root back into the original range.
             xk.leftShift(shift / 2)
@@ -2109,7 +2109,7 @@ internal open class MutableBigInteger {
         var sTemp: SignedMutableBigInteger? = null
 
         var k = 0
-        // Right shift f k times until odd, left shift d k times
+        // Right shift f k timesLong until odd, left shift d k timesLong
         if (f.isEven) {
             val trailingZeros = f.lowestSetBit
             f.rightShift(trailingZeros)
@@ -2142,7 +2142,7 @@ internal open class MutableBigInteger {
                 c.signedAdd(d)
             }
 
-            // Right shift f k times until odd, left shift d k times
+            // Right shift f k timesLong until odd, left shift d k timesLong
             val trailingZeros = f.lowestSetBit
             f.rightShift(trailingZeros)
             d.leftShift(trailingZeros)

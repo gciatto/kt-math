@@ -170,7 +170,7 @@ import kotlin.math.*
  * `21/110 = 0.190  // integer=190, scale=3` <br></br>
  *
  *
- * Note that for plus, minus, and times, the reduction in
+ * Note that for plus, minus, and timesLong, the reduction in
  * scale will equal the number of digit positions of the exact result
  * which are discarded. If the rounding causes a carry propagation to
  * create a new high-order digit position, an additional digit of the
@@ -754,10 +754,10 @@ class BigDecimal : Comparable<BigDecimal> {
             rb = if (compactVal == INFLATED) INFLATED_BIGINT else null
         } else {
             if (exponent < 0) {
-                rb = BigInteger.bigInteger(5).pow(-exponent).times(compactVal)
+                rb = BigInteger.of(5).pow(-exponent).timesLong(compactVal)
                 scl = -exponent
             } else { //  (exponent > 0)
-                rb = BigInteger.TWO.pow(exponent).times(compactVal)
+                rb = BigInteger.TWO.pow(exponent).timesLong(compactVal)
             }
             compactVal = compactValFor(rb)
         }
@@ -1651,7 +1651,7 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *
      * The remainder is given by
-     * `this.minus(this.divideToIntegralValue(divisor).times(divisor))`.
+     * `this.minus(this.divideToIntegralValue(divisor).timesLong(divisor))`.
      * Note that this is *not* the modulo operation (the result can be
      * negative).
      *
@@ -1677,7 +1677,7 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      * The remainder is given by
      * `this.minus(this.divideToIntegralValue(divisor,
-     * mc).times(divisor))`.  Note that this is not the modulo
+     * mc).timesLong(divisor))`.  Note that this is not the modulo
      * operation (the result can be negative).
      *
      * @param  divisor value by which this `BigDecimal` is to be divided.
@@ -1722,7 +1722,7 @@ class BigDecimal : Comparable<BigDecimal> {
 //        val result = arrayOfNulls<BigDecimal>(2)
 //
 //        result[0] = this.divideToIntegralValue(divisor)
-//        result[1] = this.minus(result[0].times(divisor))
+//        result[1] = this.minus(result[0].timesLong(divisor))
 
         var temp = this.divideToIntegralValue(divisor)!!
         return arrayOf(
@@ -1766,7 +1766,7 @@ class BigDecimal : Comparable<BigDecimal> {
         val lhs = this
 //
 //        result[0] = lhs.divideToIntegralValue(divisor, mc)
-//        result[1] = lhs.minus(result[0].times(divisor))
+//        result[1] = lhs.minus(result[0].timesLong(divisor))
 //        return result
 
         var temp = lhs.divideToIntegralValue(divisor, mc)!!
@@ -1980,7 +1980,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 -1 -> throw ArithmeticException("Attempted square root " + "of negative BigDecimal")
                 0 -> return bigDecimal(0L, scale() / 2)
 
-                else -> throw AssertionError("Bad value from signum")
+                else -> throw AssertionError("Bad value from _signum")
             }
         }
     }
@@ -2095,7 +2095,7 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *  *  An `ArithmeticException` exception is thrown if
      *
-     *  * `abs(n) > 999999999`
+     *  * `absoluteValue(n) > 999999999`
      *  * `mc.precision == 0` and `n < 0`
      *  * `mc.precision > 0` and `n` has more than
      * `mc.precision` decimal digits
@@ -2180,7 +2180,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * of this `BigDecimal`, and whose scale is
      * `this.scale()`.
      *
-     * @return `abs(this)`
+     * @return `absoluteValue(this)`
      */
     fun abs(): BigDecimal {
         return if (signum() < 0) unaryMinus() else this
@@ -2192,7 +2192,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * context settings.
      *
      * @param mc the context to use.
-     * @return `abs(this)`, rounded as necessary.
+     * @return `absoluteValue(this)`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
      * @since 1.5
@@ -2265,7 +2265,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns the signum function of this `BigDecimal`.
+     * Returns the _signum function of this `BigDecimal`.
      *
      * @return -1, 0, or 1 as the value of this `BigDecimal`
      * is negative, zero, or positive.
@@ -2274,7 +2274,7 @@ class BigDecimal : Comparable<BigDecimal> {
         return if (intCompact != INFLATED)
             intCompact.sign
         else
-            intVal!!.signum()
+            intVal!!.signum
     }
 
     /**
@@ -2611,7 +2611,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     fun stripTrailingZeros(): BigDecimal {
-        return if (intCompact == 0L || intVal != null && intVal.signum() == 0) {
+        return if (intCompact == 0L || intVal != null && intVal.signum == 0) {
             BigDecimal.ZERO
         } else if (intCompact != INFLATED) {
             createAndStripZerosToMatchScale(intCompact, scale, Long.MIN_VALUE)
@@ -2997,9 +2997,9 @@ class BigDecimal : Comparable<BigDecimal> {
         }
         val str: String
         if (intCompact != INFLATED) {
-            str = intCompact.absoluteValue.toString() // java.lang.Long.toString(Math.abs(intCompact))
+            str = intCompact.absoluteValue.toString() // java.lang.Long.toString(Math.absoluteValue(intCompact))
         } else {
-            str = intVal!!.abs().toString()
+            str = intVal!!.absoluteValue.toString()
         }
         return getValueString(signum(), str, scale)
     }
@@ -3125,10 +3125,10 @@ class BigDecimal : Comparable<BigDecimal> {
 
     private object LongOverflow {
         /** BigInteger equal to Long.MIN_VALUE.  */
-        private val LONGMIN = BigInteger.bigInteger(Long.MIN_VALUE)
+        private val LONGMIN = BigInteger.of(Long.MIN_VALUE)
 
         /** BigInteger equal to Long.MAX_VALUE.  */
-        private val LONGMAX = BigInteger.bigInteger(Long.MAX_VALUE)
+        private val LONGMAX = BigInteger.of(Long.MAX_VALUE)
 
         fun check(num: BigDecimal) {
             val intVal = num.inflated()
@@ -3257,12 +3257,12 @@ class BigDecimal : Comparable<BigDecimal> {
                 /*
                  * If both intCompact and the scale can be exactly
                  * represented as float values, perform a single float
-                 * times or div to compute the (properly
+                 * timesLong or div to compute the (properly
                  * rounded) result.
                  */
                 if (abs(intCompact) < 1L shl 22) {
                     // Don't have too guard against
-                    // Math.abs(MIN_VALUE) because of outer check
+                    // Math.absoluteValue(MIN_VALUE) because of outer check
                     // against INFLATED.
                     if (scale > 0 && scale < FLOAT_10_POW.size) {
                         return intCompact.toFloat() / FLOAT_10_POW[scale]
@@ -3300,12 +3300,12 @@ class BigDecimal : Comparable<BigDecimal> {
                 /*
                  * If both intCompact and the scale can be exactly
                  * represented as double values, perform a single
-                 * double times or div to compute the (properly
+                 * double timesLong or div to compute the (properly
                  * rounded) result.
                  */
                 if (abs(intCompact) < 1L shl 52) {
                     // Don't have too guard against
-                    // Math.abs(MIN_VALUE) because of outer check
+                    // Math.absoluteValue(MIN_VALUE) because of outer check
                     // against INFLATED.
                     if (scale > 0 && scale < DOUBLE_10_POW.size) {
                         return intCompact.toDouble() / DOUBLE_10_POW[scale]
@@ -3649,7 +3649,7 @@ class BigDecimal : Comparable<BigDecimal> {
             coeff = sbHelper.compactCharArray
         } else {
             offset = 0
-            coeff = intVal!!.abs().toString().toCharArray()
+            coeff = intVal!!.absoluteValue.toString().toCharArray()
         }
 
         // Construct a buffer, with sufficient capacity for all cases.
@@ -3735,7 +3735,7 @@ class BigDecimal : Comparable<BigDecimal> {
             return this.inflated()
 
         return if (intCompact != INFLATED)
-            bigTenToThe(n).times(intCompact)
+            bigTenToThe(n).timesLong(intCompact)
         else
             intVal!!.times(bigTenToThe(n))
     }
@@ -3745,7 +3745,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * null, i.e. the compact representation is in use.
      */
     private fun inflated(): BigInteger {
-        return intVal ?: BigInteger.bigInteger(intCompact)
+        return intVal ?: BigInteger.of(intCompact)
     }
 
     /**
@@ -3764,7 +3764,7 @@ class BigDecimal : Comparable<BigDecimal> {
         if (asInt.toLong() != `val`) {
             asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
             val b: BigInteger?
-            if (intCompact != 0L && (run { b = intVal; b } == null || b!!.signum() != 0))
+            if (intCompact != 0L && (run { b = intVal; b } == null || b!!.signum != 0))
                 throw ArithmeticException(if (asInt > 0) "Underflow" else "Overflow")
         }
         return asInt
@@ -3828,7 +3828,7 @@ class BigDecimal : Comparable<BigDecimal> {
          */
         internal const val INFLATED = Long.MIN_VALUE
 
-        private val INFLATED_BIGINT = BigInteger.bigInteger(INFLATED)
+        private val INFLATED_BIGINT = BigInteger.of(INFLATED)
 
         // All 18-digit base ten strings fit into a long; not all 19-digit
         // strings will
@@ -3839,13 +3839,13 @@ class BigDecimal : Comparable<BigDecimal> {
             BigDecimal(BigInteger.ZERO, 0, 0, 1),
             BigDecimal(BigInteger.ONE, 1, 0, 1),
             BigDecimal(BigInteger.TWO, 2, 0, 1),
-            BigDecimal(BigInteger.bigInteger(3), 3, 0, 1),
-            BigDecimal(BigInteger.bigInteger(4), 4, 0, 1),
-            BigDecimal(BigInteger.bigInteger(5), 5, 0, 1),
-            BigDecimal(BigInteger.bigInteger(6), 6, 0, 1),
-            BigDecimal(BigInteger.bigInteger(7), 7, 0, 1),
-            BigDecimal(BigInteger.bigInteger(8), 8, 0, 1),
-            BigDecimal(BigInteger.bigInteger(9), 9, 0, 1),
+            BigDecimal(BigInteger.of(3), 3, 0, 1),
+            BigDecimal(BigInteger.of(4), 4, 0, 1),
+            BigDecimal(BigInteger.of(5), 5, 0, 1),
+            BigDecimal(BigInteger.of(6), 6, 0, 1),
+            BigDecimal(BigInteger.of(7), 7, 0, 1),
+            BigDecimal(BigInteger.of(8), 8, 0, 1),
+            BigDecimal(BigInteger.of(9), 9, 0, 1),
             BigDecimal(BigInteger.TEN, 10, 0, 2)
         )
 
@@ -4283,24 +4283,24 @@ class BigDecimal : Comparable<BigDecimal> {
 
         private var BIG_TEN_POWERS_TABLE = arrayOf<BigInteger?>(
             BigInteger.ONE,
-            BigInteger.bigInteger(10),
-            BigInteger.bigInteger(100),
-            BigInteger.bigInteger(1000),
-            BigInteger.bigInteger(10000),
-            BigInteger.bigInteger(100000),
-            BigInteger.bigInteger(1000000),
-            BigInteger.bigInteger(10000000),
-            BigInteger.bigInteger(100000000),
-            BigInteger.bigInteger(1000000000),
-            BigInteger.bigInteger(10000000000L),
-            BigInteger.bigInteger(100000000000L),
-            BigInteger.bigInteger(1000000000000L),
-            BigInteger.bigInteger(10000000000000L),
-            BigInteger.bigInteger(100000000000000L),
-            BigInteger.bigInteger(1000000000000000L),
-            BigInteger.bigInteger(10000000000000000L),
-            BigInteger.bigInteger(100000000000000000L),
-            BigInteger.bigInteger(1000000000000000000L)
+            BigInteger.of(10),
+            BigInteger.of(100),
+            BigInteger.of(1000),
+            BigInteger.of(10000),
+            BigInteger.of(100000),
+            BigInteger.of(1000000),
+            BigInteger.of(10000000),
+            BigInteger.of(100000000),
+            BigInteger.of(1000000000),
+            BigInteger.of(10000000000L),
+            BigInteger.of(100000000000L),
+            BigInteger.of(1000000000000L),
+            BigInteger.of(10000000000000L),
+            BigInteger.of(100000000000000L),
+            BigInteger.of(1000000000000000L),
+            BigInteger.of(10000000000000000L),
+            BigInteger.of(100000000000000000L),
+            BigInteger.of(1000000000000000000L)
         )
 
         private val BIG_TEN_POWERS_TABLE_INITLEN = BIG_TEN_POWERS_TABLE.size
@@ -4416,9 +4416,9 @@ class BigDecimal : Comparable<BigDecimal> {
          * approximation of log10(2). Using 646456993/2^31
          * is accurate up to max possible reported bitLength.
          */
-            if (b.signum == 0)
+            if (b._signum == 0)
                 return 1
-            val r = ((b.bitLength().toLong() + 1) * 646456993).ushr(31).toInt()
+            val r = ((b.bitLength.toLong() + 1) * 646456993).ushr(31).toInt()
             return if (b.compareMagnitude(bigTenToThe(r)) < 0) r else r + 1
         }
 
@@ -4428,7 +4428,7 @@ class BigDecimal : Comparable<BigDecimal> {
          * `BigInteger`.
          */
         private fun compactValFor(b: BigInteger): Long {
-            val m = b.mag
+            val m = b._mag
             val len = m.size
             if (len == 0)
                 return 0
@@ -4440,7 +4440,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 (m[1].toLong() and LONG_MASK) + (d.toLong() shl 32)
             else
                 d.toLong() and LONG_MASK
-            return if (b.signum < 0) -u else u
+            return if (b._signum < 0) -u else u
         }
 
         private fun longCompareMagnitude(x: Long, y: Long): Int {
@@ -4491,7 +4491,7 @@ class BigDecimal : Comparable<BigDecimal> {
             var asInt = `val`.toInt()
             if (asInt.toLong() != `val`) {
                 asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
-                if (intVal!!.signum() != 0)
+                if (intVal!!.signum != 0)
                     throw ArithmeticException(if (asInt > 0) "Underflow" else "Overflow")
             }
             return asInt
@@ -4757,7 +4757,7 @@ class BigDecimal : Comparable<BigDecimal> {
          */
         private fun divideAndRound(bdividend: BigInteger, ldivisor: Long, roundingMode: Int): BigInteger {
             // Descend into mutables for faster remainder checks
-            val mdividend = MutableBigInteger(bdividend.mag)
+            val mdividend = MutableBigInteger(bdividend._mag)
             // store quotient
             val mq = MutableBigInteger()
             // store quotient & remainder in long
@@ -4765,7 +4765,7 @@ class BigDecimal : Comparable<BigDecimal> {
             // record remainder is zero or not
             val isRemainderZero = r == 0L
             // quotient sign
-            val qsign = if (ldivisor < 0) -bdividend.signum else bdividend.signum
+            val qsign = if (ldivisor < 0) -bdividend._signum else bdividend._signum
             if (!isRemainderZero) {
                 if (needIncrement(ldivisor, roundingMode, qsign, mq, r)) {
                     mq.add(MutableBigInteger.ONE)
@@ -4788,7 +4788,7 @@ class BigDecimal : Comparable<BigDecimal> {
             ldivisor: Long, scale: Int, roundingMode: Int, preferredScale: Int
         ): BigDecimal {
             // Descend into mutables for faster remainder checks
-            val mdividend = MutableBigInteger(bdividend.mag)
+            val mdividend = MutableBigInteger(bdividend._mag)
             // store quotient
             val mq = MutableBigInteger()
             // store quotient & remainder in long
@@ -4796,7 +4796,7 @@ class BigDecimal : Comparable<BigDecimal> {
             // record remainder is zero or not
             val isRemainderZero = r == 0L
             // quotient sign
-            val qsign = if (ldivisor < 0) -bdividend.signum else bdividend.signum
+            val qsign = if (ldivisor < 0) -bdividend._signum else bdividend._signum
             if (!isRemainderZero) {
                 if (needIncrement(ldivisor, roundingMode, qsign, mq, r)) {
                     mq.add(MutableBigInteger.ONE)
@@ -4843,12 +4843,12 @@ class BigDecimal : Comparable<BigDecimal> {
             val isRemainderZero: Boolean // record remainder is zero or not
             val qsign: Int // quotient sign
             // Descend into mutables for faster remainder checks
-            val mdividend = MutableBigInteger(bdividend.mag)
+            val mdividend = MutableBigInteger(bdividend._mag)
             val mq = MutableBigInteger()
-            val mdivisor = MutableBigInteger(bdivisor.mag)
+            val mdivisor = MutableBigInteger(bdivisor._mag)
             val mr = mdividend.divide(mdivisor, mq)
             isRemainderZero = mr!!.isZero
-            qsign = if (bdividend.signum != bdivisor.signum) -1 else 1
+            qsign = if (bdividend._signum != bdivisor._signum) -1 else 1
             if (!isRemainderZero) {
                 if (needIncrement(mdivisor, roundingMode, qsign, mq, mr)) {
                     mq.add(MutableBigInteger.ONE)
@@ -4873,12 +4873,12 @@ class BigDecimal : Comparable<BigDecimal> {
             val isRemainderZero: Boolean // record remainder is zero or not
             val qsign: Int // quotient sign
             // Descend into mutables for faster remainder checks
-            val mdividend = MutableBigInteger(bdividend.mag)
+            val mdividend = MutableBigInteger(bdividend._mag)
             val mq = MutableBigInteger()
-            val mdivisor = MutableBigInteger(bdivisor.mag)
+            val mdivisor = MutableBigInteger(bdivisor._mag)
             val mr = mdividend.divide(mdivisor, mq)
             isRemainderZero = mr!!.isZero
-            qsign = if (bdividend.signum !== bdivisor.signum) -1 else 1
+            qsign = if (bdividend._signum !== bdivisor._signum) -1 else 1
             if (!isRemainderZero) {
                 if (needIncrement(mdivisor, roundingMode, qsign, mq, mr!!)) {
                     mq.add(MutableBigInteger.ONE)
@@ -4927,7 +4927,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 if (intVal.testBit(0))
                     break // odd number cannot end in 0
                 qr = intVal.divideAndRemainder(BigInteger.TEN)
-                if (qr[1].signum() != 0)
+                if (qr[1].signum != 0)
                     break // non-0 remainder
                 intVal = qr[0]
                 scale = checkScale(intVal, scale.toLong() - 1) // could Overflow
@@ -4990,7 +4990,7 @@ class BigDecimal : Comparable<BigDecimal> {
         private fun add(xs: Long, ys: Long, scale: Int): BigDecimal {
             val sum = add(xs, ys)
             return if (sum != INFLATED) BigDecimal.bigDecimal(sum, scale) else BigDecimal(
-                BigInteger.bigInteger(xs).plus(ys),
+                BigInteger.of(xs).plusLong(ys),
                 scale
             )
         }
@@ -5005,7 +5005,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 if (scaledX != INFLATED) {
                     return add(scaledX, ys, scale2)
                 } else {
-                    val bigsum = bigMultiplyPowerTen(xs, raise).plus(ys)
+                    val bigsum = bigMultiplyPowerTen(xs, raise).plusLong(ys)
                     return if (xs xor ys >= 0)
                     // same sign test
                         BigDecimal(bigsum, INFLATED, scale2, 0)
@@ -5018,7 +5018,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 if (scaledY != INFLATED) {
                     return add(xs, scaledY, scale1)
                 } else {
-                    val bigsum = bigMultiplyPowerTen(ys, raise).plus(xs)
+                    val bigsum = bigMultiplyPowerTen(ys, raise).plusLong(xs)
                     return if (xs xor ys >= 0)
                         BigDecimal(bigsum, INFLATED, scale1, 0)
                     else
@@ -5031,7 +5031,7 @@ class BigDecimal : Comparable<BigDecimal> {
             var snd = snd
             var rscale = scale1
             val sdiff = rscale.toLong() - scale2
-            val sameSigns = xs.sign == snd.signum
+            val sameSigns = xs.sign == snd._signum
             val sum: BigInteger
             if (sdiff < 0) {
                 val raise = checkScale(xs, -sdiff)
@@ -5040,12 +5040,12 @@ class BigDecimal : Comparable<BigDecimal> {
                 if (scaledX == INFLATED) {
                     sum = snd.plus(bigMultiplyPowerTen(xs, raise))
                 } else {
-                    sum = snd.plus(scaledX)
+                    sum = snd.plusLong(scaledX)
                 }
             } else { //if (sdiff > 0) {
                 val raise = checkScale(snd, sdiff)
                 snd = bigMultiplyPowerTen(snd, raise)!!
-                sum = snd.plus(xs)
+                sum = snd.plusLong(xs)
             }
             return if (sameSigns)
                 BigDecimal(sum, INFLATED, rscale, 0)
@@ -5069,21 +5069,21 @@ class BigDecimal : Comparable<BigDecimal> {
                 }
             }
             val sum = fst!!.plus(snd!!)
-            return if (fst.signum === snd!!.signum)
+            return if (fst._signum === snd!!._signum)
                 BigDecimal(sum, INFLATED, rscale, 0)
             else
                 bigDecimal(sum, rscale, 0)
         }
 
         private fun bigMultiplyPowerTen(value: Long, n: Int): BigInteger {
-            return if (n <= 0) BigInteger.bigInteger(value) else bigTenToThe(n).times(value)
+            return if (n <= 0) BigInteger.of(value) else bigTenToThe(n).timesLong(value)
         }
 
         private fun bigMultiplyPowerTen(value: BigInteger?, n: Int): BigInteger? {
             if (n <= 0)
                 return value
             return if (n < LONG_TEN_POWERS_TABLE.size) {
-                value!!.times(LONG_TEN_POWERS_TABLE[n])
+                value!!.timesLong(LONG_TEN_POWERS_TABLE[n])
             } else value!!.times(bigTenToThe(n))
         }
 
@@ -5153,7 +5153,7 @@ class BigDecimal : Comparable<BigDecimal> {
                         if (scaledYs == INFLATED) {
                             val rb = bigMultiplyPowerTen(ys, raise)
                             quotient = divideAndRound(
-                                BigInteger.bigInteger(xs),
+                                BigInteger.of(xs),
                                 rb, scl, roundingMode, checkScaleNonZero(preferredScale)
                             )
                         } else {
@@ -5163,11 +5163,11 @@ class BigDecimal : Comparable<BigDecimal> {
                     }
                 }
             } else {
-                // abs(scaledX) <= abs(ys)
+                // absoluteValue(scaledX) <= absoluteValue(ys)
                 // result is "scaledX * 10^msp / ys"
                 val scl = checkScaleNonZero(preferredScale + yscale - xscale + mcp)
                 if (cmp == 0) {
-                    // abs(scaleX)== abs(ys) => result will be scaled 10^mcp + correct sign
+                    // absoluteValue(scaleX)== absoluteValue(ys) => result will be scaled 10^mcp + correct sign
                     quotient = roundedTenPower(
                         if (scaledX < 0 == ys < 0) 1 else -1,
                         mcp,
@@ -5175,7 +5175,7 @@ class BigDecimal : Comparable<BigDecimal> {
                         checkScaleNonZero(preferredScale)
                     )
                 } else {
-                    // abs(scaledX) < abs(ys)
+                    // absoluteValue(scaledX) < absoluteValue(ys)
                     val scaledXs: Long = longMultiplyPowerTen(scaledX, mcp)
                     if (scaledXs == INFLATED) {
                         quotient = null
@@ -5251,7 +5251,7 @@ class BigDecimal : Comparable<BigDecimal> {
                     if (scaledYs == INFLATED) {
                         val rb = bigMultiplyPowerTen(ys, raise)
                         quotient = divideAndRound(
-                            BigInteger.bigInteger(xs),
+                            BigInteger.of(xs),
                             rb, scl, roundingMode, checkScaleNonZero(preferredScale)
                         )
                     } else {
@@ -5346,7 +5346,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 val raise = checkScaleNonZero(newScale.toLong() - yscale)
                 val rb = bigMultiplyPowerTen(ys, raise)
                 quotient =
-                    divideAndRound(BigInteger.bigInteger(xs), rb!!, scl, roundingMode, checkScaleNonZero(preferredScale))
+                    divideAndRound(BigInteger.of(xs), rb!!, scl, roundingMode, checkScaleNonZero(preferredScale))
             }
             // doRound, here, only affects 1000000000 case.
             return doRound(quotient, mc)
@@ -5406,7 +5406,7 @@ class BigDecimal : Comparable<BigDecimal> {
             dividend0 = abs(dividend0)
             dividend1 = abs(dividend1)
             divisor = abs(divisor)
-            // times dividend0 * dividend1
+            // timesLong dividend0 * dividend1
             val d0_hi = dividend0.ushr(32)
             val d0_lo = dividend0 and LONG_MASK
             val d1_hi = dividend1.ushr(32)
@@ -5546,7 +5546,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
         /*
      * calculate divideAndRound for ldividend*10^raise / divisor
-     * when abs(dividend)==abs(divisor);
+     * when absoluteValue(dividend)==absoluteValue(divisor);
      */
         private fun roundedTenPower(qsign: Int, raise: Int, scale: Int, preferredScale: Int): BigDecimal {
             if (scale > preferredScale) {
@@ -5678,13 +5678,13 @@ class BigDecimal : Comparable<BigDecimal> {
             val product = multiply(x, y)
             return if (product != INFLATED) {
                 bigDecimal(product, scale)
-            } else BigDecimal(BigInteger.bigInteger(x).times(y), INFLATED, scale, 0)
+            } else BigDecimal(BigInteger.of(x).timesLong(y), INFLATED, scale, 0)
         }
 
         private fun multiply(x: Long, y: BigInteger?, scale: Int): BigDecimal {
             return if (x == 0L) {
                 zeroValueOf(scale)
-            } else BigDecimal(y!!.times(x), INFLATED, scale, 0)
+            } else BigDecimal(y!!.timesLong(x), INFLATED, scale, 0)
         }
 
         private fun multiply(x: BigInteger, y: BigInteger?, scale: Int): BigDecimal {
@@ -5711,7 +5711,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 y = -y
                 rsign *= -1
             }
-            // times dividend0 * dividend1
+            // timesLong dividend0 * dividend1
             val m0_hi = x.ushr(32)
             val m0_lo = x and LONG_MASK
             val m1_hi = y.ushr(32)
@@ -5736,14 +5736,14 @@ class BigDecimal : Comparable<BigDecimal> {
             if (res != null) {
                 return res
             }
-            res = BigDecimal(BigInteger.bigInteger(x).times(y * rsign), INFLATED, scale, 0)
+            res = BigDecimal(BigInteger.of(x).timesLong(y * rsign), INFLATED, scale, 0)
             return doRound(res, mc)!!
         }
 
         private fun multiplyAndRound(x: Long, y: BigInteger?, scale: Int, mc: MathContext): BigDecimal {
             return if (x == 0L) {
                 zeroValueOf(scale)
-            } else doRound(y!!.times(x), scale, mc)
+            } else doRound(y!!.timesLong(x), scale, mc)
         }
 
         private fun multiplyAndRound(x: BigInteger, y: BigInteger?, scale: Int, mc: MathContext): BigDecimal {
@@ -5874,7 +5874,7 @@ class BigDecimal : Comparable<BigDecimal> {
                     }
                 }
                 val scaledDivisor = bigMultiplyPowerTen(divisor, raise)
-                return divideAndRound(BigInteger.bigInteger(dividend), scaledDivisor, scale, roundingMode, scale)
+                return divideAndRound(BigInteger.of(dividend), scaledDivisor, scale, roundingMode, scale)
             }
         }
 
@@ -5923,7 +5923,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 val newScale = checkScale(divisor, dividendScale.toLong() - scale)
                 val raise = newScale - divisorScale
                 val scaledDivisor = bigMultiplyPowerTen(divisor, raise)
-                return divideAndRound(BigInteger.bigInteger(dividend), scaledDivisor!!, scale, roundingMode, scale)
+                return divideAndRound(BigInteger.of(dividend), scaledDivisor!!, scale, roundingMode, scale)
             }
         }
 

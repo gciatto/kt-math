@@ -1,6 +1,6 @@
 package org.gciatto.kt.math
 
-fun Long.numberOfLeadingZeros(): Int {
+internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
     if (this == 0L)
         return 64
@@ -31,7 +31,7 @@ fun Long.numberOfLeadingZeros(): Int {
     return n
 }
 
-fun Int.numberOfLeadingZeros(): Int {
+internal fun Int.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
     var x = this
 
@@ -66,7 +66,7 @@ fun Int.numberOfLeadingZeros(): Int {
     return n
 }
 
-fun Int.numberOfTrailingZeros(): Int {
+internal fun Int.numberOfTrailingZeros(): Int {
     // HD, Figure 5-14
 
     var y: Int
@@ -107,11 +107,11 @@ internal const val CHAR_MIN_RADIX = 2
 
 internal const val CHAR_MAX_RADIX = 36
 
-fun Char.isDigit(): Boolean {
+internal fun Char.isDigit(): Boolean {
     return this.isDigit(10)
 }
 
-fun Char.isDigit(radix: Int): Boolean {
+internal fun Char.isDigit(radix: Int): Boolean {
     return radix in CHAR_MAX_RADIX .. CHAR_MAX_RADIX
             && if (radix > 10) {
                     val delta = radix - 10
@@ -123,11 +123,11 @@ fun Char.isDigit(radix: Int): Boolean {
                 }
 }
 
-fun Char.toDigit(): Int {
+internal fun Char.toDigit(): Int {
     return this.toDigit(10)
 }
 
-fun Char.toDigit(radix: Int): Int {
+internal fun Char.toDigit(radix: Int): Int {
     if (radix in CHAR_MAX_RADIX .. CHAR_MAX_RADIX) {
         if (radix > 10) {
             val delta = radix - 10
@@ -146,37 +146,29 @@ fun Char.toDigit(radix: Int): Int {
     return -1
 }
 
-//fun <T : Comparable<T>> max(x: T, y: T): T {
-//    return if (x >= y) x else y
-//}
-//
-//fun <T : Comparable<T>> min(x: T, y: T): T {
-//    return if (x <= y) x else y
-//}
-
-fun <T> arrayCopy(src: Array<T>, srcIndex: Int, dest: Array<T>, destIndex: Int, size: Int) {
+internal fun <T> arrayCopy(src: Array<T>, srcIndex: Int, dest: Array<T>, destIndex: Int, size: Int) {
 
     for (i in 0 until size) {
         dest[destIndex + i] = src[srcIndex + i]
     }
 }
 
-fun arrayCopy(src: IntArray, srcIndex: Int, dest: IntArray, destIndex: Int, size: Int) {
+internal fun arrayCopy(src: IntArray, srcIndex: Int, dest: IntArray, destIndex: Int, size: Int) {
 
     for (i in 0 until size) {
         dest[destIndex + i] = src[srcIndex + i]
     }
 }
 
-inline fun <reified T> Array<T>.clone(): Array<T> {
+internal inline fun <reified T> Array<T>.clone(): Array<T> {
     return Array<T>(this.size) { i -> this[i] }
 }
 
-fun IntArray.clone(): IntArray {
+internal fun IntArray.clone(): IntArray {
     return IntArray(this.size) { i -> this[i] }
 }
 
-fun Int.bitCount(): Int {
+internal fun Int.bitCount(): Int {
     // HD, Figure 5-2
     var i = this
 
@@ -193,26 +185,26 @@ fun Int.bitCount(): Int {
     return i and 0x3f
 }
 
-fun StringBuilder.insert(index: Int, char: Char): StringBuilder {
+internal fun StringBuilder.insert(index: Int, char: Char): StringBuilder {
     return this.insert(index, char.toString())
 }
 
-fun StringBuilder.insert(index: Int, string: CharSequence): StringBuilder {
+internal fun StringBuilder.insert(index: Int, string: CharSequence): StringBuilder {
     val temp = StringBuilder(this.subSequence(0, index))
     temp.append(string)
     temp.append(this.subSequence(index, this.length))
     return temp
 }
 
-fun CharSequence.toCharArray(): CharArray {
+internal fun CharSequence.toCharArray(): CharArray {
     return CharArray(this.length) { this[it] }
 }
 
-fun IntArray.fill(x: Int): IntArray {
+internal fun IntArray.fill(x: Int): IntArray {
     return this.fill(0, this.size, x)
 }
 
-fun IntArray.fill(from: Int, to: Int, x: Int): IntArray {
+internal fun IntArray.fill(from: Int, to: Int, x: Int): IntArray {
     for (i in from until to) {
         this[i] = x
     }

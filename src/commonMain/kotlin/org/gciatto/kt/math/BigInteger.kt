@@ -127,23 +127,23 @@ import kotlin.math.*
 class BigInteger : Comparable<BigInteger> {
 
     /**
-     * The signum of this BigInteger: -1 for negative, 0 for zero, or
+     * The _signum of this BigInteger: -1 for negative, 0 for zero, or
      * 1 for positive.  Note that the BigInteger zero *must* have
-     * a signum of 0.  This is necessary to ensures that there is exactly one
+     * a _signum of 0.  This is necessary to ensures that there is exactly one
      * representation for each BigInteger value.
      */
-    internal val signum: Int
+    internal val _signum: Int
 
     /**d
      * The magnitude of this BigInteger, in *big-endian* order: the
      * zeroth element of this array is the most-significant int of the
      * magnitude.  The magnitude must be "minimal" in that the most-significant
-     * int (`mag[0]`) must be non-zero.  This is necessary to
+     * int (`_mag[0]`) must be non-zero.  This is necessary to
      * ensure that there is exactly one representation for each BigInteger
      * value.  Note that this implies that the BigInteger zero has a
-     * zero-length mag array.
+     * zero-length _mag array.
      */
-    internal val mag: IntArray
+    internal val _mag: IntArray
 
     // The following fields are stable variables. A stable variable's value
     // changes at most once from the default zero value to a non-zero stable
@@ -154,7 +154,7 @@ class BigInteger : Comparable<BigInteger> {
      *
      * @see .bitCount
      */
-    private var bitCountPlusOne: Int = 0
+    private var _bitCountPlusOne: Int = 0
 
     /**
      * One plus the bitLength of this BigInteger. This is a stable variable.
@@ -162,14 +162,14 @@ class BigInteger : Comparable<BigInteger> {
      *
      * @see .bitLength
      */
-    private var bitLengthPlusOne: Int = 0
+    private var _bitLengthPlusOne: Int = 0
 
     /**
      * Two plus the lowest set bit of this BigInteger. This is a stable variable.
      *
      * @see .getLowestSetBit
      */
-    private var lowestSetBitPlusTwo: Int = 0
+    private var _lowestSetBitPlusTwo: Int = 0
 
     /**
      * Two plus the index of the lowest-order int in the magnitude of this
@@ -182,7 +182,7 @@ class BigInteger : Comparable<BigInteger> {
      *
      * @see .firstNonzeroIntNum
      */
-    private var firstNonzeroIntNumPlusTwo: Int = 0
+    private var _firstNonzeroIntNumPlusTwo: Int = 0
 
     /**
      * Returns the index of the rightmost (lowest-order) one bit in this
@@ -194,12 +194,12 @@ class BigInteger : Comparable<BigInteger> {
      */
     // lowestSetBit not initialized yet
     // Search for lowest order nonzero int
-    val lowestSetBit: Int
+    private val lowestSetBit: Int
         get() {
-            var lsb = lowestSetBitPlusTwo - 2
+            var lsb = _lowestSetBitPlusTwo - 2
             if (lsb == -2) {
                 lsb = 0
-                if (signum == 0) {
+                if (_signum == 0) {
                     lsb -= 1
                 } else {
                     var i: Int
@@ -212,7 +212,7 @@ class BigInteger : Comparable<BigInteger> {
                     }
                     lsb += (i shl 5) + b.numberOfTrailingZeros()
                 }
-                lowestSetBitPlusTwo = lsb + 2
+                _lowestSetBitPlusTwo = lsb + 2
             }
             return lsb
         }
@@ -253,13 +253,13 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         if (`val`[off] < 0) {
-            mag = makePositive(`val`, off, len)
-            signum = -1
+            _mag = makePositive(`val`, off, len)
+            _signum = -1
         } else {
-            mag = stripLeadingZeroBytes(`val`, off, len)
-            signum = if (mag.size == 0) 0 else 1
+            _mag = stripLeadingZeroBytes(`val`, off, len)
+            _signum = if (_mag.size == 0) 0 else 1
         }
-        if (mag.size >= MAX_MAG_LENGTH) {
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
@@ -277,25 +277,25 @@ class BigInteger : Comparable<BigInteger> {
             throw NumberFormatException("Zero length BigInteger")
 
         if (`val`[0] < 0) {
-            mag = makePositive(`val`)
-            signum = -1
+            _mag = makePositive(`val`)
+            _signum = -1
         } else {
-            mag = trustedStripLeadingZeroInts(`val`)
-            signum = if (mag.size == 0) 0 else 1
+            _mag = trustedStripLeadingZeroInts(`val`)
+            _signum = if (_mag.size == 0) 0 else 1
         }
-        if (mag.size >= MAX_MAG_LENGTH) {
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
 
     /**
      * Translates the sign-magnitude representation of a BigInteger into a
-     * BigInteger.  The sign is represented as an integer signum value: -1 for
+     * BigInteger.  The sign is represented as an integer _signum value: -1 for
      * negative, 0 for zero, or 1 for positive.  The magnitude is a sub-array of
      * a byte array in *big-endian* byte-order: the most significant byte
      * is the element at index `off`.  A zero value of the length
      * `len` is permissible, and will result in a BigInteger value of 0,
-     * whether signum is -1, 0 or 1.  The `magnitude` array is assumed to
+     * whether _signum is -1, 0 or 1.  The `magnitude` array is assumed to
      * be unchanged for the duration of the constructor call.
      *
      * An `IndexOutOfBoundsException` is thrown if the length of the array
@@ -303,14 +303,14 @@ class BigInteger : Comparable<BigInteger> {
      * `len` is negative, or `off+len` is greater than the length of
      * `magnitude`.
      *
-     * @param  signum signum of the number (-1 for negative, 0 for zero, 1
+     * @param  signum _signum of the number (-1 for negative, 0 for zero, 1
      * for positive).
      * @param  magnitude big-endian binary representation of the magnitude of
      * the number.
      * @param  off the start offset of the binary representation.
      * @param  len the number of bytes to use.
-     * @throws NumberFormatException `signum` is not one of the three
-     * legal values (-1, 0, and 1), or `signum` is 0 and
+     * @throws NumberFormatException `_signum` is not one of the three
+     * legal values (-1, 0, and 1), or `_signum` is 0 and
      * `magnitude` contains one or more non-zero bytes.
      * @throws IndexOutOfBoundsException if the provided array offset and
      * length would cause an index into the byte array to be
@@ -319,7 +319,7 @@ class BigInteger : Comparable<BigInteger> {
      */
     constructor(signum: Int, magnitude: ByteArray, off: Int = 0, len: Int = magnitude.size) {
         if (signum < -1 || signum > 1) {
-            throw NumberFormatException("Invalid signum value")
+            throw NumberFormatException("Invalid _signum value")
         } else if (off < 0 || len < 0 ||
             len > 0 && (off >= magnitude.size || len > magnitude.size - off)
         ) { // 0 <= off < magnitude.length
@@ -327,16 +327,16 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         // stripLeadingZeroBytes() returns a zero length array if len == 0
-        this.mag = stripLeadingZeroBytes(magnitude, off, len)
+        this._mag = stripLeadingZeroBytes(magnitude, off, len)
 
-        if (this.mag.size == 0) {
-            this.signum = 0
+        if (this._mag.size == 0) {
+            this._signum = 0
         } else {
             if (signum == 0)
-                throw NumberFormatException("signum-magnitude mismatch")
-            this.signum = signum
+                throw NumberFormatException("_signum-magnitude mismatch")
+            this._signum = signum
         }
-        if (mag.size >= MAX_MAG_LENGTH) {
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
@@ -349,19 +349,19 @@ class BigInteger : Comparable<BigInteger> {
      * unchanged for the duration of the constructor call.
      */
     private constructor(signum: Int, magnitude: IntArray) {
-        this.mag = stripLeadingZeroInts(magnitude)
+        this._mag = stripLeadingZeroInts(magnitude)
 
         if (signum < -1 || signum > 1)
-            throw NumberFormatException("Invalid signum value")
+            throw NumberFormatException("Invalid _signum value")
 
-        if (this.mag.size == 0) {
-            this.signum = 0
+        if (this._mag.size == 0) {
+            this._signum = 0
         } else {
             if (signum == 0)
-                throw NumberFormatException("signum-magnitude mismatch")
-            this.signum = signum
+                throw NumberFormatException("_signum-magnitude mismatch")
+            this._signum = signum
         }
-        if (mag.size >= MAX_MAG_LENGTH) {
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
@@ -369,7 +369,7 @@ class BigInteger : Comparable<BigInteger> {
     /**
      * Translates the String representation of a BigInteger in the
      * specified radix into a BigInteger.  The String representation
-     * consists of an optional minus or plus sign followed by a
+     * consists of an optional subtract or plus sign followed by a
      * sequence of one or more digits in the specified radix.  The
      * character-to-digit mapping is provided by `Character.digit`.  The String may not contain any extraneous
      * characters (whitespace, for example).
@@ -417,13 +417,13 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         if (cursor == len) {
-            signum = 0
-            mag = ZERO.mag
+            _signum = 0
+            _mag = ZERO._mag
             return
         }
 
         numDigits = len - cursor
-        signum = sign
+        _signum = sign
 
         // Pre-allocate array of expected size. May be too large but can
         // never be too small. Typically exact.
@@ -456,8 +456,8 @@ class BigInteger : Comparable<BigInteger> {
             destructiveMulAdd(magnitude, superRadix, groupVal)
         }
         // Required for cases where the array was overallocated.
-        mag = trustedStripLeadingZeroInts(magnitude)
-        if (mag.size >= MAX_MAG_LENGTH) {
+        _mag = trustedStripLeadingZeroInts(magnitude)
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
@@ -477,13 +477,13 @@ class BigInteger : Comparable<BigInteger> {
             cursor++
         }
         if (cursor == len) {
-            signum = 0
-            mag = ZERO.mag
+            _signum = 0
+            _mag = ZERO._mag
             return
         }
 
         numDigits = len - cursor
-        signum = sign
+        _signum = sign
         // Pre-allocate array of expected size
         val numWords: Int
         if (len < 10) {
@@ -514,8 +514,8 @@ class BigInteger : Comparable<BigInteger> {
                 groupVal
             )
         }
-        mag = trustedStripLeadingZeroInts(magnitude)
-        if (mag.size >= MAX_MAG_LENGTH) {
+        _mag = trustedStripLeadingZeroInts(magnitude)
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
@@ -582,8 +582,8 @@ class BigInteger : Comparable<BigInteger> {
             smallPrime(bitLength, certainty, rnd)
         else
             largePrime(bitLength, certainty, rnd)
-        signum = 1
-        mag = prime.mag
+        _signum = 1
+        _mag = prime._mag
     }
 
     /**
@@ -599,17 +599,17 @@ class BigInteger : Comparable<BigInteger> {
      * @since 1.5
      */
     fun nextProbablePrime(): BigInteger {
-        if (this.signum < 0)
+        if (this._signum < 0)
             throw ArithmeticException("start < 0: $this")
 
         // Handle trivial cases
-        if (this.signum == 0 || this == ONE)
+        if (this._signum == 0 || this == ONE)
             return TWO
 
         var result = this.plus(ONE)
 
         // Fastpath for small numbers
-        if (result.bitLength() < SMALL_PRIME_THRESHOLD) {
+        if (result.bitLength < SMALL_PRIME_THRESHOLD) {
 
             // Ensure an odd number
             if (!result.testBit(0))
@@ -617,7 +617,7 @@ class BigInteger : Comparable<BigInteger> {
 
             while (true) {
                 // Do cheap "pre-test" if applicable
-                if (result.bitLength() > 6) {
+                if (result.bitLength > 6) {
                     val r = result.remainder(SMALL_PRIME_PRODUCT).toLong()
                     if (r % 3 == 0L || r % 5 == 0L || r % 7 == 0L || r % 11 == 0L ||
                         r % 13 == 0L || r % 17 == 0L || r % 19 == 0L || r % 23 == 0L ||
@@ -629,7 +629,7 @@ class BigInteger : Comparable<BigInteger> {
                 }
 
                 // All candidates of bitLength 2 and 3 are prime by this point
-                if (result.bitLength() < 4)
+                if (result.bitLength < 4)
                     return result
 
                 // The expensive test
@@ -645,7 +645,7 @@ class BigInteger : Comparable<BigInteger> {
             result = result.minus(ONE)
 
         // Looking for the next large prime
-        val searchLen = getPrimeSearchLen(result.bitLength())
+        val searchLen = getPrimeSearchLen(result.bitLength)
 
         while (true) {
             val searchSieve = BitSieve(result, searchLen)
@@ -655,7 +655,7 @@ class BigInteger : Comparable<BigInteger> {
             )
             if (candidate != null)
                 return candidate
-            result = result.plus(bigInteger((2 * searchLen).toLong()))
+            result = result.plus(of((2 * searchLen).toLong()))
         }
     }
 
@@ -680,7 +680,7 @@ class BigInteger : Comparable<BigInteger> {
         // The relationship between the certainty and the number of rounds
         // we perform is given in the draft standard ANSI X9.80, "PRIME
         // NUMBER GENERATION, PRIMALITY TESTING, AND PRIMALITY CERTIFICATES".
-        val sizeInBits = this.bitLength()
+        val sizeInBits = this.bitLength
         if (sizeInBits < 100) {
             rounds = 50
             rounds = if (n < rounds) n else rounds
@@ -750,7 +750,7 @@ class BigInteger : Comparable<BigInteger> {
             // Generate a uniform random on (1, this)
             var b: BigInteger
             do {
-                b = BigInteger(this.bitLength(), rnd)
+                b = BigInteger(this.bitLength, rnd)
             } while (b.compareTo(ONE) <= 0 || b.compareTo(this) >= 0)
 
             var j = 0
@@ -770,9 +770,9 @@ class BigInteger : Comparable<BigInteger> {
      * arguments are correct, and it doesn't copy the magnitude array.
      */
     internal constructor(magnitude: IntArray, signum: Int) {
-        this.signum = if (magnitude.size == 0) 0 else signum
-        this.mag = magnitude
-        if (mag.size >= MAX_MAG_LENGTH) {
+        this._signum = if (magnitude.size == 0) 0 else signum
+        this._mag = magnitude
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
@@ -783,9 +783,9 @@ class BigInteger : Comparable<BigInteger> {
      * unchanged for the duration of the constructor call.
      */
     private constructor(magnitude: ByteArray, signum: Int) {
-        this.signum = if (magnitude.size == 0) 0 else signum
-        this.mag = stripLeadingZeroBytes(magnitude, 0, magnitude.size)
-        if (mag.size >= MAX_MAG_LENGTH) {
+        this._signum = if (magnitude.size == 0) 0 else signum
+        this._mag = stripLeadingZeroBytes(magnitude, 0, magnitude.size)
+        if (_mag.size >= MAX_MAG_LENGTH) {
             checkRange()
         }
     }
@@ -797,7 +797,7 @@ class BigInteger : Comparable<BigInteger> {
      * @throws ArithmeticException if `this` exceeds the supported range.
      */
     private fun checkRange() {
-        if (mag.size > MAX_MAG_LENGTH || mag.size == MAX_MAG_LENGTH && mag[0] < 0) {
+        if (_mag.size > MAX_MAG_LENGTH || _mag.size == MAX_MAG_LENGTH && _mag[0] < 0) {
             reportOverflow()
         }
     }
@@ -809,19 +809,19 @@ class BigInteger : Comparable<BigInteger> {
         var `val` = `val`
         if (`val` < 0) {
             `val` = -`val`
-            signum = -1
+            _signum = -1
         } else {
-            signum = 1
+            _signum = 1
         }
 
         val highWord = `val`.ushr(32).toInt()
         if (highWord == 0) {
-            mag = IntArray(1)
-            mag[0] = `val`.toInt()
+            _mag = IntArray(1)
+            _mag[0] = `val`.toInt()
         } else {
-            mag = IntArray(2)
-            mag[0] = highWord
-            mag[1] = `val`.toInt()
+            _mag = IntArray(2)
+            _mag[0] = highWord
+            _mag[1] = `val`.toInt()
         }
     }
 
@@ -833,46 +833,46 @@ class BigInteger : Comparable<BigInteger> {
      * @param  val value to be added to this BigInteger.
      * @return `this + val`
      */
-    operator fun plus(`val`: BigInteger): BigInteger {
-        if (`val`.signum == 0)
+    fun plus(`val`: BigInteger): BigInteger {
+        if (`val`._signum == 0)
             return this
-        if (signum == 0)
+        if (_signum == 0)
             return `val`
-        if (`val`.signum == signum)
-            return BigInteger(plus(mag, `val`.mag), signum)
+        if (`val`._signum == _signum)
+            return BigInteger(sum(_mag, `val`._mag), _signum)
 
         val cmp = compareMagnitude(`val`)
         if (cmp == 0)
             return ZERO
         var resultMag = if (cmp > 0)
-            minus(mag, `val`.mag)
+            subtract(_mag, `val`._mag)
         else
-            minus(`val`.mag, mag)
+            subtract(`val`._mag, _mag)
         resultMag = trustedStripLeadingZeroInts(resultMag)
 
-        return BigInteger(resultMag, if (cmp == signum) 1 else -1)
+        return BigInteger(resultMag, if (cmp == _signum) 1 else -1)
     }
 
     /**
      * Package private methods used by BigDecimal code to plus a BigInteger
      * with a long. Assumes val is not equal to INFLATED.
      */
-    internal fun plus(`val`: Long): BigInteger {
+    internal fun plusLong(`val`: Long): BigInteger {
         if (`val` == 0L)
             return this
-        if (signum == 0)
-            return bigInteger(`val`)
-        if (`val`.sign == signum)
-            return BigInteger(plus(mag, `val`.absoluteValue), signum)
+        if (_signum == 0)
+            return of(`val`)
+        if (`val`.sign == _signum)
+            return BigInteger(sum(_mag, `val`.absoluteValue), _signum)
         val cmp = compareMagnitude(`val`)
         if (cmp == 0)
             return ZERO
-        var resultMag = if (cmp > 0) minus(
-            mag,
+        var resultMag = if (cmp > 0) subtract(
+            _mag,
             `val`.absoluteValue
-        ) else minus(`val`.absoluteValue, mag)
+        ) else subtract(`val`.absoluteValue, _mag)
         resultMag = trustedStripLeadingZeroInts(resultMag)
-        return BigInteger(resultMag, if (cmp == signum) 1 else -1)
+        return BigInteger(resultMag, if (cmp == _signum) 1 else -1)
     }
 
     /**
@@ -882,22 +882,22 @@ class BigInteger : Comparable<BigInteger> {
      * @return `this - val`
      */
     operator fun minus(`val`: BigInteger): BigInteger {
-        if (`val`.signum == 0)
+        if (`val`._signum == 0)
             return this
-        if (signum == 0)
+        if (_signum == 0)
             return `val`.unaryMinus()
-        if (`val`.signum != signum)
-            return BigInteger(plus(mag, `val`.mag), signum)
+        if (`val`._signum != _signum)
+            return BigInteger(sum(_mag, `val`._mag), _signum)
 
         val cmp = compareMagnitude(`val`)
         if (cmp == 0)
             return ZERO
         var resultMag = if (cmp > 0)
-            minus(mag, `val`.mag)
+            subtract(_mag, `val`._mag)
         else
-            minus(`val`.mag, mag)
+            subtract(`val`._mag, _mag)
         resultMag = trustedStripLeadingZeroInts(resultMag)
-        return BigInteger(resultMag, if (cmp == signum) 1 else -1)
+        return BigInteger(resultMag, if (cmp == _signum) 1 else -1)
     }
 
     /**
@@ -910,28 +910,28 @@ class BigInteger : Comparable<BigInteger> {
      * @return `this * val`
      */
     operator fun times(`val`: BigInteger): BigInteger {
-        if (`val`.signum == 0 || signum == 0)
+        if (`val`._signum == 0 || _signum == 0)
             return ZERO
 
-        val xlen = mag.size
+        val xlen = _mag.size
 
         if (`val` === this && xlen > MULTIPLY_SQUARE_THRESHOLD) {
             return square()
         }
 
-        val ylen = `val`.mag.size
+        val ylen = `val`._mag.size
 
         if (xlen < KARATSUBA_THRESHOLD || ylen < KARATSUBA_THRESHOLD) {
-            val resultSign = if (signum == `val`.signum) 1 else -1
-            if (`val`.mag.size == 1) {
-                return multiplyByInt(mag, `val`.mag[0], resultSign)
+            val resultSign = if (_signum == `val`._signum) 1 else -1
+            if (`val`._mag.size == 1) {
+                return multiplyByInt(_mag, `val`._mag[0], resultSign)
             }
-            if (mag.size == 1) {
-                return multiplyByInt(`val`.mag, mag[0], resultSign)
+            if (_mag.size == 1) {
+                return multiplyByInt(`val`._mag, _mag[0], resultSign)
             }
             var result = multiplyToLen(
-                mag, xlen,
-                `val`.mag, ylen, null
+                _mag, xlen,
+                `val`._mag, ylen, null
             )
             result = trustedStripLeadingZeroInts(result)
             return BigInteger(result, resultSign)
@@ -945,23 +945,23 @@ class BigInteger : Comparable<BigInteger> {
     }
 
     /**
-     * Package private methods used by BigDecimal code to times a BigInteger
+     * Package private methods used by BigDecimal code to timesLong a BigInteger
      * with a long. Assumes v is not equal to INFLATED.
      */
-    internal fun times(v: Long): BigInteger {
+    internal fun timesLong(v: Long): BigInteger {
         var v = v
-        if (v == 0L || signum == 0)
+        if (v == 0L || _signum == 0)
             return ZERO
         if (v == BigDecimal.INFLATED)
-            return times(bigInteger(v))
-        val rsign = if (v > 0) signum else -signum
+            return times(of(v))
+        val rsign = if (v > 0) _signum else -_signum
         if (v < 0)
             v = -v
         val dh = v.ushr(32)      // higher order bits
         val dl = v and LONG_MASK // lower order bits
 
-        val xlen = mag.size
-        val value = mag
+        val xlen = _mag.size
+        val value = _mag
         var rmag = if (dh == 0L) IntArray(xlen + 1) else IntArray(xlen + 2)
         var carry: Long = 0
         var rstart = rmag.size - 1
@@ -1011,7 +1011,7 @@ class BigInteger : Comparable<BigInteger> {
         val len: Int
         val offset: Int
 
-        len = mag.size
+        len = _mag.size
         offset = fullsize - len
 
         if (slice == 0) {
@@ -1038,11 +1038,11 @@ class BigInteger : Comparable<BigInteger> {
         // While performing Toom-Cook, all slices are positive and
         // the sign is adjusted when the final number is composed.
         if (start == 0 && sliceSize >= len) {
-            return this.abs()
+            return this.absoluteValue
         }
 
         val intSlice = IntArray(sliceSize)
-        arrayCopy(mag, start, intSlice, 0, sliceSize)
+        arrayCopy(_mag, start, intSlice, 0, sliceSize)
 
         return BigInteger(trustedStripLeadingZeroInts(intSlice), 1)
     }
@@ -1056,7 +1056,7 @@ class BigInteger : Comparable<BigInteger> {
      * arguments only.
      */
     private fun exactDivideBy3(): BigInteger {
-        val len = mag.size
+        val len = _mag.size
         var result = IntArray(len)
         var x: Long
         var w: Long
@@ -1064,7 +1064,7 @@ class BigInteger : Comparable<BigInteger> {
         var borrow: Long
         borrow = 0L
         for (i in len - 1 downTo 0) {
-            x = mag[i].toLong()and LONG_MASK
+            x = _mag[i].toLong()and LONG_MASK
             w = x - borrow
             if (borrow > x) {      // Did we make the number go negative?
                 borrow = 1L
@@ -1087,7 +1087,7 @@ class BigInteger : Comparable<BigInteger> {
             }
         }
         result = trustedStripLeadingZeroInts(result)
-        return BigInteger(result, signum)
+        return BigInteger(result, _signum)
     }
 
     /**
@@ -1095,25 +1095,25 @@ class BigInteger : Comparable<BigInteger> {
      * This is used by Karatsuba multiplication and Karatsuba squaring.
      */
     private fun getLower(n: Int): BigInteger {
-        val len = mag.size
+        val len = _mag.size
 
         if (len <= n) {
-            return abs()
+            return absoluteValue
         }
 
         val lowerInts = IntArray(n)
-        arrayCopy(mag, len - n, lowerInts, 0, n)
+        arrayCopy(_mag, len - n, lowerInts, 0, n)
 
         return BigInteger(trustedStripLeadingZeroInts(lowerInts), 1)
     }
 
     /**
-     * Returns a new BigInteger representing mag.length-n upper
+     * Returns a new BigInteger representing _mag.length-n upper
      * ints of the number.  This is used by Karatsuba multiplication and
      * Karatsuba squaring.
      */
     private fun getUpper(n: Int): BigInteger {
-        val len = mag.size
+        val len = _mag.size
 
         if (len <= n) {
             return ZERO
@@ -1121,7 +1121,7 @@ class BigInteger : Comparable<BigInteger> {
 
         val upperLen = len - n
         val upperInts = IntArray(upperLen)
-        arrayCopy(mag, 0, upperInts, 0, upperLen)
+        arrayCopy(_mag, 0, upperInts, 0, upperLen)
 
         return BigInteger(trustedStripLeadingZeroInts(upperInts), 1)
     }
@@ -1134,13 +1134,13 @@ class BigInteger : Comparable<BigInteger> {
      * @return `this<sup>2</sup>`
      */
     private fun square(): BigInteger {
-        if (signum == 0) {
+        if (_signum == 0) {
             return ZERO
         }
-        val len = mag.size
+        val len = _mag.size
 
         if (len < KARATSUBA_SQUARE_THRESHOLD) {
-            val z = squareToLen(mag, len, null)
+            val z = squareToLen(_mag, len, null)
             return BigInteger(trustedStripLeadingZeroInts(z), 1)
         } else {
             return if (len < TOOM_COOK_SQUARE_THRESHOLD) {
@@ -1159,7 +1159,7 @@ class BigInteger : Comparable<BigInteger> {
      * squareToLen.
      */
     private fun squareKaratsuba(): BigInteger {
-        val half = (mag.size + 1) / 2
+        val half = (_mag.size + 1) / 2
 
         val xl = getLower(half)
         val xh = getUpper(half)
@@ -1179,7 +1179,7 @@ class BigInteger : Comparable<BigInteger> {
      * squareToLen or squareKaratsuba.
      */
     private fun squareToomCook3(): BigInteger {
-        val len = mag.size
+        val len = _mag.size
 
         // k is the size (in ints) of the lower-order slices.
         val k = (len + 2) / 3   // Equal to ceil(largest/3)
@@ -1243,7 +1243,7 @@ class BigInteger : Comparable<BigInteger> {
      * @throws ArithmeticException if `val` is zero.
      */
     operator fun div(`val`: BigInteger): BigInteger {
-        return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD || mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        return if (`val`._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - `val`._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
             divideKnuth(`val`)
         } else {
             divideBurnikelZiegler(`val`)
@@ -1260,11 +1260,11 @@ class BigInteger : Comparable<BigInteger> {
      */
     private fun divideKnuth(`val`: BigInteger): BigInteger {
         val q = MutableBigInteger()
-        val a = MutableBigInteger(this.mag)
-        val b = MutableBigInteger(`val`.mag)
+        val a = MutableBigInteger(this._mag)
+        val b = MutableBigInteger(`val`._mag)
 
         a.divideKnuth(b, q, false)
-        return q.toBigInteger(this.signum * `val`.signum)
+        return q.toBigInteger(this._signum * `val`._signum)
     }
 
     /**
@@ -1279,7 +1279,7 @@ class BigInteger : Comparable<BigInteger> {
      * @throws ArithmeticException if `val` is zero.
      */
     fun divideAndRemainder(`val`: BigInteger): Array<BigInteger> {
-        return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD || mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        return if (`val`._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - `val`._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
             divideAndRemainderKnuth(`val`)
         } else {
             divideAndRemainderBurnikelZiegler(`val`)
@@ -1290,15 +1290,15 @@ class BigInteger : Comparable<BigInteger> {
     private fun divideAndRemainderKnuth(`val`: BigInteger): Array<BigInteger> {
 //        val result = arrayOfNulls<BigInteger>(2)
         val q = MutableBigInteger()
-        val a = MutableBigInteger(this.mag)
-        val b = MutableBigInteger(`val`.mag)
+        val a = MutableBigInteger(this._mag)
+        val b = MutableBigInteger(`val`._mag)
         val r = a.divideKnuth(b, q)
         return arrayOf(
-            q.toBigInteger(if (this.signum == `val`.signum) 1 else -1),
-            r!!.toBigInteger(this.signum)
+            q.toBigInteger(if (this._signum == `val`._signum) 1 else -1),
+            r!!.toBigInteger(this._signum)
         )
-//        result[0] = q.toBigInteger(if (this.signum == `val`.signum) 1 else -1)
-//        result[1] = r!!.toBigInteger(this.signum)
+//        result[0] = q.toBigInteger(if (this._signum == `val`._signum) 1 else -1)
+//        result[1] = r!!.toBigInteger(this._signum)
 //        return result
     }
 
@@ -1311,7 +1311,7 @@ class BigInteger : Comparable<BigInteger> {
      * @throws ArithmeticException if `val` is zero.
      */
     fun remainder(`val`: BigInteger): BigInteger {
-        return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD || mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        return if (`val`._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - `val`._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
             remainderKnuth(`val`)
         } else {
             remainderBurnikelZiegler(`val`)
@@ -1321,10 +1321,10 @@ class BigInteger : Comparable<BigInteger> {
     /** Long division  */
     private fun remainderKnuth(`val`: BigInteger): BigInteger {
         val q = MutableBigInteger()
-        val a = MutableBigInteger(this.mag)
-        val b = MutableBigInteger(`val`.mag)
+        val a = MutableBigInteger(this._mag)
+        val b = MutableBigInteger(`val`._mag)
 
-        return a.divideKnuth(b, q)!!.toBigInteger(this.signum)
+        return a.divideKnuth(b, q)!!.toBigInteger(this._signum)
     }
 
     /**
@@ -1355,8 +1355,8 @@ class BigInteger : Comparable<BigInteger> {
         val q = MutableBigInteger()
         val r = MutableBigInteger(this)
             .divideAndRemainderBurnikelZiegler(MutableBigInteger(`val`), q)
-        val qBigInt = if (q.isZero) ZERO else q.toBigInteger(signum * `val`.signum)
-        val rBigInt = if (r.isZero) ZERO else r.toBigInteger(signum)
+        val qBigInt = if (q.isZero) ZERO else q.toBigInteger(_signum * `val`._signum)
+        val rBigInt = if (r.isZero) ZERO else r.toBigInteger(_signum)
         return arrayOf(qBigInt, rBigInt)
     }
 
@@ -1373,11 +1373,11 @@ class BigInteger : Comparable<BigInteger> {
         if (exponent < 0) {
             throw ArithmeticException("Negative exponent")
         }
-        if (signum == 0) {
+        if (_signum == 0) {
             return if (exponent == 0) ONE else this
         }
 
-        var partToSquare = this.abs()
+        var partToSquare = this.absoluteValue
 
         // Factor out powers of two from the base, as the exponentiation of
         // these can be done by left shifts only.
@@ -1394,18 +1394,18 @@ class BigInteger : Comparable<BigInteger> {
         // Factor the powers of two out quickly by shifting right, if needed.
         if (powersOfTwo > 0) {
             partToSquare = partToSquare.shr(powersOfTwo)
-            remainingBits = partToSquare.bitLength()
+            remainingBits = partToSquare.bitLength
             if (remainingBits == 1) {  // Nothing left but +/- 1?
-                return if (signum < 0 && exponent and 1 == 1) {
+                return if (_signum < 0 && exponent and 1 == 1) {
                     NEGATIVE_ONE.shl(powersOfTwo * exponent)
                 } else {
                     ONE.shl(powersOfTwo * exponent)
                 }
             }
         } else {
-            remainingBits = partToSquare.bitLength()
+            remainingBits = partToSquare.bitLength
             if (remainingBits == 1) { // Nothing left but +/- 1?
-                return if (signum < 0 && exponent and 1 == 1) {
+                return if (_signum < 0 && exponent and 1 == 1) {
                     NEGATIVE_ONE
                 } else {
                     ONE
@@ -1420,11 +1420,11 @@ class BigInteger : Comparable<BigInteger> {
 
         // Use slightly different algorithms for small and large operands.
         // See if the result will safely fit into a long. (Largest 2^63-1)
-        if (partToSquare.mag.size == 1 && scaleFactor <= 62) {
+        if (partToSquare._mag.size == 1 && scaleFactor <= 62) {
             // Small number algorithm.  Everything fits into a long.
-            val newSign = if (signum < 0 && exponent and 1 == 1) -1 else 1
+            val newSign = if (_signum < 0 && exponent and 1 == 1) -1 else 1
             var result: Long = 1
-            var baseToPow2 = partToSquare.mag[0].toLong()and LONG_MASK
+            var baseToPow2 = partToSquare._mag[0].toLong()and LONG_MASK
 
             var workingExponent = exponent
 
@@ -1443,16 +1443,16 @@ class BigInteger : Comparable<BigInteger> {
             // Multiply back the powers of two (quickly, by shifting left)
             return if (powersOfTwo > 0) {
                 if (bitsToShift + scaleFactor <= 62) { // Fits in long?
-                    bigInteger((result shl bitsToShift.toInt()) * newSign)
+                    of((result shl bitsToShift.toInt()) * newSign)
                 } else {
-                    bigInteger(result * newSign).shl(bitsToShift.toInt())
+                    of(result * newSign).shl(bitsToShift.toInt())
                 }
             } else {
-                bigInteger(result * newSign)
+                of(result * newSign)
             }
         } else {
             // Large number algorithm.  This is basically identical to
-            // the algorithm above, but calls times() and square()
+            // the algorithm above, but calls timesLong() and square()
             // which may use more efficient algorithms for large numbers.
             var answer = ONE
 
@@ -1474,7 +1474,7 @@ class BigInteger : Comparable<BigInteger> {
                 answer = answer.shl(powersOfTwo * exponent)
             }
 
-            return if (signum < 0 && exponent and 1 == 1) {
+            return if (_signum < 0 && exponent and 1 == 1) {
                 answer.unaryMinus()
             } else {
                 answer
@@ -1500,11 +1500,11 @@ class BigInteger : Comparable<BigInteger> {
      * @since  9
      */
     fun sqrt(): BigInteger {
-        if (this.signum < 0) {
+        if (this._signum < 0) {
             throw ArithmeticException("Negative BigInteger")
         }
 
-        return MutableBigInteger(this.mag).sqrt().toBigInteger()
+        return MutableBigInteger(this._mag).sqrt().toBigInteger()
     }
 
     /**
@@ -1531,17 +1531,17 @@ class BigInteger : Comparable<BigInteger> {
 
     /**
      * Returns a BigInteger whose value is the greatest common divisor of
-     * `abs(this)` and `abs(val)`.  Returns 0 if
+     * `absoluteValue(this)` and `absoluteValue(val)`.  Returns 0 if
      * `this == 0 && val == 0`.
      *
      * @param  val value with which the GCD is to be computed.
-     * @return `GCD(abs(this), abs(val))`
+     * @return `GCD(absoluteValue(this), absoluteValue(val))`
      */
     fun gcd(`val`: BigInteger): BigInteger {
-        if (`val`.signum == 0)
-            return this.abs()
-        else if (this.signum == 0)
-            return `val`.abs()
+        if (`val`._signum == 0)
+            return this.absoluteValue
+        else if (this._signum == 0)
+            return `val`.absoluteValue
 
         val a = MutableBigInteger(this)
         val b = MutableBigInteger(`val`)
@@ -1555,11 +1555,12 @@ class BigInteger : Comparable<BigInteger> {
      * Returns a BigInteger whose value is the absolute value of this
      * BigInteger.
      *
-     * @return `abs(this)`
+     * @return `absoluteValue(this)`
      */
-    fun abs(): BigInteger {
-        return if (signum >= 0) this else this.unaryMinus()
-    }
+    val absoluteValue: BigInteger
+        get() {
+            return if (_signum >= 0) this else this.unaryMinus()
+        }
 
     /**
      * Returns a BigInteger whose value is `(-this)`.
@@ -1567,18 +1568,19 @@ class BigInteger : Comparable<BigInteger> {
      * @return `-this`
      */
     operator fun unaryMinus(): BigInteger {
-        return BigInteger(this.mag, -this.signum)
+        return BigInteger(this._mag, -this._signum)
     }
 
     /**
-     * Returns the signum function of this BigInteger.
+     * Returns the _signum function of this BigInteger.
      *
      * @return -1, 0 or 1 as the value of this BigInteger is negative, zero or
      * positive.
      */
-    fun signum(): Int {
-        return this.signum
-    }
+    val signum: Int
+        get() {
+            return this._signum
+        }
 
     // Modular Arithmetic Operations
 
@@ -1593,11 +1595,11 @@ class BigInteger : Comparable<BigInteger> {
      * @see .remainder
      */
     operator fun rem(m: BigInteger): BigInteger {
-        if (m.signum <= 0)
+        if (m._signum <= 0)
             throw ArithmeticException("BigInteger: modulus not positive")
 
         val result = this.remainder(m)
-        return if (result.signum >= 0) result else result.plus(m)
+        return if (result._signum >= 0) result else result.plus(m)
     }
 
     /**
@@ -1615,27 +1617,27 @@ class BigInteger : Comparable<BigInteger> {
      */
     fun modPow(exponent: BigInteger, m: BigInteger): BigInteger? {
         var exponent = exponent
-        if (m.signum <= 0)
+        if (m._signum <= 0)
             throw ArithmeticException("BigInteger: modulus not positive")
 
         // Trivial cases
-        if (exponent.signum == 0)
+        if (exponent._signum == 0)
             return if (m == ONE) ZERO else ONE
 
         if (this == ONE)
             return if (m == ONE) ZERO else ONE
 
-        if (this == ZERO && exponent.signum >= 0)
+        if (this == ZERO && exponent._signum >= 0)
             return ZERO
 
         if (this == negConst[1] && !exponent.testBit(0))
             return if (m == ONE) ZERO else ONE
 
-        val invertResult: Boolean = exponent.signum < 0
+        val invertResult: Boolean = exponent._signum < 0
         if (invertResult)
             exponent = exponent.unaryMinus()
 
-        val base = if (this.signum < 0 || this.compareTo(m) >= 0)
+        val base = if (this._signum < 0 || this.compareTo(m) >= 0)
             this.rem(m)
         else
             this
@@ -1656,7 +1658,7 @@ class BigInteger : Comparable<BigInteger> {
             val m2 = ONE.shl(p) // 2**p
 
             // Calculate new base from m1
-            val base2 = if (this.signum < 0 || this.compareTo(m1) >= 0)
+            val base2 = if (this._signum < 0 || this.compareTo(m1) >= 0)
                 this.rem(m1)
             else
                 this
@@ -1674,7 +1676,7 @@ class BigInteger : Comparable<BigInteger> {
             val y1 = m2.modInverse(m1)
             val y2 = m1.modInverse(m2)
 
-            if (m.mag.size < MAX_MAG_LENGTH / 2) {
+            if (m._mag.size < MAX_MAG_LENGTH / 2) {
                 result = a1.times(m2).times(y1).plus(a2.times(m1).times(y2)).rem(m)
             } else {
                 val t1 = MutableBigInteger()
@@ -1703,32 +1705,32 @@ class BigInteger : Comparable<BigInteger> {
          * and then keep appending exponent bits to it.  The following patterns
          * apply to a 3-bit window (k = 3):
          * To append   0: square
-         * To append   1: square, times by n^1
-         * To append  10: square, times by n^1, square
-         * To append  11: square, square, times by n^3
-         * To append 100: square, times by n^1, square, square
-         * To append 101: square, square, square, times by n^5
-         * To append 110: square, square, times by n^3, square
-         * To append 111: square, square, square, times by n^7
+         * To append   1: square, timesLong by n^1
+         * To append  10: square, timesLong by n^1, square
+         * To append  11: square, square, timesLong by n^3
+         * To append 100: square, timesLong by n^1, square, square
+         * To append 101: square, square, square, timesLong by n^5
+         * To append 110: square, square, timesLong by n^3, square
+         * To append 111: square, square, square, timesLong by n^7
          *
-         * Since each pattern involves only one times, the longer the pattern
+         * Since each pattern involves only one timesLong, the longer the pattern
          * the better, except that a 0 (no multiplies) can be appended directly.
          * We precompute a table of odd powers of n, up to 2^k, and can then
-         * times k bits of exponent at a time.  Actually, assuming random
+         * timesLong k bits of exponent at a time.  Actually, assuming random
          * exponents, there is on average one zero bit between needs to
-         * times (1/2 of the time there's none, 1/4 of the time there's 1,
+         * timesLong (1/2 of the time there's none, 1/4 of the time there's 1,
          * 1/8 of the time, there's 2, 1/32 of the time, there's 3, etc.), so
-         * you have to do one times per k+1 bits of exponent.
+         * you have to do one timesLong per k+1 bits of exponent.
          *
          * The loop walks down the exponent, squaring the result buffer as
          * it goes.  There is a wbits+1 bit lookahead buffer, buf, that is
          * filled with the upcoming exponent bits.  (What is read after the
          * end of the exponent is unimportant, but it is filled with zero here.)
          * When the most-significant bit of this buffer becomes set, i.e.
-         * (buf & tblmask) != 0, we have to decide what pattern to times
+         * (buf & tblmask) != 0, we have to decide what pattern to timesLong
          * by, and when to do it.  We decide, remember to do it in future
          * after a suitable number of squarings have passed (e.g. a pattern
-         * of "100" in the buffer requires that we times by n^1 immediately;
+         * of "100" in the buffer requires that we timesLong by n^1 immediately;
          * a pattern of "110" calls for multiplying by n^3 after one more
          * squaring), clear the buffer, and continue.
          *
@@ -1757,12 +1759,12 @@ class BigInteger : Comparable<BigInteger> {
             return this
 
         // Special case for base of zero
-        if (signum == 0)
+        if (_signum == 0)
             return ZERO
 
-        val base = mag.clone()
-        val exp = y.mag
-        var mod = z.mag
+        val base = _mag.clone()
+        val exp = y._mag
+        var mod = z._mag
         var modLen = mod.size
 
         // Make modLen even. It is conventional to use a cryptographic
@@ -1889,7 +1891,7 @@ class BigInteger : Comparable<BigInteger> {
                 buf = 0
             }
 
-            // Perform times
+            // Perform timesLong
             if (ebits == multpos) {
                 if (isone) {
                     b = mult.clone()
@@ -1940,7 +1942,7 @@ class BigInteger : Comparable<BigInteger> {
         var baseToPow2 = this.mod2(p)
         var expOffset = 0
 
-        var limit = exponent.bitLength()
+        var limit = exponent.bitLength
 
         if (this.testBit(0))
             limit = if (p - 1 < limit) p - 1 else limit
@@ -1961,13 +1963,13 @@ class BigInteger : Comparable<BigInteger> {
      * Assumes that this `BigInteger >= 0` and `p > 0`.
      */
     private fun mod2(p: Int): BigInteger {
-        if (bitLength() <= p)
+        if (bitLength <= p)
             return this
 
-        // Copy remaining ints of mag
+        // Copy remaining ints of _mag
         val numInts = (p + 31).ushr(5)
         val mag = IntArray(numInts)
-        arrayCopy(this.mag, this.mag.size - numInts, mag, 0, numInts)
+        arrayCopy(this._mag, this._mag.size - numInts, mag, 0, numInts)
 
         // Mask out any excess bits
         val excessBits = (numInts shl 5) - p
@@ -1986,7 +1988,7 @@ class BigInteger : Comparable<BigInteger> {
      * is not *relatively prime* to m).
      */
     fun modInverse(m: BigInteger): BigInteger {
-        if (m.signum != 1)
+        if (m._signum != 1)
             throw ArithmeticException("BigInteger: modulus not positive")
 
         if (m == ONE)
@@ -1994,7 +1996,7 @@ class BigInteger : Comparable<BigInteger> {
 
         // Calculate (this rem m)
         var modVal = this
-        if (signum < 0 || this.compareMagnitude(m) >= 0)
+        if (_signum < 0 || this.compareMagnitude(m) >= 0)
             modVal = this.rem(m)
 
         if (modVal == ONE)
@@ -2020,10 +2022,10 @@ class BigInteger : Comparable<BigInteger> {
      * @see .shr
      */
     fun shl(n: Int): BigInteger {
-        if (signum == 0)
+        if (_signum == 0)
             return ZERO
         return if (n > 0) {
-            BigInteger(shl(mag, n), signum)
+            BigInteger(shl(_mag, n), _signum)
         } else if (n == 0) {
             this
         } else {
@@ -2044,7 +2046,7 @@ class BigInteger : Comparable<BigInteger> {
      * @see .shl
      */
     fun shr(n: Int): BigInteger {
-        if (signum == 0)
+        if (_signum == 0)
             return ZERO
         return if (n > 0) {
             shiftRightImpl(n)
@@ -2053,7 +2055,7 @@ class BigInteger : Comparable<BigInteger> {
         } else {
             // Possible int overflow in {@code -n} is not a trouble,
             // because shl considers its argument unsigned
-            BigInteger(shl(mag, -n), signum)
+            BigInteger(shl(_mag, -n), _signum)
         }
     }
 
@@ -2068,19 +2070,19 @@ class BigInteger : Comparable<BigInteger> {
     private fun shiftRightImpl(n: Int): BigInteger {
         val nInts = n.ushr(5)
         val nBits = n and 0x1f
-        val magLen = mag.size
+        val magLen = _mag.size
         var newMag: IntArray? = null
 
         // Special case: entire contents shifted off the end
         if (nInts >= magLen)
-            return if (signum >= 0) ZERO else (negConst[1] ?: throw IllegalStateException())
+            return if (_signum >= 0) ZERO else (negConst[1] ?: throw IllegalStateException())
 
         if (nBits == 0) {
             val newMagLen = magLen - nInts
-            newMag = mag.copyOf(newMagLen)
+            newMag = _mag.copyOf(newMagLen)
         } else {
             var i = 0
-            val highBits = mag[0].ushr(nBits)
+            val highBits = _mag[0].ushr(nBits)
             if (highBits != 0) {
                 newMag = IntArray(magLen - nInts)
                 newMag[i++] = highBits
@@ -2091,29 +2093,29 @@ class BigInteger : Comparable<BigInteger> {
             val nBits2 = 32 - nBits
             var j = 0
             while (j < magLen - nInts - 1)
-                newMag[i++] = mag[j++] shl nBits2 or mag[j].ushr(nBits)
+                newMag[i++] = _mag[j++] shl nBits2 or _mag[j].ushr(nBits)
         }
 
-        if (signum < 0) {
+        if (_signum < 0) {
             // Find out whether any one-bits were shifted off the end.
             var onesLost = false
             var i = magLen - 1
             val j = magLen - nInts
             while (i >= j && !onesLost) {
-                onesLost = mag[i] != 0
+                onesLost = _mag[i] != 0
                 i--
             }
             if (!onesLost && nBits != 0)
-                onesLost = mag[magLen - nInts - 1] shl 32 - nBits != 0
+                onesLost = _mag[magLen - nInts - 1] shl 32 - nBits != 0
 
             if (onesLost)
                 newMag = javaIncrement(newMag ?: throw IllegalStateException())
         }
 
-        return BigInteger(newMag, signum)
+        return BigInteger(newMag, _signum)
     }
 
-    internal fun javaIncrement(`val`: IntArray): IntArray {
+    private fun javaIncrement(`val`: IntArray): IntArray {
         var result = `val`
         var lastSum = 0
         var i = result.size - 1
@@ -2139,11 +2141,11 @@ class BigInteger : Comparable<BigInteger> {
      * @return `this & val`
      */
     fun and(`val`: BigInteger): BigInteger {
-        val result = IntArray(max(intLength(), `val`.intLength()))
+        val result = IntArray(max(intLength, `val`.intLength))
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) and `val`.getInt(result.size - i - 1)
 
-        return bigInteger(result)
+        return of(result)
     }
 
     /**
@@ -2155,11 +2157,11 @@ class BigInteger : Comparable<BigInteger> {
      * @return `this | val`
      */
     fun or(`val`: BigInteger): BigInteger {
-        val result = IntArray(max(intLength(), `val`.intLength()))
+        val result = IntArray(max(intLength, `val`.intLength))
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) or `val`.getInt(result.size - i - 1)
 
-        return bigInteger(result)
+        return of(result)
     }
 
     /**
@@ -2171,11 +2173,11 @@ class BigInteger : Comparable<BigInteger> {
      * @return `this ^ val`
      */
     fun xor(`val`: BigInteger): BigInteger {
-        val result = IntArray(max(intLength(), `val`.intLength()))
+        val result = IntArray(max(intLength, `val`.intLength))
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) xor `val`.getInt(result.size - i - 1)
 
-        return bigInteger(result)
+        return of(result)
     }
 
     /**
@@ -2186,11 +2188,11 @@ class BigInteger : Comparable<BigInteger> {
      * @return `~this`
      */
     operator fun not(): BigInteger {
-        val result = IntArray(intLength())
+        val result = IntArray(intLength)
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1).inv()
 
-        return bigInteger(result)
+        return of(result)
     }
 
     /**
@@ -2204,11 +2206,11 @@ class BigInteger : Comparable<BigInteger> {
      * @return `this & ~val`
      */
     fun andNot(`val`: BigInteger): BigInteger {
-        val result = IntArray(max(intLength(), `val`.intLength()))
+        val result = IntArray(max(intLength, `val`.intLength))
         for (i in result.indices)
             result[i] = getInt(result.size - i - 1) and `val`.getInt(result.size - i - 1).inv()
 
-        return bigInteger(result)
+        return of(result)
     }
 
 
@@ -2229,6 +2231,14 @@ class BigInteger : Comparable<BigInteger> {
         return getInt(n.ushr(5)) and (1 shl (n and 31)) != 0
     }
 
+    operator fun get(n: Int): Boolean {
+        return testBit(n)
+    }
+
+    operator fun set(n: Int, b: Boolean) {
+        if (b) setBit(n) else clearBit(n)
+    }
+
     /**
      * Returns a BigInteger whose value is equivalent to this BigInteger
      * with the designated bit set.  (Computes `(this | (1<<n))`.)
@@ -2242,14 +2252,14 @@ class BigInteger : Comparable<BigInteger> {
             throw ArithmeticException("Negative bit address")
 
         val intNum = n.ushr(5)
-        val result = IntArray(max(intLength(), intNum + 2))
+        val result = IntArray(max(intLength, intNum + 2))
 
         for (i in result.indices)
             result[result.size - i - 1] = getInt(i)
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] or (1 shl (n and 31))
 
-        return bigInteger(result)
+        return of(result)
     }
 
     /**
@@ -2266,14 +2276,14 @@ class BigInteger : Comparable<BigInteger> {
             throw ArithmeticException("Negative bit address")
 
         val intNum = n.ushr(5)
-        val result = IntArray(max(intLength(), (n + 1).ushr(5) + 1))
+        val result = IntArray(max(intLength, (n + 1).ushr(5) + 1))
 
         for (i in result.indices)
             result[result.size - i - 1] = getInt(i)
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] and (1 shl (n and 31)).inv()
 
-        return bigInteger(result)
+        return of(result)
     }
 
     /**
@@ -2290,14 +2300,14 @@ class BigInteger : Comparable<BigInteger> {
             throw ArithmeticException("Negative bit address")
 
         val intNum = n.ushr(5)
-        val result = IntArray(max(intLength(), intNum + 2))
+        val result = IntArray(max(intLength, intNum + 2))
 
         for (i in result.indices)
             result[result.size - i - 1] = getInt(i)
 
         result[result.size - intNum - 1] = result[result.size - intNum - 1] xor (1 shl (n and 31))
 
-        return bigInteger(result)
+        return of(result)
     }
 
 
@@ -2313,34 +2323,35 @@ class BigInteger : Comparable<BigInteger> {
      * @return number of bits in the minimal two's-complement
      * representation of this BigInteger, *excluding* a sign bit.
      */
-    fun bitLength(): Int {
-        var n = bitLengthPlusOne - 1
-        if (n == -1) { // bitLength not initialized yet
-            val m = mag
-            val len = m.size
-            if (len == 0) {
-                n = 0 // offset by one to initialize
-            } else {
-                // Calculate the bit length of the magnitude
-                val magBitLength = (len - 1 shl 5) + bitLengthForInt(mag[0])
-                if (signum < 0) {
-                    // Check if magnitude is a power of two
-                    var pow2 = mag[0].bitCount() == 1
-                    var i = 1
-                    while (i < len && pow2) {
-                        pow2 = mag[i] == 0
-                        i++
-                    }
-
-                    n = if (pow2) magBitLength - 1 else magBitLength
+    val bitLength: Int
+        get() {
+            var n = _bitLengthPlusOne - 1
+            if (n == -1) { // bitLength not initialized yet
+                val m = _mag
+                val len = m.size
+                if (len == 0) {
+                    n = 0 // offset by one to initialize
                 } else {
-                    n = magBitLength
+                    // Calculate the bit length of the magnitude
+                    val magBitLength = (len - 1 shl 5) + bitLengthForInt(_mag[0])
+                    if (_signum < 0) {
+                        // Check if magnitude is a power of two
+                        var pow2 = _mag[0].bitCount() == 1
+                        var i = 1
+                        while (i < len && pow2) {
+                            pow2 = _mag[i] == 0
+                            i++
+                        }
+
+                        n = if (pow2) magBitLength - 1 else magBitLength
+                    } else {
+                        n = magBitLength
+                    }
                 }
+                _bitLengthPlusOne = n + 1
             }
-            bitLengthPlusOne = n + 1
+            return n
         }
-        return n
-    }
 
     /**
      * Returns the number of bits in the two's complement representation
@@ -2350,29 +2361,30 @@ class BigInteger : Comparable<BigInteger> {
      * @return number of bits in the two's complement representation
      * of this BigInteger that differ from its sign bit.
      */
-    fun bitCount(): Int {
-        var bc = bitCountPlusOne - 1
-        if (bc == -1) {  // bitCount not initialized yet
-            bc = 0      // offset by one to initialize
-            // Count the bits in the magnitude
-            for (i in mag.indices)
-                bc += mag[i].bitCount()
-            if (signum < 0) {
-                // Count the trailing zeros in the magnitude
-                var magTrailingZeroCount = 0
-                var j: Int
-                j = mag.size - 1
-                while (mag[j] == 0) {
-                    magTrailingZeroCount += 32
-                    j--
+    val bitCount: Int
+        get() {
+            var bc = _bitCountPlusOne - 1
+            if (bc == -1) {  // bitCount not initialized yet
+                bc = 0      // offset by one to initialize
+                // Count the bits in the magnitude
+                for (i in _mag.indices)
+                    bc += _mag[i].bitCount()
+                if (_signum < 0) {
+                    // Count the trailing zeros in the magnitude
+                    var magTrailingZeroCount = 0
+                    var j: Int
+                    j = _mag.size - 1
+                    while (_mag[j] == 0) {
+                        magTrailingZeroCount += 32
+                        j--
+                    }
+                    magTrailingZeroCount += _mag[j].numberOfTrailingZeros()
+                    bc += magTrailingZeroCount - 1
                 }
-                magTrailingZeroCount += mag[j].numberOfTrailingZeros()
-                bc += magTrailingZeroCount - 1
+                _bitCountPlusOne = bc + 1
             }
-            bitCountPlusOne = bc + 1
+            return bc
         }
-        return bc
-    }
 
     // Primality Testing
 
@@ -2393,7 +2405,7 @@ class BigInteger : Comparable<BigInteger> {
     fun isProbablePrime(certainty: Int): Boolean {
         if (certainty <= 0)
             return true
-        val w = this.abs()
+        val w = this.absoluteValue
         if (w == TWO)
             return true
         return if (!w.testBit(0) || w == ONE) false else w.primeToCertainty(certainty, null)
@@ -2415,14 +2427,14 @@ class BigInteger : Comparable<BigInteger> {
      * to, or greater than `val`.
      */
     override fun compareTo(`val`: BigInteger): Int {
-        if (signum == `val`.signum) {
-            when (signum) {
+        if (_signum == `val`._signum) {
+            when (_signum) {
                 1 -> return compareMagnitude(`val`)
                 -1 -> return `val`.compareMagnitude(this)
                 else -> return 0
             }
         }
-        return if (signum > `val`.signum) 1 else -1
+        return if (_signum > `val`._signum) 1 else -1
     }
 
     /**
@@ -2434,9 +2446,9 @@ class BigInteger : Comparable<BigInteger> {
      * greater than the magnitude aray for the specified BigInteger's.
      */
     internal fun compareMagnitude(`val`: BigInteger): Int {
-        val m1 = mag
+        val m1 = _mag
         val len1 = m1.size
-        val m2 = `val`.mag
+        val m2 = `val`._mag
         val len2 = m2.size
         if (len1 < len2)
             return -1
@@ -2458,7 +2470,7 @@ class BigInteger : Comparable<BigInteger> {
     internal fun compareMagnitude(`val`: Long): Int {
         var `val` = `val`
         require(`val` != Long.MIN_VALUE)
-        val m1 = mag
+        val m1 = _mag
         val len = m1.size
         if (len > 2) {
             return 1
@@ -2496,25 +2508,25 @@ class BigInteger : Comparable<BigInteger> {
     /**
      * Compares this BigInteger with the specified Object for equality.
      *
-     * @param  x Object to which this BigInteger is to be compared.
+     * @param  other Object to which this BigInteger is to be compared.
      * @return `true` if and only if the specified Object is a
      * BigInteger whose value is numerically equal to this BigInteger.
      */
-    override fun equals(x: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
         // This test is just an optimization, which may or may not help
-        if (x === this)
+        if (other === this)
             return true
 
-        if (x !is BigInteger)
+        if (other !is BigInteger)
             return false
 
-        val xInt = x as BigInteger?
-        if (xInt!!.signum != signum)
+        val xInt = other as BigInteger?
+        if (xInt!!._signum != _signum)
             return false
 
-        val m = mag
+        val m = _mag
         val len = m.size
-        val xm = xInt.mag
+        val xm = xInt._mag
         if (len != xm.size)
             return false
 
@@ -2558,10 +2570,10 @@ class BigInteger : Comparable<BigInteger> {
     override fun hashCode(): Int {
         var hashCode = 0
 
-        for (i in mag.indices)
-            hashCode = 31 * hashCode + (mag[i].toLong()and LONG_MASK).toInt()
+        for (i in _mag.indices)
+            hashCode = 31 * hashCode + (_mag[i].toLong()and LONG_MASK).toInt()
 
-        return hashCode * signum
+        return hashCode * _signum
     }
 
     /**
@@ -2569,7 +2581,7 @@ class BigInteger : Comparable<BigInteger> {
      * given radix.  If the radix is outside the range from [ ][CHAR_MIN_RADIX] to [CHAR_MAX_RADIX] inclusive,
      * it will default to 10 (as is the case for
      * `Int.toString`).  The digit-to-character mapping
-     * provided by `Character.forDigit` is used, and a minus
+     * provided by `Character.forDigit` is used, and a subtract
      * sign is prepended if appropriate.  (This representation is
      * compatible with the [(String,][.BigInteger] constructor.)
      *
@@ -2583,19 +2595,19 @@ class BigInteger : Comparable<BigInteger> {
      */
     fun toString(radix: Int): String {
         var radix = radix
-        if (signum == 0)
+        if (_signum == 0)
             return "0"
         if (radix < CHAR_MIN_RADIX || radix > CHAR_MAX_RADIX)
             radix = 10
 
         // If it's small enough, use smallToString.
-        if (mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD)
+        if (_mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD)
             return smallToString(radix)
 
         // Otherwise use recursive toString, which requires positive arguments.
         // The results will be concatenated into this StringBuilder
         var sb = StringBuilder()
-        if (signum < 0) {
+        if (_signum < 0) {
             toString(this.unaryMinus(), sb, radix, 0)
             sb = sb.insert(0, '-')
         } else
@@ -2606,26 +2618,26 @@ class BigInteger : Comparable<BigInteger> {
 
     /** This method is used to perform toString when arguments are small.  */
     private fun smallToString(radix: Int): String {
-        if (signum == 0) {
+        if (_signum == 0) {
             return "0"
         }
 
         // Compute upper bound on number of digit groups and allocate space
-        val maxNumDigitGroups = (4 * mag.size + 6) / 7
+        val maxNumDigitGroups = (4 * _mag.size + 6) / 7
         val digitGroup = arrayOfNulls<String>(maxNumDigitGroups)
 
         // Translate number to string, a digit group at a time
-        var tmp = this.abs()
+        var tmp = this.absoluteValue
         var numGroups = 0
-        while (tmp.signum != 0) {
+        while (tmp._signum != 0) {
             val d = longRadix[radix]
 
             val q = MutableBigInteger()
-            val a = MutableBigInteger(tmp.mag)
-            val b = MutableBigInteger(d!!.mag)
+            val a = MutableBigInteger(tmp._mag)
+            val b = MutableBigInteger(d!!._mag)
             val r = a.divide(b, q)
-            val q2 = q.toBigInteger(tmp.signum * d.signum)
-            val r2 = r!!.toBigInteger(tmp.signum * d.signum)
+            val q2 = q.toBigInteger(tmp._signum * d._signum)
+            val r2 = r!!.toBigInteger(tmp._signum * d._signum)
 
             digitGroup[numGroups++] = r2.toLong().toString(radix)
                     // Long.toString(r2.toLong(), radix)
@@ -2634,7 +2646,7 @@ class BigInteger : Comparable<BigInteger> {
 
         // Put sign (if any) and first digit group into result buffer
         val buf = StringBuilder(numGroups * digitsPerLong[radix] + 1)
-        if (signum < 0) {
+        if (_signum < 0) {
             buf.append('-')
         }
         buf.append(digitGroup[numGroups - 1])
@@ -2654,7 +2666,7 @@ class BigInteger : Comparable<BigInteger> {
     /**
      * Returns the decimal String representation of this BigInteger.
      * The digit-to-character mapping provided by
-     * `Character.forDigit` is used, and a minus sign is
+     * `Character.forDigit` is used, and a subtract sign is
      * prepended if appropriate.  (This representation is compatible
      * with the [(String)][.BigInteger] constructor, and
      * allows for String concatenation with Java's + operator.)
@@ -2683,7 +2695,7 @@ class BigInteger : Comparable<BigInteger> {
      * @see .BigInteger
      */
     fun toByteArray(): ByteArray {
-        val byteLen = bitLength() / 8 + 1
+        val byteLen = bitLength / 8 + 1
         val byteArray = ByteArray(byteLen)
 
         var i = byteLen - 1
@@ -2779,19 +2791,22 @@ class BigInteger : Comparable<BigInteger> {
      * Returns the length of the two's complement representation in ints,
      * including space for at least one sign bit.
      */
-    private fun intLength(): Int {
-        return bitLength().ushr(5) + 1
-    }
+    private val intLength: Int
+        get() {
+            return bitLength.ushr(5) + 1
+        }
 
     /* Returns sign bit */
-    private fun signBit(): Int {
-        return if (signum < 0) 1 else 0
-    }
+    private val signBit: Int
+        get() {
+            return if (_signum < 0) 1 else 0
+        }
 
     /* Returns an int of sign bits */
-    private fun signInt(): Int {
-        return if (signum < 0) -1 else 0
-    }
+    private val signInt: Int
+        get() {
+            return if (_signum < 0) -1 else 0
+        }
 
     /**
      * Returns the specified int of the little-endian two's complement
@@ -2802,12 +2817,12 @@ class BigInteger : Comparable<BigInteger> {
     private fun getInt(n: Int): Int {
         if (n < 0)
             return 0
-        if (n >= mag.size)
-            return signInt()
+        if (n >= _mag.size)
+            return signInt
 
-        val magInt = mag[mag.size - n - 1]
+        val magInt = _mag[_mag.size - n - 1]
 
-        return if (signum >= 0)
+        return if (_signum >= 0)
             magInt
         else
             if (n <= firstNonzeroIntNum()) -magInt else magInt.inv()
@@ -2823,29 +2838,29 @@ class BigInteger : Comparable<BigInteger> {
      * @see .getInt
      */
     private fun firstNonzeroIntNum(): Int {
-        var fn = firstNonzeroIntNumPlusTwo - 2
+        var fn = _firstNonzeroIntNumPlusTwo - 2
         if (fn == -2) { // firstNonzeroIntNum not initialized yet
             // Search for the first nonzero int
             var i: Int
-            val mlen = mag.size
+            val mlen = _mag.size
             i = mlen - 1
-            while (i >= 0 && mag[i] == 0) {
+            while (i >= 0 && _mag[i] == 0) {
                 i--
             }
             fn = mlen - i - 1
-            firstNonzeroIntNumPlusTwo = fn + 2 // offset by two to initialize
+            _firstNonzeroIntNumPlusTwo = fn + 2 // offset by two to initialize
         }
         return fn
     }
 
 
     /**
-     * Returns the mag array as an array of bytes.
+     * Returns the _mag array as an array of bytes.
      */
     private fun magSerializedForm(): ByteArray {
-        val len = mag.size
+        val len = _mag.size
 
-        val bitLen = if (len == 0) 0 else (len - 1 shl 5) + bitLengthForInt(mag[0])
+        val bitLen = if (len == 0) 0 else (len - 1 shl 5) + bitLengthForInt(_mag[0])
         val byteLen = (bitLen + 7).ushr(3)
         val result = ByteArray(byteLen)
 
@@ -2855,7 +2870,7 @@ class BigInteger : Comparable<BigInteger> {
         var nextInt = 0
         while (i >= 0) {
             if (bytesCopied == 4) {
-                nextInt = mag[intIndex--]
+                nextInt = _mag[intIndex--]
                 bytesCopied = 1
             } else {
                 nextInt = nextInt ushr 8
@@ -2881,7 +2896,7 @@ class BigInteger : Comparable<BigInteger> {
      * @since  1.8
      */
     fun toLongExact(): Long {
-        return if (mag.size <= 2 && bitLength() <= 63)
+        return if (_mag.size <= 2 && bitLength <= 63)
             toLong()
         else
             throw ArithmeticException("BigInteger out of long range")
@@ -2901,7 +2916,7 @@ class BigInteger : Comparable<BigInteger> {
      * @since  1.8
      */
     fun toIntExact(): Int {
-        return if (mag.size <= 1 && bitLength() <= 31)
+        return if (_mag.size <= 1 && bitLength <= 31)
             toInt()
         else
             throw ArithmeticException("BigInteger out of int range")
@@ -2921,7 +2936,7 @@ class BigInteger : Comparable<BigInteger> {
      * @since  1.8
      */
     fun toShortExact(): Short {
-        if (mag.size <= 1 && bitLength() <= 31) {
+        if (_mag.size <= 1 && bitLength <= 31) {
             val value = toInt()
             if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE)
                 return toShort()
@@ -2943,7 +2958,7 @@ class BigInteger : Comparable<BigInteger> {
      * @since  1.8
      */
     fun toBiteExact(): Byte {
-        if (mag.size <= 1 && bitLength() <= 31) {
+        if (_mag.size <= 1 && bitLength <= 31) {
             val value = toInt()
             if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE)
                 return toByte()
@@ -2956,10 +2971,10 @@ class BigInteger : Comparable<BigInteger> {
         /**
          * This mask is used to obtain the value of an int as if it were unsigned.
          */
-        public const val LONG_MASK = 0xffffffffL
+        const val LONG_MASK = 0xffffffffL
 
         /**
-         * This constant limits `mag.length` of BigIntegers to the supported
+         * This constant limits `_mag.length` of BigIntegers to the supported
          * range.
          */
         private const val MAX_MAG_LENGTH = Int.MAX_VALUE / Int.SIZE_BITS + 1 // (1 << 26)
@@ -2972,7 +2987,7 @@ class BigInteger : Comparable<BigInteger> {
 
         /**
          * The threshold value for using Karatsuba multiplication.  If the number
-         * of ints in both mag arrays are greater than this number, then
+         * of ints in both _mag arrays are greater than this number, then
          * Karatsuba multiplication will be used.   This value is found
          * experimentally to work well.
          */
@@ -2980,9 +2995,9 @@ class BigInteger : Comparable<BigInteger> {
 
         /**
          * The threshold value for using 3-way Toom-Cook multiplication.
-         * If the number of ints in each mag array is greater than the
+         * If the number of ints in each _mag array is greater than the
          * Karatsuba threshold, and the number of ints in at least one of
-         * the mag arrays is greater than this threshold, then Toom-Cook
+         * the _mag arrays is greater than this threshold, then Toom-Cook
          * multiplication will be used.
          */
         private const val TOOM_COOK_THRESHOLD = 240
@@ -3032,7 +3047,7 @@ class BigInteger : Comparable<BigInteger> {
         /**
          * The threshold value for using squaring code to perform multiplication
          * of a `BigInteger` instance by itself.  If the number of ints in
-         * the number are larger than this value, `times(this)` will
+         * the number are larger than this value, `timesLong(this)` will
          * return `square()`.
          */
         private const val MULTIPLY_SQUARE_THRESHOLD = 20
@@ -3045,7 +3060,7 @@ class BigInteger : Comparable<BigInteger> {
          */
         private const val MONTGOMERY_INTRINSIC_THRESHOLD = 512
 
-        // bitsPerDigit in the given radix times 1024
+        // bitsPerDigit in the given radix timesLong 1024
         // Rounded up to avoid underallocation.
         private val bitsPerDigit = longArrayOf(
             0,
@@ -3087,7 +3102,7 @@ class BigInteger : Comparable<BigInteger> {
             5295
         )
 
-        // Multiply x array times word y in place, and plus word z
+        // Multiply x array timesLong word y in place, and plus word z
         private fun destructiveMulAdd(x: IntArray, y: Int, z: Int) {
             // Perform the multiplication word by word
             val ylong = y.toLong() and LONG_MASK
@@ -3131,7 +3146,7 @@ class BigInteger : Comparable<BigInteger> {
         // Minimum size in bits that the requested prime number has
         // before we use the large prime number generating algorithms.
         // The cutoff of 95 was chosen empirically for best performance.
-        private val SMALL_PRIME_THRESHOLD = 95
+        private const val SMALL_PRIME_THRESHOLD = 95
 
         // Certainty required to meet the spec of probablePrime
         private val DEFAULT_PRIME_CERTAINTY = 100
@@ -3211,7 +3226,7 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         private val SMALL_PRIME_PRODUCT =
-            bigInteger(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
+            of(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41)
 
         /**
          * Find a random number of the specified bitLength that is probably prime.
@@ -3222,18 +3237,18 @@ class BigInteger : Comparable<BigInteger> {
         private fun largePrime(bitLength: Int, certainty: Int, rnd: Random): BigInteger {
             var p: BigInteger
             p = BigInteger(bitLength, rnd).setBit(bitLength - 1)
-            p.mag[p.mag.size - 1] = p.mag[p.mag.size - 1] and -0x2
+            p._mag[p._mag.size - 1] = p._mag[p._mag.size - 1] and -0x2
 
             // Use a sieve length likely to contain the next prime number
             val searchLen = getPrimeSearchLen(bitLength)
             var searchSieve = BitSieve(p, searchLen)
             var candidate = searchSieve.retrieve(p, certainty, rnd)
 
-            while (candidate == null || candidate.bitLength() != bitLength) {
-                p = p.plus(bigInteger((2 * searchLen).toLong()))
-                if (p.bitLength() != bitLength)
+            while (candidate == null || candidate.bitLength != bitLength) {
+                p = p.plus(of((2 * searchLen).toLong()))
+                if (p.bitLength != bitLength)
                     p = BigInteger(bitLength, rnd).setBit(bitLength - 1)
-                p.mag[p.mag.size - 1] = p.mag[p.mag.size - 1] and -0x2
+                p._mag[p._mag.size - 1] = p._mag[p._mag.size - 1] and -0x2
                 searchSieve = BitSieve(p, searchLen)
                 candidate = searchSieve.retrieve(p, certainty, rnd)
             }
@@ -3258,7 +3273,7 @@ class BigInteger : Comparable<BigInteger> {
 
             // Algorithm and comments adapted from Colin Plumb's C library.
             var j = 1
-            var u = n.mag[n.mag.size - 1]
+            var u = n._mag[n._mag.size - 1]
 
             // Make p positive
             if (p < 0) {
@@ -3283,7 +3298,7 @@ class BigInteger : Comparable<BigInteger> {
             // p = u = 3 (rem 4)?
                 j = -j
             // And reduce u rem p
-            u = n.rem(bigInteger(p.toLong())).toInt()
+            u = n.rem(of(p.toLong())).toInt()
 
             // Now compute Jacobi(u,p), u < p
             while (u != 0) {
@@ -3311,13 +3326,13 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         private fun lucasLehmerSequence(z: Int, k: BigInteger, n: BigInteger): BigInteger {
-            val d = bigInteger(z.toLong())
+            val d = of(z.toLong())
             var u = ONE
             var u2: BigInteger
             var v = ONE
             var v2: BigInteger
 
-            for (i in k.bitLength() - 2 downTo 0) {
+            for (i in k.bitLength - 2 downTo 0) {
                 u2 = u.times(v).rem(n)
 
                 v2 = v.square().plus(d.times(u.square())).rem(n)
@@ -3363,7 +3378,7 @@ class BigInteger : Comparable<BigInteger> {
          * @param  val value of the BigInteger to return.
          * @return a BigInteger with the specified value.
          */
-        fun bigInteger(`val`: Long): BigInteger {
+        fun of(`val`: Long): BigInteger {
             // If -MAX_CONSTANT < val < MAX_CONSTANT, return stashed constant
             if (`val` == 0L)
                 return ZERO
@@ -3375,11 +3390,11 @@ class BigInteger : Comparable<BigInteger> {
             return BigInteger(`val`)
         }
 
-        fun bigInteger(value: Int): BigInteger {
-            return bigInteger(value.toLong())
+        fun of(value: Int): BigInteger {
+            return of(value.toLong())
         }
 
-        fun bigInteger(value: String, radix: Int = 10): BigInteger {
+        fun of(value: String, radix: Int = 10): BigInteger {
             return BigInteger(value, radix)
         }
 
@@ -3388,7 +3403,7 @@ class BigInteger : Comparable<BigInteger> {
          * Assumes that the input array will not be modified (the returned
          * BigInteger will reference the input array if feasible).
          */
-        private fun bigInteger(`val`: IntArray): BigInteger {
+        private fun of(`val`: IntArray): BigInteger {
             return if (`val`[0] > 0) BigInteger(`val`, 1) else BigInteger(`val`)
         }
 
@@ -3431,7 +3446,7 @@ class BigInteger : Comparable<BigInteger> {
             logCache = DoubleArray(CHAR_MAX_RADIX + 1)
 
             for (i in CHAR_MIN_RADIX .. CHAR_MAX_RADIX) {
-                powerCache[i] = arrayOf(bigInteger(i.toLong()))
+                powerCache[i] = arrayOf(of(i.toLong()))
                 logCache[i] = ln(i.toDouble())
             }
         }
@@ -3448,26 +3463,26 @@ class BigInteger : Comparable<BigInteger> {
          *
          * @since   1.2
          */
-        val ONE = bigInteger(1)
+        val ONE = of(1)
 
         /**
          * The BigInteger constant two.
          *
          * @since   9
          */
-        val TWO = bigInteger(2)
+        val TWO = of(2)
 
         /**
          * The BigInteger constant -1.  (Not exported.)
          */
-        private val NEGATIVE_ONE = bigInteger(-1)
+        private val NEGATIVE_ONE = of(-1)
 
         /**
          * The BigInteger constant ten.
          *
          * @since   1.5
          */
-        val TEN = bigInteger(10)
+        val TEN = of(10)
 
         /**
          * Adds the contents of the int array x and long value val. This
@@ -3475,7 +3490,7 @@ class BigInteger : Comparable<BigInteger> {
          * a reference to that array.  Assumes x.length &gt; 0 and val is
          * non-negative
          */
-        private fun plus(x: IntArray, `val`: Long): IntArray {
+        private fun sum(x: IntArray, `val`: Long): IntArray {
             val y: IntArray
             var sum: Long = 0
             var xIndex = x.size
@@ -3524,7 +3539,7 @@ class BigInteger : Comparable<BigInteger> {
          * a new int array to hold the answer and returns a reference to that
          * array.
          */
-        private fun plus(x: IntArray, y: IntArray): IntArray {
+        private fun sum(x: IntArray, y: IntArray): IntArray {
             var x = x
             var y = y
             // If x is shorter, swap the two arrays
@@ -3572,7 +3587,7 @@ class BigInteger : Comparable<BigInteger> {
             return result
         }
 
-        private fun minus(`val`: Long, little: IntArray): IntArray {
+        private fun subtract(`val`: Long, little: IntArray): IntArray {
             val highWord = `val`.ushr(32).toInt()
             if (highWord == 0) {
                 val result = IntArray(1)
@@ -3608,7 +3623,7 @@ class BigInteger : Comparable<BigInteger> {
          * answer.
          * assumes val &gt;= 0
          */
-        private fun minus(big: IntArray, `val`: Long): IntArray {
+        private fun subtract(big: IntArray, `val`: Long): IntArray {
             val highWord = `val`.ushr(32).toInt()
             var bigIndex = big.size
             val result = IntArray(bigIndex)
@@ -3644,7 +3659,7 @@ class BigInteger : Comparable<BigInteger> {
          * than the second.  This method allocates the space necessary to hold the
          * answer.
          */
-        private fun minus(big: IntArray, little: IntArray): IntArray {
+        private fun subtract(big: IntArray, little: IntArray): IntArray {
             var bigIndex = big.size
             val result = IntArray(bigIndex)
             var littleIndex = little.size
@@ -3773,8 +3788,8 @@ class BigInteger : Comparable<BigInteger> {
          * See:  http://en.wikipedia.org/wiki/Karatsuba_algorithm
          */
         private fun multiplyKaratsuba(x: BigInteger, y: BigInteger): BigInteger {
-            val xlen = x.mag.size
-            val ylen = y.mag.size
+            val xlen = x._mag.size
+            val ylen = y._mag.size
 
             // The number of ints in each half of the number.
             val half = (max(xlen, ylen) + 1) / 2
@@ -3795,7 +3810,7 @@ class BigInteger : Comparable<BigInteger> {
             // result = p1 * 2^(32*2*half) + (p3 - p1 - p2) * 2^(32*half) + p2
             val result = p1.shl(32 * half).plus(p3.minus(p1).minus(p2)).shl(32 * half).plus(p2)
 
-            return if (x.signum != y.signum) {
+            return if (x._signum != y._signum) {
                 result.unaryMinus()
             } else {
                 result
@@ -3831,8 +3846,8 @@ class BigInteger : Comparable<BigInteger> {
          *
          */
         private fun multiplyToomCook3(a: BigInteger, b: BigInteger): BigInteger {
-            val alen = a.mag.size
-            val blen = b.mag.size
+            val alen = a._mag.size
+            val blen = b._mag.size
 
             val largest = max(alen, blen)
 
@@ -3899,7 +3914,7 @@ class BigInteger : Comparable<BigInteger> {
 
             val result = vinf.shl(ss).plus(t2).shl(ss).plus(t1).shl(ss).plus(tm1).shl(ss).plus(v0)
 
-            return if (a.signum != b.signum) {
+            return if (a._signum != b._signum) {
                 result.unaryMinus()
             } else {
                 result
@@ -4323,13 +4338,13 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         /**
-         * Returns a magnitude array whose value is `(mag << n)`.
+         * Returns a magnitude array whose value is `(_mag << n)`.
          * The shift distance, `n`, is considered unnsigned.
          * (Computes `this * 2<sup>n</sup>`.)
          *
-         * @param mag magnitude, the most-significant int (`mag[0]`) must be non-zero.
+         * @param mag magnitude, the most-significant int (`_mag[0]`) must be non-zero.
          * @param  n unsigned shift distance, in bits.
-         * @return `mag << n`
+         * @return `_mag << n`
          */
         private fun shl(mag: IntArray, n: Int): IntArray {
             val nInts = n.ushr(5)
@@ -4378,7 +4393,7 @@ class BigInteger : Comparable<BigInteger> {
         ) {
             // If we're smaller than a certain threshold, use the smallToString
             // method, padding with leading zeroes when necessary.
-            if (u.mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD) {
+            if (u._mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD) {
                 val s = u.smallToString(radix)
 
                 // Pad with internal zeros if necessary.
@@ -4395,10 +4410,10 @@ class BigInteger : Comparable<BigInteger> {
 
             val b: Int
             val n: Int
-            b = u.bitLength()
+            b = u.bitLength
 
             // Calculate a value for n in the equation radix^(2^n) = u
-            // and minus 1 from that value.  This is used to find the
+            // and subtract 1 from that value.  This is used to find the
             // cache index that contains the best value to div u.
             n = round(ln(b * LOG_TWO / logCache[radix]) / LOG_TWO - 1.0).toInt()
             val v = getRadixConversionCache(radix, n)
@@ -4662,41 +4677,41 @@ class BigInteger : Comparable<BigInteger> {
         private val longRadix = arrayOf(
             null,
             null,
-            bigInteger(0x4000000000000000L),
-            bigInteger(0x383d9170b85ff80bL),
-            bigInteger(0x4000000000000000L),
-            bigInteger(0x6765c793fa10079dL),
-            bigInteger(0x41c21cb8e1000000L),
-            bigInteger(0x3642798750226111L),
-            bigInteger(0x1000000000000000L),
-            bigInteger(0x12bf307ae81ffd59L),
-            bigInteger(0xde0b6b3a7640000L),
-            bigInteger(0x4d28cb56c33fa539L),
-            bigInteger(0x1eca170c00000000L),
-            bigInteger(0x780c7372621bd74dL),
-            bigInteger(0x1e39a5057d810000L),
-            bigInteger(0x5b27ac993df97701L),
-            bigInteger(0x1000000000000000L),
-            bigInteger(0x27b95e997e21d9f1L),
-            bigInteger(0x5da0e1e53c5c8000L),
-            bigInteger(0xb16a458ef403f19L),
-            bigInteger(0x16bcc41e90000000L),
-            bigInteger(0x2d04b7fdd9c0ef49L),
-            bigInteger(0x5658597bcaa24000L),
-            bigInteger(0x6feb266931a75b7L),
-            bigInteger(0xc29e98000000000L),
-            bigInteger(0x14adf4b7320334b9L),
-            bigInteger(0x226ed36478bfa000L),
-            bigInteger(0x383d9170b85ff80bL),
-            bigInteger(0x5a3c23e39c000000L),
-            bigInteger(0x4e900abb53e6b71L),
-            bigInteger(0x7600ec618141000L),
-            bigInteger(0xaee5720ee830681L),
-            bigInteger(0x1000000000000000L),
-            bigInteger(0x172588ad4f5f0981L),
-            bigInteger(0x211e44f7d02c1000L),
-            bigInteger(0x2ee56725f06e5c71L),
-            bigInteger(0x41c21cb8e1000000L)
+            of(0x4000000000000000L),
+            of(0x383d9170b85ff80bL),
+            of(0x4000000000000000L),
+            of(0x6765c793fa10079dL),
+            of(0x41c21cb8e1000000L),
+            of(0x3642798750226111L),
+            of(0x1000000000000000L),
+            of(0x12bf307ae81ffd59L),
+            of(0xde0b6b3a7640000L),
+            of(0x4d28cb56c33fa539L),
+            of(0x1eca170c00000000L),
+            of(0x780c7372621bd74dL),
+            of(0x1e39a5057d810000L),
+            of(0x5b27ac993df97701L),
+            of(0x1000000000000000L),
+            of(0x27b95e997e21d9f1L),
+            of(0x5da0e1e53c5c8000L),
+            of(0xb16a458ef403f19L),
+            of(0x16bcc41e90000000L),
+            of(0x2d04b7fdd9c0ef49L),
+            of(0x5658597bcaa24000L),
+            of(0x6feb266931a75b7L),
+            of(0xc29e98000000000L),
+            of(0x14adf4b7320334b9L),
+            of(0x226ed36478bfa000L),
+            of(0x383d9170b85ff80bL),
+            of(0x5a3c23e39c000000L),
+            of(0x4e900abb53e6b71L),
+            of(0x7600ec618141000L),
+            of(0xaee5720ee830681L),
+            of(0x1000000000000000L),
+            of(0x172588ad4f5f0981L),
+            of(0x211e44f7d02c1000L),
+            of(0x2ee56725f06e5c71L),
+            of(0x41c21cb8e1000000L)
         )
 
         /*
@@ -4796,20 +4811,20 @@ class BigInteger : Comparable<BigInteger> {
  */
 /**
  * Translates the sign-magnitude representation of a BigInteger into a
- * BigInteger.  The sign is represented as an integer signum value: -1 for
+ * BigInteger.  The sign is represented as an integer _signum value: -1 for
  * negative, 0 for zero, or 1 for positive.  The magnitude is a byte array
  * in *big-endian* byte-order: the most significant byte is the
  * zeroth element.  A zero-length magnitude array is permissible, and will
- * result in a BigInteger value of 0, whether signum is -1, 0 or 1.  The
+ * result in a BigInteger value of 0, whether _signum is -1, 0 or 1.  The
  * `magnitude` array is assumed to be unchanged for the duration of
  * the constructor call.
  *
- * @param  signum signum of the number (-1 for negative, 0 for zero, 1
+ * @param  _signum _signum of the number (-1 for negative, 0 for zero, 1
  * for positive).
  * @param  magnitude big-endian binary representation of the magnitude of
  * the number.
- * @throws NumberFormatException `signum` is not one of the three
- * legal values (-1, 0, and 1), or `signum` is 0 and
+ * @throws NumberFormatException `_signum` is not one of the three
+ * legal values (-1, 0, and 1), or `_signum` is 0 and
  * `magnitude` contains one or more non-zero bytes.
  */
 /**
