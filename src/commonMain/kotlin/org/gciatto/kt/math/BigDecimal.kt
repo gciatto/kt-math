@@ -248,7 +248,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @serial
      * @see .unscaledValue
      */
-    private val intVal: BigInteger?
+    private val _intVal: BigInteger?
 
     /**
      * The scale of this BigDecimal, as returned by [.scale].
@@ -289,14 +289,14 @@ class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * Trusted package private constructor.
-     * Trusted simply means if val is INFLATED, intVal could not be null and
-     * if intVal is null, val could not be INFLATED.
+     * Trusted simply means if val is INFLATED, _intVal could not be null and
+     * if _intVal is null, val could not be INFLATED.
      */
     internal constructor(intVal: BigInteger?, `val`: Long, scale: Int, prec: Int) {
         this.scale = scale
         this.precision = prec
         this.intCompact = `val`
-        this.intVal = intVal
+        this._intVal = intVal
     }
 
     /**
@@ -539,7 +539,7 @@ class BigDecimal : Comparable<BigDecimal> {
         this.scale = scl
         this.precision = prec
         this.intCompact = rs
-        this.intVal = rb
+        this._intVal = rb
     }
 
     private fun adjustScale(scl: Int, exp: Long): Int {
@@ -735,7 +735,7 @@ class BigDecimal : Comparable<BigDecimal> {
          * scale calculation.
          */
         if (significand == 0L) {
-            this.intVal = BigInteger.ZERO
+            this._intVal = BigInteger.ZERO
             this.scale = 0
             this.intCompact = 0
             this.precision = 1
@@ -747,7 +747,7 @@ class BigDecimal : Comparable<BigDecimal> {
             exponent++
         }
         var scl = 0
-        // Calculate intVal and scale
+        // Calculate _intVal and scale
         var rb: BigInteger?
         var compactVal = sign * significand
         if (exponent == 0) {
@@ -792,7 +792,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 rb = null
             }
         }
-        this.intVal = rb
+        this._intVal = rb
         this.intCompact = compactVal
         this.scale = scl
         this.precision = prec
@@ -807,7 +807,7 @@ class BigDecimal : Comparable<BigDecimal> {
      */
     constructor(`val`: BigInteger) {
         scale = 0
-        intVal = `val`
+        _intVal = `val`
         intCompact = compactValFor(`val`)
     }
 
@@ -836,7 +836,7 @@ class BigDecimal : Comparable<BigDecimal> {
      */
     constructor(unscaledVal: BigInteger, scale: Int) {
         // Negative scales are now allowed
-        this.intVal = unscaledVal
+        this._intVal = unscaledVal
         this.intCompact = compactValFor(unscaledVal)
         this.scale = scale
     }
@@ -890,7 +890,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 unscaledVal = null
             }
         }
-        this.intVal = unscaledVal
+        this._intVal = unscaledVal
         this.intCompact = compactVal
         this.scale = scale
         this.precision = prec
@@ -907,7 +907,7 @@ class BigDecimal : Comparable<BigDecimal> {
     constructor(`val`: Int) {
         this.intCompact = `val`.toLong()
         this.scale = 0
-        this.intVal = null
+        this._intVal = null
     }
 
     /**
@@ -936,7 +936,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 drop = prec - mcp
             }
         }
-        this.intVal = null
+        this._intVal = null
         this.intCompact = compactVal
         this.scale = scl
         this.precision = prec
@@ -951,7 +951,7 @@ class BigDecimal : Comparable<BigDecimal> {
      */
     constructor(`val`: Long) {
         this.intCompact = `val`
-        this.intVal = if (`val` == INFLATED) INFLATED_BIGINT else null
+        this._intVal = if (`val` == INFLATED) INFLATED_BIGINT else null
         this.scale = 0
     }
 
@@ -1000,7 +1000,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 rb = null
             }
         }
-        this.intVal = rb
+        this._intVal = rb
         this.intCompact = `val`
         this.scale = scl
         this.precision = prec
@@ -1020,13 +1020,13 @@ class BigDecimal : Comparable<BigDecimal> {
             if (augend!!.intCompact != INFLATED) {
                 add(this.intCompact, this.scale, augend.intCompact, augend.scale)
             } else {
-                add(this.intCompact, this.scale, augend.intVal!!, augend.scale)
+                add(this.intCompact, this.scale, augend._intVal!!, augend.scale)
             }
         } else {
             if (augend!!.intCompact != INFLATED) {
-                add(augend.intCompact, augend.scale, this.intVal!!, this.scale)
+                add(augend.intCompact, augend.scale, this._intVal!!, this.scale)
             } else {
-                add(this.intVal, this.scale, augend.intVal, augend.scale)
+                add(this._intVal, this.scale, augend._intVal, augend.scale)
             }
         }
     }
@@ -1067,7 +1067,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 if (result!!.scale() == preferredScale)
                     return result
                 else if (result.scale() > preferredScale) {
-                    return stripZerosToMatchScale(result.intVal, result.intCompact, result.scale, preferredScale)
+                    return stripZerosToMatchScale(result._intVal, result.intCompact, result.scale, preferredScale)
                 } else { // result.scale < preferredScale
                     val precisionDiff = mc.precision - result.precision()
                     val scaleDiff = preferredScale - result.scale()
@@ -1173,16 +1173,16 @@ class BigDecimal : Comparable<BigDecimal> {
             if (subtrahend.intCompact != INFLATED) {
                 add(this.intCompact, this.scale, -subtrahend.intCompact, subtrahend.scale)
             } else {
-                add(this.intCompact, this.scale, subtrahend.intVal!!.unaryMinus(), subtrahend.scale)
+                add(this.intCompact, this.scale, subtrahend._intVal!!.unaryMinus(), subtrahend.scale)
             }
         } else {
             if (subtrahend.intCompact != INFLATED) {
                 // Pair of subtrahend values given before pair of
                 // values from this BigDecimal to avoid need for
                 // method overloading on the specialized plus method
-                add(-subtrahend.intCompact, subtrahend.scale, this.intVal!!, this.scale)
+                add(-subtrahend.intCompact, subtrahend.scale, this._intVal!!, this.scale)
             } else {
-                add(this.intVal, this.scale, subtrahend.intVal!!.unaryMinus(), subtrahend.scale)
+                add(this._intVal, this.scale, subtrahend._intVal!!.unaryMinus(), subtrahend.scale)
             }
         }
     }
@@ -1220,13 +1220,13 @@ class BigDecimal : Comparable<BigDecimal> {
             if (multiplicand.intCompact != INFLATED) {
                 multiply(this.intCompact, multiplicand.intCompact, productScale)
             } else {
-                multiply(this.intCompact, multiplicand.intVal, productScale)
+                multiply(this.intCompact, multiplicand._intVal, productScale)
             }
         } else {
             if (multiplicand.intCompact != INFLATED) {
-                multiply(multiplicand.intCompact, this.intVal, productScale)
+                multiply(multiplicand.intCompact, this._intVal, productScale)
             } else {
-                multiply(this.intVal!!, multiplicand.intVal, productScale)
+                multiply(this._intVal!!, multiplicand._intVal, productScale)
             }
         }
     }
@@ -1250,13 +1250,13 @@ class BigDecimal : Comparable<BigDecimal> {
             if (multiplicand.intCompact != INFLATED) {
                 multiplyAndRound(this.intCompact, multiplicand.intCompact, productScale, mc)
             } else {
-                multiplyAndRound(this.intCompact, multiplicand.intVal, productScale, mc)
+                multiplyAndRound(this.intCompact, multiplicand._intVal, productScale, mc)
             }
         } else {
             if (multiplicand.intCompact != INFLATED) {
-                multiplyAndRound(multiplicand.intCompact, this.intVal, productScale, mc)
+                multiplyAndRound(multiplicand.intCompact, this._intVal, productScale, mc)
             } else {
-                multiplyAndRound(this.intVal!!, multiplicand.intVal, productScale, mc)
+                multiplyAndRound(this._intVal!!, multiplicand._intVal, productScale, mc)
             }
         }
     }
@@ -1306,13 +1306,13 @@ class BigDecimal : Comparable<BigDecimal> {
             if (divisor.intCompact != INFLATED) {
                 divide(this.intCompact, this.scale, divisor.intCompact, divisor.scale, scale, roundingMode)
             } else {
-                divide(this.intCompact, this.scale, divisor.intVal, divisor.scale, scale, roundingMode)
+                divide(this.intCompact, this.scale, divisor._intVal, divisor.scale, scale, roundingMode)
             }
         } else {
             if (divisor.intCompact != INFLATED) {
-                divide(this.intVal, this.scale, divisor.intCompact, divisor.scale, scale, roundingMode)
+                divide(this._intVal, this.scale, divisor.intCompact, divisor.scale, scale, roundingMode)
             } else {
-                divide(this.intVal, this.scale, divisor.intVal, divisor.scale, scale, roundingMode)
+                divide(this._intVal, this.scale, divisor._intVal, divisor.scale, scale, roundingMode)
             }
         }
     }
@@ -1512,13 +1512,13 @@ class BigDecimal : Comparable<BigDecimal> {
             if (divisor.intCompact != INFLATED) {
                 divide(dividend.intCompact, xscale, divisor.intCompact, yscale, preferredScale, mc)
             } else {
-                divide(dividend.intCompact, xscale, divisor.intVal, yscale, preferredScale, mc)
+                divide(dividend.intCompact, xscale, divisor._intVal, yscale, preferredScale, mc)
             }
         } else {
             if (divisor.intCompact != INFLATED) {
-                divide(dividend.intVal, xscale, divisor.intCompact, yscale, preferredScale, mc)
+                divide(dividend._intVal, xscale, divisor.intCompact, yscale, preferredScale, mc)
             } else {
-                divide(dividend.intVal, xscale, divisor.intVal, yscale, preferredScale, mc)
+                divide(dividend._intVal, xscale, divisor._intVal, yscale, preferredScale, mc)
             }
         }
     }
@@ -1562,7 +1562,7 @@ class BigDecimal : Comparable<BigDecimal> {
         )
         if (quotient!!.scale > 0) {
             quotient = quotient.setScale(0, RoundingMode.DOWN)
-            quotient = stripZerosToMatchScale(quotient.intVal, quotient.intCompact, quotient.scale, preferredScale)
+            quotient = stripZerosToMatchScale(quotient._intVal, quotient.intCompact, quotient.scale, preferredScale)
         }
 
         if (quotient.scale < preferredScale) {
@@ -1643,7 +1643,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 return result.setScale(result.scale() + min(precisionDiff, preferredScale - result.scale))
         }
 
-        return stripZerosToMatchScale(result.intVal, result.intCompact, result.scale, preferredScale)
+        return stripZerosToMatchScale(result._intVal, result.intCompact, result.scale, preferredScale)
     }
 
     /**
@@ -2209,7 +2209,7 @@ class BigDecimal : Comparable<BigDecimal> {
      */
     operator fun unaryMinus(): BigDecimal {
         return if (intCompact == INFLATED) {
-            BigDecimal(intVal!!.unaryMinus(), INFLATED, scale, precision)
+            BigDecimal(_intVal!!.unaryMinus(), INFLATED, scale, precision)
         } else {
             bigDecimal(-intCompact, scale, precision)
         }
@@ -2274,7 +2274,7 @@ class BigDecimal : Comparable<BigDecimal> {
         return if (intCompact != INFLATED)
             intCompact.sign
         else
-            intVal!!.signum
+            _intVal!!.signum
     }
 
     /**
@@ -2308,7 +2308,7 @@ class BigDecimal : Comparable<BigDecimal> {
             if (s != INFLATED)
                 result = longDigitLength(s)
             else
-                result = bigDigitLength(intVal!!)
+                result = bigDigitLength(_intVal!!)
             precision = result
         }
         return result
@@ -2470,7 +2470,7 @@ class BigDecimal : Comparable<BigDecimal> {
         } else {
             if (newScale > oldScale) {
                 val raise = checkScale(newScale.toLong() - oldScale)
-                val rb = bigMultiplyPowerTen(this.intVal, raise)
+                val rb = bigMultiplyPowerTen(this._intVal, raise)
                 return BigDecimal(rb!!, INFLATED, newScale, if (precision > 0) precision + raise else 0)
             } else {
                 // newScale < oldScale -- drop some digits
@@ -2478,11 +2478,11 @@ class BigDecimal : Comparable<BigDecimal> {
                 val drop = checkScale(oldScale.toLong() - newScale)
                 return if (drop < LONG_TEN_POWERS_TABLE.size)
                     divideAndRound(
-                        this.intVal!!, LONG_TEN_POWERS_TABLE[drop], newScale, roundingMode,
+                        this._intVal!!, LONG_TEN_POWERS_TABLE[drop], newScale, roundingMode,
                         newScale
                     )
                 else
-                    divideAndRound(this.intVal!!, bigTenToThe(drop), newScale, roundingMode, newScale)
+                    divideAndRound(this._intVal!!, bigTenToThe(drop), newScale, roundingMode, newScale)
             }
         }
     }
@@ -2549,7 +2549,7 @@ class BigDecimal : Comparable<BigDecimal> {
     fun movePointLeft(n: Int): BigDecimal {
         // Cannot use movePointRight(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(scale.toLong() + n)
-        val num = BigDecimal(intVal!!, intCompact, newScale, 0)
+        val num = BigDecimal(_intVal!!, intCompact, newScale, 0)
         return if (num.scale < 0) num.setScale(0, ROUND_UNNECESSARY) else num
     }
 
@@ -2571,7 +2571,7 @@ class BigDecimal : Comparable<BigDecimal> {
     fun movePointRight(n: Int): BigDecimal {
         // Cannot use movePointLeft(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(scale.toLong() - n)
-        val num = BigDecimal(intVal!!, intCompact, newScale, 0)
+        val num = BigDecimal(_intVal!!, intCompact, newScale, 0)
         return if (num.scale < 0) num.setScale(0, ROUND_UNNECESSARY) else num
     }
 
@@ -2590,7 +2590,7 @@ class BigDecimal : Comparable<BigDecimal> {
      */
     fun scaleByPowerOfTen(n: Int): BigDecimal {
         return BigDecimal(
-            intVal!!, intCompact,
+            _intVal!!, intCompact,
             checkScale(scale.toLong() - n), precision
         )
     }
@@ -2611,12 +2611,12 @@ class BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     fun stripTrailingZeros(): BigDecimal {
-        return if (intCompact == 0L || intVal != null && intVal.signum == 0) {
+        return if (intCompact == 0L || _intVal != null && _intVal.signum == 0) {
             BigDecimal.ZERO
         } else if (intCompact != INFLATED) {
             createAndStripZerosToMatchScale(intCompact, scale, Long.MIN_VALUE)
         } else {
-            createAndStripZerosToMatchScale(intVal!!, scale, Long.MIN_VALUE)
+            createAndStripZerosToMatchScale(_intVal!!, scale, Long.MIN_VALUE)
         }
     }
 
@@ -2685,7 +2685,7 @@ class BigDecimal : Comparable<BigDecimal> {
                     ys == INFLATED
                 ) {
                     val rb = bigMultiplyPowerTen((-sdiff).toInt())
-                    return rb.compareMagnitude(`val`.intVal!!)
+                    return rb.compareMagnitude(`val`._intVal!!)
                 }
             } else { // sdiff > 0
                 // The cases sdiff > Int.MAX_VALUE intentionally fall through.
@@ -2694,7 +2694,7 @@ class BigDecimal : Comparable<BigDecimal> {
                     xs == INFLATED
                 ) {
                     val rb = `val`.bigMultiplyPowerTen(sdiff.toInt())
-                    return this.intVal!!.compareMagnitude(rb)
+                    return this._intVal!!.compareMagnitude(rb)
                 }
             }
         }
@@ -2703,7 +2703,7 @@ class BigDecimal : Comparable<BigDecimal> {
         else if (ys != INFLATED)
             1
         else
-            this.intVal!!.compareMagnitude(`val`.intVal!!)
+            this._intVal!!.compareMagnitude(`val`._intVal!!)
     }
 
     /**
@@ -2733,10 +2733,10 @@ class BigDecimal : Comparable<BigDecimal> {
         var xs = xDec.intCompact
         if (s != INFLATED) {
             if (xs == INFLATED)
-                xs = compactValFor(xDec.intVal!!)
+                xs = compactValFor(xDec._intVal!!)
             return xs == s
         } else if (xs != INFLATED)
-            return xs == compactValFor(this.intVal!!)
+            return xs == compactValFor(this._intVal!!)
 
         return this.inflated() == xDec.inflated()
     }
@@ -2787,7 +2787,7 @@ class BigDecimal : Comparable<BigDecimal> {
             val temp = (val2.ushr(32).toInt() * 31 + (val2 and LONG_MASK)).toInt()
             return 31 * (if (intCompact < 0) -temp else temp) + scale
         } else
-            return 31 * intVal!!.hashCode() + scale
+            return 31 * _intVal!!.hashCode() + scale
     }
 
     // Format Converters
@@ -2973,7 +2973,7 @@ class BigDecimal : Comparable<BigDecimal> {
             return if (intCompact != INFLATED) {
                 intCompact.toString()
             } else {
-                intVal!!.toString()
+                _intVal!!.toString()
             }
         }
         if (this.scale < 0) { // No decimal point
@@ -2986,7 +2986,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 buf = StringBuilder(20 + trailingZeros)
                 buf.append(intCompact)
             } else {
-                val str = intVal!!.toString()
+                val str = _intVal!!.toString()
                 buf = StringBuilder(str.length + trailingZeros)
                 buf.append(str)
             }
@@ -2999,7 +2999,7 @@ class BigDecimal : Comparable<BigDecimal> {
         if (intCompact != INFLATED) {
             str = intCompact.absoluteValue.toString() // java.lang.Long.toString(Math.absoluteValue(intCompact))
         } else {
-            str = intVal!!.absoluteValue.toString()
+            str = _intVal!!.absoluteValue.toString()
         }
         return getValueString(signum(), str, scale)
     }
@@ -3009,14 +3009,14 @@ class BigDecimal : Comparable<BigDecimal> {
         /* Insert decimal point */
         val buf: StringBuilder
         val insertionPoint = intString.length - scale
-        if (insertionPoint == 0) {  /* Point goes right before intVal */
+        if (insertionPoint == 0) {  /* Point goes right before _intVal */
             return (if (signum < 0) "-0." else "0.") + intString
-        } else if (insertionPoint > 0) { /* Point goes inside intVal */
+        } else if (insertionPoint > 0) { /* Point goes inside _intVal */
             buf = StringBuilder(intString)
             buf.insert(insertionPoint, '.')
             if (signum < 0)
                 buf.insert(0, '-')
-        } else { /* We must insert zeros between point and intVal */
+        } else { /* We must insert zeros between point and _intVal */
             buf = StringBuilder(3 - insertionPoint + intString.length)
             buf.append(if (signum < 0) "-0." else "0.")
             for (i in 0 until -insertionPoint) {
@@ -3628,7 +3628,7 @@ class BigDecimal : Comparable<BigDecimal> {
             return if (intCompact != INFLATED)
                 intCompact.toString()
             else
-                intVal!!.toString()
+                _intVal!!.toString()
         if (scale == 2 &&
             intCompact >= 0 && intCompact < Int.MAX_VALUE
         ) {
@@ -3649,7 +3649,7 @@ class BigDecimal : Comparable<BigDecimal> {
             coeff = sbHelper.compactCharArray
         } else {
             offset = 0
-            coeff = intVal!!.absoluteValue.toString().toCharArray()
+            coeff = _intVal!!.absoluteValue.toString().toCharArray()
         }
 
         // Construct a buffer, with sufficient capacity for all cases.
@@ -3737,15 +3737,15 @@ class BigDecimal : Comparable<BigDecimal> {
         return if (intCompact != INFLATED)
             bigTenToThe(n).timesLong(intCompact)
         else
-            intVal!!.times(bigTenToThe(n))
+            _intVal!!.times(bigTenToThe(n))
     }
 
     /**
-     * Returns appropriate BigInteger from intVal field if intVal is
+     * Returns appropriate BigInteger from _intVal field if _intVal is
      * null, i.e. the compact representation is in use.
      */
     private fun inflated(): BigInteger {
-        return intVal ?: BigInteger.of(intCompact)
+        return _intVal ?: BigInteger.of(intCompact)
     }
 
     /**
@@ -3764,7 +3764,7 @@ class BigDecimal : Comparable<BigDecimal> {
         if (asInt.toLong() != `val`) {
             asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
             val b: BigInteger?
-            if (intCompact != 0L && (run { b = intVal; b } == null || b!!.signum != 0))
+            if (intCompact != 0L && (run { b = _intVal; b } == null || b!!.signum != 0))
                 throw ArithmeticException(if (asInt > 0) "Underflow" else "Overflow")
         }
         return asInt
@@ -3777,10 +3777,10 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *
      *  * The object must be initialized; either intCompact must not be
-     * INFLATED or intVal is non-null.  Both of these conditions may
+     * INFLATED or _intVal is non-null.  Both of these conditions may
      * be true.
      *
-     *  * If both intCompact and intVal and set, their values must be
+     *  * If both intCompact and _intVal and set, their values must be
      * consistent.
      *
      *  * If precision is nonzero, it must have the right value.
@@ -3791,23 +3791,23 @@ class BigDecimal : Comparable<BigDecimal> {
      */
     private fun audit(): BigDecimal {
         if (intCompact == INFLATED) {
-            if (intVal == null) {
+            if (_intVal == null) {
                 print("audit", this)
-                throw AssertionError("null intVal")
+                throw AssertionError("null _intVal")
             }
             // Check precision
-            if (precision > 0 && precision != bigDigitLength(intVal)) {
+            if (precision > 0 && precision != bigDigitLength(_intVal)) {
                 print("audit", this)
                 throw AssertionError("precision mismatch")
             }
         } else {
-            if (intVal != null) {
-                val `val` = intVal.toLong()
+            if (_intVal != null) {
+                val `val` = _intVal.toLong()
                 if (`val` != intCompact) {
                     print("audit", this)
                     throw AssertionError(
                         "Inconsistent state, intCompact=" +
-                                intCompact + "\t intVal=" + `val`
+                                intCompact + "\t _intVal=" + `val`
                     )
                 }
             }
@@ -3824,7 +3824,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
         /**
          * Sentinel value for [.intCompact] indicating the
-         * significand information is only available from `intVal`.
+         * significand information is only available from `_intVal`.
          */
         internal const val INFLATED = Long.MIN_VALUE
 
@@ -4464,7 +4464,7 @@ class BigDecimal : Comparable<BigDecimal> {
         private fun print(name: String, bd: BigDecimal) {
             
             println(
-                "$name:\tintCompact ${bd.intCompact}\tintVal ${bd.intVal}\tscale ${bd.scale}\tprecision ${bd.precision}"
+                "$name:\tintCompact ${bd.intCompact}\t_intVal ${bd._intVal}\tscale ${bd.scale}\tprecision ${bd.precision}"
             )
         }
 
@@ -4514,7 +4514,7 @@ class BigDecimal : Comparable<BigDecimal> {
             val mcp = mc.precision
             var wasDivided = false
             if (mcp > 0) {
-                var intVal = `val`!!.intVal
+                var intVal = `val`!!._intVal
                 var compactVal = `val`.intCompact
                 var scale = `val`.scale
                 var prec = `val`.precision()
