@@ -16,13 +16,6 @@ version = "0.0.1"
 apply(plugin="maven-publish")
 
 kotlin {
-//    jvm()
-//    js()
-//    js() {
-//        compileKotlinJs {
-//            kotlinOptions.moduleKind = "umd"
-//        }
-//    }
 
     sourceSets {
         val commonMain by getting {
@@ -44,6 +37,8 @@ kotlin {
                     implementation(kotlin("stdlib-jdk8"))
                 }
             }
+
+            this.
             // JVM-specific tests and their dependencies:
             compilations["test"].defaultSourceSet {
                 dependencies {

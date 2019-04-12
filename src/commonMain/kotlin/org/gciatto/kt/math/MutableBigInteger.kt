@@ -239,7 +239,7 @@ internal open class MutableBigInteger {
             mag[1].toLong() and LONG_MASK or (d.toLong() and LONG_MASK shl 32)
         else
             d.toLong() and LONG_MASK
-        return BigDecimal.bigDecimal(if (sign == -1) -v else v, scale)
+        return BigDecimal.of(if (sign == -1) -v else v, scale)
     }
 
     /**

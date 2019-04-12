@@ -1,4 +1,4 @@
-import org.gciatto.kt.math.BigDecimal
+import org.gciatto.kt.math.bigDecimal
 import org.gciatto.kt.math.bigInteger
 
 fun main() {
@@ -7,7 +7,7 @@ fun main() {
     x = x shl 640
     println(x)
 
-    var y = BigDecimal(kotlin.math.PI)
+    var y = bigDecimal(kotlin.math.PI)
     println(y)
     y *= y
     println(y)

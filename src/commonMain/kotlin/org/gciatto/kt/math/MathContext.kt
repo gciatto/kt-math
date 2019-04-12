@@ -55,6 +55,53 @@ package org.gciatto.kt.math
  * @since 1.5
  */
 
+data class MathContext(val precision: Int = 9, val roundingMode: RoundingMode = RoundingMode.HALF_UP) {
+    init {
+        require(precision >= 0)
+    }
+
+    companion object {
+        /**
+         * A `MathContext` object whose settings have the values
+         * required for unlimited precision arithmetic.
+         * The values of the settings are:
+         * `
+         * precision=0 roundingMode=HALF_UP
+        ` *
+         */
+        val UNLIMITED = MathContext(0, RoundingMode.HALF_UP)
+
+        /**
+         * A `MathContext` object with a precision setting
+         * matching the IEEE 754R Decimal32 format, 7 digits, and a
+         * rounding mode of [HALF_EVEN][RoundingMode.HALF_EVEN], the
+         * IEEE 754R default.
+         */
+        val DECIMAL32 = MathContext(7, RoundingMode.HALF_EVEN)
+
+        /**
+         * A `MathContext` object with a precision setting
+         * matching the IEEE 754R Decimal64 format, 16 digits, and a
+         * rounding mode of [HALF_EVEN][RoundingMode.HALF_EVEN], the
+         * IEEE 754R default.
+         */
+        val DECIMAL64 = MathContext(16, RoundingMode.HALF_EVEN)
+
+        /**
+         * A `MathContext` object with a precision setting
+         * matching the IEEE 754R Decimal128 format, 34 digits, and a
+         * rounding mode of [HALF_EVEN][RoundingMode.HALF_EVEN], the
+         * IEEE 754R default.
+         */
+        val DECIMAL128 = MathContext(34, RoundingMode.HALF_EVEN)
+    }
+
+    override fun toString(): String {
+        return "precision=" + precision + " " +
+                "roundingMode=" + roundingMode.toString()
+    }
+}
+/*
 class MathContext {
 
     /* ----- Shared Properties ----- */
@@ -296,3 +343,4 @@ class MathContext {
     }
 
 }
+*/

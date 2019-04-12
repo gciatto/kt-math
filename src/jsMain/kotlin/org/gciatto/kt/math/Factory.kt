@@ -15,3 +15,19 @@ fun bigInteger(x: dynamic): BigInteger {
         else -> throw IllegalArgumentException()
     }
 }
+
+@JsName("bigDecimal")
+fun bigDecimal(x: dynamic): BigDecimal {
+    return when (x) {
+        is Number -> BigDecimal.of(x.toDouble())
+        is String -> BigDecimal.of(x.toString())
+        is Array<dynamic> -> {
+            require(x.size == 2 && x[1] is MathContext)
+            when (x[0]) {
+                is Number -> BigDecimal((x[0] as Number).toDouble(), x[1] as MathContext)
+                else -> BigDecimal(x[0].toString(), x[1] as MathContext)
+            }
+        }
+        else -> throw IllegalArgumentException()
+    }
+}
