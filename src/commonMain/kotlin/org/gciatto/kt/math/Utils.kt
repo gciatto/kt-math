@@ -128,7 +128,7 @@ internal fun Char.toDigit(): Int {
 }
 
 internal fun Char.toDigit(radix: Int): Int {
-    if (radix in CHAR_MAX_RADIX .. CHAR_MAX_RADIX) {
+    if (radix in CHAR_MIN_RADIX .. CHAR_MAX_RADIX) {
         if (radix > 10) {
             val delta = radix - 10
             when (this) {

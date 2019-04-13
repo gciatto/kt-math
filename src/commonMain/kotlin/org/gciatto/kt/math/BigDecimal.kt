@@ -323,7 +323,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * is not wholly within `in`.
      * @since  1.5
      */
-    constructor(`in`: CharArray, offset: Int = 0, len: Int = `in`.size, mc: MathContext = MathContext.UNLIMITED) {
+    internal constructor(`in`: CharArray, offset: Int = 0, len: Int = `in`.size, mc: MathContext = MathContext.UNLIMITED) {
         var offset = offset
         var len = len
         // protect against huge length.
@@ -502,7 +502,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 rb = BigInteger(coeff, if (isneg) -1 else 1, prec)
                 rs = compactValFor(rb)
                 val mcp = mc.precision
-                if (mcp in 1..(prec - 1)) {
+                if (mcp in 1 until prec) {
                     if (rs == INFLATED) {
                         var drop = prec - mcp
                         while (drop > 0) {
@@ -572,7 +572,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * representation of a `BigDecimal`.
      * @since  1.5
      */
-    constructor(`in`: CharArray, mc: MathContext) : this(`in`, 0, `in`.size, mc)
+    internal constructor(`in`: CharArray, mc: MathContext) : this(`in`, 0, `in`.size, mc)
 
     /**
      * Translates the string representation of a `BigDecimal`
@@ -679,7 +679,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @throws NumberFormatException if `val` is not a valid
      * representation of a `BigDecimal`.
      */
-    constructor(`val`: String) : this(`val`.toCharArray(), 0, `val`.length)
+    internal constructor(`val`: String) : this(`val`.toCharArray(), 0, `val`.length)
 
     /**
      * Translates the string representation of a `BigDecimal`
@@ -695,7 +695,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * representation of a BigDecimal.
      * @since  1.5
      */
-    constructor(`val`: String, mc: MathContext) : this(`val`.toCharArray(), 0, `val`.length, mc)
+    internal constructor(`val`: String, mc: MathContext) : this(`val`.toCharArray(), 0, `val`.length, mc)
 
     /**
      * Translates a `double` into a `BigDecimal`, with
@@ -806,7 +806,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @param val `BigInteger` value to be converted to
      * `BigDecimal`.
      */
-    constructor(`val`: BigInteger) {
+    internal constructor(`val`: BigInteger) {
         _scale = 0
         _intVal = `val`
         _intCompact = compactValFor(`val`)
@@ -824,7 +824,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
-    constructor(`val`: BigInteger, mc: MathContext) : this(`val`, 0, mc) {}
+    internal constructor(`val`: BigInteger, mc: MathContext) : this(`val`, 0, mc) {}
 
     /**
      * Translates a `BigInteger` unscaled value and an
@@ -835,7 +835,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @param unscaledVal unscaled value of the `BigDecimal`.
      * @param scale _scale of the `BigDecimal`.
      */
-    constructor(unscaledVal: BigInteger, scale: Int) {
+    internal constructor(unscaledVal: BigInteger, scale: Int) {
         // Negative scales are now allowed
         this._intVal = unscaledVal
         this._intCompact = compactValFor(unscaledVal)
@@ -857,7 +857,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
-    constructor(unscaledVal: BigInteger?, scale: Int, mc: MathContext) {
+    internal constructor(unscaledVal: BigInteger?, scale: Int, mc: MathContext) {
         var unscaledVal = unscaledVal
         var scale = scale
         var compactVal = compactValFor(unscaledVal!!)
@@ -905,7 +905,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * `BigDecimal`.
      * @since  1.5
      */
-    constructor(`val`: Int) {
+    internal constructor(`val`: Int) {
         this._intCompact = `val`.toLong()
         this._scale = 0
         this._intVal = null
@@ -922,7 +922,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
-    constructor(`val`: Int, mc: MathContext) {
+    internal constructor(`val`: Int, mc: MathContext) {
         val mcp = mc.precision
         var compactVal = `val`.toLong()
         var scl = 0
@@ -950,7 +950,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @param val `long` value to be converted to `BigDecimal`.
      * @since  1.5
      */
-    constructor(`val`: Long) {
+    internal constructor(`val`: Long) {
         this._intCompact = `val`
         this._intVal = if (`val` == INFLATED) INFLATED_BIGINT else null
         this._scale = 0
@@ -967,7 +967,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
-    constructor(`val`: Long, mc: MathContext) {
+    internal constructor(`val`: Long, mc: MathContext) {
         var `val` = `val`
         val mcp = mc.precision
         val mode = mc.roundingMode!!.oldMode
@@ -3952,16 +3952,20 @@ class BigDecimal : Comparable<BigDecimal> {
         /**
          * The value 0.1, with a _scale of 1.
          */
-        private val ONE_TENTH = of(1L, 1)
+        val ONE_TENTH = of(1L, 1)
 
         /**
          * The value 0.5, with a _scale of 1.
          */
-        private val ONE_HALF = of(5L, 1)
+        val ONE_HALF = of(5L, 1)
 
-        /*
-     * parse exponent
-     */
+        val PI = of("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648")
+
+        val E = of("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264")
+
+            /*
+         * parse exponent
+         */
         private fun parseExp(`in`: CharArray, offset: Int, len: Int): Long {
             var offset = offset
             var len = len
@@ -4053,13 +4057,13 @@ class BigDecimal : Comparable<BigDecimal> {
          * @param val value of the `BigDecimal`.
          * @return a `BigDecimal` whose value is `val`.
          */
-        fun of(`val`: Long): BigDecimal {
-            if (`val` >= 0 && `val` < ZERO_THROUGH_TEN.size)
-                return ZERO_THROUGH_TEN[`val`.toInt()]
-            else if (`val` != INFLATED)
-                return BigDecimal(null, `val`, 0, 0)
-            return BigDecimal(INFLATED_BIGINT, `val`, 0, 0)
-        }
+//        fun of(`val`: Long): BigDecimal {
+//            if (`val` >= 0 && `val` < ZERO_THROUGH_TEN.size)
+//                return ZERO_THROUGH_TEN[`val`.toInt()]
+//            else if (`val` != INFLATED)
+//                return BigDecimal(null, `val`, 0, 0)
+//            return BigDecimal(INFLATED_BIGINT, `val`, 0, 0)
+//        }
 
         internal fun of(unscaledVal: Long, scale: Int, prec: Int): BigDecimal {
             if (scale == 0 && unscaledVal >= 0 && unscaledVal < ZERO_THROUGH_TEN.size) {
@@ -4106,32 +4110,32 @@ class BigDecimal : Comparable<BigDecimal> {
          * @throws NumberFormatException if `val` is infinite or NaN.
          * @since  1.5
          */
-        fun of(`val`: Double): BigDecimal {
-            // Reminder: a zero double returns '0.0', so we cannot fastpath
-            // to use the constant ZERO.  This might be important enough to
-            // justify a factory approach, a cache, or a few private
-            // constants, later.
-            return BigDecimal(`val`.toString())
+        fun of(`val`: Double, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
+            return BigDecimal(`val`.toString(), ctx)
         }
 
-        fun of(`val`: Float): BigDecimal {
-            // Reminder: a zero double returns '0.0', so we cannot fastpath
-            // to use the constant ZERO.  This might be important enough to
-            // justify a factory approach, a cache, or a few private
-            // constants, later.
-            return BigDecimal(`val`.toString())
+        fun of(`val`: Float, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
+            return of(`val`.toDouble(), ctx)
         }
 
-        fun of(`val`: String): BigDecimal {
-            return BigDecimal(`val`)
+        fun of(`val`: String, ctx: MathContext? = null): BigDecimal {
+            return if (ctx === null) {
+                BigDecimal(`val`)
+            } else {
+                BigDecimal(`val`, ctx!!)
+            }
         }
 
-        fun of(`val`: BigInteger): BigDecimal {
-            return BigDecimal(`val`)
+        fun of(`val`: BigInteger, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
+            return BigDecimal(`val`, ctx)
         }
 
-        fun of(`val`: Int): BigDecimal {
-            return BigDecimal(`val`)
+        fun of(`val`: Int, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
+            return BigDecimal(`val`, ctx)
+        }
+
+        fun of(`val`: Long, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
+            return BigDecimal(`val`, ctx)
         }
 
         // Rounding Modes

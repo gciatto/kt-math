@@ -525,13 +525,12 @@ class BigInteger : Comparable<BigInteger> {
     // Assumes start < end. The result may be negative, but it
     // is to be treated as an unsigned value.
     private fun parseInt(source: CharArray, start: Int, end: Int): Int {
-        var start = start
-        var result = source[start++].toDigit(10)
+        var result = source[start].toDigit(10)
         if (result == -1)
             throw NumberFormatException(String(source))
 
-        for (index in start until end) {
-            val nextVal = source[start].toDigit(10)
+        for (index in (start + 1) until end) {
+            val nextVal = source[index].toDigit(10)
             if (nextVal == -1)
                 throw NumberFormatException(String(source))
             result = 10 * result + nextVal
