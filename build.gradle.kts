@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-group = "org.gciatto"
+group = "com.github.gciatto"
 version = "0.0.1"
 
 kotlin {
@@ -37,8 +37,6 @@ kotlin {
 
             mavenPublication {
                 artifactId = rootProject.name + "-jvm"
-                groupId = rootProject.group.toString()
-                version = rootProject.version.toString()
             }
 
             // JVM-specific tests and their dependencies:
@@ -72,9 +70,27 @@ kotlin {
 
             mavenPublication {
                 artifactId = rootProject.name + "-js"
-                groupId = rootProject.group.toString()
-                version = rootProject.version.toString()
             }
         }
+    }
+}
+
+publishing {
+    publications.withType<MavenPublication> {
+        groupId = rootProject.group.toString()
+        version = rootProject.version.toString()
+
+        pom {
+            name.set("Kotlin Math")
+            description.set("Pure Kotlin porting of the java.math package")
+            url.set("https://github.com/gciatto/kt-math")
+            licenses {
+                license {
+                    name.set("GNU General Public License, version 2, with the Classpath Exception")
+                    url.set("https://openjdk.java.net/legal/gplv2+ce.html")
+                }
+            }
+        }
+
     }
 }
