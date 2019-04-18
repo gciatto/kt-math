@@ -1,9 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.resolve.calls.inference.TypeVariable
 
 plugins {
     kotlin("multiplatform") version "1.3.21"
+    id("maven-publish")
 }
 
 repositories {
@@ -12,8 +11,6 @@ repositories {
 
 group = "org.gciatto"
 version = "0.0.1"
-
-apply(plugin="maven-publish")
 
 kotlin {
 
@@ -38,7 +35,12 @@ kotlin {
                 }
             }
 
-            this.
+            mavenPublication {
+                artifactId = rootProject.name + "-jvm"
+                groupId = rootProject.group.toString()
+                version = rootProject.version.toString()
+            }
+
             // JVM-specific tests and their dependencies:
             compilations["test"].defaultSourceSet {
                 dependencies {
@@ -52,13 +54,12 @@ kotlin {
                 tasks.getByName<KotlinJsCompile>("compile${it}KotlinJs") {
                     kotlinOptions {
                         moduleKind = "umd"
-                        noStdlib = false
+                        noStdlib = true
                         metaInfo = true
                     }
                 }
             }
             compilations["main"].defaultSourceSet {
-                this.kotlin
                 dependencies {
                     implementation(kotlin("stdlib-js"))
                 }
@@ -67,6 +68,12 @@ kotlin {
                 dependencies {
                     implementation(kotlin("test-js"))
                 }
+            }
+
+            mavenPublication {
+                artifactId = rootProject.name + "-js"
+                groupId = rootProject.group.toString()
+                version = rootProject.version.toString()
             }
         }
     }
