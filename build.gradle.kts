@@ -80,9 +80,11 @@ kotlin {
     }
 }
 
+val docDir = "$buildDir/doc"
+
 tasks.withType<DokkaTask> {
 
-    outputDirectory = "$buildDir/javadoc"
+    outputDirectory = docDir
     jdkVersion = 8
     reportUndocumented = false
 //    outputFormat = "javadoc"
@@ -116,18 +118,50 @@ tasks.withType<DokkaTask> {
     }
 }
 
-signing {
-    useGpgCmd()
-    sign(configurations.archives.get())
-    sign(publishing.publications)
+fun capitalize(s: String): String {
+    return s[0].toUpperCase() + s.substring(1)
+}
+
+val jarPlatform = tasks.withType<Jar>().map { it.name.replace("Jar", "") }
+
+task<DefaultTask>("packAllDokka") {
+    group = "documentation"
+}
+
+//tasks.getByName("signArchives").dependsOn("packAllDokka")
+
+jarPlatform.forEach {
+    val packDokkaForPlatform = "packDokka${capitalize(it)}"
+
+    task<Jar>(packDokkaForPlatform) {
+        group = "documentation"
+        dependsOn("dokka")
+        from(docDir)
+        archiveBaseName.set(rootProject.name)
+        archiveVersion.set(rootProject.version.toString())
+        archiveAppendix.set(it)
+        archiveClassifier.set("javadoc")
+    }
+
+    tasks.getByName("${it}Jar").dependsOn(packDokkaForPlatform)
+    tasks.getByName("packAllDokka").dependsOn(packDokkaForPlatform)
 }
 
 // https://central.sonatype.org/pages/requirements.html
 // https://docs.gradle.org/current/userguide/signing_plugin.html
 publishing {
     publications.withType<MavenPublication> {
+
         groupId = rootProject.group.toString()
         version = rootProject.version.toString()
+
+        val docArtifact = "packDokka${capitalize(name)}"
+
+        if (docArtifact in tasks.names) {
+            artifact(tasks.getByName(docArtifact)) {
+                classifier = "javadoc"
+            }
+        }
 
         pom {
             name.set("Kotlin Math")
@@ -172,5 +206,18 @@ publishing {
                 password = rootProject.property("ossrhPassword").toString()
             }
         }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications)
+}
+
+publishing {
+    val pubs = publications.withType<MavenPublication>().map{ "sign${capitalize(it.name)}Publication" }
+
+    task<Sign>("signAllPublications") {
+        dependsOn(*pubs.toTypedArray())
     }
 }
