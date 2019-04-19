@@ -1,19 +1,28 @@
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.resolve.calls.inference.TypeVariable
 
 plugins {
     kotlin("multiplatform") version "1.3.21"
+    id("maven-publish")
+    signing
+    id("org.jetbrains.dokka") version "0.9.18"
 }
 
 repositories {
     mavenCentral()
+    maven("https://dl.bintray.com/kotlin/dokka")
+    maven("https://jitpack.io")
 }
 
-group = "org.gciatto"
+group = "com.github.gciatto"
 version = "0.0.1"
 
-apply(plugin="maven-publish")
+//val dokkaFatJar by configurations.creating
+//
+//dependencies {
+//    dokkaFatJar("org.jetbrains.dokka:dokka-gradle-plugin:0.9.16")
+//    dokkaFatJar("capital.scalable:spring-auto-restdocs-dokka-json:2.0.1")
+//}
 
 kotlin {
 
@@ -38,7 +47,10 @@ kotlin {
                 }
             }
 
-            this.
+            mavenPublication {
+                artifactId = rootProject.name + "-jvm"
+            }
+
             // JVM-specific tests and their dependencies:
             compilations["test"].defaultSourceSet {
                 dependencies {
@@ -52,13 +64,12 @@ kotlin {
                 tasks.getByName<KotlinJsCompile>("compile${it}KotlinJs") {
                     kotlinOptions {
                         moduleKind = "umd"
-                        noStdlib = false
+                        noStdlib = true
                         metaInfo = true
                     }
                 }
             }
             compilations["main"].defaultSourceSet {
-                this.kotlin
                 dependencies {
                     implementation(kotlin("stdlib-js"))
                 }
@@ -68,6 +79,113 @@ kotlin {
                     implementation(kotlin("test-js"))
                 }
             }
+
+            mavenPublication {
+                artifactId = rootProject.name + "-js"
+            }
         }
     }
+}
+
+tasks.withType<DokkaTask> {
+
+    outputDirectory = "$buildDir/javadoc"
+    jdkVersion = 8
+    reportUndocumented = false
+    outputFormat = "javadoc"
+
+    kotlinTasks {
+        listOf()
+    }
+}
+
+//tasks.getByName<DokkaTask>("dokka") {
+////    dependsOn("repackDokka")
+//
+//    outputFormat = "html"
+//    outputDirectory = "$buildDir/javadoc"
+////    dokkaFatJar = tasks.getByName<Jar>("repackDokka").outputs.files.singleFile
+//
+//    kotlinTasks {
+//        listOf()
+////        listOf("compileKotlinJvm", "compileKotlinMetadata")
+//    }
+//
+//    impliedPlatforms = mutableListOf("Common")
+//
+//    sourceRoot {
+//        // assuming there is only a single source dir...
+//        kotlin.sourceSets.commonMain {
+//            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
+//        }
+//        platforms = listOf("Common")
+//    }
+//    sourceRoot {
+//        // assuming there is only a single source dir...
+//        with(kotlin.sourceSets.get("jvmMain")) {
+//            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
+//        }
+//        platforms = listOf("JVM")
+//    }
+//}
+
+signing {
+    useGpgCmd()
+    sign(configurations.archives.get())
+    sign(publishing.publications)
+}
+
+// https://central.sonatype.org/pages/requirements.html
+// https://docs.gradle.org/current/userguide/signing_plugin.html
+publishing {
+    publications.withType<MavenPublication> {
+        groupId = rootProject.group.toString()
+        version = rootProject.version.toString()
+
+        pom {
+            name.set("Kotlin Math")
+            description.set("Pure Kotlin porting of the java.math package")
+            url.set("https://github.com/gciatto/kt-math")
+            licenses {
+                license {
+                    name.set("GNU General Public License, version 2, with the Classpath Exception")
+                    url.set("https://openjdk.java.net/legal/gplv2+ce.html")
+                }
+            }
+
+            developers {
+                developer {
+                    email.set("giovanni.ciatto@gmail.com")
+                    url.set("https://about.me/gciatto")
+                    organization.set("GitHub")
+                    organizationUrl.set("https://github.com")
+                }
+            }
+
+            scm {
+                connection.set("scm:git:git:///github.com/gciatto/kt-math.git")
+                developerConnection.set("scm:git:ssh://github.com:gciatto/kt-math.git")
+                url.set("https://github.com/gciatto/kt-math")
+            }
+        }
+
+    }
+
+    repositories {
+
+        val mavenRepoUrl = if (version.toString().contains("SNAPSHOT")) {
+            "https://oss.sonatype.org/content/repositories/snapshots/"
+        } else {
+            "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+
+        maven(mavenRepoUrl) {
+            credentials {
+                username = rootProject.property("ossrhUsername").toString()
+                password = rootProject.property("ossrhPassword").toString()
+            }
+        }
+    }
+
+
 }
