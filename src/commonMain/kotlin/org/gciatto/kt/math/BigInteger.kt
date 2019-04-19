@@ -38,7 +38,7 @@ import kotlin.random.Random
  * Immutable arbitrary-precision integers.  All operations behave as if
  * BigIntegers were represented in two's-complement notation (like Java's
  * primitive integer types).  BigInteger provides analogues to all of Java's
- * primitive integer operators, and all relevant methods from java.lang.Math.
+ * primitive integer operators, and all relevant methods from `kotlin.math`.
  * Additionally, BigInteger provides operations for modular arithmetic, GCD
  * calculation, primality testing, prime generation, bit manipulation,
  * and a few other miscellaneous operations.
@@ -558,7 +558,7 @@ class BigInteger : Comparable<BigInteger> {
      * Constructs a randomly generated positive BigInteger that is probably
      * prime, with the specified bitLength.
      *
-     * @apiNote It is recommended that the [probablePrime][.probablePrime]
+     * @apiNote It is recommended that the [probablePrime][BigInteger.probablePrime]
      * method be used in preference to this constructor unless there
      * is a compelling need to specify a certainty.
      *
@@ -2614,20 +2614,16 @@ class BigInteger : Comparable<BigInteger> {
 
     /**
      * Returns the String representation of this BigInteger in the
-     * given radix.  If the radix is outside the range from [ ][CHAR_MIN_RADIX] to [CHAR_MAX_RADIX] inclusive,
+     * given radix.  If the radix is outside the range from [CHAR_MIN_RADIX] to [CHAR_MAX_RADIX] inclusive,
      * it will default to 10 (as is the case for
      * `Int.toString`).  The digit-to-character mapping
      * provided by `Character.forDigit` is used, and a subtract
      * sign is prepended if appropriate.  (This representation is
-     * compatible with the [(String,][.BigInteger] constructor.)
+     * compatible with the String constructor.)
      *
      * @param  radix  radix of the String representation.
      * @return String representation of this BigInteger in the given radix.
      * @see Int.toString
-     *
-     * @see Character.forDigit
-     *
-     * @see .BigInteger
      */
     @JsName("toStringWithRadix")
     fun toString(radix: Int): String {
@@ -2705,13 +2701,10 @@ class BigInteger : Comparable<BigInteger> {
      * The digit-to-character mapping provided by
      * `Character.forDigit` is used, and a subtract sign is
      * prepended if appropriate.  (This representation is compatible
-     * with the [(String)][.BigInteger] constructor, and
+     * with the string constructor, and
      * allows for String concatenation with Java's + operator.)
      *
      * @return decimal String representation of this BigInteger.
-     * @see Character.forDigit
-     *
-     * @see .BigInteger
      */
     override fun toString(): String {
         return toString(10)
@@ -2725,11 +2718,10 @@ class BigInteger : Comparable<BigInteger> {
      * of bytes required to represent this BigInteger, including at
      * least one sign bit, which is `(ceil((this.bitLength() +
      * 1)/8))`.  (This representation is compatible with the
-     * [(byte[])][.BigInteger] constructor.)
+     * byte array constructor.)
      *
      * @return a byte array containing the two's-complement representation of
      * this BigInteger.
-     * @see .BigInteger
      */
     @JsName("toByteArray")
     fun toByteArray(): ByteArray {
@@ -2767,7 +2759,7 @@ class BigInteger : Comparable<BigInteger> {
      * result with the opposite sign.
      *
      * @return this BigInteger converted to an `int`.
-     * @see .toIntExact
+     * @see BigInteger.toIntExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toInt")
@@ -2803,27 +2795,27 @@ class BigInteger : Comparable<BigInteger> {
     }
 
     @JsName("toByte")
-            /*override*/ fun toByte(): Byte {
+    /*override*/ fun toByte(): Byte {
         return toInt().toByte()
     }
 
     @JsName("toChar")
-            /*override*/ fun toChar(): Char {
+    /*override*/ fun toChar(): Char {
         return toInt().toChar()
     }
 
     @JsName("toShort")
-            /*override*/ fun toShort(): Short {
+    /*override*/ fun toShort(): Short {
         return toInt().toShort()
     }
 
     @JsName("toFloat")
-            /*override*/ fun toFloat(): Float {
+    /*override*/ fun toFloat(): Float {
         return toInt().toFloat()
     }
 
     @JsName("toDouble")
-            /*override*/ fun toDouble(): Double {
+    /*override*/ fun toDouble(): Double {
         return toLong().toDouble()
     }
 
@@ -2936,7 +2928,7 @@ class BigInteger : Comparable<BigInteger> {
      * @return this `BigInteger` converted to a `long`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in a `long`.
-     * @see BigInteger.longValue
+     * @see BigInteger.toLong
      *
      * @since  1.8
      */
@@ -2956,7 +2948,7 @@ class BigInteger : Comparable<BigInteger> {
      * @return this `BigInteger` converted to an `int`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in an `int`.
-     * @see BigInteger.intValue
+     * @see BigInteger.toInt
      *
      * @since  1.8
      */
@@ -2977,7 +2969,7 @@ class BigInteger : Comparable<BigInteger> {
      * @return this `BigInteger` converted to a `short`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in a `short`.
-     * @see BigInteger.shortValue
+     * @see BigInteger.toShort
      *
      * @since  1.8
      */
@@ -3000,7 +2992,7 @@ class BigInteger : Comparable<BigInteger> {
      * @return this `BigInteger` converted to a `byte`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in a `byte`.
-     * @see BigInteger.byteValue
+     * @see BigInteger.toByte
      *
      * @since  1.8
      */
@@ -3209,7 +3201,7 @@ class BigInteger : Comparable<BigInteger> {
          * tested for primality.
          * @return a BigInteger of `bitLength` bits that is probably prime
          * @throws ArithmeticException `bitLength < 2` or `bitLength` is too large.
-         * @see .bitLength
+         * @see BigInteger.bitLength
          * @since 1.4
          */
         fun probablePrime(bitLength: Int, rnd: Random): BigInteger {

@@ -180,9 +180,9 @@ import kotlin.math.*
  *
  * Other methods may have slightly different rounding semantics.
  * For example, the result of the `pow` method using the
- * [specified algorithm][BigInteger.pow] can
+ * [specified algorithm][BigDecimal.pow] can
  * occasionally differ from the rounded mathematical result by more
- * than one unit in the last place, one *[ulp][BigInteger.ulp]*.
+ * than one unit in the last place, one *[ulp][BigDecimal.ulp]*.
  *
  *
  * Two types of operations are provided for manipulating the scale
@@ -209,7 +209,7 @@ import kotlin.math.*
  * [BigDecimal] `j`." Other pseudo-code expressions
  * are interpreted similarly.  Square brackets are used to represent
  * the particular [BigInteger] and scale pair defining a
- * [BigDecimal] value; for example [19, 2] is the
+ * [BigDecimal] value; for example `[19, 2]` is the
  * [BigDecimal] numerically equal to 0.19 having a scale of 2.
  *
  *
@@ -1721,8 +1721,8 @@ class BigDecimal : Comparable<BigDecimal> {
      * (the result of `divideToIntegralValue`) is the initial element
      * and the remainder is the final element.
      * @throws ArithmeticException if `divisor==0`
-     * @see .divideToIntegralValue
-     * @see .remainder
+     * @see BigDecimal.divideToIntegralValue
+     * @see BigDecimal.rem
      * @since  1.5
      */
     @JsName("divideAndRemainder")
@@ -1763,8 +1763,8 @@ class BigDecimal : Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`, or `mc._precision`
      * &gt; 0 and the result of `this.divideToIntgralValue(divisor)` would
      * require a _precision of more than `mc._precision` digits.
-     * @see .divideToIntegralValue
-     * @see .remainder
+     * @see BigDecimal.divideToIntegralValue
+     * @see BigDecimal.rem
      * @since  1.5
      */
     @JsName("divideAndRemainderWithContext")
@@ -2113,7 +2113,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * `mc._precision` decimal digits
      *
      *
-     *  *  if `n` is zero, [Bi.ONE] is returned even if
+     *  *  if `n` is zero, [BigDecimal.ONE] is returned even if
      * `this` is zero, otherwise
      *
      *  *  if `n` is positive, the result is calculated via
@@ -2631,8 +2631,8 @@ class BigDecimal : Comparable<BigDecimal> {
      * representation.  For example, stripping the trailing zeros from
      * the [BigDecimal] value `600.0`, which has
      * [[BigInteger], `_scale`] components equals to
-     * [6000, 1], yields `6E2` with [[BigInteger],
-     * `_scale`] components equals to [6, -2].  If
+     * `[6000, 1]`, yields `6E2` with `[BigInteger,
+     * scale]` components equals to `[6, -2]`.  If
      * this BigDecimal is numerically equal to zero, then
      * `BigDecimal.ZERO` is returned.
      *
@@ -2884,10 +2884,10 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      * **Examples:**
      *
-     * For each representation [*unscaled value*, *_scale*]
+     * For each representation `[unscaled value, scale]`
      * on the left, the resulting string is shown on the right.
      * <pre>
-     * [123,0]      "123"
+     * [123,0]`      "123"
      * [-123,0]     "-123"
      * [123,-1]     "1.23E+3"
      * [123,-3]     "1.23E+5"
@@ -2913,7 +2913,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * it is not affected by locale.  This means that it can be used
      * as a canonical string representation for exchanging decimal
      * data, or as a key for a Hashtable, etc.  Locale-sensitive
-     * number formatting and parsing is handled by the [ ] class and its subclasses.
+     * number formatting and parsing is handled by the ??? class and its subclasses.
      *
      *  1. The [BigDecimal.toEngineeringString] method may be used for
      * presenting numbers with exponents in engineering notation, and the
@@ -2927,9 +2927,6 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *
      * @return string representation of this [BigDecimal].
-     * @see Character.forDigit
-     *
-     * @see .BigDecimal
      */
     override fun toString(): String {
         var sc = _stringCache
@@ -2954,8 +2951,8 @@ class BigDecimal : Comparable<BigDecimal> {
      * decimal point and one or two fractional zero digits are used so
      * that the _scale of the zero value is preserved.  Note that
      * unlike the output of [BigDecimal.toString], the output of this
-     * method is *not* guaranteed to recover the same [integer,
-     * _scale] pair of this [BigDecimal] if the output string is
+     * method is *not* guaranteed to recover the same `[integer,
+     * _scale]` pair of this [BigDecimal] if the output string is
      * converting back to a [BigDecimal] using the aforementioned.  The result of this method meets
      * the weaker constraint of always producing a numerically equal
      * result from applying the string constructor to the method's output.

@@ -17,13 +17,6 @@ repositories {
 group = "com.github.gciatto"
 version = "0.0.1"
 
-//val dokkaFatJar by configurations.creating
-//
-//dependencies {
-//    dokkaFatJar("org.jetbrains.dokka:dokka-gradle-plugin:0.9.16")
-//    dokkaFatJar("capital.scalable:spring-auto-restdocs-dokka-json:2.0.1")
-//}
-
 kotlin {
 
     sourceSets {
@@ -92,7 +85,7 @@ tasks.withType<DokkaTask> {
     outputDirectory = "$buildDir/javadoc"
     jdkVersion = 8
     reportUndocumented = false
-    outputFormat = "javadoc"
+//    outputFormat = "javadoc"
 
     kotlinTasks {
         listOf()
@@ -106,44 +99,22 @@ tasks.withType<DokkaTask> {
         platforms = listOf("Common")
     }
 
-//    sourceRoot {
-//        // assuming there is only a single source dir...
-//        with(kotlin.sourceSets.get("jvmMain")) {
-//            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
-//        }
-//        platforms = listOf("JVM")
-//    }
-}
+    sourceRoot {
+        // assuming there is only a single source dir...
+        with(kotlin.sourceSets.get("jvmMain")) {
+            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
+        }
+        platforms = listOf("JVM")
+    }
 
-//tasks.getByName<DokkaTask>("dokka") {
-////    dependsOn("repackDokka")
-//
-//    outputFormat = "html"
-//    outputDirectory = "$buildDir/javadoc"
-////    dokkaFatJar = tasks.getByName<Jar>("repackDokka").outputs.files.singleFile
-//
-//    kotlinTasks {
-//        listOf()
-////        listOf("compileKotlinJvm", "compileKotlinMetadata")
-//    }
-//
-//    impliedPlatforms = mutableListOf("Common")
-//
-//    sourceRoot {
-//        // assuming there is only a single source dir...
-//        kotlin.sourceSets.commonMain {
-//            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
-//        }
-//        platforms = listOf("Common")
-//    }
-//    sourceRoot {
-//        // assuming there is only a single source dir...
-//        with(kotlin.sourceSets.get("jvmMain")) {
-//            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
-//        }
-//        platforms = listOf("JVM")
-//    }
-//}
+    sourceRoot {
+        // assuming there is only a single source dir...
+        with(kotlin.sourceSets.get("jsMain")) {
+            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
+        }
+        platforms = listOf("JS")
+    }
+}
 
 signing {
     useGpgCmd()
@@ -202,6 +173,4 @@ publishing {
             }
         }
     }
-
-
 }
