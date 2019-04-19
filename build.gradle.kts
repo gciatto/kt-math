@@ -97,6 +97,22 @@ tasks.withType<DokkaTask> {
     kotlinTasks {
         listOf()
     }
+
+    sourceRoot {
+        // assuming there is only a single source dir...
+        kotlin.sourceSets.commonMain {
+            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
+        }
+        platforms = listOf("Common")
+    }
+
+//    sourceRoot {
+//        // assuming there is only a single source dir...
+//        with(kotlin.sourceSets.get("jvmMain")) {
+//            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
+//        }
+//        platforms = listOf("JVM")
+//    }
 }
 
 //tasks.getByName<DokkaTask>("dokka") {

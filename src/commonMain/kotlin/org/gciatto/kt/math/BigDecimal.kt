@@ -34,77 +34,77 @@ import kotlin.js.JsName
 import kotlin.math.*
 
 /**
- * Immutable, arbitrary-_precision signed decimal numbers.  A
- * `BigDecimal` consists of an arbitrary _precision integer
- * *unscaled value* and a 32-bit integer *_scale*.  If zero
- * or positive, the _scale is the number of digits to the right of the
+ * Immutable, arbitrary-precision signed decimal numbers.  A
+ * [BigDecimal] consists of an arbitrary precision integer
+ * *unscaled value* and a 32-bit integer *scale*.  If zero
+ * or positive, the scale is the number of digits to the right of the
  * decimal point.  If negative, the unscaled value of the number is
- * multiplied by ten to the power of the negation of the _scale.  The
- * value of the number represented by the `BigDecimal` is
- * therefore `(unscaledValue  10<sup>-_scale</sup>)`.
+ * multiplied by ten to the power of the negation of the scale.  The
+ * value of the number represented by the [BigDecimal] is
+ * therefore `unscaledValue  10^(-scale)`.
  *
  *
- * The `BigDecimal` class provides operations for
- * arithmetic, _scale manipulation, rounding, comparison, hashing, and
- * format conversion.  The [.toString] method provides a
- * canonical representation of a `BigDecimal`.
+ * The [BigDecimal] class provides operations for
+ * arithmetic, scale manipulation, rounding, comparison, hashing, and
+ * format conversion.  The [BigDecimal.toString] method provides a
+ * canonical representation of a [BigDecimal].
  *
  *
- * The `BigDecimal` class gives its user complete control
+ * The [BigDecimal] class gives its user complete control
  * over rounding behavior.  If no rounding mode is specified and the
  * exact result cannot be represented, an exception is thrown;
  * otherwise, calculations can be carried out to a chosen _precision
  * and rounding mode by supplying an appropriate [MathContext]
  * object to the operation.  In either case, eight *rounding
  * modes* are provided for the control of rounding.  Using the
- * integer fields in this class (such as [.ROUND_HALF_UP]) to
+ * integer fields in this class (such as [BigDecimal.ROUND_HALF_UP]) to
  * represent rounding mode is deprecated; the enumeration values
- * of the `RoundingMode` `enum`, (such as [ ][RoundingMode.HALF_UP]) should be used instead.
+ * of the [RoundingMode] `enum`, (such as [RoundingMode.HALF_UP]) should be used instead.
  *
  *
- * When a `MathContext` object is supplied with a _precision
+ * When a [MathContext] object is supplied with a _precision
  * setting of 0 (for example, [MathContext.UNLIMITED]),
  * arithmetic operations are exact, as are the arithmetic methods
- * which take no `MathContext` object.  (This is the only
+ * which take no [MathContext] object.  (This is the only
  * behavior that was supported in releases prior to 5.)  As a
  * corollary of computing the exact result, the rounding mode setting
- * of a `MathContext` object with a _precision setting of 0 is
+ * of a [MathContext] object with a _precision setting of 0 is
  * not used and thus irrelevant.  In the case of div, the exact
  * quotient could have an infinitely long decimal expansion; for
  * example, 1 divided by 3.  If the quotient has a nonterminating
  * decimal expansion and the operation is specified to return an exact
- * result, an `ArithmeticException` is thrown.  Otherwise, the
+ * result, an [ArithmeticException] is thrown.  Otherwise, the
  * exact result of the division is returned, as done for other
  * operations.
  *
  *
  * When the _precision setting is not 0, the rules of
- * `BigDecimal` arithmetic are broadly compatible with selected
+ * [BigDecimal] arithmetic are broadly compatible with selected
  * modes of operation of the arithmetic defined in ANSI X3.274-1996
  * and ANSI X3.274-1996/AM 1-2000 (section 7.4).  Unlike those
- * standards, `BigDecimal` includes many rounding modes, which
- * were mandatory for division in `BigDecimal` releases prior
+ * standards, [BigDecimal] includes many rounding modes, which
+ * were mandatory for division in [BigDecimal] releases prior
  * to 5.  Any conflicts between these ANSI standards and the
- * `BigDecimal` specification are resolved in favor of
- * `BigDecimal`.
+ * [BigDecimal] specification are resolved in favor of
+ * [BigDecimal].
  *
  *
  * Since the same numerical value can have different
  * representations (with different scales), the rules of arithmetic
- * and rounding must specify both the numerical result and the _scale
+ * and rounding must specify both the numerical result and the scale
  * used in the result's representation.
  *
  *
  *
- * In general the rounding modes and _precision setting determine
+ * In general the rounding modes and precision setting determine
  * how operations return results with a limited number of digits when
  * the exact result has more digits (perhaps infinitely many in the
  * case of division and square root) than the number of digits returned.
  *
  * First, the
  * total number of digits to return is specified by the
- * `MathContext`'s `_precision` setting; this determines
- * the result's *_precision*.  The digit count starts from the
+ * [MathContext]'s `precision` setting; this determines
+ * the result's *precision*.  The digit count starts from the
  * leftmost nonzero digit of the exact result.  The rounding mode
  * determines how any discarded trailing digits affect the returned
  * result.
@@ -112,7 +112,7 @@ import kotlin.math.*
  *
  * For all arithmetic operators , the operation is carried out as
  * though an exact intermediate result were first calculated and then
- * rounded to the number of digits specified by the _precision setting
+ * rounded to the number of digits specified by the precision setting
  * (if necessary), using the selected rounding mode.  If the exact
  * result is not returned, some digit positions of the exact result
  * are discarded.  When rounding increases the magnitude of the
@@ -120,13 +120,13 @@ import kotlin.math.*
  * created by a carry propagating to a leading &quot;9&quot; digit.
  * For example, rounding the value 999.9 to three digits rounding up
  * would be numerically equal to one thousand, represented as
- * 10010<sup>1</sup>.  In such cases, the new &quot;1&quot; is
+ * `10010^1`.  In such cases, the new &quot;1&quot; is
  * the leading digit position of the returned result.
  *
  *
  * Besides a logical exact result, each arithmetic operation has a
- * preferred _scale for representing a result.  The preferred
- * _scale for each operation is listed in the table below.
+ * preferred scale for representing a result.  The preferred
+ * scale for each operation is listed in the table below.
  *
  * <table class="striped" style="text-align:left">
  * <caption>Preferred Scales for Results of Arithmetic Operations
@@ -135,44 +135,44 @@ import kotlin.math.*
  * <tr><th scope="col">Operation</th><th scope="col">Preferred Scale of Result</th></tr>
 </thead> *
  * <tbody>
- * <tr><th scope="row">Add</th><td>max(addend._scale(), augend._scale())</td>
-</tr> * <tr><th scope="row">Subtract</th><td>max(minuend._scale(), subtrahend._scale())</td>
-</tr> * <tr><th scope="row">Multiply</th><td>multiplier._scale() + multiplicand._scale()</td>
-</tr> * <tr><th scope="row">Divide</th><td>dividend._scale() - divisor._scale()</td>
-</tr> * <tr><th scope="row">Square root</th><td>radicand._scale()/2</td>
+ * <tr><th scope="row">Add</th><td>max(addend.scale, augend.scale)</td>
+</tr> * <tr><th scope="row">Subtract</th><td>max(minuend.scale, subtrahend.scale)</td>
+</tr> * <tr><th scope="row">Multiply</th><td>multiplier.scale + multiplicand.scale</td>
+</tr> * <tr><th scope="row">Divide</th><td>dividend.scale - divisor.scale</td>
+</tr> * <tr><th scope="row">Square root</th><td>radicand.scale/2</td>
 </tr></tbody> *
 </table> *
  *
  * These scales are the ones used by the methods which return exact
  * arithmetic results; except that an exact div may have to use a
- * larger _scale since the exact result may have more digits.  For
+ * larger scale since the exact result may have more digits.  For
  * example, `1/32` is `0.03125`.
  *
  *
- * Before rounding, the _scale of the logical exact intermediate
- * result is the preferred _scale for that operation.  If the exact
- * numerical result cannot be represented in `_precision`
- * digits, rounding selects the set of digits to return and the _scale
- * of the result is reduced from the _scale of the intermediate result
- * to the least _scale which can represent the `_precision`
+ * Before rounding, the scale of the logical exact intermediate
+ * result is the preferred scale for that operation.  If the exact
+ * numerical result cannot be represented in `precision`
+ * digits, rounding selects the set of digits to return and the scale
+ * of the result is reduced from the scale of the intermediate result
+ * to the least scale which can represent the `precision`
  * digits actually returned.  If the exact result can be represented
- * with at most `_precision` digits, the representation
- * of the result with the _scale closest to the preferred _scale is
+ * with at most `precision` digits, the representation
+ * of the result with the scale closest to the preferred scale is
  * returned.  In particular, an exactly representable quotient may be
- * represented in fewer than `_precision` digits by removing
- * trailing zeros and decreasing the _scale.  For example, rounding to
+ * represented in fewer than `precision` digits by removing
+ * trailing zeros and decreasing the scale.  For example, rounding to
  * three digits using the [floor][RoundingMode.FLOOR]
  * rounding mode, <br></br>
  *
- * `19/100 = 0.19   // integer=19,  _scale=2` <br></br>
+ * `19/100 = 0.19   // integer=19,  scale=2` <br></br>
  *
  * but<br></br>
  *
- * `21/110 = 0.190  // integer=190, _scale=3` <br></br>
+ * `21/110 = 0.190  // integer=190, scale=3` <br></br>
  *
  *
  * Note that for plus, minus, and timesLong, the reduction in
- * _scale will equal the number of digit positions of the exact result
+ * scale will equal the number of digit positions of the exact result
  * which are discarded. If the rounding causes a carry propagation to
  * create a new high-order digit position, an additional digit of the
  * result is discarded than when no new digit position is created.
@@ -180,50 +180,48 @@ import kotlin.math.*
  *
  * Other methods may have slightly different rounding semantics.
  * For example, the result of the `pow` method using the
- * [specified algorithm][.pow] can
+ * [specified algorithm][BigInteger.pow] can
  * occasionally differ from the rounded mathematical result by more
- * than one unit in the last place, one *[ulp][.ulp]*.
+ * than one unit in the last place, one *[ulp][BigInteger.ulp]*.
  *
  *
- * Two types of operations are provided for manipulating the _scale
- * of a `BigDecimal`: scaling/rounding operations and decimal
- * point motion operations.  Scaling/rounding operations ([ ][.setScale] and [round][.round]) return a
- * `BigDecimal` whose value is approximately (or exactly) equal
- * to that of the operand, but whose _scale or _precision is the
+ * Two types of operations are provided for manipulating the scale
+ * of a [BigDecimal]: scaling/rounding operations and decimal
+ * point motion operations.  Scaling/rounding operations ([setScale][BigDecimal.setScale] and [round][BigDecimal.round]) return a
+ * [BigDecimal] whose value is approximately (or exactly) equal
+ * to that of the operand, but whose scale or _precision is the
  * specified value; that is, they increase or decrease the _precision
  * of the stored number with minimal effect on its value.  Decimal
- * point motion operations ([movePointLeft][.movePointLeft] and
- * [movePointRight][.movePointRight]) return a
- * `BigDecimal` created from the operand by moving the decimal
+ * point motion operations ([movePointLeft][BigDecimal.movePointLeft] and
+ * [movePointRight][BigDecimal.movePointRight]) return a
+ * [BigDecimal] created from the operand by moving the decimal
  * point a specified distance in the specified direction.
  *
  *
  * For the sake of brevity and clarity, pseudo-code is used
- * throughout the descriptions of `BigDecimal` methods.  The
+ * throughout the descriptions of [BigDecimal] methods.  The
  * pseudo-code expression `(i + j)` is shorthand for "a
- * `BigDecimal` whose value is that of the `BigDecimal`
- * `i` added to that of the `BigDecimal`
+ * [BigDecimal] whose value is that of the [BigDecimal]
+ * `i` added to that of the [BigDecimal]
  * `j`." The pseudo-code expression `(i == j)` is
  * shorthand for "`true` if and only if the
- * `BigDecimal` `i` represents the same value as the
- * `BigDecimal` `j`." Other pseudo-code expressions
+ * [BigDecimal] `i` represents the same value as the
+ * [BigDecimal] `j`." Other pseudo-code expressions
  * are interpreted similarly.  Square brackets are used to represent
- * the particular `BigInteger` and _scale pair defining a
- * `BigDecimal` value; for example [19, 2] is the
- * `BigDecimal` numerically equal to 0.19 having a _scale of 2.
+ * the particular [BigInteger] and scale pair defining a
+ * [BigDecimal] value; for example [19, 2] is the
+ * [BigDecimal] numerically equal to 0.19 having a scale of 2.
  *
  *
  *
  * All methods and constructors for this class throw
- * `NullPointerException` when passed a `null` object
+ * [NullPointerException] when passed a `null` object
  * reference for any input parameter.
  *
- * @apiNote Care should be exercised if `BigDecimal` objects
- * are used as keys in a [SortedMap][java.util.SortedMap] or
- * elements in a [SortedSet][java.util.SortedSet] since
- * `BigDecimal`'s *natural ordering* is *inconsistent
- * with equals*.  See [Comparable], [ ] or [java.util.SortedSet] for more
- * information.
+ * @apiNote Care should be exercised if [BigDecimal] objects
+ * are used as keys in sorted data structures,
+ * since [BigDecimal]'s *natural ordering* is *inconsistent
+ * with equals*.  See [Comparable], for more information.
  *
  * @see BigInteger
  *
@@ -231,9 +229,6 @@ import kotlin.math.*
  *
  * @see RoundingMode
  *
- * @see java.util.SortedMap
- *
- * @see java.util.SortedSet
  *
  * @author  Josh Bloch
  * @author  Mike Cowlishaw
@@ -244,18 +239,18 @@ import kotlin.math.*
 class BigDecimal : Comparable<BigDecimal> {
 
     /**
-     * The unscaled value of this BigDecimal, as returned by [ ][.unscaledValue].
+     * The unscaled value of this BigDecimal, as returned by [BigDecimal.unscaledValue].
      *
      * @serial
-     * @see .unscaledValue
+     * @see BigDecimal.unscaledValue
      */
     private val _intVal: BigInteger?
 
     /**
-     * The _scale of this BigDecimal, as returned by [._scale].
+     * The scale of this [BigDecimal], as returned by [BigDecimal.scale].
      *
      * @serial
-     * @see ._scale
+     * @see BigDecimal.scale
      */
     private val _scale: Int  // Note: this may have any value, so
     // calculations must be done in longs
@@ -263,8 +258,8 @@ class BigDecimal : Comparable<BigDecimal> {
     /**
      * The number of decimal digits in this BigDecimal, or 0 if the
      * number of digits are not known (lookaside information).  If
-     * nonzero, the value is guaranteed correct.  Use the _precision()
-     * method to obtain and set the value if it might be 0.  This
+     * nonzero, the value is guaranteed correct.  Use the [BigDecimal.precision]
+     * property to obtain and set the value if it might be 0.  This
      * field is mutable until set nonzero.
      *
      * @since  1.5
@@ -278,7 +273,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * If the absolute value of the significand of this BigDecimal is
-     * less than or equal to `Long.MAX_VALUE`, the value can be
+     * less than or equal to [Long.MAX_VALUE], the value can be
      * compactly stored in this field and used in computations.
      */
     private val _intCompact: Long
@@ -290,8 +285,8 @@ class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * Trusted package private constructor.
-     * Trusted simply means if val is INFLATED, _intVal could not be null and
-     * if _intVal is null, val could not be INFLATED.
+     * Trusted simply means if val is [INFLATED], [_intVal] could not be null and
+     * if [_intVal] is null, val could not be [INFLATED].
      */
     internal constructor(intVal: BigInteger?, `val`: Long, scale: Int, prec: Int) {
         this._scale = scale
@@ -302,24 +297,24 @@ class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * Translates a character array representation of a
-     * `BigDecimal` into a `BigDecimal`, accepting the
-     * same sequence of characters as the [.BigDecimal]
+     * [BigDecimal] into a [BigDecimal], accepting the
+     * same sequence of characters as the aforementioned
      * constructor, while allowing a sub-array to be specified and
      * with rounding according to the context settings.
      *
      * @implNote If the sequence of characters is already available
      * within a character array, using this constructor is faster than
-     * converting the `char` array to string and using the
+     * converting the [CharArray] to string and using the
      * `BigDecimal(String)` constructor.
      *
-     * @param  in `char` array that is the source of characters.
+     * @param  in [CharArray] that is the source of characters.
      * @param  offset first character in the array to inspect.
      * @param  len number of characters to consider.
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
-     * rounding mode is `UNNECESSARY`.
+     * rounding mode is [UNNECESSARY][RoundingMode.UNNECESSARY].
      * @throws NumberFormatException if `in` is not a valid
-     * representation of a `BigDecimal` or the defined subarray
+     * representation of a [BigDecimal] or the defined subarray
      * is not wholly within `in`.
      * @since  1.5
      */
@@ -335,8 +330,8 @@ class BigDecimal : Comparable<BigDecimal> {
         // (temporary) object (a char[] array) for non-compact case.
 
         // Use locals for all fields values until completion
-        var prec = 0                 // record _precision value
-        var scl = 0                  // record _scale value
+        var prec = 0                 // record precision value
+        var scl = 0                  // record scale value
         var rs: Long = 0                  // the compact value in long
         var rb: BigInteger? = null         // the inflated value in BigInteger
         // use array bounds checking to handle too-long, len == 0,
@@ -554,8 +549,8 @@ class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * Translates a character array representation of a
-     * `BigDecimal` into a `BigDecimal`, accepting the
-     * same sequence of characters as the [.BigDecimal]
+     * [BigDecimal] into a [BigDecimal], accepting the
+     * same sequence of characters as the aforementioned
      * constructor and with rounding according to the context
      * settings.
      *
@@ -564,19 +559,19 @@ class BigDecimal : Comparable<BigDecimal> {
      * converting the `char` array to string and using the
      * `BigDecimal(String)` constructor.
      *
-     * @param  in `char` array that is the source of characters.
+     * @param  in `Char` array that is the source of characters.
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
      * @throws NumberFormatException if `in` is not a valid
-     * representation of a `BigDecimal`.
+     * representation of a [BigDecimal].
      * @since  1.5
      */
     internal constructor(`in`: CharArray, mc: MathContext) : this(`in`, 0, `in`.size, mc)
 
     /**
-     * Translates the string representation of a `BigDecimal`
-     * into a `BigDecimal`.  The string representation consists
+     * Translates the string representation of a [BigDecimal]
+     * into a [BigDecimal].  The string representation consists
      * of an optional sign, `'+'` (` '&#92;u002B'`) or
      * `'-'` (`'&#92;u002D'`), followed by a sequence of
      * zero or more decimal digits ("the integer"), optionally
@@ -630,7 +625,7 @@ class BigDecimal : Comparable<BigDecimal> {
     </blockquote> *
      *
      *
-     * The _scale of the returned `BigDecimal` will be the
+     * The _scale of the returned [BigDecimal] will be the
      * number of digits in the fraction, or zero if the string
      * contains no decimal point, subject to adjustment for any
      * exponent; if the string contains an exponent, the exponent is
@@ -645,10 +640,10 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *
      * **Examples:**<br></br>
-     * The value of the returned `BigDecimal` is equal to
+     * The value of the returned [BigDecimal] is equal to
      * *significand*  10<sup>&nbsp;*exponent*</sup>.
      * For each string on the left, the resulting representation
-     * [`BigInteger`, `_scale`] is shown on the right.
+     * [[BigInteger], `_scale`] is shown on the right.
      * <pre>
      * "0"            [0,0]
      * "0.00"         [0,2]
@@ -672,22 +667,22 @@ class BigDecimal : Comparable<BigDecimal> {
      * and [Double.toString].  This is generally the preferred
      * way to convert a `float` or `double` into a
      * BigDecimal, as it doesn't suffer from the unpredictability of
-     * the [.BigDecimal] constructor.
+     * the aforementioned constructor.
      *
-     * @param val String representation of `BigDecimal`.
+     * @param val String representation of [BigDecimal].
      *
      * @throws NumberFormatException if `val` is not a valid
-     * representation of a `BigDecimal`.
+     * representation of a [BigDecimal].
      */
     internal constructor(`val`: String) : this(`val`.toCharArray(), 0, `val`.length)
 
     /**
-     * Translates the string representation of a `BigDecimal`
-     * into a `BigDecimal`, accepting the same strings as the
-     * [.BigDecimal] constructor, with rounding
+     * Translates the string representation of a [BigDecimal]
+     * into a [BigDecimal], accepting the same strings as the
+     * aforementioned constructor, with rounding
      * according to the context settings.
      *
-     * @param  val string representation of a `BigDecimal`.
+     * @param  val string representation of a [BigDecimal].
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
@@ -698,18 +693,18 @@ class BigDecimal : Comparable<BigDecimal> {
     internal constructor(`val`: String, mc: MathContext) : this(`val`.toCharArray(), 0, `val`.length, mc)
 
     /**
-     * Translates a `double` into a `BigDecimal`, with
+     * Translates a `double` into a [BigDecimal], with
      * rounding according to the context settings.  The _scale of the
-     * `BigDecimal` is the smallest value such that
+     * [BigDecimal] is the smallest value such that
      * `(10<sup>_scale</sup>  val)` is an integer.
      *
      *
      * The results of this constructor can be somewhat unpredictable
      * and its use is generally not recommended; see the notes under
-     * the [.BigDecimal] constructor.
+     * the aforementioned constructor.
      *
      * @param  val `double` value to be converted to
-     * `BigDecimal`.
+     * [BigDecimal].
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
      * RoundingMode is UNNECESSARY.
@@ -800,11 +795,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Translates a `BigInteger` into a `BigDecimal`.
-     * The _scale of the `BigDecimal` is zero.
+     * Translates a [BigInteger] into a [BigDecimal].
+     * The _scale of the [BigDecimal] is zero.
      *
-     * @param val `BigInteger` value to be converted to
-     * `BigDecimal`.
+     * @param val [BigInteger] value to be converted to
+     * [BigDecimal].
      */
     internal constructor(`val`: BigInteger) {
         _scale = 0
@@ -813,12 +808,12 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Translates a `BigInteger` into a `BigDecimal`
+     * Translates a [BigInteger] into a [BigDecimal]
      * rounding according to the context settings.  The _scale of the
-     * `BigDecimal` is zero.
+     * [BigDecimal] is zero.
      *
-     * @param val `BigInteger` value to be converted to
-     * `BigDecimal`.
+     * @param val [BigInteger] value to be converted to
+     * [BigDecimal].
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
@@ -827,13 +822,13 @@ class BigDecimal : Comparable<BigDecimal> {
     internal constructor(`val`: BigInteger, mc: MathContext) : this(`val`, 0, mc) {}
 
     /**
-     * Translates a `BigInteger` unscaled value and an
-     * `int` _scale into a `BigDecimal`.  The value of
-     * the `BigDecimal` is
+     * Translates a [BigInteger] unscaled value and an
+     * `int` _scale into a [BigDecimal].  The value of
+     * the [BigDecimal] is
      * `(unscaledVal  10<sup>-_scale</sup>)`.
      *
-     * @param unscaledVal unscaled value of the `BigDecimal`.
-     * @param scale _scale of the `BigDecimal`.
+     * @param unscaledVal unscaled value of the [BigDecimal].
+     * @param scale _scale of the [BigDecimal].
      */
     internal constructor(unscaledVal: BigInteger, scale: Int) {
         // Negative scales are now allowed
@@ -843,15 +838,15 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Translates a `BigInteger` unscaled value and an
-     * `int` _scale into a `BigDecimal`, with rounding
+     * Translates a [BigInteger] unscaled value and an
+     * `int` _scale into a [BigDecimal], with rounding
      * according to the context settings.  The value of the
-     * `BigDecimal` is `(unscaledVal
+     * [BigDecimal] is `(unscaledVal
      * 10<sup>-_scale</sup>)`, rounded according to the
      * `_precision` and rounding mode settings.
      *
-     * @param  unscaledVal unscaled value of the `BigDecimal`.
-     * @param  scale _scale of the `BigDecimal`.
+     * @param  unscaledVal unscaled value of the [BigDecimal].
+     * @param  scale _scale of the [BigDecimal].
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
@@ -898,11 +893,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Translates an `int` into a `BigDecimal`.  The
-     * _scale of the `BigDecimal` is zero.
+     * Translates an `int` into a [BigDecimal].  The
+     * _scale of the [BigDecimal] is zero.
      *
      * @param val `int` value to be converted to
-     * `BigDecimal`.
+     * [BigDecimal].
      * @since  1.5
      */
     internal constructor(`val`: Int) {
@@ -912,11 +907,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Translates an `int` into a `BigDecimal`, with
+     * Translates an `int` into a [BigDecimal], with
      * rounding according to the context settings.  The _scale of the
-     * `BigDecimal`, before any rounding, is zero.
+     * [BigDecimal], before any rounding, is zero.
      *
-     * @param  val `int` value to be converted to `BigDecimal`.
+     * @param  val `int` value to be converted to [BigDecimal].
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
@@ -944,10 +939,10 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Translates a `long` into a `BigDecimal`.  The
-     * _scale of the `BigDecimal` is zero.
+     * Translates a `long` into a [BigDecimal].  The
+     * _scale of the [BigDecimal] is zero.
      *
-     * @param val `long` value to be converted to `BigDecimal`.
+     * @param val `long` value to be converted to [BigDecimal].
      * @since  1.5
      */
     internal constructor(`val`: Long) {
@@ -957,11 +952,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Translates a `long` into a `BigDecimal`, with
+     * Translates a `long` into a [BigDecimal], with
      * rounding according to the context settings.  The _scale of the
-     * `BigDecimal`, before any rounding, is zero.
+     * [BigDecimal], before any rounding, is zero.
      *
-     * @param  val `long` value to be converted to `BigDecimal`.
+     * @param  val `long` value to be converted to [BigDecimal].
      * @param  mc the context to use.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
@@ -1009,11 +1004,11 @@ class BigDecimal : Comparable<BigDecimal> {
 
     // Arithmetic Operations
     /**
-     * Returns a `BigDecimal` whose value is `(this +
+     * Returns a [BigDecimal] whose value is `(this +
      * augend)`, and whose _scale is `max(this._scale(),
      * augend._scale())`.
      *
-     * @param  augend value to be added to this `BigDecimal`.
+     * @param  augend value to be added to this [BigDecimal].
      * @return `this + augend`
      */
     @JsName("plus")
@@ -1034,13 +1029,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this + augend)`,
+     * Returns a [BigDecimal] whose value is `(this + augend)`,
      * with rounding according to the context settings.
      *
      * If either number is zero and the _precision setting is nonzero then
      * the other number, rounded if necessary, is used as the result.
      *
-     * @param  augend value to be added to this `BigDecimal`.
+     * @param  augend value to be added to this [BigDecimal].
      * @param  mc the context to use.
      * @return `this + augend`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
@@ -1095,7 +1090,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * Returns an array of length two, the sum of whose entries is
-     * equal to the rounded sum of the `BigDecimal` arguments.
+     * equal to the rounded sum of the [BigDecimal] arguments.
      *
      *
      * If the digit positions of the arguments have a sufficient
@@ -1164,11 +1159,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this -
+     * Returns a [BigDecimal] whose value is `(this -
      * subtrahend)`, and whose _scale is `max(this._scale(),
      * subtrahend._scale())`.
      *
-     * @param  subtrahend value to be subtracted from this `BigDecimal`.
+     * @param  subtrahend value to be subtracted from this [BigDecimal].
      * @return `this - subtrahend`
      */
     @JsName("minus")
@@ -1192,13 +1187,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this - subtrahend)`,
+     * Returns a [BigDecimal] whose value is `(this - subtrahend)`,
      * with rounding according to the context settings.
      *
      * If `subtrahend` is zero then this, rounded if necessary, is used as the
      * result.  If this is zero then the result is `subtrahend.unaryMinus(mc)`.
      *
-     * @param  subtrahend value to be subtracted from this `BigDecimal`.
+     * @param  subtrahend value to be subtracted from this [BigDecimal].
      * @param  mc the context to use.
      * @return `this - subtrahend`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
@@ -1212,11 +1207,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this
+     * Returns a [BigDecimal] whose value is `(this
      * multiplicand)`, and whose _scale is `(this._scale() +
      * multiplicand._scale())`.
      *
-     * @param  multiplicand value to be multiplied by this `BigDecimal`.
+     * @param  multiplicand value to be multiplied by this [BigDecimal].
      * @return `this * multiplicand`
      */
     @JsName("times")
@@ -1238,10 +1233,10 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this
+     * Returns a [BigDecimal] whose value is `(this
      * multiplicand)`, with rounding according to the context settings.
      *
-     * @param  multiplicand value to be multiplied by this `BigDecimal`.
+     * @param  multiplicand value to be multiplied by this [BigDecimal].
      * @param  mc the context to use.
      * @return `this * multiplicand`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
@@ -1269,13 +1264,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this /
+     * Returns a [BigDecimal] whose value is `(this /
      * divisor)`, and whose _scale is as specified.  If rounding must
      * be performed to generate a result with the specified _scale, the
      * specified rounding mode is applied.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
-     * @param  scale _scale of the `BigDecimal` quotient to be returned.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
+     * @param  scale _scale of the [BigDecimal] quotient to be returned.
      * @param  roundingMode rounding mode to apply.
      * @return `this / divisor`
      * @throws ArithmeticException if `divisor` is zero,
@@ -1325,13 +1320,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this /
+     * Returns a [BigDecimal] whose value is `(this /
      * divisor)`, and whose _scale is as specified.  If rounding must
      * be performed to generate a result with the specified _scale, the
      * specified rounding mode is applied.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
-     * @param  scale _scale of the `BigDecimal` quotient to be returned.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
+     * @param  scale _scale of the [BigDecimal] quotient to be returned.
      * @param  roundingMode rounding mode to apply.
      * @return `this / divisor`
      * @throws ArithmeticException if `divisor` is zero,
@@ -1345,12 +1340,12 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this /
+     * Returns a [BigDecimal] whose value is `(this /
      * divisor)`, and whose _scale is `this._scale()`.  If
      * rounding must be performed to generate a result with the given
      * _scale, the specified rounding mode is applied.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @param  roundingMode rounding mode to apply.
      * @return `this / divisor`
      * @throws ArithmeticException if `divisor==0`, or
@@ -1386,12 +1381,12 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this /
+     * Returns a [BigDecimal] whose value is `(this /
      * divisor)`, and whose _scale is `this._scale()`.  If
      * rounding must be performed to generate a result with the given
      * _scale, the specified rounding mode is applied.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @param  roundingMode rounding mode to apply.
      * @return `this / divisor`
      * @throws ArithmeticException if `divisor==0`, or
@@ -1405,13 +1400,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this /
+     * Returns a [BigDecimal] whose value is `(this /
      * divisor)`, and whose preferred _scale is `(this._scale() -
      * divisor._scale())`; if the exact quotient cannot be
      * represented (because it has a non-terminating decimal
      * expansion) an `ArithmeticException` is thrown.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @throws ArithmeticException if the exact quotient does not have a
      * terminating decimal expansion
      * @return `this / divisor`
@@ -1474,10 +1469,10 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this /
+     * Returns a [BigDecimal] whose value is `(this /
      * divisor)`, with rounding according to the context settings.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @param  mc the context to use.
      * @return `this / divisor`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
@@ -1533,12 +1528,12 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is the integer part
+     * Returns a [BigDecimal] whose value is the integer part
      * of the quotient `(this / divisor)` rounded down.  The
      * preferred _scale of the result is `(this._scale() -
      * divisor._scale())`.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @return The integer part of `this / divisor`.
      * @throws ArithmeticException if `divisor==0`
      * @since  1.5
@@ -1584,7 +1579,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is the integer part
+     * Returns a [BigDecimal] whose value is the integer part
      * of `(this / divisor)`.  Since the integer part of the
      * exact quotient does not depend on the rounding mode, the
      * rounding mode does not affect the values returned by this
@@ -1594,7 +1589,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * the exact quotient needs more than `mc._precision`
      * digits.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @param  mc the context to use.
      * @return The integer part of `this / divisor`.
      * @throws ArithmeticException if `divisor==0`
@@ -1658,7 +1653,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(this % divisor)`.
+     * Returns a [BigDecimal] whose value is `(this % divisor)`.
      *
      *
      * The remainder is given by
@@ -1666,7 +1661,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * Note that this is *not* the modulo operation (the result can be
      * negative).
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @return `this % divisor`.
      * @throws ArithmeticException if `divisor==0`
      * @since  1.5
@@ -1679,7 +1674,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
 
     /**
-     * Returns a `BigDecimal` whose value is `(this %
+     * Returns a [BigDecimal] whose value is `(this %
      * divisor)`, with rounding according to the context settings.
      * The `MathContext` settings affect the implicit div
      * used to compute the remainder.  The remainder computation
@@ -1692,7 +1687,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * mc).timesLong(divisor))`.  Note that this is not the modulo
      * operation (the result can be negative).
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided.
+     * @param  divisor value by which this [BigDecimal] is to be divided.
      * @param  mc the context to use.
      * @return `this % divisor`, rounded as necessary.
      * @throws ArithmeticException if `divisor==0`
@@ -1710,7 +1705,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a two-element `BigDecimal` array containing the
+     * Returns a two-element [BigDecimal] array containing the
      * result of `divideToIntegralValue` followed by the result of
      * `remainder` on the two operands.
      *
@@ -1720,9 +1715,9 @@ class BigDecimal : Comparable<BigDecimal> {
      * `divideToIntegralValue` and `remainder` methods
      * separately because the division need only be carried out once.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided,
+     * @param  divisor value by which this [BigDecimal] is to be divided,
      * and the remainder computed.
-     * @return a two element `BigDecimal` array: the quotient
+     * @return a two element [BigDecimal] array: the quotient
      * (the result of `divideToIntegralValue`) is the initial element
      * and the remainder is the final element.
      * @throws ArithmeticException if `divisor==0`
@@ -1746,7 +1741,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a two-element `BigDecimal` array containing the
+     * Returns a two-element [BigDecimal] array containing the
      * result of `divideToIntegralValue` followed by the result of
      * `remainder` on the two operands calculated with rounding
      * according to the context settings.
@@ -1757,10 +1752,10 @@ class BigDecimal : Comparable<BigDecimal> {
      * `divideToIntegralValue` and `remainder` methods
      * separately because the division need only be carried out once.
      *
-     * @param  divisor value by which this `BigDecimal` is to be divided,
+     * @param  divisor value by which this [BigDecimal] is to be divided,
      * and the remainder computed.
      * @param  mc the context to use.
-     * @return a two element `BigDecimal` array: the quotient
+     * @return a two element [BigDecimal] array: the quotient
      * (the result of `divideToIntegralValue`) is the
      * initial element and the remainder is the final element.
      * @throws ArithmeticException if `divisor==0`
@@ -2069,18 +2064,18 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is
+     * Returns a [BigDecimal] whose value is
      * `(this<sup>n</sup>)`, The power is computed exactly, to
      * unlimited _precision.
      *
      *
      * The parameter `n` must be in the range 0 through
-     * 999999999, inclusive.  `ZERO.pow(0)` returns [ ][.ONE].
+     * 999999999, inclusive.  `ZERO.pow(0)` returns [BigDecimal.ONE].
      *
      * Note that future releases may expand the allowable exponent
      * range of this method.
      *
-     * @param  n power to raise this `BigDecimal` to.
+     * @param  n power to raise this [BigDecimal] to.
      * @return `this<sup>n</sup>`
      * @throws ArithmeticException if `n` is out of range.
      * @since  1.5
@@ -2097,7 +2092,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
 
     /**
-     * Returns a `BigDecimal` whose value is
+     * Returns a [BigDecimal] whose value is
      * `(this<sup>n</sup>)`.  The current implementation uses
      * the core algorithm defined in ANSI standard X3.274-1996 with
      * rounding according to the context settings.  In general, the
@@ -2118,7 +2113,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * `mc._precision` decimal digits
      *
      *
-     *  *  if `n` is zero, [.ONE] is returned even if
+     *  *  if `n` is zero, [Bi.ONE] is returned even if
      * `this` is zero, otherwise
      *
      *  *  if `n` is positive, the result is calculated via
@@ -2138,7 +2133,7 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *
      *
-     * @param  n power to raise this `BigDecimal` to.
+     * @param  n power to raise this [BigDecimal] to.
      * @param  mc the context to use.
      * @return `this<sup>n</sup>` using the ANSI standard X3.274-1996
      * algorithm
@@ -2194,8 +2189,8 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is the absolute value
-     * of this `BigDecimal`, and whose _scale is
+     * Returns a [BigDecimal] whose value is the absolute value
+     * of this [BigDecimal], and whose _scale is
      * `this._scale()`.
      *
      * @return `absoluteValue(this)`
@@ -2206,8 +2201,8 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
     /**
-     * Returns a `BigDecimal` whose value is the absolute value
-     * of this `BigDecimal`, with rounding according to the
+     * Returns a [BigDecimal] whose value is the absolute value
+     * of this [BigDecimal], with rounding according to the
      * context settings.
      *
      * @param mc the context to use.
@@ -2222,7 +2217,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(-this)`,
+     * Returns a [BigDecimal] whose value is `(-this)`,
      * and whose _scale is `this._scale()`.
      *
      * @return `-this`.
@@ -2237,7 +2232,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(-this)`,
+     * Returns a [BigDecimal] whose value is `(-this)`,
      * with rounding according to the context settings.
      *
      * @param mc the context to use.
@@ -2252,12 +2247,12 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(+this)`, and whose
+     * Returns a [BigDecimal] whose value is `(+this)`, and whose
      * _scale is `this._scale()`.
      *
      *
-     * This method, which simply returns this `BigDecimal`
-     * is included for symmetry with the unary minus method [ ][.unaryMinus].
+     * This method, which simply returns this [BigDecimal]
+     * is included for symmetry with the unary minus method [ ][BigDecimal.unaryMinus].
      *
      * @return `this`.
      * @see .unaryMinus
@@ -2269,11 +2264,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose value is `(+this)`,
+     * Returns a [BigDecimal] whose value is `(+this)`,
      * with rounding according to the context settings.
      *
      *
-     * The effect of this method is identical to that of the [ ][.round] method.
+     * The effect of this method is identical to that of the [ ][BigDecimal.round] method.
      *
      * @param mc the context to use.
      * @return `this`, rounded as necessary.  A zero result will
@@ -2289,9 +2284,9 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns the _signum function of this `BigDecimal`.
+     * Returns the _signum function of this [BigDecimal].
      *
-     * @return -1, 0, or 1 as the value of this `BigDecimal`
+     * @return -1, 0, or 1 as the value of this [BigDecimal]
      * is negative, zero, or positive.
      */
     val signum: Int
@@ -2303,14 +2298,14 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
     /**
-     * Returns the *_scale* of this `BigDecimal`.  If zero
+     * Returns the *_scale* of this [BigDecimal].  If zero
      * or positive, the _scale is the number of digits to the right of
      * the decimal point.  If negative, the unscaled value of the
      * number is multiplied by ten to the power of the negation of the
      * _scale.  For example, a _scale of `-3` means the unscaled
      * value is multiplied by 1000.
      *
-     * @return the _scale of this `BigDecimal`.
+     * @return the _scale of this [BigDecimal].
      */
     val scale: Int
         get() {
@@ -2318,13 +2313,13 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
     /**
-     * Returns the *_precision* of this `BigDecimal`.  (The
+     * Returns the *_precision* of this [BigDecimal].  (The
      * _precision is the number of digits in the unscaled value.)
      *
      *
      * The _precision of a zero value is 1.
      *
-     * @return the _precision of this `BigDecimal`.
+     * @return the _precision of this [BigDecimal].
      * @since  1.5
      */
     val precision: Int
@@ -2343,11 +2338,11 @@ class BigDecimal : Comparable<BigDecimal> {
 
 
     /**
-     * Returns a `BigInteger` whose value is the *unscaled
-     * value* of this `BigDecimal`.  (Computes `(this *
+     * Returns a [BigInteger] whose value is the *unscaled
+     * value* of this [BigDecimal].  (Computes `(this *
      * 10<sup>this._scale()</sup>)`.)
      *
-     * @return the unscaled value of this `BigDecimal`.
+     * @return the unscaled value of this [BigDecimal].
      * @since  1.2
      */
     val unscaledValue: BigInteger
@@ -2359,20 +2354,20 @@ class BigDecimal : Comparable<BigDecimal> {
     // Scaling/Rounding Operations
 
     /**
-     * Returns a `BigDecimal` rounded according to the
+     * Returns a [BigDecimal] rounded according to the
      * `MathContext` settings.  If the _precision setting is 0 then
      * no rounding takes place.
      *
      *
      * The effect of this method is identical to that of the
-     * [.plus] method.
+     * [BigDecimal.plus] method.
      *
      * @param mc the context to use.
-     * @return a `BigDecimal` rounded according to the
+     * @return a [BigDecimal] rounded according to the
      * `MathContext` settings.
      * @throws ArithmeticException if the rounding mode is
      * `UNNECESSARY` and the
-     * `BigDecimal`  operation would require rounding.
+     * [BigDecimal]  operation would require rounding.
      * @see .plus
      * @since  1.5
      */
@@ -2382,9 +2377,9 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose _scale is the specified
+     * Returns a [BigDecimal] whose _scale is the specified
      * value, and whose unscaled value is determined by multiplying or
-     * dividing this `BigDecimal`'s unscaled value by the
+     * dividing this [BigDecimal]'s unscaled value by the
      * appropriate power of ten to maintain its overall value.  If the
      * _scale is reduced by the operation, the unscaled value must be
      * divided (rather than multiplied), and the value may be changed;
@@ -2398,11 +2393,11 @@ class BigDecimal : Comparable<BigDecimal> {
      * Instead, `setScale` returns an object with the proper
      * _scale; the returned object may or may not be newly allocated.
      *
-     * @param  newScale _scale of the `BigDecimal` value to be returned.
+     * @param  newScale _scale of the [BigDecimal] value to be returned.
      * @param  roundingMode The rounding mode to apply.
-     * @return a `BigDecimal` whose _scale is the specified value,
+     * @return a [BigDecimal] whose _scale is the specified value,
      * and whose unscaled value is determined by multiplying or
-     * dividing this `BigDecimal`'s unscaled value by the
+     * dividing this [BigDecimal]'s unscaled value by the
      * appropriate power of ten to maintain its overall value.
      * @throws ArithmeticException if `roundingMode==UNNECESSARY`
      * and the specified scaling operation would require
@@ -2417,9 +2412,9 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose _scale is the specified
+     * Returns a [BigDecimal] whose _scale is the specified
      * value, and whose unscaled value is determined by multiplying or
-     * dividing this `BigDecimal`'s unscaled value by the
+     * dividing this [BigDecimal]'s unscaled value by the
      * appropriate power of ten to maintain its overall value.  If the
      * _scale is reduced by the operation, the unscaled value must be
      * divided (rather than multiplied), and the value may be changed;
@@ -2433,11 +2428,11 @@ class BigDecimal : Comparable<BigDecimal> {
      * Instead, `setScale` returns an object with the proper
      * _scale; the returned object may or may not be newly allocated.
      *
-     * @param  newScale _scale of the `BigDecimal` value to be returned.
+     * @param  newScale _scale of the [BigDecimal] value to be returned.
      * @param  roundingMode The rounding mode to apply.
-     * @return a `BigDecimal` whose _scale is the specified value,
+     * @return a [BigDecimal] whose _scale is the specified value,
      * and whose unscaled value is determined by multiplying or
-     * dividing this `BigDecimal`'s unscaled value by the
+     * dividing this [BigDecimal]'s unscaled value by the
      * appropriate power of ten to maintain its overall value.
      * @throws ArithmeticException if `roundingMode==ROUND_UNNECESSARY`
      * and the specified scaling operation would require
@@ -2518,17 +2513,17 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` whose _scale is the specified
+     * Returns a [BigDecimal] whose _scale is the specified
      * value, and whose value is numerically equal to this
-     * `BigDecimal`'s.  Throws an `ArithmeticException`
+     * [BigDecimal]'s.  Throws an `ArithmeticException`
      * if this is not possible.
      *
      *
      * This call is typically used to increase the _scale, in which
-     * case it is guaranteed that there exists a `BigDecimal`
+     * case it is guaranteed that there exists a [BigDecimal]
      * of the specified _scale and the correct value.  The call can
      * also be used to reduce the _scale if the caller knows that the
-     * `BigDecimal` has sufficiently many zeros at the end of
+     * [BigDecimal] has sufficiently many zeros at the end of
      * its fractional part (i.e., factors of ten in its integer value)
      * to allow for the rescaling without changing its value.
      *
@@ -2537,7 +2532,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * versions of `setScale`, but saves the caller the trouble
      * of specifying a rounding mode in cases where it is irrelevant.
      *
-     * @apiNote Since `BigDecimal` objects are immutable,
+     * @apiNote Since [BigDecimal] objects are immutable,
      * calls of this method do *not* result in the original
      * object being modified, contrary to the usual convention of
      * having methods named `set*X*` mutate field
@@ -2545,10 +2540,10 @@ class BigDecimal : Comparable<BigDecimal> {
      * object with the proper _scale; the returned object may or may
      * not be newly allocated.
      *
-     * @param  newScale _scale of the `BigDecimal` value to be returned.
-     * @return a `BigDecimal` whose _scale is the specified value, and
+     * @param  newScale _scale of the [BigDecimal] value to be returned.
+     * @return a [BigDecimal] whose _scale is the specified value, and
      * whose unscaled value is determined by multiplying or dividing
-     * this `BigDecimal`'s unscaled value by the appropriate
+     * this [BigDecimal]'s unscaled value by the appropriate
      * power of ten to maintain its overall value.
      * @throws ArithmeticException if the specified scaling operation would
      * require rounding.
@@ -2564,17 +2559,17 @@ class BigDecimal : Comparable<BigDecimal> {
     // Decimal Point Motion Operations
 
     /**
-     * Returns a `BigDecimal` which is equivalent to this one
+     * Returns a [BigDecimal] which is equivalent to this one
      * with the decimal point moved `n` places to the left.  If
      * `n` is non-negative, the call merely adds `n` to
      * the _scale.  If `n` is negative, the call is equivalent
-     * to `movePointRight(-n)`.  The `BigDecimal`
+     * to `movePointRight(-n)`.  The [BigDecimal]
      * returned by this call has value `(this
      * 10<sup>-n</sup>)` and _scale `max(this._scale()+n,
      * 0)`.
      *
      * @param  n number of places to move the decimal point to the left.
-     * @return a `BigDecimal` which is equivalent to this one with the
+     * @return a [BigDecimal] which is equivalent to this one with the
      * decimal point moved `n` places to the left.
      * @throws ArithmeticException if _scale overflows.
      */
@@ -2587,17 +2582,17 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` which is equivalent to this one
+     * Returns a [BigDecimal] which is equivalent to this one
      * with the decimal point moved `n` places to the right.
      * If `n` is non-negative, the call merely subtracts
      * `n` from the _scale.  If `n` is negative, the call
      * is equivalent to `movePointLeft(-n)`.  The
-     * `BigDecimal` returned by this call has value `(this
+     * [BigDecimal] returned by this call has value `(this
      *  10<sup>n</sup>)` and _scale `max(this._scale()-n,
      * 0)`.
      *
      * @param  n number of places to move the decimal point to the right.
-     * @return a `BigDecimal` which is equivalent to this one
+     * @return a [BigDecimal] which is equivalent to this one
      * with the decimal point moved `n` places to the right.
      * @throws ArithmeticException if _scale overflows.
      */
@@ -2631,17 +2626,17 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a `BigDecimal` which is numerically equal to
+     * Returns a [BigDecimal] which is numerically equal to
      * this one but with any trailing zeros removed from the
      * representation.  For example, stripping the trailing zeros from
-     * the `BigDecimal` value `600.0`, which has
-     * [`BigInteger`, `_scale`] components equals to
-     * [6000, 1], yields `6E2` with [`BigInteger`,
+     * the [BigDecimal] value `600.0`, which has
+     * [[BigInteger], `_scale`] components equals to
+     * [6000, 1], yields `6E2` with [[BigInteger],
      * `_scale`] components equals to [6, -2].  If
      * this BigDecimal is numerically equal to zero, then
      * `BigDecimal.ZERO` is returned.
      *
-     * @return a numerically equal `BigDecimal` with any
+     * @return a numerically equal [BigDecimal] with any
      * trailing zeros removed.
      * @since 1.5
      */
@@ -2659,8 +2654,8 @@ class BigDecimal : Comparable<BigDecimal> {
     // Comparison Operations
 
     /**
-     * Compares this `BigDecimal` with the specified
-     * `BigDecimal`.  Two `BigDecimal` objects that are
+     * Compares this [BigDecimal] with the specified
+     * [BigDecimal].  Two [BigDecimal] objects that are
      * equal in value but have a different _scale (like 2.0 and 2.00)
      * are considered equal by this method.  This method is provided
      * in preference to individual methods for each of the six boolean
@@ -2670,9 +2665,9 @@ class BigDecimal : Comparable<BigDecimal> {
      * `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
      * &lt;*op*&gt; is one of the six comparison operators.
      *
-     * @param  val `BigDecimal` to which this `BigDecimal` is
+     * @param  val [BigDecimal] to which this [BigDecimal] is
      * to be compared.
-     * @return -1, 0, or 1 as this `BigDecimal` is numerically
+     * @return -1, 0, or 1 as this [BigDecimal] is numerically
      * less than, equal to, or greater than `val`.
      */
     override fun compareTo(`val`: BigDecimal): Int {
@@ -2743,17 +2738,17 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Compares this `BigDecimal` with the specified
-     * `Object` for equality.  Unlike [ ][.compareTo], this method considers two
-     * `BigDecimal` objects equal only if they are equal in
+     * Compares this [BigDecimal] with the specified
+     * `Object` for equality.  Unlike [BigDecimal.compareTo], this method considers two
+     * [BigDecimal] objects equal only if they are equal in
      * value and _scale (thus 2.0 is not equal to 2.00 when compared by
      * this method).
      *
-     * @param  x `Object` to which this `BigDecimal` is
+     * @param  x `Object` to which this [BigDecimal] is
      * to be compared.
      * @return `true` if and only if the specified `Object` is a
-     * `BigDecimal` whose value and _scale are equal to this
-     * `BigDecimal`'s.
+     * [BigDecimal] whose value and _scale are equal to this
+     * [BigDecimal]'s.
      * @see .compareTo
      * @see .hashCode
      */
@@ -2778,13 +2773,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns the minimum of this `BigDecimal` and
+     * Returns the minimum of this [BigDecimal] and
      * `val`.
      *
      * @param  val value with which the minimum is to be computed.
-     * @return the `BigDecimal` whose value is the lesser of this
-     * `BigDecimal` and `val`.  If they are equal,
-     * as defined by the [compareTo][.compareTo]
+     * @return the [BigDecimal] whose value is the lesser of this
+     * [BigDecimal] and `val`.  If they are equal,
+     * as defined by the [compareTo][BigDecimal.compareTo]
      * method, `this` is returned.
      * @see .compareTo
      */
@@ -2794,12 +2789,12 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns the maximum of this `BigDecimal` and `val`.
+     * Returns the maximum of this [BigDecimal] and `val`.
      *
      * @param  val value with which the maximum is to be computed.
-     * @return the `BigDecimal` whose value is the greater of this
-     * `BigDecimal` and `val`.  If they are equal,
-     * as defined by the [compareTo][.compareTo]
+     * @return the [BigDecimal] whose value is the greater of this
+     * [BigDecimal] and `val`.  If they are equal,
+     * as defined by the [compareTo][BigDecimal.compareTo]
      * method, `this` is returned.
      * @see .compareTo
      */
@@ -2811,12 +2806,12 @@ class BigDecimal : Comparable<BigDecimal> {
     // Hash Function
 
     /**
-     * Returns the hash code for this `BigDecimal`.  Note that
-     * two `BigDecimal` objects that are numerically equal but
+     * Returns the hash code for this [BigDecimal].  Note that
+     * two [BigDecimal] objects that are numerically equal but
      * differ in _scale (like 2.0 and 2.00) will generally *not*
      * have the same hash code.
      *
-     * @return hash code for this `BigDecimal`.
+     * @return hash code for this [BigDecimal].
      * @see .equals
      */
     override fun hashCode(): Int {
@@ -2831,13 +2826,13 @@ class BigDecimal : Comparable<BigDecimal> {
     // Format Converters
 
     /**
-     * Returns the string representation of this `BigDecimal`,
+     * Returns the string representation of this [BigDecimal],
      * using scientific notation if an exponent is needed.
      *
      *
-     * A standard canonical string form of the `BigDecimal`
+     * A standard canonical string form of the [BigDecimal]
      * is created as though by the following steps: first, the
-     * absolute value of the unscaled value of the `BigDecimal`
+     * absolute value of the unscaled value of the [BigDecimal]
      * is converted to a string in base ten using the characters
      * `'0'` through `'9'` with no leading zeros (except
      * if its value is zero, in which case a single `'0'`
@@ -2868,7 +2863,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * Otherwise (that is, if the _scale is negative, or the
      * adjusted exponent is less than `-6`), the number will be
      * converted to a character form using exponential notation.  In
-     * this case, if the converted `BigInteger` has more than
+     * this case, if the converted [BigInteger] has more than
      * one digit a decimal point is inserted after the first digit.
      * An exponent in character form is then suffixed to the converted
      * unscaled value (perhaps with inserted decimal point); this
@@ -2906,12 +2901,12 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *
      *  1. There is a one-to-one mapping between the distinguishable
-     * `BigDecimal` values and the result of this conversion.
-     * That is, every distinguishable `BigDecimal` value
+     * [BigDecimal] values and the result of this conversion.
+     * That is, every distinguishable [BigDecimal] value
      * (unscaled value and _scale) has a unique string representation
      * as a result of using `toString`.  If that string
-     * representation is converted back to a `BigDecimal` using
-     * the [.BigDecimal] constructor, then the original
+     * representation is converted back to a [BigDecimal] using
+     * the aforementioned constructor, then the original
      * value will be recovered.
      *
      *  1. The string produced for a given number is always the same;
@@ -2920,10 +2915,10 @@ class BigDecimal : Comparable<BigDecimal> {
      * data, or as a key for a Hashtable, etc.  Locale-sensitive
      * number formatting and parsing is handled by the [ ] class and its subclasses.
      *
-     *  1. The [.toEngineeringString] method may be used for
+     *  1. The [BigDecimal.toEngineeringString] method may be used for
      * presenting numbers with exponents in engineering notation, and the
-     * [setScale][.setScale] method may be used for
-     * rounding a `BigDecimal` so it has a known number of digits after
+     * [setScale][BigDecimal.setScale] method may be used for
+     * rounding a [BigDecimal] so it has a known number of digits after
      * the decimal point.
      *
      *  1. The digit-to-character mapping provided by
@@ -2931,7 +2926,7 @@ class BigDecimal : Comparable<BigDecimal> {
      *
      *
      *
-     * @return string representation of this `BigDecimal`.
+     * @return string representation of this [BigDecimal].
      * @see Character.forDigit
      *
      * @see .BigDecimal
@@ -2946,26 +2941,26 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a string representation of this `BigDecimal`,
+     * Returns a string representation of this [BigDecimal],
      * using engineering notation if an exponent is needed.
      *
      *
-     * Returns a string that represents the `BigDecimal` as
-     * described in the [.toString] method, except that if
+     * Returns a string that represents the [BigDecimal] as
+     * described in the [BigDecimal.toString] method, except that if
      * exponential notation is used, the power of ten is adjusted to
      * be a multiple of three (engineering notation) such that the
      * integer part of nonzero values will be in the range 1 through
      * 999.  If exponential notation is used for zero values, a
      * decimal point and one or two fractional zero digits are used so
      * that the _scale of the zero value is preserved.  Note that
-     * unlike the output of [.toString], the output of this
+     * unlike the output of [BigDecimal.toString], the output of this
      * method is *not* guaranteed to recover the same [integer,
-     * _scale] pair of this `BigDecimal` if the output string is
-     * converting back to a `BigDecimal` using the [ ][.BigDecimal].  The result of this method meets
+     * _scale] pair of this [BigDecimal] if the output string is
+     * converting back to a [BigDecimal] using the aforementioned.  The result of this method meets
      * the weaker constraint of always producing a numerically equal
      * result from applying the string constructor to the method's output.
      *
-     * @return string representation of this `BigDecimal`, using
+     * @return string representation of this [BigDecimal], using
      * engineering notation if an exponent is needed.
      * @since  1.5
      */
@@ -2975,7 +2970,7 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Returns a string representation of this `BigDecimal`
+     * Returns a string representation of this [BigDecimal]
      * without an exponent field.  For values with a positive _scale,
      * the number of digits to the right of the decimal point is used
      * to indicate _scale.  For values with a zero or negative _scale,
@@ -2990,18 +2985,18 @@ class BigDecimal : Comparable<BigDecimal> {
      * zero or positive.
      *
      * Note that if the result of this method is passed to the
-     * [string constructor][.BigDecimal], only the
-     * numerical value of this `BigDecimal` will necessarily be
-     * recovered; the representation of the new `BigDecimal`
+     * string constructor, only the
+     * numerical value of this [BigDecimal] will necessarily be
+     * recovered; the representation of the new [BigDecimal]
      * may have a different _scale.  In particular, if this
-     * `BigDecimal` has a negative _scale, the string resulting
+     * [BigDecimal] has a negative _scale, the string resulting
      * from this method will have a _scale of zero when processed by
      * the string constructor.
      *
      * (This method behaves analogously to the `toString`
      * method in 1.4 and earlier releases.)
      *
-     * @return a string representation of this `BigDecimal`
+     * @return a string representation of this [BigDecimal]
      * without an exponent field.
      * @since 1.5
      * @see .toString
@@ -3068,22 +3063,22 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `BigInteger`.
+     * Converts this [BigDecimal] to a [BigInteger].
      * This conversion is analogous to the
      * *narrowing primitive conversion* from `double` to
      * `long` as defined in
      * <cite>The Java Language Specification</cite>:
      * any fractional part of this
-     * `BigDecimal` will be discarded.  Note that this
+     * [BigDecimal] will be discarded.  Note that this
      * conversion can lose information about the _precision of the
-     * `BigDecimal` value.
+     * [BigDecimal] value.
      *
      *
      * To have an exception thrown if the conversion is inexact (in
      * other words if a nonzero fractional part is discarded), use the
-     * [.toBigIntegerExact] method.
+     * [BigDecimal.toBigIntegerExact] method.
      *
-     * @return this `BigDecimal` converted to a `BigInteger`.
+     * @return this [BigDecimal] converted to a [BigInteger].
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toBigInteger")
@@ -3093,11 +3088,11 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `BigInteger`,
+     * Converts this [BigDecimal] to a [BigInteger],
      * checking for lost information.  An exception is thrown if this
-     * `BigDecimal` has a nonzero fractional part.
+     * [BigDecimal] has a nonzero fractional part.
      *
-     * @return this `BigDecimal` converted to a `BigInteger`.
+     * @return this [BigDecimal] converted to a [BigInteger].
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part.
      * @since  1.5
@@ -3109,20 +3104,20 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `long`.
+     * Converts this [BigDecimal] to a `long`.
      * This conversion is analogous to the
      * *narrowing primitive conversion* from `double` to
      * `short` as defined in
      * <cite>The Java Language Specification</cite>:
      * any fractional part of this
-     * `BigDecimal` will be discarded, and if the resulting
-     * "`BigInteger`" is too big to fit in a
+     * [BigDecimal] will be discarded, and if the resulting
+     * "[BigInteger]" is too big to fit in a
      * `long`, only the low-order 64 bits are returned.
      * Note that this conversion can lose information about the
-     * overall magnitude and _precision of this `BigDecimal` value as well
+     * overall magnitude and _precision of this [BigDecimal] value as well
      * as return a result with the opposite sign.
      *
-     * @return this `BigDecimal` converted to a `long`.
+     * @return this [BigDecimal] converted to a `long`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toLong")
@@ -3134,13 +3129,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `long`, checking
-     * for lost information.  If this `BigDecimal` has a
+     * Converts this [BigDecimal] to a `long`, checking
+     * for lost information.  If this [BigDecimal] has a
      * nonzero fractional part or is out of the possible range for a
      * `long` result then an `ArithmeticException` is
      * thrown.
      *
-     * @return this `BigDecimal` converted to a `long`.
+     * @return this [BigDecimal] converted to a `long`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in a `long`.
      * @since  1.5
@@ -3182,20 +3177,20 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to an `int`.
+     * Converts this [BigDecimal] to an `int`.
      * This conversion is analogous to the
      * *narrowing primitive conversion* from `double` to
      * `short` as defined in
      * <cite>The Java Language Specification</cite>:
      * any fractional part of this
-     * `BigDecimal` will be discarded, and if the resulting
-     * "`BigInteger`" is too big to fit in an
+     * [BigDecimal] will be discarded, and if the resulting
+     * "[BigInteger]" is too big to fit in an
      * `int`, only the low-order 32 bits are returned.
      * Note that this conversion can lose information about the
-     * overall magnitude and _precision of this `BigDecimal`
+     * overall magnitude and _precision of this [BigDecimal]
      * value as well as return a result with the opposite sign.
      *
-     * @return this `BigDecimal` converted to an `int`.
+     * @return this [BigDecimal] converted to an `int`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toInt")
@@ -3222,13 +3217,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to an `int`, checking
-     * for lost information.  If this `BigDecimal` has a
+     * Converts this [BigDecimal] to an `int`, checking
+     * for lost information.  If this [BigDecimal] has a
      * nonzero fractional part or is out of the possible range for an
      * `int` result then an `ArithmeticException` is
      * thrown.
      *
-     * @return this `BigDecimal` converted to an `int`.
+     * @return this [BigDecimal] converted to an `int`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in an `int`.
      * @since  1.5
@@ -3243,13 +3238,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `short`, checking
-     * for lost information.  If this `BigDecimal` has a
+     * Converts this [BigDecimal] to a `short`, checking
+     * for lost information.  If this [BigDecimal] has a
      * nonzero fractional part or is out of the possible range for a
      * `short` result then an `ArithmeticException` is
      * thrown.
      *
-     * @return this `BigDecimal` converted to a `short`.
+     * @return this [BigDecimal] converted to a `short`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in a `short`.
      * @since  1.5
@@ -3264,13 +3259,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `byte`, checking
-     * for lost information.  If this `BigDecimal` has a
+     * Converts this [BigDecimal] to a `byte`, checking
+     * for lost information.  If this [BigDecimal] has a
      * nonzero fractional part or is out of the possible range for a
      * `byte` result then an `ArithmeticException` is
      * thrown.
      *
-     * @return this `BigDecimal` converted to a `byte`.
+     * @return this [BigDecimal] converted to a `byte`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in a `byte`.
      * @since  1.5
@@ -3285,19 +3280,19 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `float`.
+     * Converts this [BigDecimal] to a `float`.
      * This conversion is similar to the
      * *narrowing primitive conversion* from `double` to
      * `float` as defined in
      * <cite>The Java Language Specification</cite>:
-     * if this `BigDecimal` has too great a
+     * if this [BigDecimal] has too great a
      * magnitude to represent as a `float`, it will be
      * converted to [Float.NEGATIVE_INFINITY] or [ ][Float.POSITIVE_INFINITY] as appropriate.  Note that even when
      * the return value is finite, this conversion can lose
-     * information about the _precision of the `BigDecimal`
+     * information about the _precision of the [BigDecimal]
      * value.
      *
-     * @return this `BigDecimal` converted to a `float`.
+     * @return this [BigDecimal] converted to a `float`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toFloat")
@@ -3329,19 +3324,19 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Converts this `BigDecimal` to a `double`.
+     * Converts this [BigDecimal] to a `double`.
      * This conversion is similar to the
      * *narrowing primitive conversion* from `double` to
      * `float` as defined in
      * <cite>The Java Language Specification</cite>:
-     * if this `BigDecimal` has too great a
+     * if this [BigDecimal] has too great a
      * magnitude represent as a `double`, it will be
      * converted to [Double.NEGATIVE_INFINITY] or [ ][Double.POSITIVE_INFINITY] as appropriate.  Note that even when
      * the return value is finite, this conversion can lose
-     * information about the _precision of the `BigDecimal`
+     * information about the _precision of the [BigDecimal]
      * value.
      *
-     * @return this `BigDecimal` converted to a `double`.
+     * @return this [BigDecimal] converted to a `double`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toDouble")
@@ -3374,9 +3369,9 @@ class BigDecimal : Comparable<BigDecimal> {
 
     /**
      * Returns the size of an ulp, a unit in the last place, of this
-     * `BigDecimal`.  An ulp of a nonzero `BigDecimal`
+     * [BigDecimal].  An ulp of a nonzero [BigDecimal]
      * value is the positive distance between this value and the
-     * `BigDecimal` value next larger in magnitude with the
+     * [BigDecimal] value next larger in magnitude with the
      * same number of digits.  An ulp of a zero value is numerically
      * equal to 1 with the _scale of `this`.  The result is
      * stored with the same _scale as `this` so the result
@@ -3668,13 +3663,13 @@ class BigDecimal : Comparable<BigDecimal> {
     }
 
     /**
-     * Lay out this `BigDecimal` into a `char[]` array.
+     * Lay out this [BigDecimal] into a `char[]` array.
      * The Java 1.2 equivalent to this was called `getValueString`.
      *
      * @param  sci `true` for Scientific exponential notation;
      * `false` for Engineering
      * @return string with canonical string representation of this
-     * `BigDecimal`
+     * [BigDecimal]
      */
     private fun layoutChars(sci: Boolean): String {
         if (_scale == 0)
@@ -3877,7 +3872,7 @@ class BigDecimal : Comparable<BigDecimal> {
     companion object {
 
         /**
-         * Sentinel value for [._intCompact] indicating the
+         * Sentinel value for [BigDecimal._intCompact] indicating the
          * significand information is only available from `_intVal`.
          */
         internal const val INFLATED = Long.MIN_VALUE
@@ -4020,15 +4015,15 @@ class BigDecimal : Comparable<BigDecimal> {
 
         /**
          * Translates a `long` unscaled value and an
-         * `int` _scale into a `BigDecimal`.
+         * `int` _scale into a [BigDecimal].
          *
          * @apiNote This static factory method is provided in preference
          * to a (`long`, `int`) constructor because it allows
-         * for reuse of frequently used `BigDecimal` values.
+         * for reuse of frequently used [BigDecimal] values.
          *
-         * @param unscaledVal unscaled value of the `BigDecimal`.
-         * @param scale _scale of the `BigDecimal`.
-         * @return a `BigDecimal` whose value is
+         * @param unscaledVal unscaled value of the [BigDecimal].
+         * @param scale _scale of the [BigDecimal].
+         * @return a [BigDecimal] whose value is
          * `(unscaledVal  10<sup>-_scale</sup>)`.
          */
         fun of(unscaledVal: Long, scale: Int): BigDecimal {
@@ -4047,15 +4042,15 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Translates a `long` value into a `BigDecimal`
+         * Translates a `long` value into a [BigDecimal]
          * with a _scale of zero.
          *
          * @apiNote This static factory method is provided in preference
          * to a (`long`) constructor because it allows for reuse of
-         * frequently used `BigDecimal` values.
+         * frequently used [BigDecimal] values.
          *
-         * @param val value of the `BigDecimal`.
-         * @return a `BigDecimal` whose value is `val`.
+         * @param val value of the [BigDecimal].
+         * @return a [BigDecimal] whose value is `val`.
          */
 //        fun of(`val`: Long): BigDecimal {
 //            if (`val` >= 0 && `val` < ZERO_THROUGH_TEN.size)
@@ -4095,17 +4090,17 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Translates a `double` into a `BigDecimal`, using
+         * Translates a `double` into a [BigDecimal], using
          * the `double`'s canonical string representation provided
          * by the [Double.toString] method.
          *
          * @apiNote This is generally the preferred way to convert a
-         * `double` (or `float`) into a `BigDecimal`, as
+         * `double` (or `float`) into a [BigDecimal], as
          * the value returned is equal to that resulting from constructing
-         * a `BigDecimal` from the result of using [ ][Double.toString].
+         * a [BigDecimal] from the result of using [ ][Double.toString].
          *
-         * @param  val `double` to convert to a `BigDecimal`.
-         * @return a `BigDecimal` whose value is equal to or approximately
+         * @param  val `double` to convert to a [BigDecimal].
+         * @return a [BigDecimal] whose value is equal to or approximately
          * equal to the value of `val`.
          * @throws NumberFormatException if `val` is infinite or NaN.
          * @since  1.5
@@ -4160,7 +4155,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
         /**
          * Rounding mode to round towards positive infinity.  If the
-         * `BigDecimal` is positive, behaves as for
+         * [BigDecimal] is positive, behaves as for
          * `ROUND_UP`; if negative, behaves as for
          * `ROUND_DOWN`.  Note that this rounding mode never
          * decreases the calculated value.
@@ -4171,7 +4166,7 @@ class BigDecimal : Comparable<BigDecimal> {
 
         /**
          * Rounding mode to round towards negative infinity.  If the
-         * `BigDecimal` is positive, behave as for
+         * [BigDecimal] is positive, behave as for
          * `ROUND_DOWN`; if negative, behave as for
          * `ROUND_UP`.  Note that this rounding mode never
          * increases the calculated value.
@@ -4263,10 +4258,10 @@ class BigDecimal : Comparable<BigDecimal> {
             floatArrayOf(1.0e0f, 1.0e1f, 1.0e2f, 1.0e3f, 1.0e4f, 1.0e5f, 1.0e6f, 1.0e7f, 1.0e8f, 1.0e9f, 1.0e10f)
 
         /**
-         * Return 10 to the power n, as a `BigInteger`.
+         * Return 10 to the power n, as a [BigInteger].
          *
          * @param  n the power of ten to be returned (>=0)
-         * @return a `BigInteger` with the value (10<sup>n</sup>)
+         * @return a [BigInteger] with the value (10<sup>n</sup>)
          */
         private fun bigTenToThe(n: Int): BigInteger {
             if (n < 0)
@@ -4287,7 +4282,7 @@ class BigDecimal : Comparable<BigDecimal> {
          * Expand the BIG_TEN_POWERS_TABLE array to contain at least 10**n.
          *
          * @param n the power of ten to be returned (>=0)
-         * @return a `BigDecimal` with the value (10<sup>n</sup>) and
+         * @return a [BigDecimal] with the value (10<sup>n</sup>) and
          * in the meantime, the BIG_TEN_POWERS_TABLE array gets
          * expanded to the size greater than n.
          */
@@ -4406,18 +4401,18 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Match the scales of two `BigDecimal`s to align their
+         * Match the scales of two [BigDecimal]s to align their
          * least significant digits.
          *
          *
          * If the scales of val[0] and val[1] differ, rescale
-         * (non-destructively) the lower-scaled `BigDecimal` so
+         * (non-destructively) the lower-scaled [BigDecimal] so
          * they match.  That is, the lower-scaled reference will be
          * replaced by a reference to a new object with the same _scale as
-         * the other `BigDecimal`.
+         * the other [BigDecimal].
          *
          * @param  val array of two elements referring to the two
-         * `BigDecimal`s to be aligned.
+         * [BigDecimal]s to be aligned.
          */
         private fun matchScale(`val`: Array<BigDecimal>) {
             if (`val`[0]._scale < `val`[1]._scale) {
@@ -4481,9 +4476,9 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Returns the compact value for given `BigInteger`, or
+         * Returns the compact value for given [BigInteger], or
          * INFLATED if too big. Relies on internal representation of
-         * `BigInteger`.
+         * [BigInteger].
          */
         private fun compactValFor(b: BigInteger): Long {
             val m = b._mag
@@ -4556,13 +4551,13 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Returns a `BigDecimal` rounded according to the MathContext
+         * Returns a [BigDecimal] rounded according to the MathContext
          * settings;
-         * If rounding is needed a new `BigDecimal` is created and returned.
+         * If rounding is needed a new [BigDecimal] is created and returned.
          *
          * @param val the value to be rounded
          * @param mc the context to use.
-         * @return a `BigDecimal` rounded according to the MathContext
+         * @return a [BigDecimal] rounded according to the MathContext
          * settings.  May return `value`, if no rounding needed.
          * @throws ArithmeticException if the rounding mode is
          * `RoundingMode.UNNECESSARY` and the
@@ -4690,7 +4685,7 @@ class BigDecimal : Comparable<BigDecimal> {
         /**
          * Internally used for division operation for division `long` by
          * `long`.
-         * The returned `BigDecimal` object is the quotient whose _scale is set
+         * The returned [BigDecimal] object is the quotient whose _scale is set
          * to the passed in _scale. If the remainder is not zero, it will be rounded
          * based on the passed in roundingMode. Also, if the remainder is zero and
          * the last parameter, i.e. preferredScale is NOT equal to _scale, the
@@ -4810,7 +4805,7 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Divides `BigInteger` value by `long` value and
+         * Divides [BigInteger] value by `long` value and
          * do rounding based on the passed in roundingMode.
          */
         private fun divideAndRound(bdividend: BigInteger, ldivisor: Long, roundingMode: Int): BigInteger {
@@ -4833,9 +4828,9 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Internally used for division operation for division `BigInteger`
+         * Internally used for division operation for division [BigInteger]
          * by `long`.
-         * The returned `BigDecimal` object is the quotient whose _scale is set
+         * The returned [BigDecimal] object is the quotient whose _scale is set
          * to the passed in _scale. If the remainder is not zero, it will be rounded
          * based on the passed in roundingMode. Also, if the remainder is zero and
          * the last parameter, i.e. preferredScale is NOT equal to _scale, the
@@ -4894,7 +4889,7 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Divides `BigInteger` value by `BigInteger` value and
+         * Divides [BigInteger] value by [BigInteger] value and
          * do rounding based on the passed in roundingMode.
          */
         private fun divideAndRound(bdividend: BigInteger, bdivisor: BigInteger, roundingMode: Int): BigInteger {
@@ -4916,9 +4911,9 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Internally used for division operation for division `BigInteger`
-         * by `BigInteger`.
-         * The returned `BigDecimal` object is the quotient whose _scale is set
+         * Internally used for division operation for division [BigInteger]
+         * by [BigInteger].
+         * The returned [BigDecimal] object is the quotient whose _scale is set
          * to the passed in _scale. If the remainder is not zero, it will be rounded
          * based on the passed in roundingMode. Also, if the remainder is zero and
          * the last parameter, i.e. preferredScale is NOT equal to _scale, the
@@ -4970,11 +4965,11 @@ class BigDecimal : Comparable<BigDecimal> {
 
         /**
          * Remove insignificant trailing zeros from this
-         * `BigInteger` value until the preferred _scale is reached or no
+         * [BigInteger] value until the preferred _scale is reached or no
          * more zeros can be removed.  If the preferred _scale is less than
          * Int.MIN_VALUE, all the trailing zeros will be removed.
          *
-         * @return new `BigDecimal` with a _scale possibly reduced
+         * @return new [BigDecimal] with a _scale possibly reduced
          * to be closed to the preferred _scale.
          */
         private fun createAndStripZerosToMatchScale(intVal: BigInteger, scale: Int, preferredScale: Long): BigDecimal {
@@ -4999,7 +4994,7 @@ class BigDecimal : Comparable<BigDecimal> {
          * more zeros can be removed.  If the preferred _scale is less than
          * Int.MIN_VALUE, all the trailing zeros will be removed.
          *
-         * @return new `BigDecimal` with a _scale possibly reduced
+         * @return new [BigDecimal] with a _scale possibly reduced
          * to be closed to the preferred _scale.
          */
         private fun createAndStripZerosToMatchScale(compactVal: Long, scale: Int, preferredScale: Long): BigDecimal {
@@ -5146,7 +5141,7 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Returns a `BigDecimal` whose value is `(xs /
+         * Returns a [BigDecimal] whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          *
          * Fast path - used only when (xscale <= yscale && yscale < 18
@@ -5264,7 +5259,7 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Returns a `BigDecimal` whose value is `(xs /
+         * Returns a [BigDecimal] whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
         private fun divide(
@@ -5322,7 +5317,7 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Returns a `BigDecimal` whose value is `(xs /
+         * Returns a [BigDecimal] whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
         private fun divide(
@@ -5371,7 +5366,7 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Returns a `BigDecimal` whose value is `(xs /
+         * Returns a [BigDecimal] whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
         private fun divide(
@@ -5411,7 +5406,7 @@ class BigDecimal : Comparable<BigDecimal> {
         }
 
         /**
-         * Returns a `BigDecimal` whose value is `(xs /
+         * Returns a [BigDecimal] whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
         private fun divide(
