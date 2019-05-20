@@ -1,8 +1,8 @@
 import java.math.*
 
 fun main() {
-    var x = BigInteger.valueOf(1)
+    var x = BigInteger.valueOf(Long.MIN_VALUE)
     println(x)
-    x = x.shiftLeft(640)
+    x = x.add(BigInteger.ONE)
     println(x)
 }
