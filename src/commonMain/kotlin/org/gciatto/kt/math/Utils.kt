@@ -133,8 +133,8 @@ internal fun Char.toDigit(radix: Int): Int {
             val delta = radix - 10
             when (this) {
                 in '0'..'9' -> return this - '0'
-                in 'a' until ('a' + delta) -> return this - 'a'
-                in 'A' until ('A' + delta) -> return this - 'A'
+                in 'a' until ('a' + delta) -> return this - 'a' + 10
+                in 'A' until ('A' + delta) -> return this - 'A' + 10
             }
         } else {
             if (this in '0' until ('0' + radix)) {
