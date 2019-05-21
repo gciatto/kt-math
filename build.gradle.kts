@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
 plugins {
-    kotlin("multiplatform") version "1.3.21"
+    kotlin("multiplatform") version "1.3.31"
     id("maven-publish")
     signing
     id("org.jetbrains.dokka") version "0.9.18"
@@ -15,7 +15,7 @@ repositories {
 }
 
 group = "com.github.gciatto"
-version = "0.0.2"
+version = "0.0.3"
 
 kotlin {
 

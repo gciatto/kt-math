@@ -3435,8 +3435,29 @@ class BigInteger : Comparable<BigInteger> {
             return of(value.toLong())
         }
 
+        private fun String.getRadix(): Pair<Int, String> {
+            return when {
+                this.contains("0B", ignoreCase = true) -> {
+                    Pair(2, this.replaceFirst("0B", "").replaceFirst("0b", ""))
+                }
+                this.contains("0O", ignoreCase = true) -> {
+                    Pair(8, this.replaceFirst("0O", "").replaceFirst("0o", ""))
+                }
+                this.contains("0X", ignoreCase = true) -> {
+                    Pair(16, this.replaceFirst("0X", "").replaceFirst("0x", ""))
+                }
+                else -> Pair(10, this)
+            }
+        }
+
         @JsName("parse")
-        fun of(value: String, radix: Int = 10): BigInteger {
+        fun of(value: String): BigInteger {
+            val radixed = value.getRadix()
+            return BigInteger(radixed.second, radixed.first)
+        }
+
+        @JsName("parseWithRadix")
+        fun of(value: String, radix: Int): BigInteger {
             return BigInteger(value, radix)
         }
 
@@ -3445,6 +3466,7 @@ class BigInteger : Comparable<BigInteger> {
          * Assumes that the input array will not be modified (the returned
          * BigInteger will reference the input array if feasible).
          */
+        @JsName("ofIntArray")
         private fun of(`val`: IntArray): BigInteger {
             return if (`val`[0] > 0) BigInteger(`val`, 1) else BigInteger(`val`)
         }
