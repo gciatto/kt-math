@@ -2081,7 +2081,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @since  1.5
      */
     @JsName("pow")
-    fun pow(n: Int): BigDecimal {
+    infix fun pow(n: Int): BigDecimal {
         if (n < 0 || n > 999999999)
             throw ArithmeticException("Invalid operation")
         // No need to calculate pow(n) if result will over/underflow.
