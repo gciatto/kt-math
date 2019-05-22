@@ -1,15 +1,6 @@
-import org.gciatto.kt.math.BigDecimal
-import org.gciatto.kt.math.BigInteger
-import org.gciatto.kt.math.MathContext
+import java.math.BigDecimal
 
 fun main() {
-    var x = BigInteger.of(1)
+    var x = BigDecimal.valueOf(Double.MIN_VALUE).subtract(BigDecimal.ONE)
     println(x)
-    x = x shl 640
-    println(x)
-
-    var y = BigDecimal.PI
-    println(y)
-    y = y / BigDecimal.of(3)
-    println(y)
 }

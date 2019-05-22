@@ -4,6 +4,16 @@ import kotlin.test.*
 
 class TestIntegers {
 
+    fun assertEquals(x: BigDecimal, y: BigDecimal, m: String? = "Failed: $x == $y") {
+        if (m === null) {
+            assertEquals(0, x.compareTo(y))
+            assertEquals(0, y.compareTo(x))
+        } else {
+            assertEquals(0, x.compareTo(y), m)
+            assertEquals(0, y.compareTo(x), m)
+        }
+    }
+
     @Test
     fun testLimits() {
         assertEquals("0", BigInteger.of(0).toString())

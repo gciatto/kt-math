@@ -3706,8 +3706,8 @@ class BigInteger : Comparable<BigInteger> {
             // Subtract remainder of longer number while borrow propagates
             var borrow = difference shr 32 != 0L
             while (bigIndex > 0 && borrow) {
-                result[bigIndex - 1] = big[bigIndex] - 1
-                borrow = result[--bigIndex] == -1
+                result[--bigIndex] = big[bigIndex] - 1
+                borrow = result[bigIndex] == -1
             }
 
             // Copy remainder of longer number

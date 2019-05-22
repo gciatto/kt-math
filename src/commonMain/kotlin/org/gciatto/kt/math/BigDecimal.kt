@@ -3934,6 +3934,8 @@ class BigDecimal : Comparable<BigDecimal> {
          */
         val ONE = ZERO_THROUGH_TEN[1]
 
+        val TWO = ZERO_THROUGH_TEN[2]
+
         /**
          * The value 10, with a _scale of 0.
          *

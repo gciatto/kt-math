@@ -1,8 +1,8 @@
-import java.math.*
+import org.gciatto.kt.math.BigDecimal
 
 fun main() {
-    var x = BigInteger.valueOf(Long.MIN_VALUE)
+    var x = BigDecimal.PI - BigDecimal.ONE_HALF
     println(x)
-    x = x.add(BigInteger.ONE)
+    x = BigDecimal.E - BigDecimal.ONE_HALF
     println(x)
 }
