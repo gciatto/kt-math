@@ -14,7 +14,7 @@ repositories {
     maven("https://jitpack.io")
 }
 
-group = "com.github.gciatto"
+group = "io.github.gciatto"
 version = "0.0.3"
 
 kotlin {
