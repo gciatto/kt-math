@@ -4139,8 +4139,12 @@ class BigDecimal : Comparable<BigDecimal> {
             }
         }
 
-        fun of(`val`: BigInteger, ctx: MathContext): BigDecimal {
-            return BigDecimal(`val`, ctx)
+        fun of(`val`: BigInteger, ctx: MathContext? = null): BigDecimal {
+            return if (ctx === null) {
+                BigDecimal(`val`)
+            } else {
+                BigDecimal(`val`, ctx!!)
+            }
         }
 
         fun of(`val`: Int, ctx: MathContext): BigDecimal {
