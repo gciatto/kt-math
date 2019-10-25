@@ -859,7 +859,7 @@ class BigDecimal : Comparable<BigDecimal> {
         val mcp = mc.precision
         var prec = 0
         if (mcp > 0) { // do rounding
-            val mode = mc.roundingMode!!.oldMode
+            val mode = mc.roundingMode.oldMode
             if (compactVal == INFLATED) {
                 prec = bigDigitLength(unscaledVal)
                 var drop = prec - mcp
@@ -1820,7 +1820,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * @since  9
      */
     @JsName("sqrt")
-    fun sqrt(mc: MathContext): BigDecimal {
+    fun sqrt(mc: MathContext = MathContext()): BigDecimal {
         val signum = signum
         if (signum == 1) {
             /*
@@ -2620,7 +2620,7 @@ class BigDecimal : Comparable<BigDecimal> {
     @JsName("scaleByPowerOfTen")
     fun scaleByPowerOfTen(n: Int): BigDecimal {
         return BigDecimal(
-            _intVal!!, _intCompact,
+            _intVal, _intCompact,
             checkScale(_scale.toLong() - n), _precision
         )
     }
@@ -4060,15 +4060,30 @@ class BigDecimal : Comparable<BigDecimal> {
 //        }
 
         internal fun of(unscaledVal: Long, scale: Int, prec: Int): BigDecimal {
-            if (scale == 0 && unscaledVal >= 0 && unscaledVal < ZERO_THROUGH_TEN.size) {
-                return ZERO_THROUGH_TEN[unscaledVal.toInt()]
+            return if (scale == 0 && unscaledVal >= 0 && unscaledVal < ZERO_THROUGH_TEN.size) {
+                ZERO_THROUGH_TEN[unscaledVal.toInt()]
             } else if (unscaledVal == 0L) {
-                return zeroValueOf(scale)
+                zeroValueOf(scale)
+            } else {
+                BigDecimal(
+                    if (unscaledVal == INFLATED) INFLATED_BIGINT else null,
+                    unscaledVal, scale, prec
+                )
             }
-            return BigDecimal(
-                if (unscaledVal == INFLATED) INFLATED_BIGINT else null,
-                unscaledVal, scale, prec
-            )
+
+        }
+
+        fun of(`val`: Long): BigDecimal {
+            return if (`val` >= 0L && `val` < ZERO_THROUGH_TEN.size.toLong()) {
+                ZERO_THROUGH_TEN[`val`.toInt()]
+            } else {
+                if (`val` != INFLATED) BigDecimal(null as BigInteger?, `val`, 0, 0) else BigDecimal(
+                    INFLATED_BIGINT,
+                    `val`,
+                    0,
+                    0
+                )
+            }
         }
 
         internal fun of(intVal: BigInteger, scale: Int, prec: Int): BigDecimal {
@@ -4120,15 +4135,15 @@ class BigDecimal : Comparable<BigDecimal> {
             }
         }
 
-        fun of(`val`: BigInteger, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
+        fun of(`val`: BigInteger, ctx: MathContext): BigDecimal {
             return BigDecimal(`val`, ctx)
         }
 
-        fun of(`val`: Int, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
-            return BigDecimal(`val`, ctx)
+        fun of(`val`: Int, ctx: MathContext): BigDecimal {
+            return BigDecimal(`val`.toLong(), ctx)
         }
 
-        fun of(`val`: Long, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
+        fun of(`val`: Long, ctx: MathContext): BigDecimal {
             return BigDecimal(`val`, ctx)
         }
 

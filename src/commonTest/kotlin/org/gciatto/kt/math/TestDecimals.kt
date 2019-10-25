@@ -1,6 +1,7 @@
 package org.gciatto.kt.math
 
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TestDecimals {
 
@@ -181,4 +182,13 @@ class TestDecimals {
 
         assertEquals(BigDecimal.of(1, 1000), BigDecimal.of("0." + (0 until 999).map { "0" }.joinToString("") +  "1"))
     }
+
+    @Test
+    fun testSqrt() {
+        assertEquals(BigDecimal.ZERO, BigDecimal.ZERO.sqrt())
+        assertEquals(BigDecimal.ONE, BigDecimal.ONE.sqrt())
+        assertEquals(BigDecimal.of(2), BigDecimal.of(4).sqrt())
+        assertEquals(BigDecimal.of(1.1), BigDecimal.of(1.21).sqrt())
+    }
+
 }
