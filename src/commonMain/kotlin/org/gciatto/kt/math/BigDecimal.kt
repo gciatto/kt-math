@@ -4073,6 +4073,10 @@ class BigDecimal : Comparable<BigDecimal> {
 
         }
 
+        fun of(`val`: Int): BigDecimal {
+            return of(`val`.toLong())
+        }
+
         fun of(`val`: Long): BigDecimal {
             return if (`val` >= 0L && `val` < ZERO_THROUGH_TEN.size.toLong()) {
                 ZERO_THROUGH_TEN[`val`.toInt()]
