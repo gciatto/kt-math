@@ -2,10 +2,12 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
 plugins {
-    kotlin("multiplatform") version Versions.org_jetbrains_kotlin
+    kotlin("multiplatform") version Versions.org_jetbrains_kotlin_multiplatform_gradle_plugin
     id("maven-publish")
     signing
     id("org.jetbrains.dokka") version Versions.org_jetbrains_dokka_gradle_plugin
+    id("com.jfrog.bintray") version Versions.com_jfrog_bintray_gradle_plugin
+    id("org.danilopianini.git-sensitive-semantic-versioning") version Versions.org_danilopianini_git_sensitive_semantic_versioning_gradle_plugin
     id("de.fayard.buildSrcVersions") version Versions.de_fayard_buildsrcversions_gradle_plugin
 }
 
@@ -16,7 +18,30 @@ repositories {
 }
 
 group = "io.github.gciatto"
-version = "0.0.6"
+
+gitSemVer {
+    minimumVersion.set("0.1.0")
+    developmentIdentifier.set("dev")
+    noTagIdentifier.set("archeo")
+    developmentCounterLength.set(2) // How many digits after `dev`
+    version = computeGitSemVer() // THIS IS MANDATORY, AND MUST BE LAST IN THIS BLOCK!
+}
+
+println("${rootProject.name} version: $version")
+
+
+// env ORG_GRADLE_PROJECT_signingKey
+val signingKey = getPropertyOrWarnForAbsence("signingKey")
+// env ORG_GRADLE_PROJECT_signingPassword
+val signingPassword = getPropertyOrWarnForAbsence("signingPassword")
+// env ORG_GRADLE_PROJECT_bintrayUser
+val bintrayUser = getPropertyOrWarnForAbsence("bintrayUser")
+// env ORG_GRADLE_PROJECT_bintrayKey
+val bintrayKey = getPropertyOrWarnForAbsence("bintrayKey")
+// env ORG_GRADLE_PROJECT_ossrhUsername
+val ossrhUsername = getPropertyOrWarnForAbsence("ossrhUsername")
+// env ORG_GRADLE_PROJECT_ossrhPassword
+val ossrhPassword = getPropertyOrWarnForAbsence("ossrhPassword")
 
 kotlin {
 
@@ -54,6 +79,8 @@ kotlin {
         }
 
         js {
+            nodeJs()
+
             sequenceOf("", "Test").forEach {
                 tasks.getByName<KotlinJsCompile>("compile${it}KotlinJs") {
                     kotlinOptions {
@@ -81,145 +108,189 @@ kotlin {
     }
 }
 
-val docDir = "$buildDir/doc"
+with(rootProject) {
+    configureDokka()
 
-tasks.withType<DokkaTask> {
+    configureMavenPublications("packDokka${capitalize(name)}")
 
-    outputDirectory = docDir
-    jdkVersion = 8
-    reportUndocumented = false
-//    outputFormat = "javadoc"
-
-    kotlinTasks {
-        listOf()
-    }
-
-    sourceRoot {
-        // assuming there is only a single source dir...
-        kotlin.sourceSets.commonMain {
-            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
-        }
-        platforms = listOf("Common")
-    }
-
-    sourceRoot {
-        // assuming there is only a single source dir...
-        with(kotlin.sourceSets.get("jvmMain")) {
-            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
-        }
-        platforms = listOf("JVM")
-    }
-
-    sourceRoot {
-        // assuming there is only a single source dir...
-        with(kotlin.sourceSets.get("jsMain")) {
-            this@sourceRoot.path = kotlin.srcDirs.first().absolutePath
-        }
-        platforms = listOf("JS")
-    }
-}
-
-fun capitalize(s: String): String {
-    return s[0].toUpperCase() + s.substring(1)
-}
-
-val jarPlatform = tasks.withType<Jar>().map { it.name.replace("Jar", "") }
-
-task<DefaultTask>("packAllDokka") {
-    group = "documentation"
-}
-
-//tasks.getByName("signArchives").dependsOn("packAllDokka")
-
-jarPlatform.forEach {
-    val packDokkaForPlatform = "packDokka${capitalize(it)}"
-
-    task<Jar>(packDokkaForPlatform) {
-        group = "documentation"
-        dependsOn("dokka")
-        from(docDir)
-        archiveBaseName.set(rootProject.name)
-        archiveVersion.set(rootProject.version.toString())
-        archiveAppendix.set(it)
-        archiveClassifier.set("javadoc")
-    }
-
-    tasks.getByName("${it}Jar").dependsOn(packDokkaForPlatform)
-    tasks.getByName("packAllDokka").dependsOn(packDokkaForPlatform)
-}
-
-// https://central.sonatype.org/pages/requirements.html
-// https://docs.gradle.org/current/userguide/signing_plugin.html
-publishing {
-    publications.withType<MavenPublication> {
-
-        groupId = rootProject.group.toString()
-        version = rootProject.version.toString()
-
-        val docArtifact = "packDokka${capitalize(name)}"
-
-        if (docArtifact in tasks.names) {
-            artifact(tasks.getByName(docArtifact)) {
-                classifier = "javadoc"
-            }
-        }
-
-        pom {
-            name.set("Kotlin Math")
-            description.set("Pure Kotlin porting of the java.math package")
-            url.set("https://github.com/gciatto/kt-math")
-            licenses {
-                license {
-                    name.set("GNU General Public License, version 2, with the Classpath Exception")
-                    url.set("https://openjdk.java.net/legal/gplv2+ce.html")
-                }
-            }
-
-            developers {
-                developer {
-                    email.set("giovanni.ciatto@gmail.com")
-                    url.set("https://about.me/gciatto")
-                    organization.set("GitHub")
-                    organizationUrl.set("https://github.com")
-                }
-            }
-
-            scm {
-                connection.set("scm:git:git:///github.com/gciatto/kt-math.git")
-                developerConnection.set("scm:git:ssh://github.com:gciatto/kt-math.git")
-                url.set("https://github.com/gciatto/kt-math")
-            }
-        }
-
-    }
-
-    repositories {
-
-        val mavenRepoUrl = if (version.toString().contains("SNAPSHOT")) {
+    configureUploadToMavenCentral(
+        if (version.toString().contains("SNAPSHOT")) {
             "https://oss.sonatype.org/content/repositories/snapshots/"
         } else {
             "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
         }
+    )
 
-        maven(mavenRepoUrl) {
-            credentials {
-                username = rootProject.property("ossrhUsername").toString()
-                password = rootProject.property("ossrhPassword").toString()
+    configureUploadToBintray("kotlinMultiplatform", "js", "jvm", "metadata")
+
+    configureSigning()
+}
+
+fun Project.configureDokka() {
+    tasks.withType<DokkaTask> {
+        outputDirectory = docDir
+        outputFormat = "html"
+
+        multiplatform {
+            registerPlatform("jvm")
+            registerPlatform("js")
+        }
+    }
+
+    val jarPlatform = tasks.withType<Jar>().map { it.name.replace("Jar", "") }
+
+    task<DefaultTask>("packAllDokka") {
+        group = "documentation"
+    }
+
+    jarPlatform.forEach {
+        val packDokkaForPlatform = "packDokka${capitalize(it)}"
+
+        task<Jar>(packDokkaForPlatform) {
+            group = "documentation"
+            dependsOn("dokka")
+            from(docDir)
+            archiveBaseName.set(project.name)
+            archiveVersion.set(project.version.toString())
+            archiveAppendix.set(it)
+            archiveClassifier.set("javadoc")
+        }
+
+        tasks.getByName("${it}Jar").dependsOn(packDokkaForPlatform)
+        tasks.getByName("packAllDokka").dependsOn(packDokkaForPlatform)
+    }
+}
+
+fun Project.configureSigning() {
+    signing {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+
+        sign(publishing.publications)
+    }
+
+    publishing {
+        val pubs = publications.withType<MavenPublication>().map { "sign${capitalize(it.name)}Publication" }
+
+        task<Sign>("signAllPublications") {
+            dependsOn(*pubs.toTypedArray())
+        }
+    }
+}
+
+fun Project.configureUploadToBintray(vararg publicationNames: String) {
+    publishing {
+        bintray {
+            user = bintrayUser
+            key = bintrayKey
+            setPublications(*publicationNames)
+            override = true
+            with(pkg) {
+                repo = "kt-math"
+                name = project.name
+                userOrg = "kt-math"
+                vcsUrl = "https://github.com/gciatto/kt-math"
+                setLicenses("Apache-2.0")
+                with(version) {
+                    name = project.version.toString()
+                }
+            }
+        }
+    }
+    this.tasks.withType<BintrayUploadTask> {
+        publishAllToBintrayTask.dependsOn(this)
+    }
+}
+
+fun Project.configureUploadToMavenCentral(mavenRepoUrl: String) {
+    if (ossrhUsername != null && ossrhPassword != null) {
+        publishing {
+            repositories {
+                maven(mavenRepoUrl) {
+                    credentials {
+                        username = ossrhUsername
+                        password = ossrhPassword
+                    }
+                }
             }
         }
     }
 }
 
-signing {
-    useGpgCmd()
-    sign(publishing.publications)
-}
+fun Project.configureMavenPublications(docArtifact: String) {
+    publishing {
+        publications.withType<MavenPublication> {
+            groupId = project.group.toString()
+            version = project.version.toString()
 
-publishing {
-    val pubs = publications.withType<MavenPublication>().map{ "sign${capitalize(it.name)}Publication" }
+            if (docArtifact in tasks.names) {
+                artifact(tasks.getByName(docArtifact)) {
+                    classifier = "javadoc"
+                }
+            }
 
-    task<Sign>("signAllPublications") {
-        dependsOn(*pubs.toTypedArray())
+            pom {
+                name.set("Kotlin Math")
+                description.set("Pure Kotlin porting of the java.math package")
+                url.set("https://github.com/gciatto/kt-math")
+                licenses {
+                    license {
+                        name.set("GNU General Public License, version 2, with the Classpath Exception")
+                        url.set("https://openjdk.java.net/legal/gplv2+ce.html")
+                    }
+                }
+
+                developers {
+                    developer {
+                        email.set("giovanni.ciatto@gmail.com")
+                        url.set("https://about.me/gciatto")
+                        organization.set("GitHub")
+                        organizationUrl.set("https://github.com")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:git:///github.com/gciatto/kt-math.git")
+                    developerConnection.set("scm:git:ssh://github.com:gciatto/kt-math.git")
+                    url.set("https://github.com/gciatto/kt-math")
+                }
+            }
+
+        }
     }
 }
 
+fun getPropertyOrWarnForAbsence(key: String): String? {
+    val value = property(key)?.toString()
+    if (value.isNullOrBlank()) {
+        System.err.println("WARNING: $key is not set")
+    }
+    return value
+}
+
+fun capitalize(s: String) = s[0].toUpperCase() + s.substring(1)
+
+fun Set<String>.forEachProject(f: Project.() -> Unit) = subprojects.filter { it.name in this }.forEach(f)
+
+val Project.docDir: String
+    get() = "$buildDir/doc"
+
+fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatform(
+    platform: String, configuration: Action<in GradlePassConfigurationImpl>
+) {
+
+    val low = platform.toLowerCase()
+    val up = platform.toUpperCase()
+
+    register(low) {
+        targets = listOf(up)
+        this@register.platform = low
+        includeNonPublic = false
+        reportUndocumented = false
+        collectInheritedExtensionsFromLibraries = true
+        skipEmptyPackages = true
+        configuration(this@register)
+    }
+}
+
+fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatform(platform: String) =
+    registerPlatform(platform) { }
