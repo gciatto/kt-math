@@ -2,10 +2,11 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
 plugins {
-    kotlin("multiplatform") version "1.3.50"
+    kotlin("multiplatform") version Versions.org_jetbrains_kotlin
     id("maven-publish")
     signing
-    id("org.jetbrains.dokka") version "0.9.18"
+    id("org.jetbrains.dokka") version Versions.org_jetbrains_dokka_gradle_plugin
+    id("de.fayard.buildSrcVersions") version Versions.de_fayard_buildsrcversions_gradle_plugin
 }
 
 repositories {
@@ -221,3 +222,4 @@ publishing {
         dependsOn(*pubs.toTypedArray())
     }
 }
+
