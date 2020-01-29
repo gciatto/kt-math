@@ -1,4 +1,6 @@
+import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.GradlePassConfigurationImpl
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 
 plugins {
@@ -79,7 +81,7 @@ kotlin {
         }
 
         js {
-            nodeJs()
+            nodejs()
 
             sequenceOf("", "Test").forEach {
                 tasks.getByName<KotlinJsCompile>("compile${it}KotlinJs") {
@@ -108,7 +110,12 @@ kotlin {
     }
 }
 
+val publishAllToBintrayTask = tasks.create<DefaultTask>("publishAllToBintray") {
+    group = "publishing"
+}
+
 with(rootProject) {
+    
     configureDokka()
 
     configureMavenPublications("packDokka${capitalize(name)}")

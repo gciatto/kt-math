@@ -22,6 +22,10 @@ object Versions {
 
     const val kt_math_metadata: String = "0.0.6"
 
+    const val org_danilopianini_git_sensitive_semantic_versioning_gradle_plugin: String = "0.2.2"
+
+    const val com_jfrog_bintray_gradle_plugin: String = "1.8.4"
+    
     /**
      * Current version: "5.6.3"
      * See issue 19: How to update Gradle itself?
