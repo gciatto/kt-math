@@ -1,0 +1,68 @@
+image: pikalab/ci:jdk12oracle-gradle6-git
+
+variables:
+  GOPTS: "--no-daemon --console=plain --stacktrace"
+  CI: "true"
+  BEFORE_TASK: ""
+  AFTER_TASK: ""
+  GCMD: "gradle"
+  BUILD_TASK: "assemble"
+  TEST_TASK: "check"
+  BINTRAY_TASK: "publishAllToBintray"
+  PAGES_TASK: "orchidBuild"
+  ORG_GRADLE_PROJECT_orchidBaseUrl: "https://pika-lab.gitlab.io/tuprolog/2p-in-kotlin/"
+
+before_script:
+  - chmod +x gradlew
+
+cache:
+  paths:
+    - /root/.gradle/
+    - gradle/
+    - build/
+    - .gradle/
+
+Compile:
+  stage: build
+  script: $GCMD $BEFORE_TASK $BUILD_TASK $AFTER_TASK $GOPTS
+
+Test:
+  stage: test
+  script: $GCMD $BEFORE_TASK $TEST_TASK $AFTER_TASK $GOPTS
+
+# Automatically publish to Bintray (dev):
+#   stage: deploy
+#   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
+#   environment:
+#     name: Bintray
+#     url: "https://bintray.com/pika-lab/tuprolog"
+#   only:
+#     - /^develop$/
+
+# Automatically publish Releases to Bintray:
+#   stage: deploy
+#   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
+#   environment:
+#     name: Bintray
+#     url: "https://bintray.com/pika-lab/tuprolog"
+#   only:
+#     - /^(master)|(release)$/
+
+# Manually publish to Bintray:
+#   stage: deploy
+#   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
+#   environment:
+#     name: Bintray
+#     url: "https://bintray.com/pika-lab/tuprolog"
+#   when: manual
+
+# pages:
+#   script:
+#     - mkdir public
+#     - $GCMD $BEFORE_TASK $PAGES_TASK $AFTER_TASK $GOPTS
+#     - cp -r documentation/build/docs/orchid/* public
+#   artifacts:
+#     paths:
+#       - public
+#   only:
+#     - feature/doc
