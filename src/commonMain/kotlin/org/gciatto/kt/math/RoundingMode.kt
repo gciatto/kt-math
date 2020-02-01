@@ -99,16 +99,7 @@ package org.gciatto.kt.math
  * @since 1.5
  */
 // Legacy rounding mode constants in BigDecimal
-enum class RoundingMode
-/**
- * Constructor
- *
- * @param oldMode The `BigDecimal` constant corresponding to
- * this mode
- */
-private constructor(// Corresponding BigDecimal rounding constant
-    internal val oldMode: Int
-) {
+enum class RoundingMode {
 
     /**
      * Rounding mode to round away from zero.  Always increments the
@@ -138,7 +129,7 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    UP(BigDecimal.ROUND_UP),
+    UP,
 
     /**
      * Rounding mode to round towards zero.  Never increments the digit
@@ -167,7 +158,7 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    DOWN(BigDecimal.ROUND_DOWN),
+    DOWN,
 
     /**
      * Rounding mode to round towards positive infinity.  If the
@@ -197,7 +188,7 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    CEILING(BigDecimal.ROUND_CEILING),
+    CEILING,
 
     /**
      * Rounding mode to round towards negative infinity.  If the
@@ -227,7 +218,7 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    FLOOR(BigDecimal.ROUND_FLOOR),
+    FLOOR,
 
     /**
      * Rounding mode to round towards &quot;nearest neighbor&quot;
@@ -259,7 +250,7 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    HALF_UP(BigDecimal.ROUND_HALF_UP),
+    HALF_UP,
 
     /**
      * Rounding mode to round towards &quot;nearest neighbor&quot;
@@ -290,7 +281,7 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    HALF_DOWN(BigDecimal.ROUND_HALF_DOWN),
+    HALF_DOWN,
 
     /**
      * Rounding mode to round towards the &quot;nearest neighbor&quot;
@@ -328,7 +319,7 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    HALF_EVEN(BigDecimal.ROUND_HALF_EVEN),
+    HALF_EVEN,
 
     /**
      * Rounding mode to assert that the requested operation has an exact
@@ -357,7 +348,23 @@ private constructor(// Corresponding BigDecimal rounding constant
     </tr></tbody> *
     </table> *
      */
-    UNNECESSARY(BigDecimal.ROUND_UNNECESSARY);
+    UNNECESSARY;
+
+    /**
+     * The `BigDecimal` constant corresponding to
+     * this mode
+     */
+    internal val oldMode: Int
+        get() = when (this) {
+                CEILING -> BigDecimal.ROUND_CEILING
+                UP -> BigDecimal.ROUND_UP
+                DOWN -> BigDecimal.ROUND_DOWN
+                FLOOR -> BigDecimal.ROUND_FLOOR
+                HALF_UP -> BigDecimal.ROUND_HALF_UP
+                HALF_EVEN -> BigDecimal.ROUND_HALF_EVEN
+                HALF_DOWN -> BigDecimal.ROUND_HALF_DOWN
+                UNNECESSARY -> BigDecimal.ROUND_UNNECESSARY
+            }
 
 
     companion object {
@@ -389,7 +396,7 @@ private constructor(// Corresponding BigDecimal rounding constant
 
                 BigDecimal.ROUND_UNNECESSARY -> return UNNECESSARY
 
-                else -> throw IllegalArgumentException("argument out of range")
+                else -> throw IllegalArgumentException("Argument out of range: $rm")
             }
         }
     }

@@ -5405,7 +5405,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 yscale -= 1 // [that is, divisor *= 10]
             }
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode!!.oldMode
+            val roundingMode = mc.roundingMode.also { log { it } }.oldMode
 
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the

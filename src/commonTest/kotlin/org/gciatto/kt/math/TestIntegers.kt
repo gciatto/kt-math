@@ -1,10 +1,11 @@
 package org.gciatto.kt.math
 
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TestIntegers {
 
-    fun assertEquals(x: BigDecimal, y: BigDecimal, m: String? = "Failed: $x == $y") {
+    fun assertEquals(x: BigInteger, y: BigInteger, m: String? = "Failed: $x == $y") {
         if (m === null) {
             assertEquals(0, x.compareTo(y))
             assertEquals(0, y.compareTo(x))

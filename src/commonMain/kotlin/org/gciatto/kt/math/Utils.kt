@@ -1,5 +1,15 @@
 package org.gciatto.kt.math
 
+const val DEBUG = true
+
+internal fun log(lazyObject: () -> Any) {
+    if (DEBUG) {
+        logImpl(lazyObject)
+    }
+}
+
+internal expect fun logImpl(lazyObject: () -> Any)
+
 internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
     if (this == 0L)
