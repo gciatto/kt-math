@@ -5,16 +5,6 @@ import kotlin.test.assertEquals
 
 class TestIntegers {
 
-    fun assertEquals(x: BigInteger, y: BigInteger, m: String? = "Failed: $x == $y") {
-        if (m === null) {
-            assertEquals(0, x.compareTo(y))
-            assertEquals(0, y.compareTo(x))
-        } else {
-            assertEquals(0, x.compareTo(y), m)
-            assertEquals(0, y.compareTo(x), m)
-        }
-    }
-
     @Test
     fun testLimits() {
         assertEquals("0", BigInteger.of(0).toString())
@@ -32,17 +22,17 @@ class TestIntegers {
 
     @Test
     fun testSum() {
-        assertEquals(BigInteger.of(-1 + 1), BigInteger.of(-1) + BigInteger.ONE)
-        assertEquals(BigInteger.of(0 + 1), BigInteger.of(0) + BigInteger.ONE)
-        assertEquals(BigInteger.of(1 + 1), BigInteger.of(1) + BigInteger.ONE)
+        assertBigIntegersAreEquals(BigInteger.of(-1 + 1), BigInteger.of(-1) + BigInteger.ONE)
+        assertBigIntegersAreEquals(BigInteger.of(0 + 1), BigInteger.of(0) + BigInteger.ONE)
+        assertBigIntegersAreEquals(BigInteger.of(1 + 1), BigInteger.of(1) + BigInteger.ONE)
 
-        assertEquals(BigInteger.of(-1 + 2), BigInteger.of(-1) + BigInteger.TWO)
-        assertEquals(BigInteger.of(0 + 2), BigInteger.of(0) + BigInteger.TWO)
-        assertEquals(BigInteger.of(1 + 2), BigInteger.of(1) + BigInteger.TWO)
+        assertBigIntegersAreEquals(BigInteger.of(-1 + 2), BigInteger.of(-1) + BigInteger.TWO)
+        assertBigIntegersAreEquals(BigInteger.of(0 + 2), BigInteger.of(0) + BigInteger.TWO)
+        assertBigIntegersAreEquals(BigInteger.of(1 + 2), BigInteger.of(1) + BigInteger.TWO)
 
-        assertEquals(BigInteger.of(-1 + 10), BigInteger.of(-1) + BigInteger.TEN)
-        assertEquals(BigInteger.of(0 + 10), BigInteger.of(0) + BigInteger.TEN)
-        assertEquals(BigInteger.of(1 + 10), BigInteger.of(1) + BigInteger.TEN)
+        assertBigIntegersAreEquals(BigInteger.of(-1 + 10), BigInteger.of(-1) + BigInteger.TEN)
+        assertBigIntegersAreEquals(BigInteger.of(0 + 10), BigInteger.of(0) + BigInteger.TEN)
+        assertBigIntegersAreEquals(BigInteger.of(1 + 10), BigInteger.of(1) + BigInteger.TEN)
 
         assertEquals("9223372036854775808", (BigInteger.of(Long.MAX_VALUE) + BigInteger.ONE).toString())
         assertEquals("9223372036854775809", (BigInteger.of(Long.MAX_VALUE) + BigInteger.TWO).toString())
@@ -55,17 +45,17 @@ class TestIntegers {
 
     @Test
     fun testSub() {
-        assertEquals(BigInteger.of(-1 - 1), BigInteger.of(-1) - BigInteger.ONE)
-        assertEquals(BigInteger.of(0 - 1), BigInteger.of(0) - BigInteger.ONE)
-        assertEquals(BigInteger.of(1 - 1), BigInteger.of(1) - BigInteger.ONE)
+        assertBigIntegersAreEquals(BigInteger.of(-1 - 1), BigInteger.of(-1) - BigInteger.ONE)
+        assertBigIntegersAreEquals(BigInteger.of(0 - 1), BigInteger.of(0) - BigInteger.ONE)
+        assertBigIntegersAreEquals(BigInteger.of(1 - 1), BigInteger.of(1) - BigInteger.ONE)
 
-        assertEquals(BigInteger.of(-1 - 2), BigInteger.of(-1) - BigInteger.TWO)
-        assertEquals(BigInteger.of(0 - 2), BigInteger.of(0) - BigInteger.TWO)
-        assertEquals(BigInteger.of(1 - 2), BigInteger.of(1) - BigInteger.TWO)
+        assertBigIntegersAreEquals(BigInteger.of(-1 - 2), BigInteger.of(-1) - BigInteger.TWO)
+        assertBigIntegersAreEquals(BigInteger.of(0 - 2), BigInteger.of(0) - BigInteger.TWO)
+        assertBigIntegersAreEquals(BigInteger.of(1 - 2), BigInteger.of(1) - BigInteger.TWO)
 
-        assertEquals(BigInteger.of(-1 - 10), BigInteger.of(-1) - BigInteger.TEN)
-        assertEquals(BigInteger.of(0 - 10), BigInteger.of(0) - BigInteger.TEN)
-        assertEquals(BigInteger.of(1 - 10), BigInteger.of(1) - BigInteger.TEN)
+        assertBigIntegersAreEquals(BigInteger.of(-1 - 10), BigInteger.of(-1) - BigInteger.TEN)
+        assertBigIntegersAreEquals(BigInteger.of(0 - 10), BigInteger.of(0) - BigInteger.TEN)
+        assertBigIntegersAreEquals(BigInteger.of(1 - 10), BigInteger.of(1) - BigInteger.TEN)
 
         assertEquals("9223372036854775806", (BigInteger.of(Long.MAX_VALUE) - BigInteger.ONE).toString())
         assertEquals("9223372036854775805", (BigInteger.of(Long.MAX_VALUE) - BigInteger.TWO).toString())
