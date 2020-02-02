@@ -296,6 +296,7 @@ fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatfor
         collectInheritedExtensionsFromLibraries = true
         skipEmptyPackages = true
         configuration(this@register)
+        noStdlibLink = true
     }
 }
 
