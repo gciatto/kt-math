@@ -194,7 +194,7 @@ fun Project.configureUploadToBintray(vararg publicationNames: String) {
             with(pkg) {
                 repo = "kt-math"
                 name = project.name
-                userOrg = "kt-math"
+                user = bintrayUser
                 vcsUrl = "https://github.com/gciatto/kt-math"
                 setLicenses("Apache-2.0")
                 with(version) {
