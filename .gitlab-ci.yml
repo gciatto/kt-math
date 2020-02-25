@@ -48,6 +48,7 @@ Publish to Maven Central:
      url: "https://oss.sonatype.org/#stagingRepositories"
    only:
      - /^(master)|(release)$/
+   allow_failure: true
 
 Publish to Bintray (dev):
   stage: deploy
@@ -59,6 +60,7 @@ Publish to Bintray (dev):
     - /^develop$/
   dependencies:
     - Test JVM
+  allow_failure: true
 
 Publish Releases to Bintray:
   stage: deploy
