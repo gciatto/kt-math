@@ -118,7 +118,7 @@ with(rootProject) {
     
     configureDokka()
 
-    configureMavenPublications("packDokka${capitalize(name)}")
+    configureMavenPublications("packDokka")
 
     configureUploadToMavenCentral(
         if (version.toString().contains("SNAPSHOT")) {
@@ -223,16 +223,21 @@ fun Project.configureUploadToMavenCentral(mavenRepoUrl: String) {
     }
 }
 
-fun Project.configureMavenPublications(docArtifact: String) {
+fun Project.configureMavenPublications(docArtifactBaseName: String) {
     publishing {
         publications.withType<MavenPublication> {
-            groupId = project.group.toString()
-            version = project.version.toString()
+            groupId = this@configureMavenPublications.group.toString()
+            version = this@configureMavenPublications.version.toString()
+
+            val docArtifact = "${docArtifactBaseName}${name.capitalize()}"
 
             if (docArtifact in tasks.names) {
                 artifact(tasks.getByName(docArtifact)) {
                     classifier = "javadoc"
                 }
+            } else {
+                println("w: no javadoc artifact for publication $name in project ${this@configureMavenPublications.name}: " +
+                        "no such a task: $docArtifact")
             }
 
             pom {
