@@ -761,7 +761,7 @@ class BigInteger : Comparable<BigInteger> {
             while (!(j == 0 && z == ONE || z == thisMinusOne)) {
                 if (j > 0 && z == ONE || ++j == a)
                     return false
-                z = z!!.modPow(TWO, this)
+                z = z.modPow(TWO, this)
             }
         }
         return true
@@ -1636,7 +1636,7 @@ class BigInteger : Comparable<BigInteger> {
      * @see .modInverse
      */
     @JsName("modPow")
-    fun modPow(exponent: BigInteger, m: BigInteger): BigInteger? {
+    fun modPow(exponent: BigInteger, m: BigInteger): BigInteger {
         var exponent = exponent
         if (m._signum <= 0)
             throw ArithmeticException("BigInteger: modulus not positive")
@@ -1658,7 +1658,7 @@ class BigInteger : Comparable<BigInteger> {
         if (invertResult)
             exponent = exponent.unaryMinus()
 
-        val base = if (this._signum < 0 || this.compareTo(m) >= 0)
+        val base = if (this._signum < 0 || this >= m)
             this.rem(m)
         else
             this
