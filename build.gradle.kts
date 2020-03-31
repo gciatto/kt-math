@@ -2,6 +2,7 @@ import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.GradlePassConfigurationImpl
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
 
 plugins {
     kotlin("multiplatform") version Versions.org_jetbrains_kotlin_multiplatform_gradle_plugin
@@ -271,20 +272,7 @@ fun Project.configureMavenPublications(docArtifactBaseName: String) {
     }
 }
 
-fun getPropertyOrWarnForAbsence(key: String): String? {
-    val value = property(key)?.toString()
-    if (value.isNullOrBlank()) {
-        System.err.println("WARNING: $key is not set")
-    }
-    return value
-}
-
-fun capitalize(s: String) = s[0].toUpperCase() + s.substring(1)
-
 fun Set<String>.forEachProject(f: Project.() -> Unit) = subprojects.filter { it.name in this }.forEach(f)
-
-val Project.docDir: String
-    get() = "$buildDir/doc"
 
 fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatform(
     platform: String, configuration: Action<in GradlePassConfigurationImpl>
@@ -307,3 +295,20 @@ fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatfor
 
 fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatform(platform: String) =
     registerPlatform(platform) { }
+
+tasks.withType<KotlinPackageJsonTask> {
+    doLast {
+        packageJson.updateJsonFile {
+            setKey("homepage", "https://github.com/gciatto/kt-math")
+            setKey("bugs",
+                "url" to "https://github.com/gciatto/kt-math/issues",
+                "email" to "giovanni.ciatto@gmail.com"
+            )
+            setKey("people",
+                "name" to "Giovanni Ciatto",
+                "url" to "https://about.me/gciatto",
+                "email" to "giovanni.ciatto@gmail.com"
+            )
+        }
+    }
+}
