@@ -50,7 +50,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
+                api(kotlin("stdlib-common"))
             }
         }
         val commonTest by getting {
@@ -64,7 +64,7 @@ kotlin {
         jvm {
             compilations["main"].defaultSourceSet {
                 dependencies {
-                    implementation(kotlin("stdlib-jdk8"))
+                    api(kotlin("stdlib-jdk8"))
                 }
             }
 
@@ -94,7 +94,7 @@ kotlin {
             }
             compilations["main"].defaultSourceSet {
                 dependencies {
-                    implementation(kotlin("stdlib-js"))
+                    api(kotlin("stdlib-js"))
                 }
             }
             compilations["test"].defaultSourceSet {
@@ -235,9 +235,9 @@ fun Project.configureMavenPublications(docArtifactBaseName: String) {
                 artifact(tasks.getByName(docArtifact)) {
                     classifier = "javadoc"
                 }
-            } else {
-                println("w: no javadoc artifact for publication $name in project ${this@configureMavenPublications.name}: " +
-                        "no such a task: $docArtifact")
+            } else if (!docArtifact.endsWith("KotlinMultiplatform")) {
+                println("w: no javadoc artifact for publication $name in " +
+                        "project ${this@configureMavenPublications.name}: no such a task: $docArtifact")
             }
 
             pom {
