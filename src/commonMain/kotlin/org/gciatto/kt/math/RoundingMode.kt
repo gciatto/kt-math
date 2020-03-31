@@ -99,6 +99,7 @@ package org.gciatto.kt.math
  * @since 1.5
  */
 // Legacy rounding mode constants in BigDecimal
+@Suppress("DEPRECATION")
 enum class RoundingMode {
 
     /**

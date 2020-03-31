@@ -5,6 +5,7 @@ import kotlin.test.assertEquals
 
 class TestRoundingMode {
     @Test
+    @Suppress("DEPRECATION")
     fun testOldModesAreCorrect() {
         assertEquals(BigDecimal.ROUND_CEILING, RoundingMode.CEILING.oldMode)
         assertEquals(BigDecimal.ROUND_DOWN, RoundingMode.DOWN.oldMode)

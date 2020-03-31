@@ -1,5 +1,6 @@
 package org.gciatto.kt.math
 
+@Suppress("USELESS_CAST")
 @JsName("bigInteger")
 fun bigInteger(x: dynamic): BigInteger {
     return when (x) {

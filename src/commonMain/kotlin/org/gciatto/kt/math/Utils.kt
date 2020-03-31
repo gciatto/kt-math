@@ -195,11 +195,11 @@ internal fun Int.bitCount(): Int {
     return i and 0x3f
 }
 
-internal fun StringBuilder.insert(index: Int, char: Char): StringBuilder {
-    return this.insert(index, char.toString())
+internal fun StringBuilder.insertChar(index: Int, char: Char): StringBuilder {
+    return this.insertCharSeq(index, char.toString())
 }
 
-internal fun StringBuilder.insert(index: Int, string: CharSequence): StringBuilder {
+internal fun StringBuilder.insertCharSeq(index: Int, string: CharSequence): StringBuilder {
     val temp = StringBuilder(this.subSequence(0, index))
     temp.append(string)
     temp.append(this.subSequence(index, this.length))

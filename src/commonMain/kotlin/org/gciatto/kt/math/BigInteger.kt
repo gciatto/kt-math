@@ -125,6 +125,7 @@ import kotlin.random.Random
  * @since 1.1
  */
 
+@Suppress("NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 class BigInteger : Comparable<BigInteger> {
 
     /**
@@ -598,6 +599,7 @@ class BigInteger : Comparable<BigInteger> {
      * @throws ArithmeticException `this < 0` or `this` is too large.
      * @since 1.5
      */
+    @Suppress("UNREACHABLE_CODE", "UNUSED_VARIABLE")
     @JsName("nextProbablePrime")
     fun nextProbablePrime(): BigInteger {
         if (this._signum < 0)
@@ -2131,7 +2133,7 @@ class BigInteger : Comparable<BigInteger> {
                 onesLost = _mag[magLen - nInts - 1] shl 32 - nBits != 0
 
             if (onesLost)
-                newMag = javaIncrement(newMag ?: throw IllegalStateException())
+                newMag = javaIncrement(newMag)
         }
 
         return BigInteger(newMag, _signum)
@@ -2456,19 +2458,19 @@ class BigInteger : Comparable<BigInteger> {
      * idiom for performing these comparisons is: `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
      * &lt;*op*&gt; is one of the six comparison operators.
      *
-     * @param  val BigInteger to which this BigInteger is to be compared.
+     * @param  other BigInteger to which this BigInteger is to be compared.
      * @return -1, 0 or 1 as this BigInteger is numerically less than, equal
      * to, or greater than `val`.
      */
-    override fun compareTo(`val`: BigInteger): Int {
-        if (_signum == `val`._signum) {
+    override fun compareTo(other: BigInteger): Int {
+        if (_signum == other._signum) {
             when (_signum) {
-                1 -> return compareMagnitude(`val`)
-                -1 -> return `val`.compareMagnitude(this)
+                1 -> return compareMagnitude(other)
+                -1 -> return other.compareMagnitude(this)
                 else -> return 0
             }
         }
-        return if (_signum > `val`._signum) 1 else -1
+        return if (_signum > other._signum) 1 else -1
     }
 
     /**
@@ -2642,7 +2644,7 @@ class BigInteger : Comparable<BigInteger> {
         var sb = StringBuilder()
         if (_signum < 0) {
             toString(this.unaryMinus(), sb, radix, 0)
-            sb = sb.insert(0, '-')
+            sb = sb.insertChar(0, '-')
         } else
             toString(this, sb, radix, 0)
 
@@ -3555,7 +3557,6 @@ class BigInteger : Comparable<BigInteger> {
          * non-negative
          */
         private fun sum(x: IntArray, `val`: Long): IntArray {
-            val y: IntArray
             var sum: Long = 0
             var xIndex = x.size
             val result: IntArray
@@ -4343,6 +4344,7 @@ class BigInteger : Comparable<BigInteger> {
         /**
          * Parameters validation.
          */
+        @Suppress("UNUSED_PARAMETER")
         private fun implMulAddCheck(out: IntArray, `in`: IntArray, offset: Int, len: Int, k: Int) {
             if (len > `in`.size) {
                 throw IllegalArgumentException("input length is out of bound: " + len + " > " + `in`.size)
