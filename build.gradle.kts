@@ -1,7 +1,10 @@
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
+import node.Bugs
+import node.People
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.GradlePassConfigurationImpl
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
 import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
 
 plugins {
@@ -13,6 +16,8 @@ plugins {
     id("org.danilopianini.git-sensitive-semantic-versioning") version Versions.org_danilopianini_git_sensitive_semantic_versioning_gradle_plugin
     id("de.fayard.buildSrcVersions") version Versions.de_fayard_buildsrcversions_gradle_plugin
 }
+
+apply<node.NpmPublishPlugin>()
 
 repositories {
     mavenCentral()
@@ -45,6 +50,8 @@ val bintrayKey = getPropertyOrWarnForAbsence("bintrayKey")
 val ossrhUsername = getPropertyOrWarnForAbsence("ossrhUsername")
 // env ORG_GRADLE_PROJECT_ossrhPassword
 val ossrhPassword = getPropertyOrWarnForAbsence("ossrhPassword")
+// env ORG_GRADLE_PROJECT_npmToken
+val npmToken = getPropertyOrWarnForAbsence("npmToken")
 
 kotlin {
 
@@ -132,6 +139,8 @@ with(rootProject) {
     configureUploadToBintray("kotlinMultiplatform", "js", "jvm", "metadata")
 
     configureSigning()
+
+    configureJsPackage()
 }
 
 fun Project.configureDokka() {
@@ -296,19 +305,28 @@ fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatfor
 fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatform(platform: String) =
     registerPlatform(platform) { }
 
-tasks.withType<KotlinPackageJsonTask> {
-    doLast {
-        packageJson.updateJsonFile {
-            setKey("homepage", "https://github.com/gciatto/kt-math")
-            setKey("bugs",
-                "url" to "https://github.com/gciatto/kt-math/issues",
-                "email" to "giovanni.ciatto@gmail.com"
+fun Project.configureJsPackage() {
+
+    configure<node.NpmPublishExtension> {
+        packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
+        token = npmToken!!
+        nodePath = tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
+
+        liftPackageJson {
+            people = mutableListOf(
+                People(
+                    "Giovanni Ciatto",
+                    "giovanni.ciatto@gmail.com",
+                    "https://about.me/gciatto"
+                )
             )
-            setKey("people",
-                "name" to "Giovanni Ciatto",
-                "url" to "https://about.me/gciatto",
-                "email" to "giovanni.ciatto@gmail.com"
+            homepage = "https://github.com/gciatto/kt-math"
+            bugs = Bugs(
+                "https://github.com/gciatto/kt-math/issues",
+                "giovanni.ciatto@gmail.com"
             )
         }
+
+        tasks.getByName("liftPackageJson").dependsOn("jsMainClasses")
     }
 }
