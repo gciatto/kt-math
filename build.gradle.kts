@@ -17,8 +17,6 @@ plugins {
     id("de.fayard.buildSrcVersions") version Versions.de_fayard_buildsrcversions_gradle_plugin
 }
 
-apply<node.NpmPublishPlugin>()
-
 repositories {
     mavenCentral()
     maven("https://dl.bintray.com/kotlin/dokka")
@@ -206,7 +204,7 @@ fun Project.configureUploadToBintray(vararg publicationNames: String) {
                 name = project.name
                 user = bintrayUser
                 vcsUrl = "https://github.com/gciatto/kt-math"
-                setLicenses("Apache-2.0")
+                setLicenses("GPL-2.0+CE")
                 with(version) {
                     name = project.version.toString()
                 }
@@ -306,6 +304,7 @@ fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatfor
     registerPlatform(platform) { }
 
 fun Project.configureJsPackage() {
+    apply<node.NpmPublishPlugin>()
 
     configure<node.NpmPublishExtension> {
         packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
@@ -325,6 +324,7 @@ fun Project.configureJsPackage() {
                 "https://github.com/gciatto/kt-math/issues",
                 "giovanni.ciatto@gmail.com"
             )
+            license = "GPL-2.0+CE"
         }
 
         tasks.getByName("liftPackageJson").dependsOn("jsMainClasses")

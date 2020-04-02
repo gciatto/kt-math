@@ -11,21 +11,13 @@ variables:
   TEST_JVM_TASK: "jvmTest -x dokka"
   TEST_JS_TASK: "clean jsTest -x dokka"
   BINTRAY_TASK: "publishAllToBintray"
+  NPM_TASK: "clean npmPublish"
   MAVEN_TASK: "publishAllPublicationsToMavenRepository"
   PAGES_TASK: "orchidBuild"
   ORG_GRADLE_PROJECT_orchidBaseUrl: "https://gciatto-unibo.gitlab.io/kt-math"
 
 before_script:
   - chmod +x gradlew
-
-#cache:
-#  paths:
-#    - /root/.gradle/caches
-#    - /root/.gradle/daemon
-#    - /root/.gradle/wrapper
-#    - gradle/
-#    - build/
-#    - .gradle/
 
 Compile:
   stage: build
@@ -40,7 +32,7 @@ Test JS:
   script: $GCMD $BEFORE_TASK $TEST_JS_TASK $AFTER_TASK $GOPTS
   allow_failure: true
 
-Publish to Maven Central:
+Deploy to Maven Central:
    stage: deploy
    script: $GCMD $BEFORE_TASK $MAVEN_TASK $AFTER_TASK $GOPTS
    environment:
@@ -48,44 +40,21 @@ Publish to Maven Central:
      url: "https://oss.sonatype.org/#stagingRepositories"
    only:
      - /^(master)|(release)$/
-   allow_failure: true
 
-Publish to Bintray (dev):
+Deploy to Bintray:
   stage: deploy
   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
   environment:
     name: Bintray
     url: "https://bintray.com/gciatto-unibo/kt-math"
   only:
-    - /^develop$/
-  dependencies:
-    - Test JVM
-  allow_failure: true
+    - /^(master)|(release)|(develop)$/
 
-Publish Releases to Bintray:
+Deploy to NPM:
   stage: deploy
-  script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
+  script: $GCMD $BEFORE_TASK $NPM_TASK $AFTER_TASK $GOPTS
   environment:
-    name: Bintray
-    url: "https://bintray.com/gciatto-unibo/kt-math"
+    name: NPM
+    url: "https://www.npmjs.com/package/kt-math"
   only:
-    - /^(master)|(release)$/
-
-# Manually publish to Bintray:
-#   stage: deploy
-#   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
-#   environment:
-#     name: Bintray
-#     url: "https://bintray.com/pika-lab/tuprolog"
-#   when: manual
-
-# pages:
-#   script:
-#     - mkdir public
-#     - $GCMD $BEFORE_TASK $PAGES_TASK $AFTER_TASK $GOPTS
-#     - cp -r documentation/build/docs/orchid/* public
-#   artifacts:
-#     paths:
-#       - public
-#   only:
-#     - feature/doc
+    - /^(master)|(release)|(develop)$/

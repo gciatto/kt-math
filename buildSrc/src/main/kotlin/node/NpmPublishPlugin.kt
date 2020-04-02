@@ -12,45 +12,22 @@ class NpmPublishPlugin : Plugin<Project> {
 
     private lateinit var extension: NpmPublishExtension
 
-    val nodePath: File
-        get() = extension.nodePath
-
-    val packageJson: File
-        get() = extension.packageJson
-
-    val token: String
-        get() = extension.token
-
-    val registry: String
-        get() = extension.registry
-
-    private val node: File
-        get() = nodePath.resolve("node")
-
-    private val npm: File
-        get() = nodePath.resolve("node_modules/npm/bin/npm-cli.js")
-
-    private val npmProject: File
-        get() = File(packageJson.parent)
-
     private fun Project.createNpmLoginTask(name: String): DefaultTask {
         val setRegistryName = "${name}SetRegistry"
-        val setRegistry = tasks.maybeCreate(setRegistryName, Exec::class.java).let {
+        val setRegistry = tasks.maybeCreate(setRegistryName, Exec::class.java).also {
             it.group = "nodeJs"
             it.standardOutput = System.out
-            it.doFirst {
-                it.executable = node.absolutePath
-                it.args(npm, "set", "registry", "https://$registry")
-            }
         }
-        val setToken = tasks.maybeCreate("${name}SetToken", Exec::class.java).let {
+        val setToken = tasks.maybeCreate("${name}SetToken", Exec::class.java).also {
             it.dependsOn(setRegistry)
             it.group = "nodeJs"
             it.standardOutput = System.out
-            it.doFirst {
-                it.executable = node.absolutePath
-                it.args(npm, "set", "//$registry/:_authToken", token)
-            }
+        }
+        extension.onExtensionChanged.add {
+            setRegistry.executable = node.absolutePath
+            setRegistry.setArgs(listOf(npm, "set", "registry", "https://$registry"))
+            setToken.executable = node.absolutePath
+            setToken.setArgs(listOf(npm, "set", "//$registry/:_authToken", token))
         }
         return tasks.maybeCreate(name, DefaultTask::class.java).also {
             it.group = "nodeJs"
@@ -59,39 +36,41 @@ class NpmPublishPlugin : Plugin<Project> {
     }
 
     private fun Project.createNpmPublishTask(name: String): Exec {
-        return tasks.maybeCreate(name, Exec::class.java).also {
+        val publish = tasks.maybeCreate(name, Exec::class.java).also {
             it.group = "nodeJs"
             it.standardOutput = System.out
-            it.doFirst {
-                it.args(npm, "publish", npmProject, "--access", "public")
-                it.executable = node.absolutePath
-            }
         }
+        extension.onExtensionChanged.add {
+            publish.executable = node.absolutePath
+            publish.setArgs(listOf(npm, "publish", npmProject, "--access", "public"))
+        }
+        return publish
     }
 
     private fun Project.createCopyRootProjectFilesTask(name: String): Task {
-        return tasks.maybeCreate(name, Copy::class.java).also {
+        val copy = tasks.maybeCreate(name, Copy::class.java).also {
             it.group = "nodeJs"
             it.from(rootProject.projectDir)
             it.include("README*")
             it.include("CONTRIB*")
             it.include("LICENSE*")
-            it.destinationDir = buildDir
-            it.doFirst {
-                it.destinationDir = File(packageJson.parent)
-            }
         }
+        extension.onExtensionChanged.add {
+            copy.destinationDir = File(packageJson.parent)
+        }
+        return copy
     }
 
     private fun Project.createLiftPackageJsonTask(name: String): LiftPackageJsonTask {
-        return tasks.maybeCreate(name, LiftPackageJsonTask::class.java).also {
+        val lift = tasks.maybeCreate(name, LiftPackageJsonTask::class.java).also {
             it.group = "nodeJs"
-            it.doFirst {
-                it.packageJsonFile = packageJson
-                it.liftingActions = extension.liftingActions
-                it.rawLiftingActions = extension.rawLiftingActions
-            }
         }
+        extension.onExtensionChanged.add {
+            lift.packageJsonFile = packageJson
+            lift.liftingActions = liftingActions
+            lift.rawLiftingActions = rawLiftingActions
+        }
+        return lift
     }
 
     override fun apply(target: Project) {
