@@ -6,7 +6,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
-import java.io.File
 
 class NpmPublishPlugin : Plugin<Project> {
 
@@ -62,7 +61,7 @@ class NpmPublishPlugin : Plugin<Project> {
             it.include("LICENSE*")
         }
         extension.onExtensionChanged.add {
-            copy.destinationDir = File(packageJson.parent)
+            copy.destinationDir = packageJson.parentFile
             jsCompileTask?.let { copy.dependsOn(it) }
         }
         return copy

@@ -68,7 +68,7 @@ open class NpmPublishExtension {
             onExtensionChanged.forEach { it(this) }
         }
 
-    var registry = "registry.npmjs.org"
+    var registry = "registry.npmjs.org/"
         get() = field
         set(value) {
             field = value
@@ -90,11 +90,11 @@ open class NpmPublishExtension {
             if (_npm == null) {
                 _npm = possibleNpmPaths.map { nodeRoot.resolve(it) }.find { it.exists() }
             }
-            return _node ?: File("")
+            return _npm ?: File("")
         }
 
     internal val npmProject: File
-        get() = File(packageJson.parent)
+        get() = packageJson.parentFile ?: File("")
 
     private val _liftingActions: MutableList<Action<PackageJson>> = mutableListOf()
     private val _rawLiftingActions: MutableList<Action<JsonObject>> = mutableListOf()
