@@ -307,9 +307,9 @@ fun Project.configureJsPackage() {
     apply<node.NpmPublishPlugin>()
 
     configure<node.NpmPublishExtension> {
-        packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
+        nodeRoot = tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
         token = npmToken!!
-        nodePath = tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
+        packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
         nodeSetupTask = "kotlinNodeJsSetup"
         jsCompileTask = "jsMainClasses"
 

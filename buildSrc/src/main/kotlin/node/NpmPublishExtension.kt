@@ -10,23 +10,28 @@ open class NpmPublishExtension {
         private val isWindows: Boolean
             get() = File.separatorChar == '\\'
 
+        private val npmScriptSubpath = "node_modules/npm/bin/npm-cli.js"
+
         private val possibleNodePaths: Sequence<String> =
-            sequenceOf("node", "bin/node").let { paths ->
+            sequenceOf("bin/node", "node").let { paths ->
                 if (isWindows) {
                     paths.map { "$it.exe" } + paths
                 } else {
                     paths
                 }
             }
+
+        private val possibleNpmPaths: Sequence<String> =
+            sequenceOf("lib/", "").map { it + npmScriptSubpath }
     }
 
     internal var onExtensionChanged: MutableList<NpmPublishExtension.() -> Unit> = mutableListOf()
 
-    private var _nodePath: File = File("")
-    var nodePath: File
-        get() = _nodePath
+    private var _nodeRoot: File = File("")
+    var nodeRoot: File
+        get() = _nodeRoot
         set(value) {
-            _nodePath = value
+            _nodeRoot = value
             _node = null
             onExtensionChanged.forEach { it(this) }
         }
@@ -74,13 +79,19 @@ open class NpmPublishExtension {
     internal val node: File
         get() {
             if (_node == null) {
-                _node = possibleNodePaths.map { nodePath.resolve(it) }.find { it.exists() }
+                _node = possibleNodePaths.map { nodeRoot.resolve(it) }.find { it.exists() }
             }
             return _node ?: File("")
         }
 
+    private var _npm: File? = null
     internal val npm: File
-        get() = nodePath.resolve("node_modules/npm/bin/npm-cli.js")
+        get() {
+            if (_npm == null) {
+                _npm = possibleNpmPaths.map { nodeRoot.resolve(it) }.find { it.exists() }
+            }
+            return _node ?: File("")
+        }
 
     internal val npmProject: File
         get() = File(packageJson.parent)
