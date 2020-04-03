@@ -28,6 +28,10 @@ class NpmPublishPlugin : Plugin<Project> {
             setRegistry.setArgs(listOf(npm, "set", "registry", "https://$registry"))
             setToken.executable = node.absolutePath
             setToken.setArgs(listOf(npm, "set", "//$registry/:_authToken", token))
+            nodeSetupTask?.let {
+                setRegistry.dependsOn(it)
+                setToken.dependsOn(it)
+            }
         }
         return tasks.maybeCreate(name, DefaultTask::class.java).also {
             it.group = "nodeJs"
@@ -43,6 +47,8 @@ class NpmPublishPlugin : Plugin<Project> {
         extension.onExtensionChanged.add {
             publish.executable = node.absolutePath
             publish.setArgs(listOf(npm, "publish", npmProject, "--access", "public"))
+            nodeSetupTask?.let { publish.dependsOn(it) }
+            jsCompileTask?.let { publish.dependsOn(it) }
         }
         return publish
     }
@@ -57,6 +63,7 @@ class NpmPublishPlugin : Plugin<Project> {
         }
         extension.onExtensionChanged.add {
             copy.destinationDir = File(packageJson.parent)
+            jsCompileTask?.let { copy.dependsOn(it) }
         }
         return copy
     }
@@ -69,6 +76,7 @@ class NpmPublishPlugin : Plugin<Project> {
             lift.packageJsonFile = packageJson
             lift.liftingActions = liftingActions
             lift.rawLiftingActions = rawLiftingActions
+            jsCompileTask?.let { lift.dependsOn(it) }
         }
         return lift
     }

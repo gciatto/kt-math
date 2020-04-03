@@ -310,6 +310,8 @@ fun Project.configureJsPackage() {
         packageJson = tasks.getByName<KotlinPackageJsonTask>("jsPackageJson").packageJson
         token = npmToken!!
         nodePath = tasks.withType<NodeJsSetupTask>().asSequence().map { it.destination }.first()
+        nodeSetupTask = "kotlinNodeJsSetup"
+        jsCompileTask = "jsMainClasses"
 
         liftPackageJson {
             people = mutableListOf(
@@ -326,7 +328,5 @@ fun Project.configureJsPackage() {
             )
             license = "GPL-2.0+CE"
         }
-
-        tasks.getByName("liftPackageJson").dependsOn("jsMainClasses")
     }
 }
