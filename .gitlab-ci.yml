@@ -11,7 +11,8 @@ variables:
   TEST_JVM_TASK: "jvmTest -x dokka"
   TEST_JS_TASK: "clean jsTest -x dokka"
   BINTRAY_TASK: "publishAllToBintray"
-  NPM_TASK: "clean jsMain npmPublish"
+  JS_COMPILE_TASK: "clean jsMain"
+  NPM_PUBLISH_TASK: "npmPublish"
   MAVEN_TASK: "publishAllPublicationsToMavenRepository"
   PAGES_TASK: "orchidBuild"
   ORG_GRADLE_PROJECT_orchidBaseUrl: "https://gciatto-unibo.gitlab.io/kt-math"
@@ -52,7 +53,9 @@ Deploy to Bintray:
 
 Deploy to NPM:
   stage: deploy
-  script: $GCMD $BEFORE_TASK $NPM_TASK $AFTER_TASK $GOPTS
+  script:
+    - $GCMD $BEFORE_TASK $JS_COMPILE_TASK $AFTER_TASK $GOPTS
+    - $GCMD $BEFORE_TASK $NPM_PUBLISH_TASK $AFTER_TASK $GOPTS
   environment:
     name: NPM
     url: "https://www.npmjs.com/package/kt-math"
