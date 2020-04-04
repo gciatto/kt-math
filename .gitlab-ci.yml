@@ -11,7 +11,7 @@ variables:
   TEST_JVM_TASK: "jvmTest -x dokka"
   TEST_JS_TASK: "clean jsTest -x dokka"
   BINTRAY_TASK: "publishAllToBintray"
-  NPM_TASK: "clean npmPublish"
+  NPM_TASK: "clean jsMain npmPublish"
   MAVEN_TASK: "publishAllPublicationsToMavenRepository"
   PAGES_TASK: "orchidBuild"
   ORG_GRADLE_PROJECT_orchidBaseUrl: "https://gciatto-unibo.gitlab.io/kt-math"
