@@ -19,6 +19,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    jcenter()
     maven("https://dl.bintray.com/kotlin/dokka")
     maven("https://jitpack.io")
 }
