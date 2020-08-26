@@ -1,6 +1,6 @@
 package org.gciatto.kt.math
 
-const val DEBUG = true
+const val DEBUG = false
 
 internal fun log(lazyObject: () -> Any) {
     if (DEBUG) {
@@ -164,17 +164,16 @@ internal fun <T> arrayCopy(src: Array<T>, srcIndex: Int, dest: Array<T>, destInd
 }
 
 internal fun arrayCopy(src: IntArray, srcIndex: Int, dest: IntArray, destIndex: Int, size: Int) {
-
     for (i in 0 until size) {
         dest[destIndex + i] = src[srcIndex + i]
     }
 }
 
-internal inline fun <reified T> Array<T>.clone(): Array<T> {
+internal inline fun <reified T> Array<T>.cloneArray(): Array<T> {
     return Array<T>(this.size) { i -> this[i] }
 }
 
-internal fun IntArray.clone(): IntArray {
+internal fun IntArray.cloneArray(): IntArray {
     return IntArray(this.size) { i -> this[i] }
 }
 
@@ -221,7 +220,7 @@ internal fun IntArray.fill(from: Int, to: Int, x: Int): IntArray {
     return this
 }
 
-internal fun StringBuilder.append(char: CharArray, offset: Int, len: Int): StringBuilder {
+internal fun StringBuilder.appendCharArray(char: CharArray, offset: Int, len: Int): StringBuilder {
     for (i in offset until offset + len) {
         append(char[i])
     }

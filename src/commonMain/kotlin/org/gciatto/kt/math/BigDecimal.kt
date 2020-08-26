@@ -3718,18 +3718,18 @@ class BigDecimal : Comparable<BigDecimal> {
                     buf.append('0')
                     pad--
                 }
-                buf.append(coeff, offset, coeffLen)
+                buf.appendCharArray(coeff, offset, coeffLen)
             } else {                         // xx.xx form
-                buf.append(coeff, offset, -pad)
+                buf.appendCharArray(coeff, offset, -pad)
                 buf.append('.')
-                buf.append(coeff, -pad + offset, _scale)
+                buf.appendCharArray(coeff, -pad + offset, _scale)
             }
         } else { // E-notation is needed
             if (sci) {                       // Scientific notation
                 buf.append(coeff[offset])   // first character
                 if (coeffLen > 1) {          // more to come
                     buf.append('.')
-                    buf.append(coeff, offset + 1, coeffLen - 1)
+                    buf.appendCharArray(coeff, offset + 1, coeffLen - 1)
                 }
             } else {                         // Engineering notation
                 var sig = (adjusted % 3).toInt()
@@ -3751,15 +3751,15 @@ class BigDecimal : Comparable<BigDecimal> {
                         else -> throw AssertionError("Unexpected sig value $sig")
                     }
                 } else if (sig >= coeffLen) {   // significand all in integer
-                    buf.append(coeff, offset, coeffLen)
+                    buf.appendCharArray(coeff, offset, coeffLen)
                     // may need some zeros, too
                     for (i in sig - coeffLen downTo 1) {
                         buf.append('0')
                     }
                 } else {                     // xx.xxE form
-                    buf.append(coeff, offset, sig)
+                    buf.appendCharArray(coeff, offset, sig)
                     buf.append('.')
-                    buf.append(coeff, offset + sig, coeffLen - sig)
+                    buf.appendCharArray(coeff, offset + sig, coeffLen - sig)
                 }
             }
             if (adjusted != 0L) {             // [!sci could have made 0]

@@ -1783,7 +1783,7 @@ class BigInteger : Comparable<BigInteger> {
         if (_signum == 0)
             return ZERO
 
-        val base = _mag.clone()
+        val base = _mag.cloneArray()
         val exp = y._mag
         var mod = z._mag
         var modLen = mod.size
@@ -1915,7 +1915,7 @@ class BigInteger : Comparable<BigInteger> {
             // Perform timesLong
             if (ebits == multpos) {
                 if (isone) {
-                    b = mult.clone()
+                    b = mult.cloneArray()
                     isone = false
                 } else {
                     t = b
@@ -4516,7 +4516,7 @@ class BigInteger : Comparable<BigInteger> {
 
             var pc = powerCache // volatile read again
             if (exponent >= pc[radix]!!.size) {
-                pc = pc.clone()
+                pc = pc.cloneArray()
                 pc[radix] = cacheLine2.requireNoNulls()
                 powerCache = pc // volatile write, publish
             }
