@@ -4310,7 +4310,7 @@ class BigDecimal : Comparable<BigDecimal> {
          * expanded to the size greater than n.
          */
         private fun expandBigIntegerTenPowers(n: Int): BigInteger {
-            synchronized(this) {
+            lock(this) {
                 var pows: Array<BigInteger?> = BIG_TEN_POWERS_TABLE
                 val curLen = pows.size
                 // The following comparison and the above synchronized statement is
