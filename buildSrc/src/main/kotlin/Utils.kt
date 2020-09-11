@@ -1,9 +1,10 @@
 import org.gradle.api.Project
+import java.io.File
 
 fun capitalize(s: String) = s[0].toUpperCase() + s.substring(1)
 
-val Project.docDir: String
-    get() = "$buildDir/doc"
+val Project.docDir: File
+    get() = buildDir.resolve("doc")
 
 fun Project.getPropertyOrWarnForAbsence(key: String): String? {
     val value = property(key)?.toString()

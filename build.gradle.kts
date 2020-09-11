@@ -2,7 +2,6 @@ import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import node.Bugs
 import node.People
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.dokka.gradle.GradlePassConfigurationImpl
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsSetupTask
 import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinPackageJsonTask
@@ -143,19 +142,25 @@ with(rootProject) {
 }
 
 fun Project.configureDokka() {
-    tasks.withType<DokkaTask> {
-        outputDirectory = docDir
-        outputFormat = "html"
 
-        multiplatform {
-            registerPlatform("jvm")
-            registerPlatform("js")
+    tasks.withType<DokkaTask>().configureEach {
+        outputDirectory.set(docDir)
+
+        dokkaSourceSets {
+            named("jvmMain") {
+                sourceRoots.from(kotlin.sourceSets.getByName("jvmMain").kotlin.srcDirs)
+                sourceRoots.from(kotlin.sourceSets.getByName("commonMain").kotlin.srcDirs)
+            }
+            named("jsMain") {
+                sourceRoots.from(kotlin.sourceSets.getByName("jsMain").kotlin.srcDirs)
+                sourceRoots.from(kotlin.sourceSets.getByName("commonMain").kotlin.srcDirs)
+            }
         }
     }
 
     val jarPlatform = tasks.withType<Jar>().map { it.name.replace("Jar", "") }
 
-    task<DefaultTask>("packAllDokka") {
+    val packAllDokka by tasks.registering(DefaultTask::class) {
         group = "documentation"
     }
 
@@ -164,7 +169,7 @@ fun Project.configureDokka() {
 
         task<Jar>(packDokkaForPlatform) {
             group = "documentation"
-            dependsOn("dokka")
+            dependsOn("dokkaHtml")
             from(docDir)
             archiveBaseName.set(project.name)
             archiveVersion.set(project.version.toString())
@@ -173,7 +178,7 @@ fun Project.configureDokka() {
         }
 
         tasks.getByName("${it}Jar").dependsOn(packDokkaForPlatform)
-        tasks.getByName("packAllDokka").dependsOn(packDokkaForPlatform)
+        packAllDokka.get().dependsOn(packDokkaForPlatform)
     }
 }
 
@@ -281,28 +286,6 @@ fun Project.configureMavenPublications(docArtifactBaseName: String) {
 }
 
 fun Set<String>.forEachProject(f: Project.() -> Unit) = subprojects.filter { it.name in this }.forEach(f)
-
-fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatform(
-    platform: String, configuration: Action<in GradlePassConfigurationImpl>
-) {
-
-    val low = platform.toLowerCase()
-    val up = platform.toUpperCase()
-
-    register(low) {
-        targets = listOf(up)
-        this@register.platform = low
-        includeNonPublic = false
-        reportUndocumented = false
-        collectInheritedExtensionsFromLibraries = true
-        skipEmptyPackages = true
-        configuration(this@register)
-        noStdlibLink = true
-    }
-}
-
-fun NamedDomainObjectContainerScope<GradlePassConfigurationImpl>.registerPlatform(platform: String) =
-    registerPlatform(platform) { }
 
 fun Project.configureJsPackage() {
     apply<node.NpmPublishPlugin>()
