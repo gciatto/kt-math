@@ -528,12 +528,12 @@ class BigInteger : Comparable<BigInteger> {
     private fun parseInt(source: CharArray, start: Int, end: Int): Int {
         var result = source[start].toDigit(10)
         if (result == -1)
-            throw NumberFormatException(String(source))
+            throw NumberFormatException(source.concatToString())
 
         for (index in (start + 1) until end) {
             val nextVal = source[index].toDigit(10)
             if (nextVal == -1)
-                throw NumberFormatException(String(source))
+                throw NumberFormatException(source.concatToString())
             result = 10 * result + nextVal
         }
 

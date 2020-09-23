@@ -311,6 +311,13 @@ fun Project.configureJsPackage() {
                 "giovanni.ciatto@gmail.com"
             )
             license = "GPL-2.0+CE"
+            dependencies = dependencies?.mapValues { (_, v) ->
+                if (v.startsWith("file:")) {
+                    v.split('/').last()
+                } else {
+                    v
+                }
+            }?.toMutableMap() ?: dependencies
         }
     }
 }
