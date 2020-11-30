@@ -1,6 +1,5 @@
 plugins {
     id("io.github.gciatto.kt-mpp-pp")
-    kotlin("multiplatform")
     id("org.danilopianini.git-sensitive-semantic-versioning")
 }
 
@@ -27,3 +26,13 @@ println("${rootProject.name} version: $version")
 kotlinMultiplatform {
     developer("Giovanni Ciatto", "giovanni.ciatto@gmail.com", "http://about.me/gciatto")
 }
+
+//publishing {
+//    publications.withType<MavenPublication> {
+//        println("""
+//            name=$name
+//            groupId=$groupId
+//            version=$version
+//        """.trimIndent())
+//    }
+//}
