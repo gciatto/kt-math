@@ -1,5 +1,15 @@
 package org.gciatto.kt.math
 
+const val DEBUG = false
+
+internal fun log(lazyObject: () -> Any) {
+    if (DEBUG) {
+        logImpl(lazyObject)
+    }
+}
+
+internal expect fun logImpl(lazyObject: () -> Any)
+
 internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
     if (this == 0L)
@@ -154,17 +164,16 @@ internal fun <T> arrayCopy(src: Array<T>, srcIndex: Int, dest: Array<T>, destInd
 }
 
 internal fun arrayCopy(src: IntArray, srcIndex: Int, dest: IntArray, destIndex: Int, size: Int) {
-
     for (i in 0 until size) {
         dest[destIndex + i] = src[srcIndex + i]
     }
 }
 
-internal inline fun <reified T> Array<T>.clone(): Array<T> {
+internal inline fun <reified T> Array<T>.cloneArray(): Array<T> {
     return Array<T>(this.size) { i -> this[i] }
 }
 
-internal fun IntArray.clone(): IntArray {
+internal fun IntArray.cloneArray(): IntArray {
     return IntArray(this.size) { i -> this[i] }
 }
 
@@ -185,11 +194,11 @@ internal fun Int.bitCount(): Int {
     return i and 0x3f
 }
 
-internal fun StringBuilder.insert(index: Int, char: Char): StringBuilder {
-    return this.insert(index, char.toString())
+internal fun StringBuilder.insertChar(index: Int, char: Char): StringBuilder {
+    return this.insertCharSeq(index, char.toString())
 }
 
-internal fun StringBuilder.insert(index: Int, string: CharSequence): StringBuilder {
+internal fun StringBuilder.insertCharSeq(index: Int, string: CharSequence): StringBuilder {
     val temp = StringBuilder(this.subSequence(0, index))
     temp.append(string)
     temp.append(this.subSequence(index, this.length))
@@ -211,7 +220,7 @@ internal fun IntArray.fill(from: Int, to: Int, x: Int): IntArray {
     return this
 }
 
-internal fun StringBuilder.append(char: CharArray, offset: Int, len: Int): StringBuilder {
+internal fun StringBuilder.appendCharArray(char: CharArray, offset: Int, len: Int): StringBuilder {
     for (i in offset until offset + len) {
         append(char[i])
     }

@@ -1,27 +1,8 @@
 package org.gciatto.kt.math
 
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class TestDecimals {
-
-    fun assertEquals(x: BigDecimal, y: BigDecimal, m: String? = "Failed: $x == $y") {
-        if (m === null) {
-            assertEquals(0, x.compareTo(y))
-            assertEquals(0, y.compareTo(x))
-        } else {
-            assertEquals(0, x.compareTo(y), m)
-            assertEquals(0, y.compareTo(x), m)
-        }
-    }
-
-    fun assertReprEquals(repr: Any, obj: Any, m: String? = "Failed: $obj.toString() == $repr") {
-        if (m === null) {
-            assertEquals(repr.toString(), obj.toString())
-        } else {
-            assertEquals(repr.toString(), obj.toString(), m)
-        }
-    }
 
     @Test
     fun testCreation() {
@@ -37,55 +18,53 @@ class TestDecimals {
         assertReprEquals("-0.5", -BigDecimal.ONE_HALF)
         assertReprEquals("-0.1", -BigDecimal.ONE_TENTH)
 
-        assertReprEquals("1.7976931348623157E+308", BigDecimal.of(Double.MAX_VALUE))
-        assertReprEquals("4.9E-324", BigDecimal.of(Double.MIN_VALUE))
-        assertReprEquals("3.4028234663852886E+38", BigDecimal.of(Float.MAX_VALUE))
-        assertReprEquals("1.401298464324817E-45", BigDecimal.of(Float.MIN_VALUE))
+        assertReprEquals(DOUBLE_MAX_VALUE_REPR, BigDecimal.of(Double.MAX_VALUE).toPlainString())
+        assertReprEquals(DOUBLE_MIN_VALUE_REPR, BigDecimal.of(Double.MIN_VALUE).toPlainString())
+        assertReprEquals(FLOAT_MAX_VALUE_REPR, BigDecimal.of(Float.MAX_VALUE).toPlainString())
+        assertReprEquals(FLOAT_MIN_VALUE_REPR, BigDecimal.of(Float.MIN_VALUE).toPlainString())
 
-        assertReprEquals("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648",
-            BigDecimal.PI)
+        assertReprEquals(PI_REPR, BigDecimal.PI)
 
-        assertReprEquals("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264",
-            BigDecimal.E)
+        assertReprEquals(E_REPR, BigDecimal.E)
 
-        assertEquals(BigDecimal.ZERO, BigDecimal.of(0))
-        assertEquals(BigDecimal.ONE, BigDecimal.of(1))
-        assertEquals(BigDecimal.TWO, BigDecimal.of(2))
-        assertEquals(BigDecimal.TEN, BigDecimal.of(10))
-        assertEquals(BigDecimal.ONE_HALF, BigDecimal.of(1) / BigDecimal.of(2))
-        assertEquals(BigDecimal.ONE_TENTH, BigDecimal.of(1) / BigDecimal.of(10))
-        assertEquals(-BigDecimal.ONE, BigDecimal.of(-1))
-        assertEquals(-BigDecimal.TWO, BigDecimal.of(-2))
-        assertEquals(-BigDecimal.TEN, BigDecimal.of(-10))
-        assertEquals(-BigDecimal.ONE_HALF, BigDecimal.of(-1) / BigDecimal.of(2))
-        assertEquals(-BigDecimal.ONE_TENTH, BigDecimal.of(-1) / BigDecimal.of(10))
+        assertBigDecimalsAreEquals(BigDecimal.ZERO, BigDecimal.of(0))
+        assertBigDecimalsAreEquals(BigDecimal.ONE, BigDecimal.of(1))
+        assertBigDecimalsAreEquals(BigDecimal.TWO, BigDecimal.of(2))
+        assertBigDecimalsAreEquals(BigDecimal.TEN, BigDecimal.of(10))
+        assertBigDecimalsAreEquals(BigDecimal.ONE_HALF, BigDecimal.of(1) / BigDecimal.of(2))
+        assertBigDecimalsAreEquals(BigDecimal.ONE_TENTH, BigDecimal.of(1) / BigDecimal.of(10))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE, BigDecimal.of(-1))
+        assertBigDecimalsAreEquals(-BigDecimal.TWO, BigDecimal.of(-2))
+        assertBigDecimalsAreEquals(-BigDecimal.TEN, BigDecimal.of(-10))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE_HALF, BigDecimal.of(-1) / BigDecimal.of(2))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE_TENTH, BigDecimal.of(-1) / BigDecimal.of(10))
 
-        assertEquals(BigDecimal.ZERO, BigDecimal.of(0.0))
-        assertEquals(BigDecimal.ONE, BigDecimal.of(1.0))
-        assertEquals(BigDecimal.TWO, BigDecimal.of(2.0))
-        assertEquals(BigDecimal.TEN, BigDecimal.of(10.0))
-        assertEquals(BigDecimal.ONE_HALF, BigDecimal.of(0.5))
-        assertEquals(BigDecimal.ONE_TENTH, BigDecimal.of(0.1))
-        assertEquals(-BigDecimal.ONE, BigDecimal.of(-1.0))
-        assertEquals(-BigDecimal.TWO, BigDecimal.of(-2.0))
-        assertEquals(-BigDecimal.TEN, BigDecimal.of(-10.0))
-        assertEquals(-BigDecimal.ONE_HALF, BigDecimal.of(-0.5))
-        assertEquals(-BigDecimal.ONE_TENTH, BigDecimal.of(-0.1))
+        assertBigDecimalsAreEquals(BigDecimal.ZERO, BigDecimal.of(0.0))
+        assertBigDecimalsAreEquals(BigDecimal.ONE, BigDecimal.of(1.0))
+        assertBigDecimalsAreEquals(BigDecimal.TWO, BigDecimal.of(2.0))
+        assertBigDecimalsAreEquals(BigDecimal.TEN, BigDecimal.of(10.0))
+        assertBigDecimalsAreEquals(BigDecimal.ONE_HALF, BigDecimal.of(0.5))
+        assertBigDecimalsAreEquals(BigDecimal.ONE_TENTH, BigDecimal.of(0.1))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE, BigDecimal.of(-1.0))
+        assertBigDecimalsAreEquals(-BigDecimal.TWO, BigDecimal.of(-2.0))
+        assertBigDecimalsAreEquals(-BigDecimal.TEN, BigDecimal.of(-10.0))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE_HALF, BigDecimal.of(-0.5))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE_TENTH, BigDecimal.of(-0.1))
     }
 
     @Test
     fun testSum() {
-        assertEquals(BigDecimal.of(-1 + 1), BigDecimal.of(-1) + BigDecimal.ONE)
-        assertEquals(BigDecimal.of(0 + 1), BigDecimal.of(0) + BigDecimal.ONE)
-        assertEquals(BigDecimal.of(1 + 1), BigDecimal.of(1) + BigDecimal.ONE)
+        assertBigDecimalsAreEquals(BigDecimal.of(-1 + 1), BigDecimal.of(-1) + BigDecimal.ONE)
+        assertBigDecimalsAreEquals(BigDecimal.of(0 + 1), BigDecimal.of(0) + BigDecimal.ONE)
+        assertBigDecimalsAreEquals(BigDecimal.of(1 + 1), BigDecimal.of(1) + BigDecimal.ONE)
 
-        assertEquals(BigDecimal.of(-1 + 2), BigDecimal.of(-1) + BigDecimal.TWO)
-        assertEquals(BigDecimal.of(0 + 2), BigDecimal.of(0) + BigDecimal.TWO)
-        assertEquals(BigDecimal.of(1 + 2), BigDecimal.of(1) + BigDecimal.TWO)
+        assertBigDecimalsAreEquals(BigDecimal.of(-1 + 2), BigDecimal.of(-1) + BigDecimal.TWO)
+        assertBigDecimalsAreEquals(BigDecimal.of(0 + 2), BigDecimal.of(0) + BigDecimal.TWO)
+        assertBigDecimalsAreEquals(BigDecimal.of(1 + 2), BigDecimal.of(1) + BigDecimal.TWO)
 
-        assertEquals(BigDecimal.of(-1 + 10), BigDecimal.of(-1) + BigDecimal.TEN)
-        assertEquals(BigDecimal.of(0 + 10), BigDecimal.of(0) + BigDecimal.TEN)
-        assertEquals(BigDecimal.of(1 + 10), BigDecimal.of(1) + BigDecimal.TEN)
+        assertBigDecimalsAreEquals(BigDecimal.of(-1 + 10), BigDecimal.of(-1) + BigDecimal.TEN)
+        assertBigDecimalsAreEquals(BigDecimal.of(0 + 10), BigDecimal.of(0) + BigDecimal.TEN)
+        assertBigDecimalsAreEquals(BigDecimal.of(1 + 10), BigDecimal.of(1) + BigDecimal.TEN)
 
         assertReprEquals("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648",
             BigDecimal.PI + BigDecimal.ZERO)
@@ -119,17 +98,17 @@ class TestDecimals {
 
     @Test
     fun testSub() {
-        assertEquals(BigDecimal.of(-1 - 1), BigDecimal.of(-1) - BigDecimal.ONE)
-        assertEquals(BigDecimal.of(0 - 1), BigDecimal.of(0) - BigDecimal.ONE)
-        assertEquals(BigDecimal.of(1 - 1), BigDecimal.of(1) - BigDecimal.ONE)
+        assertBigDecimalsAreEquals(BigDecimal.of(-1 - 1), BigDecimal.of(-1) - BigDecimal.ONE)
+        assertBigDecimalsAreEquals(BigDecimal.of(0 - 1), BigDecimal.of(0) - BigDecimal.ONE)
+        assertBigDecimalsAreEquals(BigDecimal.of(1 - 1), BigDecimal.of(1) - BigDecimal.ONE)
 
-        assertEquals(BigDecimal.of(-1 - 2), BigDecimal.of(-1) - BigDecimal.TWO)
-        assertEquals(BigDecimal.of(0 - 2), BigDecimal.of(0) - BigDecimal.TWO)
-        assertEquals(BigDecimal.of(1 - 2), BigDecimal.of(1) - BigDecimal.TWO)
+        assertBigDecimalsAreEquals(BigDecimal.of(-1 - 2), BigDecimal.of(-1) - BigDecimal.TWO)
+        assertBigDecimalsAreEquals(BigDecimal.of(0 - 2), BigDecimal.of(0) - BigDecimal.TWO)
+        assertBigDecimalsAreEquals(BigDecimal.of(1 - 2), BigDecimal.of(1) - BigDecimal.TWO)
 
-        assertEquals(BigDecimal.of(-1 - 10), BigDecimal.of(-1) - BigDecimal.TEN)
-        assertEquals(BigDecimal.of(0 - 10), BigDecimal.of(0) - BigDecimal.TEN)
-        assertEquals(BigDecimal.of(1 - 10), BigDecimal.of(1) - BigDecimal.TEN)
+        assertBigDecimalsAreEquals(BigDecimal.of(-1 - 10), BigDecimal.of(-1) - BigDecimal.TEN)
+        assertBigDecimalsAreEquals(BigDecimal.of(0 - 10), BigDecimal.of(0) - BigDecimal.TEN)
+        assertBigDecimalsAreEquals(BigDecimal.of(1 - 10), BigDecimal.of(1) - BigDecimal.TEN)
 
         assertReprEquals("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648",
             BigDecimal.PI - BigDecimal.ZERO)
@@ -157,38 +136,39 @@ class TestDecimals {
         assertReprEquals("2.618281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264",
             BigDecimal.E - BigDecimal.ONE_TENTH)
 
-        assertReprEquals("-0.9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999951",
+        log { "Notice that Double.MIN_VALUE=${Double.MIN_VALUE}" }
+        assertReprEquals(BigDecimal.of(DOUBLE_MIN_VALUE_REPR) - BigDecimal.ONE,
             BigDecimal.of(Double.MIN_VALUE) - BigDecimal.ONE)
     }
 
     @Test
     fun testDecimalParsing() {
-        assertEquals(BigDecimal.ZERO, BigDecimal.of("0.0"))
-        assertEquals(BigDecimal.ONE, BigDecimal.of("1.0"))
-        assertEquals(BigDecimal.TWO, BigDecimal.of("2.0"))
-        assertEquals(BigDecimal.TEN, BigDecimal.of("10.0"))
-        assertEquals(BigDecimal.ONE_HALF, BigDecimal.of("0.5"))
-        assertEquals(BigDecimal.ONE_TENTH, BigDecimal.of("0.1"))
-        assertEquals(-BigDecimal.ONE, BigDecimal.of("-1.0"))
-        assertEquals(-BigDecimal.TWO, BigDecimal.of("-2.0"))
-        assertEquals(-BigDecimal.TEN, BigDecimal.of("-10.0"))
-        assertEquals(-BigDecimal.ONE_HALF, BigDecimal.of("-0.5"))
-        assertEquals(-BigDecimal.ONE_TENTH, BigDecimal.of("-0.1"))
+        assertBigDecimalsAreEquals(BigDecimal.ZERO, BigDecimal.of("0.0"))
+        assertBigDecimalsAreEquals(BigDecimal.ONE, BigDecimal.of("1.0"))
+        assertBigDecimalsAreEquals(BigDecimal.TWO, BigDecimal.of("2.0"))
+        assertBigDecimalsAreEquals(BigDecimal.TEN, BigDecimal.of("10.0"))
+        assertBigDecimalsAreEquals(BigDecimal.ONE_HALF, BigDecimal.of("0.5"))
+        assertBigDecimalsAreEquals(BigDecimal.ONE_TENTH, BigDecimal.of("0.1"))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE, BigDecimal.of("-1.0"))
+        assertBigDecimalsAreEquals(-BigDecimal.TWO, BigDecimal.of("-2.0"))
+        assertBigDecimalsAreEquals(-BigDecimal.TEN, BigDecimal.of("-10.0"))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE_HALF, BigDecimal.of("-0.5"))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE_TENTH, BigDecimal.of("-0.1"))
 
-        assertEquals(BigDecimal.PI, BigDecimal.of("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648"))
-        assertEquals(-BigDecimal.PI, BigDecimal.of("-3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648"))
-        assertEquals(BigDecimal.E, BigDecimal.of("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264"))
-        assertEquals(-BigDecimal.E, BigDecimal.of("-2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264"))
+        assertBigDecimalsAreEquals(BigDecimal.PI, BigDecimal.of("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648"))
+        assertBigDecimalsAreEquals(-BigDecimal.PI, BigDecimal.of("-3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648"))
+        assertBigDecimalsAreEquals(BigDecimal.E, BigDecimal.of("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264"))
+        assertBigDecimalsAreEquals(-BigDecimal.E, BigDecimal.of("-2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264"))
 
-        assertEquals(BigDecimal.of(1, 1000), BigDecimal.of("0." + (0 until 999).map { "0" }.joinToString("") +  "1"))
+        assertBigDecimalsAreEquals(BigDecimal.of(1, 1000), BigDecimal.of("0." + (0 until 999).map { "0" }.joinToString("") +  "1"))
     }
 
     @Test
     fun testSqrt() {
-        assertEquals(BigDecimal.ZERO, BigDecimal.ZERO.sqrt())
-        assertEquals(BigDecimal.ONE, BigDecimal.ONE.sqrt())
-        assertEquals(BigDecimal.of(2), BigDecimal.of(4).sqrt())
-        assertEquals(BigDecimal.of(1.1), BigDecimal.of(1.21).sqrt())
+        assertBigDecimalsAreEquals(BigDecimal.ZERO, BigDecimal.ZERO.sqrt())
+        assertBigDecimalsAreEquals(BigDecimal.ONE, BigDecimal.ONE.sqrt())
+        assertBigDecimalsAreEquals(BigDecimal.of(2), BigDecimal.of(4).sqrt())
+        assertBigDecimalsAreEquals(BigDecimal.of(1.1), BigDecimal.of(1.21).sqrt())
     }
 
 }

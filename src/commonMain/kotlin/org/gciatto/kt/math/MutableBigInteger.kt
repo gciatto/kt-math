@@ -47,6 +47,7 @@ import org.gciatto.kt.math.BigDecimal.Companion.INFLATED
 import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
 import kotlin.math.*
 
+@Suppress("NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER", "UNUSED_CHANGED_VALUE")
 internal open class MutableBigInteger {
     /**
      * Holds the magnitude of this MutableBigInteger in big endian order.
@@ -1807,6 +1808,7 @@ internal open class MutableBigInteger {
      * Specialized version of the method sulsub.
      * dh is a high part of the divisor, dl is a low part
      */
+    @Suppress("UNUSED_CHANGED_VALUE")
     private fun mulsubLong(q: IntArray, dh: Int, dl: Int, x: Int, offset: Int): Int {
         var offset = offset
         val xLong = x.toLong()and LONG_MASK
@@ -1953,6 +1955,7 @@ internal open class MutableBigInteger {
      * Calculate GCD of this and v.
      * Assumes that this and v are not zero.
      */
+    @Suppress("UNUSED_VALUE")
     private fun binaryGCD(v: MutableBigInteger): MutableBigInteger {
         var v = v
         // Algorithm B from Knuth section 4.5.2
@@ -2105,8 +2108,8 @@ internal open class MutableBigInteger {
         var g = MutableBigInteger(p)
         var c = SignedMutableBigInteger(1)
         var d = SignedMutableBigInteger()
-        var temp: MutableBigInteger? = null
-        var sTemp: SignedMutableBigInteger? = null
+        var temp: MutableBigInteger?
+        var sTemp: SignedMutableBigInteger?
 
         var k = 0
         // Right shift f k timesLong until odd, left shift d k timesLong
@@ -2159,6 +2162,7 @@ internal open class MutableBigInteger {
      * Uses the extended Euclidean algorithm to compute the modInverse of base
      * rem a modulus that is a power of 2. The modulus is 2^k.
      */
+    @Suppress("UNUSED_VALUE")
     fun euclidModInverse(k: Int): MutableBigInteger {
         var b: MutableBigInteger? = MutableBigInteger(1)
         b!!.leftShift(k)

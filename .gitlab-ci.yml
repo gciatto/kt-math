@@ -1,4 +1,4 @@
-image: pikalab/ci:jdk12oracle-gradle6-git
+image: pikalab/ci:ubuntu-jdk14-git-gradle-graphviz
 
 variables:
   GOPTS: "--no-daemon --console=plain --stacktrace"
@@ -7,62 +7,62 @@ variables:
   AFTER_TASK: ""
   GCMD: "gradle"
   BUILD_TASK: "assemble"
-  TEST_TASK: "check"
+  DOC_TASK: "dokkaHtml"
+  TEST_JVM_TASK: "jvmTest"
+  TEST_JS_TASK: "clean jsTest"
   BINTRAY_TASK: "publishAllToBintray"
+  JS_COMPILE_TASK: "clean jsMain"
+  NPM_PUBLISH_TASK: "npmPublish"
+  MAVEN_TASK: "publishAllPublicationsToMavenRepository"
   PAGES_TASK: "orchidBuild"
-  ORG_GRADLE_PROJECT_orchidBaseUrl: "https://pika-lab.gitlab.io/tuprolog/2p-in-kotlin/"
+  ORG_GRADLE_PROJECT_orchidBaseUrl: "https://gciatto-unibo.gitlab.io/kt-math"
 
 before_script:
   - chmod +x gradlew
-
-cache:
-  paths:
-    - /root/.gradle/
-    - gradle/
-    - build/
-    - .gradle/
+  - source $HOME/.sdkman/bin/sdkman-init.sh
 
 Compile:
   stage: build
   script: $GCMD $BEFORE_TASK $BUILD_TASK $AFTER_TASK $GOPTS
 
-Test:
+Dokka:
+  stage: build
+  script: $GCMD $BEFORE_TASK $DOC_TASK $AFTER_TASK $GOPTS
+
+Test JVM:
   stage: test
-  script: $GCMD $BEFORE_TASK $TEST_TASK $AFTER_TASK $GOPTS
+  script: $GCMD $BEFORE_TASK $TEST_JVM_TASK $AFTER_TASK $GOPTS
 
-# Automatically publish to Bintray (dev):
-#   stage: deploy
-#   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
-#   environment:
-#     name: Bintray
-#     url: "https://bintray.com/pika-lab/tuprolog"
-#   only:
-#     - /^develop$/
+Test JS:
+  stage: test
+  script: $GCMD $BEFORE_TASK $TEST_JS_TASK $AFTER_TASK $GOPTS
+  allow_failure: true
 
-# Automatically publish Releases to Bintray:
-#   stage: deploy
-#   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
-#   environment:
-#     name: Bintray
-#     url: "https://bintray.com/pika-lab/tuprolog"
-#   only:
-#     - /^(master)|(release)$/
+Deploy to Maven Central:
+   stage: deploy
+   script: $GCMD $BEFORE_TASK $MAVEN_TASK $AFTER_TASK $GOPTS
+   environment:
+     name: Nexus Repository Manager
+     url: "https://oss.sonatype.org/#stagingRepositories"
+   only:
+     - /^(master)|(release)$/
 
-# Manually publish to Bintray:
-#   stage: deploy
-#   script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
-#   environment:
-#     name: Bintray
-#     url: "https://bintray.com/pika-lab/tuprolog"
-#   when: manual
+Deploy to Bintray:
+  stage: deploy
+  script: $GCMD $BEFORE_TASK $BINTRAY_TASK $AFTER_TASK $GOPTS
+  environment:
+    name: Bintray
+    url: "https://bintray.com/gciatto-unibo/kt-math"
+  only:
+    - /^(master)|(release)|(develop)$/
 
-# pages:
-#   script:
-#     - mkdir public
-#     - $GCMD $BEFORE_TASK $PAGES_TASK $AFTER_TASK $GOPTS
-#     - cp -r documentation/build/docs/orchid/* public
-#   artifacts:
-#     paths:
-#       - public
-#   only:
-#     - feature/doc
+Deploy to NPM:
+  stage: deploy
+  script:
+    - $GCMD $BEFORE_TASK $JS_COMPILE_TASK $AFTER_TASK $GOPTS
+    - $GCMD $BEFORE_TASK $NPM_PUBLISH_TASK $AFTER_TASK $GOPTS
+  environment:
+    name: NPM
+    url: "https://www.npmjs.com/package/kt-math"
+  only:
+    - /^(master)|(release)|(develop)$/

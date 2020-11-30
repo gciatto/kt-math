@@ -236,6 +236,7 @@ import kotlin.math.*
  * @author  Sergey V. Kuksenko
  * @since 1.1
  */
+@Suppress("NAME_SHADOWING", "DEPRECATION", "UNREACHABLE_CODE", "UNUSED_PARAMETER")
 class BigDecimal : Comparable<BigDecimal> {
 
     /**
@@ -430,7 +431,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 if (mcp > 0 && drop > 0) {  // do rounding
                     while (drop > 0) {
                         scl = checkScaleNonZero(scl.toLong() - drop)
-                        rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode!!.oldMode)
+                        rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
                         prec = longDigitLength(rs)
                         drop = prec - mcp
                     }
@@ -502,7 +503,7 @@ class BigDecimal : Comparable<BigDecimal> {
                         var drop = prec - mcp
                         while (drop > 0) {
                             scl = checkScaleNonZero(scl.toLong() - drop)
-                            rb = divideAndRoundByTenPow(rb!!, drop, mc.roundingMode!!.oldMode)
+                            rb = divideAndRoundByTenPow(rb!!, drop, mc.roundingMode.oldMode)
                             rs = compactValFor(rb)
                             if (rs != INFLATED) {
                                 prec = longDigitLength(rs)
@@ -516,7 +517,7 @@ class BigDecimal : Comparable<BigDecimal> {
                         var drop = prec - mcp
                         while (drop > 0) {
                             scl = checkScaleNonZero(scl.toLong() - drop)
-                            rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode!!.oldMode)
+                            rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
                             prec = longDigitLength(rs)
                             drop = prec - mcp
                         }
@@ -760,7 +761,7 @@ class BigDecimal : Comparable<BigDecimal> {
         var prec = 0
         val mcp = mc.precision
         if (mcp > 0) { // do rounding
-            val mode = mc.roundingMode!!.oldMode
+            val mode = mc.roundingMode.oldMode
             var drop: Int
             if (compactVal == INFLATED) {
                 prec = bigDigitLength(rb!!)
@@ -927,7 +928,7 @@ class BigDecimal : Comparable<BigDecimal> {
             var drop = prec - mcp // drop can't be more than 18
             while (drop > 0) {
                 scl = checkScaleNonZero(scl.toLong() - drop)
-                compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode!!.oldMode)
+                compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
                 prec = longDigitLength(compactVal)
                 drop = prec - mcp
             }
@@ -965,7 +966,7 @@ class BigDecimal : Comparable<BigDecimal> {
     internal constructor(`val`: Long, mc: MathContext) {
         var `val` = `val`
         val mcp = mc.precision
-        val mode = mc.roundingMode!!.oldMode
+        val mode = mc.roundingMode.oldMode
         var prec = 0
         var scl = 0
         var rb: BigInteger? = if (`val` == INFLATED) INFLATED_BIGINT else null
@@ -1886,7 +1887,7 @@ class BigDecimal : Comparable<BigDecimal> {
             // point by roughly (_scale() - _precision() +1).
 
             // Now the _precision / _scale adjustment
-            var scaleAdjust = 0
+            var scaleAdjust: Int
             val scale = stripped.scale - stripped.precision + 1
             if (scale % 2 == 0) {
                 scaleAdjust = scale
@@ -2665,26 +2666,26 @@ class BigDecimal : Comparable<BigDecimal> {
      * `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
      * &lt;*op*&gt; is one of the six comparison operators.
      *
-     * @param  val [BigDecimal] to which this [BigDecimal] is
+     * @param  other [BigDecimal] to which this [BigDecimal] is
      * to be compared.
      * @return -1, 0, or 1 as this [BigDecimal] is numerically
      * less than, equal to, or greater than `val`.
      */
-    override fun compareTo(`val`: BigDecimal): Int {
+    override fun compareTo(other: BigDecimal): Int {
         // Quick path for equal _scale and non-inflated case.
-        if (_scale == `val`._scale) {
+        if (_scale == other._scale) {
             val xs = _intCompact
-            val ys = `val`._intCompact
+            val ys = other._intCompact
             if (xs != INFLATED && ys != INFLATED)
                 return if (xs != ys) if (xs > ys) 1 else -1 else 0
         }
         val xsign = this.signum
-        val ysign = `val`.signum
+        val ysign = other.signum
         if (xsign != ysign)
             return if (xsign > ysign) 1 else -1
         if (xsign == 0)
             return 0
-        val cmp = compareMagnitude(`val`)
+        val cmp = compareMagnitude(other)
         return if (xsign > 0) cmp else -cmp
     }
 
@@ -2744,7 +2745,7 @@ class BigDecimal : Comparable<BigDecimal> {
      * value and _scale (thus 2.0 is not equal to 2.00 when compared by
      * this method).
      *
-     * @param  x `Object` to which this [BigDecimal] is
+     * @param  other `Object` to which this [BigDecimal] is
      * to be compared.
      * @return `true` if and only if the specified `Object` is a
      * [BigDecimal] whose value and _scale are equal to this
@@ -2752,11 +2753,11 @@ class BigDecimal : Comparable<BigDecimal> {
      * @see .compareTo
      * @see .hashCode
      */
-    override fun equals(x: Any?): Boolean {
-        if (x !is BigDecimal)
+    override fun equals(other: Any?): Boolean {
+        if (other !is BigDecimal)
             return false
-        val xDec = x as BigDecimal?
-        if (x === this)
+        val xDec = other as BigDecimal?
+        if (other === this)
             return true
         if (_scale != xDec!!._scale)
             return false
@@ -3045,9 +3046,9 @@ class BigDecimal : Comparable<BigDecimal> {
             return (if (signum < 0) "-0." else "0.") + intString
         } else if (insertionPoint > 0) { /* Point goes inside _intVal */
             buf = StringBuilder(intString)
-            buf.insert(insertionPoint, '.')
+            buf.insertChar(insertionPoint, '.')
             if (signum < 0)
-                buf.insert(0, '-')
+                buf.insertChar(0, '-')
         } else { /* We must insert zeros between point and _intVal */
             buf = StringBuilder(3 - insertionPoint + intString.length)
             buf.append(if (signum < 0) "-0." else "0.")
@@ -3717,18 +3718,18 @@ class BigDecimal : Comparable<BigDecimal> {
                     buf.append('0')
                     pad--
                 }
-                buf.append(coeff, offset, coeffLen)
+                buf.appendCharArray(coeff, offset, coeffLen)
             } else {                         // xx.xx form
-                buf.append(coeff, offset, -pad)
+                buf.appendCharArray(coeff, offset, -pad)
                 buf.append('.')
-                buf.append(coeff, -pad + offset, _scale)
+                buf.appendCharArray(coeff, -pad + offset, _scale)
             }
         } else { // E-notation is needed
             if (sci) {                       // Scientific notation
                 buf.append(coeff[offset])   // first character
                 if (coeffLen > 1) {          // more to come
                     buf.append('.')
-                    buf.append(coeff, offset + 1, coeffLen - 1)
+                    buf.appendCharArray(coeff, offset + 1, coeffLen - 1)
                 }
             } else {                         // Engineering notation
                 var sig = (adjusted % 3).toInt()
@@ -3750,15 +3751,15 @@ class BigDecimal : Comparable<BigDecimal> {
                         else -> throw AssertionError("Unexpected sig value $sig")
                     }
                 } else if (sig >= coeffLen) {   // significand all in integer
-                    buf.append(coeff, offset, coeffLen)
+                    buf.appendCharArray(coeff, offset, coeffLen)
                     // may need some zeros, too
                     for (i in sig - coeffLen downTo 1) {
                         buf.append('0')
                     }
                 } else {                     // xx.xxE form
-                    buf.append(coeff, offset, sig)
+                    buf.appendCharArray(coeff, offset, sig)
                     buf.append('.')
-                    buf.append(coeff, offset + sig, coeffLen - sig)
+                    buf.appendCharArray(coeff, offset + sig, coeffLen - sig)
                 }
             }
             if (adjusted != 0L) {             // [!sci could have made 0]
@@ -4135,7 +4136,7 @@ class BigDecimal : Comparable<BigDecimal> {
             return if (ctx === null) {
                 BigDecimal(`val`)
             } else {
-                BigDecimal(`val`, ctx!!)
+                BigDecimal(`val`, ctx)
             }
         }
 
@@ -4143,7 +4144,7 @@ class BigDecimal : Comparable<BigDecimal> {
             return if (ctx === null) {
                 BigDecimal(`val`)
             } else {
-                BigDecimal(`val`, ctx!!)
+                BigDecimal(`val`, ctx)
             }
         }
 
@@ -4309,7 +4310,7 @@ class BigDecimal : Comparable<BigDecimal> {
          * expanded to the size greater than n.
          */
         private fun expandBigIntegerTenPowers(n: Int): BigInteger {
-            synchronized(this) {
+            lock(this) {
                 var pows: Array<BigInteger?> = BIG_TEN_POWERS_TABLE
                 val curLen = pows.size
                 // The following comparison and the above synchronized statement is
@@ -4593,7 +4594,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 var compactVal = `val`._intCompact
                 var scale = `val`._scale
                 var prec = `val`.precision
-                val mode = mc.roundingMode!!.oldMode
+                val mode = mc.roundingMode.oldMode
                 var drop: Int
                 if (compactVal == INFLATED) {
                     drop = prec - mcp
@@ -4640,7 +4641,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 var drop = prec - mcp  // drop can't be more than 18
                 while (drop > 0) {
                     scale = checkScaleNonZero(scale.toLong() - drop)
-                    compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode!!.oldMode)
+                    compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
                     prec = longDigitLength(compactVal)
                     drop = prec - mcp
                 }
@@ -4660,7 +4661,7 @@ class BigDecimal : Comparable<BigDecimal> {
             var prec = 0
             if (mcp > 0) {
                 var compactVal = compactValFor(intVal)
-                val mode = mc.roundingMode!!.oldMode
+                val mode = mc.roundingMode.oldMode
                 var drop: Int
                 if (compactVal == INFLATED) {
                     prec = bigDigitLength(intVal)
@@ -4953,9 +4954,9 @@ class BigDecimal : Comparable<BigDecimal> {
             val mdivisor = MutableBigInteger(bdivisor._mag)
             val mr = mdividend.divide(mdivisor, mq)
             isRemainderZero = mr!!.isZero
-            qsign = if (bdividend._signum !== bdivisor._signum) -1 else 1
+            qsign = if (bdividend._signum != bdivisor._signum) -1 else 1
             if (!isRemainderZero) {
-                if (needIncrement(mdivisor, roundingMode, qsign, mq, mr!!)) {
+                if (needIncrement(mdivisor, roundingMode, qsign, mq, mr)) {
                     mq.add(MutableBigInteger.ONE)
                 }
                 return mq.toBigDecimal(qsign, scale)
@@ -5144,7 +5145,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 }
             }
             val sum = fst!!.plus(snd!!)
-            return if (fst._signum === snd!!._signum)
+            return if (fst._signum == snd._signum)
                 BigDecimal(sum, INFLATED, rscale, 0)
             else
                 of(sum, rscale, 0)
@@ -5176,7 +5177,7 @@ class BigDecimal : Comparable<BigDecimal> {
         ): BigDecimal? {
             var yscale = yscale
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode!!.oldMode
+            val roundingMode = mc.roundingMode.oldMode
 
             require(xscale <= yscale && yscale < 18 && mcp < 18)
             val xraise = yscale - xscale // xraise >=0
@@ -5300,7 +5301,7 @@ class BigDecimal : Comparable<BigDecimal> {
             if (compareMagnitudeNormalized(xs, xscale, ys, yscale) > 0) {// satisfy constraint (b)
                 yscale -= 1 // [that is, divisor *= 10]
             }
-            val roundingMode = mc.roundingMode!!.oldMode
+            val roundingMode = mc.roundingMode.oldMode
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
             // return BigDecimal object whose _scale will be set to 'scl'.
@@ -5356,7 +5357,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 yscale -= 1 // [that is, divisor *= 10]
             }
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode!!.oldMode
+            val roundingMode = mc.roundingMode.oldMode
 
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
@@ -5405,7 +5406,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 yscale -= 1 // [that is, divisor *= 10]
             }
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode!!.oldMode
+            val roundingMode = mc.roundingMode.also { log { it } }.oldMode
 
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
@@ -5445,7 +5446,7 @@ class BigDecimal : Comparable<BigDecimal> {
                 yscale -= 1 // [that is, divisor *= 10]
             }
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode!!.oldMode
+            val roundingMode = mc.roundingMode.oldMode
 
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
@@ -5842,7 +5843,7 @@ class BigDecimal : Comparable<BigDecimal> {
                     LONG_TEN_POWERS_TABLE[drop],
                     sign,
                     scale,
-                    mc.roundingMode!!.oldMode,
+                    mc.roundingMode.oldMode,
                     scale
                 )
             }

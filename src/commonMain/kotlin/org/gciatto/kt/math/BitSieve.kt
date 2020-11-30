@@ -47,6 +47,7 @@ import kotlin.random.Random
  * @author  Michael McCloskey
  * @since   1.3
  */
+@Suppress("NAME_SHADOWING")
 internal class BitSieve {
     /**
      * Stores the bits in this bitSieve.
