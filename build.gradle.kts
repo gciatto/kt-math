@@ -3,7 +3,6 @@ plugins {
     id("org.danilopianini.git-sensitive-semantic-versioning")
 }
 
-description = "Pure Kotlin porting of Java's BigIntegers and BigDecimals"
 group = "io.github.gciatto"
 
 gitSemVer {
@@ -17,6 +16,5 @@ gitSemVer {
 println("${rootProject.name} version: $version")
 
 kotlinMultiplatform {
-    projectLongName.set("Kotlin MPP Math")
     developer("Giovanni Ciatto", "giovanni.ciatto@gmail.com", "http://about.me/gciatto")
 }
