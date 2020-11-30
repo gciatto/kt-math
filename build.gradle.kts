@@ -3,14 +3,7 @@ plugins {
     id("org.danilopianini.git-sensitive-semantic-versioning")
 }
 
-repositories {
-    gradlePluginPortal()
-    mavenCentral()
-    maven("https://dl.bintray.com/kotlin/dokka")
-    maven("https://jitpack.io")
-}
-
-description = "Kotlin MPP Math"
+description = "Pure Kotlin porting of Java's BigIntegers and BigDecimals"
 group = "io.github.gciatto"
 
 gitSemVer {
@@ -24,15 +17,6 @@ gitSemVer {
 println("${rootProject.name} version: $version")
 
 kotlinMultiplatform {
+    projectLongName.set("Kotlin MPP Math")
     developer("Giovanni Ciatto", "giovanni.ciatto@gmail.com", "http://about.me/gciatto")
 }
-
-//publishing {
-//    publications.withType<MavenPublication> {
-//        println("""
-//            name=$name
-//            groupId=$groupId
-//            version=$version
-//        """.trimIndent())
-//    }
-//}
