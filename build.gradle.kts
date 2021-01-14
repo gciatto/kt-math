@@ -1,6 +1,9 @@
+import java.time.Duration
+
 plugins {
     id("io.github.gciatto.kt-mpp-pp")
     id("org.danilopianini.git-sensitive-semantic-versioning")
+    id("de.marcphilipp.nexus-publish")
 }
 
 group = "io.github.gciatto"
@@ -17,4 +20,14 @@ println("${rootProject.name} version: $version")
 
 kotlinMultiplatform {
     developer("Giovanni Ciatto", "giovanni.ciatto@gmail.com", "http://about.me/gciatto")
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(project.property("mavenUsername").toString())
+            password.set(project.property("mavenPassword").toString())
+        }
+    }
+    clientTimeout.set(Duration.ofMinutes(10))
 }
