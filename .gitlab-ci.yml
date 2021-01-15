@@ -43,7 +43,7 @@ Deploy to Maven Central:
    script: $GCMD $BEFORE_TASK $MAVEN_TASK $AFTER_TASK $GOPTS
    environment:
      name: Nexus Repository Manager
-     url: "https://oss.sonatype.org/#stagingRepositories"
+     url: "https://s01.oss.sonatype.org/#stagingRepositories"
    only:
      - /^(master)|(release)$/
 

@@ -22,11 +22,16 @@ kotlinMultiplatform {
     developer("Giovanni Ciatto", "giovanni.ciatto@gmail.com", "http://about.me/gciatto")
 }
 
+val mavenRepo: String by project
+val mavenUsername: String by project
+val mavenPassword: String by project
+
 nexusPublishing {
     repositories {
         sonatype {
-            username.set(project.property("mavenUsername").toString())
-            password.set(project.property("mavenPassword").toString())
+            nexusUrl.set(uri(mavenRepo))
+            username.set(mavenUsername)
+            password.set(mavenPassword)
         }
     }
     clientTimeout.set(Duration.ofMinutes(10))
