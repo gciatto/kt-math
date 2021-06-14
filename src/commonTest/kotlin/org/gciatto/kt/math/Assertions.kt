@@ -14,9 +14,9 @@ fun assertBigIntegersAreEquals(x: BigInteger, y: BigInteger, m: String? = "Faile
 
 fun assertReprEquals(repr: Any, obj: Any, m: String? = "Failed: $obj.toString() == $repr") {
     if (m === null) {
-        assertEquals(repr.toString().toLowerCase(), obj.toString().toLowerCase())
+        assertEquals(repr.toString().lowercase(), obj.toString().lowercase())
     } else {
-        assertEquals(repr.toString().toLowerCase(), obj.toString().toLowerCase(), m)
+        assertEquals(repr.toString().lowercase(), obj.toString().lowercase(), m)
     }
 }
 
