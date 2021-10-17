@@ -31,6 +31,9 @@ package org.gciatto.kt.math
 
 import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
 import kotlin.js.JsName
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
 import kotlin.math.*
 
 /**
@@ -3926,6 +3929,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          * @since  1.5
          */
+        @JvmField
+        @JsName("ZERO")
         val ZERO = ZERO_THROUGH_TEN[0]
 
         /**
@@ -3933,8 +3938,12 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          * @since  1.5
          */
+        @JvmField
+        @JsName("ONE")
         val ONE = ZERO_THROUGH_TEN[1]
 
+        @JvmField
+        @JsName("TWO")
         val TWO = ZERO_THROUGH_TEN[2]
 
         /**
@@ -3942,20 +3951,30 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          * @since  1.5
          */
+        @JvmField
+        @JsName("TEN")
         val TEN = ZERO_THROUGH_TEN[10]
 
         /**
          * The value 0.1, with a _scale of 1.
          */
+        @JvmField
+        @JsName("ONE_TENTH")
         val ONE_TENTH = of(1L, 1)
 
         /**
          * The value 0.5, with a _scale of 1.
          */
+        @JvmField
+        @JsName("ONE_HALF")
         val ONE_HALF = of(5L, 1)
 
+        @JvmField
+        @JsName("PI")
         val PI = of("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648")
 
+        @JvmField
+        @JsName("E")
         val E = of("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264")
 
             /*
@@ -4026,6 +4045,8 @@ class BigDecimal : Comparable<BigDecimal> {
          * @return a [BigDecimal] whose value is
          * `(unscaledVal  10<sup>-_scale</sup>)`.
          */
+        @JvmStatic
+        @JsName("ofScaledLong")
         fun of(unscaledVal: Long, scale: Int): BigDecimal {
             if (scale == 0)
                 return of(unscaledVal)
@@ -4059,8 +4080,9 @@ class BigDecimal : Comparable<BigDecimal> {
 //                return BigDecimal(null, `val`, 0, 0)
 //            return BigDecimal(INFLATED_BIGINT, `val`, 0, 0)
 //        }
-
-        internal fun of(unscaledVal: Long, scale: Int, prec: Int): BigDecimal {
+        @JvmStatic
+        @JsName("ofScaledLongWithPrecision")
+        fun of(unscaledVal: Long, scale: Int, prec: Int): BigDecimal {
             return if (scale == 0 && unscaledVal >= 0 && unscaledVal < ZERO_THROUGH_TEN.size) {
                 ZERO_THROUGH_TEN[unscaledVal.toInt()]
             } else if (unscaledVal == 0L) {
@@ -4074,10 +4096,14 @@ class BigDecimal : Comparable<BigDecimal> {
 
         }
 
+        @JvmStatic
+        @JsName("ofInt")
         fun of(`val`: Int): BigDecimal {
             return of(`val`.toLong())
         }
 
+        @JvmStatic
+        @JsName("of")
         fun of(`val`: Long): BigDecimal {
             return if (`val` >= 0L && `val` < ZERO_THROUGH_TEN.size.toLong()) {
                 ZERO_THROUGH_TEN[`val`.toInt()]
@@ -4091,7 +4117,9 @@ class BigDecimal : Comparable<BigDecimal> {
             }
         }
 
-        internal fun of(intVal: BigInteger, scale: Int, prec: Int): BigDecimal {
+        @JvmStatic
+        @JsName("ofScaledBigIntegerWithPrecision")
+        fun of(intVal: BigInteger, scale: Int, prec: Int): BigDecimal {
             val `val` = compactValFor(intVal)
             if (`val` == 0L) {
                 return zeroValueOf(scale)
@@ -4124,14 +4152,23 @@ class BigDecimal : Comparable<BigDecimal> {
          * @throws NumberFormatException if `val` is infinite or NaN.
          * @since  1.5
          */
+        @JvmStatic
+        @JsName("ofDouble")
+        @JvmOverloads
         fun of(`val`: Double, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
             return BigDecimal(`val`.toString(), ctx)
         }
 
+        @JvmStatic
+        @JsName("ofFloat")
+        @JvmOverloads
         fun of(`val`: Float, ctx: MathContext = MathContext.UNLIMITED): BigDecimal {
             return of(`val`.toDouble(), ctx)
         }
 
+        @JvmStatic
+        @JsName("parse")
+        @JvmOverloads
         fun of(`val`: String, ctx: MathContext? = null): BigDecimal {
             return if (ctx === null) {
                 BigDecimal(`val`)
@@ -4140,6 +4177,9 @@ class BigDecimal : Comparable<BigDecimal> {
             }
         }
 
+        @JvmStatic
+        @JsName("ofBigInteger")
+        @JvmOverloads
         fun of(`val`: BigInteger, ctx: MathContext? = null): BigDecimal {
             return if (ctx === null) {
                 BigDecimal(`val`)
@@ -4148,10 +4188,14 @@ class BigDecimal : Comparable<BigDecimal> {
             }
         }
 
+        @JvmStatic
+        @JsName("ofIntWithContext")
         fun of(`val`: Int, ctx: MathContext): BigDecimal {
             return BigDecimal(`val`.toLong(), ctx)
         }
 
+        @JvmStatic
+        @JsName("ofWithContext")
         fun of(`val`: Long, ctx: MathContext): BigDecimal {
             return BigDecimal(`val`, ctx)
         }
@@ -4165,7 +4209,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#UP} instead.")
-        internal val ROUND_UP = 0
+        @JsName("ROUND_UP")
+        internal const val ROUND_UP = 0
 
         /**
          * Rounding mode to round towards zero.  Never increments the digit
@@ -4174,7 +4219,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#DOWN} instead.")
-        internal val ROUND_DOWN = 1
+        @JsName("ROUND_DOWN")
+        internal const val ROUND_DOWN = 1
 
         /**
          * Rounding mode to round towards positive infinity.  If the
@@ -4185,7 +4231,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#CEILING} instead.")
-        internal val ROUND_CEILING = 2
+        @JsName("ROUND_CEILING")
+        internal const val ROUND_CEILING = 2
 
         /**
          * Rounding mode to round towards negative infinity.  If the
@@ -4196,7 +4243,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#FLOOR} instead.")
-        internal val ROUND_FLOOR = 3
+        @JsName("ROUND_FLOOR")
+        internal const val ROUND_FLOOR = 3
 
         /**
          * Rounding mode to round towards &quot;nearest neighbor&quot;
@@ -4208,7 +4256,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#HALF_UP} instead.")
-        internal val ROUND_HALF_UP = 4
+        @JsName("ROUND_HALF_UP")
+        internal const val ROUND_HALF_UP = 4
 
         /**
          * Rounding mode to round towards &quot;nearest neighbor&quot;
@@ -4219,7 +4268,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#HALF_DOWN} instead.")
-        internal val ROUND_HALF_DOWN = 5
+        @JsName("ROUND_HALF_DOWN")
+        internal const val ROUND_HALF_DOWN = 5
 
         /**
          * Rounding mode to round towards the &quot;nearest neighbor&quot;
@@ -4233,7 +4283,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#HALF_EVEN} instead.")
-        internal val ROUND_HALF_EVEN = 6
+        @JsName("ROUND_HALF_EVEN")
+        internal const val ROUND_HALF_EVEN = 6
 
         /**
          * Rounding mode to require that the requested operation has an exact
@@ -4243,7 +4294,8 @@ class BigDecimal : Comparable<BigDecimal> {
          *
          */
         @Deprecated("Use {@link RoundingMode#UNNECESSARY} instead.")
-        internal val ROUND_UNNECESSARY = 7
+        @JsName("ROUND_UNNECESSARY")
+        internal const val ROUND_UNNECESSARY = 7
 
         /**
          * Powers of 10 which can be represented exactly in `double`.

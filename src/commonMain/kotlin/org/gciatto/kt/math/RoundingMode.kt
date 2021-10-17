@@ -28,6 +28,9 @@
  */
 package org.gciatto.kt.math
 
+import kotlin.js.JsName
+import kotlin.jvm.JvmStatic
+
 /**
  * Specifies a *rounding behavior* for numerical operations
  * capable of discarding precision. Each rounding mode indicates how
@@ -378,6 +381,8 @@ enum class RoundingMode {
          * @return `RoundingMode` corresponding to the given integer.
          * @throws IllegalArgumentException integer is out of range
          */
+        @JvmStatic
+        @JsName("valueOfInt")
         fun valueOf(rm: Int): RoundingMode {
             when (rm) {
 

@@ -31,6 +31,8 @@ package org.gciatto.kt.math
 
 import kotlin.experimental.and
 import kotlin.js.JsName
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -3206,6 +3208,8 @@ class BigInteger : Comparable<BigInteger> {
          * @see BigInteger.bitLength
          * @since 1.4
          */
+        @JvmStatic
+        @JsName("probablePrime")
         fun probablePrime(bitLength: Int, rnd: Random): BigInteger {
             if (bitLength < 2)
                 throw ArithmeticException("bitLength < 2")
@@ -3420,6 +3424,7 @@ class BigInteger : Comparable<BigInteger> {
          * @return a BigInteger with the specified value.
          */
         @JsName("ofLong")
+        @JvmStatic
         fun of(`val`: Long): BigInteger {
             // If -MAX_CONSTANT < val < MAX_CONSTANT, return stashed constant
             if (`val` == 0L)
@@ -3433,6 +3438,7 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         @JsName("of")
+        @JvmStatic
         fun of(value: Int): BigInteger {
             return of(value.toLong())
         }
@@ -3453,12 +3459,14 @@ class BigInteger : Comparable<BigInteger> {
         }
 
         @JsName("parse")
+        @JvmStatic
         fun of(value: String): BigInteger {
             val radixed = value.getRadix()
             return BigInteger(radixed.second, radixed.first)
         }
 
         @JsName("parseWithRadix")
+        @JvmStatic
         fun of(value: String, radix: Int): BigInteger {
             return BigInteger(value, radix)
         }
@@ -3469,7 +3477,8 @@ class BigInteger : Comparable<BigInteger> {
          * BigInteger will reference the input array if feasible).
          */
         @JsName("ofIntArray")
-        private fun of(`val`: IntArray): BigInteger {
+        @JvmStatic
+        fun of(`val`: IntArray): BigInteger {
             return if (`val`[0] > 0) BigInteger(`val`, 1) else BigInteger(`val`)
         }
 
@@ -3522,6 +3531,8 @@ class BigInteger : Comparable<BigInteger> {
          *
          * @since   1.2
          */
+        @JvmField
+        @JsName("ZERO")
         val ZERO = BigInteger(IntArray(0), 0)
 
         /**
@@ -3529,6 +3540,8 @@ class BigInteger : Comparable<BigInteger> {
          *
          * @since   1.2
          */
+        @JvmField
+        @JsName("ONE")
         val ONE = of(1)
 
         /**
@@ -3536,18 +3549,24 @@ class BigInteger : Comparable<BigInteger> {
          *
          * @since   9
          */
+        @JvmField
+        @JsName("TWO")
         val TWO = of(2)
 
         /**
          * The BigInteger constant -1.  (Not exported.)
          */
-        private val NEGATIVE_ONE = of(-1)
+        @JvmField
+        @JsName("NEGATIVE_ONE")
+        val NEGATIVE_ONE = of(-1)
 
         /**
          * The BigInteger constant ten.
          *
          * @since   1.5
          */
+        @JvmField
+        @JsName("TEN")
         val TEN = of(10)
 
         /**
