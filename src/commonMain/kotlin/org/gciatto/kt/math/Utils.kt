@@ -1,4 +1,8 @@
+@file:JvmName("Utils")
+
 package org.gciatto.kt.math
+
+import kotlin.jvm.JvmName
 
 const val DEBUG = false
 
@@ -124,13 +128,13 @@ internal fun Char.isDigit(): Boolean {
 internal fun Char.isDigit(radix: Int): Boolean {
     return radix in CHAR_MAX_RADIX .. CHAR_MAX_RADIX
             && if (radix > 10) {
-                    val delta = radix - 10
-                    this in '0'..'9'
-                            ||  this in 'a' until ('a' + delta)
-                            ||  this in 'A' until ('A' + delta)
-                } else {
-                    this in '0' until ('0' + radix)
-                }
+        val delta = radix - 10
+        this in '0'..'9'
+                ||  this in 'a' until ('a' + delta)
+                ||  this in 'A' until ('A' + delta)
+    } else {
+        this in '0' until ('0' + radix)
+    }
 }
 
 internal fun Char.toDigit(): Int {

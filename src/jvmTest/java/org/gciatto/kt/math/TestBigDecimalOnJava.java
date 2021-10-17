@@ -2,6 +2,11 @@ package org.gciatto.kt.math;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.gciatto.kt.math.JvmUtils.toJava;
+import static org.gciatto.kt.math.JvmUtils.toKotlin;
 import static org.junit.Assert.assertEquals;
 
 public class TestBigDecimalOnJava {
@@ -44,5 +49,22 @@ public class TestBigDecimalOnJava {
                 BigDecimal.of("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264"),
                 BigDecimal.E
         );
+    }
+
+    @Test
+    public void testConversions() {
+        List<BigDecimal> toTest = Arrays.asList(
+                BigDecimal.ZERO,
+                BigDecimal.ONE,
+                BigDecimal.TWO,
+                BigDecimal.E,
+                BigDecimal.PI,
+                BigDecimal.ONE_HALF,
+                BigDecimal.ONE_TENTH
+        );
+
+        for (BigDecimal x : toTest) {
+            assertEquals(x, toKotlin(toJava(x)));
+        }
     }
 }
