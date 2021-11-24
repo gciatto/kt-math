@@ -3,6 +3,7 @@
 package org.gciatto.kt.math
 
 import kotlin.jvm.JvmName
+import kotlin.random.Random
 
 const val DEBUG = false
 
@@ -13,6 +14,21 @@ internal fun log(lazyObject: () -> Any) {
 }
 
 internal expect fun logImpl(lazyObject: () -> Any)
+
+internal expect inline fun <T, reified U : T> T.castTo(): U
+
+internal expect fun bigProbablePrimeInteger(bitLength: Int, rnd: Random): BigInteger
+
+internal expect fun bigIntegerOf(value: Long): BigInteger
+
+internal expect fun bigIntegerOf(value: Int): BigInteger
+
+internal expect fun bigIntegerOf(value: String): BigInteger
+
+internal expect fun bigIntegerOf(value: String, radix: Int): BigInteger
+
+internal expect fun bigIntegerOf(value: IntArray): BigInteger
+
 
 internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
@@ -161,7 +177,6 @@ internal fun Char.toDigit(radix: Int): Int {
 }
 
 internal fun <T> arrayCopy(src: Array<T>, srcIndex: Int, dest: Array<T>, destIndex: Int, size: Int) {
-
     for (i in 0 until size) {
         dest[destIndex + i] = src[srcIndex + i]
     }
@@ -184,17 +199,11 @@ internal fun IntArray.cloneArray(): IntArray {
 internal fun Int.bitCount(): Int {
     // HD, Figure 5-2
     var i = this
-
     i -= (i.ushr(1) and 0x55555555)
-
     i = (i and 0x33333333) + (i.ushr(2) and 0x33333333)
-
     i = i + i.ushr(4) and 0x0f0f0f0f
-
     i += i.ushr(8)
-
     i += i.ushr(16)
-
     return i and 0x3f
 }
 

@@ -39,7 +39,7 @@ package org.gciatto.kt.math
  * Note that SignedMutableBigIntegers only support signed addition and
  * subtraction. All other operations occur as with MutableBigIntegers.
  *
- * @see BigInteger
+ * @see CommonBigInteger
  *
  * @author  Michael McCloskey
  * @since   1.3

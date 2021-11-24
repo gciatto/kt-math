@@ -44,7 +44,7 @@ package org.gciatto.kt.math
  */
 
 import org.gciatto.kt.math.BigDecimal.Companion.INFLATED
-import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
+import org.gciatto.kt.math.CommonBigInteger.Companion.LONG_MASK
 import kotlin.math.*
 
 @Suppress("NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER", "UNUSED_CHANGED_VALUE")
@@ -164,7 +164,7 @@ internal open class MutableBigInteger {
      * Construct a new MutableBigInteger with a magnitude equal to the
      * specified BigInteger.
      */
-    constructor(b: BigInteger) {
+    constructor(b: CommonBigInteger) {
         intLen = b._mag.size
         value = b._mag.copyOf(intLen)
     }
@@ -207,8 +207,8 @@ internal open class MutableBigInteger {
     /**
      * Convert this MutableBigInteger to a BigInteger object.
      */
-    fun toBigInteger(sign: Int): BigInteger {
-        return if (intLen == 0 || sign == 0) BigInteger.ZERO else BigInteger(
+    fun toBigInteger(sign: Int): CommonBigInteger {
+        return if (intLen == 0 || sign == 0) CommonBigInteger.ZERO else CommonBigInteger(
             magnitudeArray,
             sign
         )
@@ -217,7 +217,7 @@ internal open class MutableBigInteger {
     /**
      * Converts this number to a nonnegative `BigInteger`.
      */
-    fun toBigInteger(): BigInteger {
+    fun toBigInteger(): CommonBigInteger {
         normalize()
         return toBigInteger(if (isZero) 0 else 1)
     }
@@ -235,7 +235,7 @@ internal open class MutableBigInteger {
         // If this MutableBigInteger can't be fit into long, we need to
         // make a BigInteger object for the resultant BigDecimal object.
         if (len > 2 || d < 0 && len == 2)
-            return BigDecimal(BigInteger(mag, sign), INFLATED, scale, 0)
+            return BigDecimal(CommonBigInteger(mag, sign), INFLATED, scale, 0)
         val v = if (len == 2)
             mag[1].toLong() and LONG_MASK or (d.toLong() and LONG_MASK shl 32)
         else
@@ -531,7 +531,7 @@ internal open class MutableBigInteger {
         this.intLen -= nInts
         if (nBits == 0)
             return
-        val bitsInHighWord = BigInteger.bitLengthForInt(value[offset])
+        val bitsInHighWord = CommonBigInteger.bitLengthForInt(value[offset])
         if (nBits >= bitsInHighWord) {
             this.primitiveLeftShift(32 - nBits)
             this.intLen--
@@ -563,7 +563,7 @@ internal open class MutableBigInteger {
             return
         val nInts = n.ushr(5)
         val nBits = n and 0x1F
-        val bitsInHighWord = BigInteger.bitLengthForInt(value[offset])
+        val bitsInHighWord = CommonBigInteger.bitLengthForInt(value[offset])
 
         // If shift can be done without moving words, do so
         if (n <= 32 - bitsInHighWord) {
@@ -704,9 +704,9 @@ internal open class MutableBigInteger {
      * Returns a `BigInteger` equal to the `n`
      * low ints of this number.
      */
-    private fun getLower(n: Int): BigInteger {
+    private fun getLower(n: Int): CommonBigInteger {
         if (isZero) {
-            return BigInteger.ZERO
+            return CommonBigInteger.ZERO
         } else if (intLen < n) {
             return toBigInteger(1)
         } else {
@@ -715,7 +715,7 @@ internal open class MutableBigInteger {
             while (len > 0 && value[offset + intLen - len] == 0)
                 len--
             val sign = if (len > 0) 1 else 0
-            return BigInteger(value.copyOfRange(offset + intLen - len, offset + intLen), sign)
+            return CommonBigInteger(value.copyOfRange(offset + intLen - len, offset + intLen), sign)
         }
     }
 
@@ -1155,7 +1155,7 @@ internal open class MutableBigInteger {
     }
 
     fun divide(b: MutableBigInteger, quotient: MutableBigInteger, needRemainder: Boolean = true): MutableBigInteger? {
-        return if (b.intLen < BigInteger.BURNIKEL_ZIEGLER_THRESHOLD || intLen - b.intLen < BigInteger.BURNIKEL_ZIEGLER_OFFSET) {
+        return if (b.intLen < CommonBigInteger.BURNIKEL_ZIEGLER_THRESHOLD || intLen - b.intLen < CommonBigInteger.BURNIKEL_ZIEGLER_OFFSET) {
             divideKnuth(b, quotient, needRemainder)
         } else {
             divideAndRemainderBurnikelZiegler(b, quotient)
@@ -1259,7 +1259,7 @@ internal open class MutableBigInteger {
             // additional benefit.
 
             // step 1: let m = min{2^k | (2^k)*BURNIKEL_ZIEGLER_THRESHOLD > s}
-            val m = 1 shl 32 - (s / BigInteger.BURNIKEL_ZIEGLER_THRESHOLD).numberOfLeadingZeros()
+            val m = 1 shl 32 - (s / CommonBigInteger.BURNIKEL_ZIEGLER_THRESHOLD).numberOfLeadingZeros()
 
             val j = (s + m - 1) / m      // step 2a: j = ceil(s/m)
             val n = j * m            // step 2b: block length in 32-bit units
@@ -1318,7 +1318,7 @@ internal open class MutableBigInteger {
         val n = b.intLen
 
         // step 1: base case
-        if (n % 2 != 0 || n < BigInteger.BURNIKEL_ZIEGLER_THRESHOLD) {
+        if (n % 2 != 0 || n < CommonBigInteger.BURNIKEL_ZIEGLER_THRESHOLD) {
             return divideKnuth(b, quotient)
         }
 
@@ -1427,7 +1427,7 @@ internal open class MutableBigInteger {
         return MutableBigInteger(newVal)
     }
 
-    /** @see BigInteger.getBitLength
+    /** @see CommonBigInteger.getBitLength
      */
     fun bitLength(): Long {
         return if (intLen == 0) 0 else intLen * 32L - value[offset].numberOfLeadingZeros()
@@ -1862,7 +1862,7 @@ internal open class MutableBigInteger {
 
         if (bitLength() <= 63) {
             // Initial estimate is the square root of the positive long value.
-            val v = BigInteger(this.value, 1).toLongExact()
+            val v = CommonBigInteger(this.value, 1).toLongExact()
             var xk = floor(sqrt(v.toDouble())).toLong()
 
             // Refine the estimate.
@@ -1902,8 +1902,8 @@ internal open class MutableBigInteger {
             xk.normalize()
 
             // Use the square root of the shifted value as an approximation.
-            val d = BigInteger(xk.value, 1).toDouble()
-            val bi = BigInteger.of(ceil(sqrt(d)).toLong())
+            val d = CommonBigInteger(xk.value, 1).toDouble()
+            val bi = CommonBigInteger.of(ceil(sqrt(d)).toLong())
             xk = MutableBigInteger(bi._mag)
 
             // Shift the approximate square root back into the original range.

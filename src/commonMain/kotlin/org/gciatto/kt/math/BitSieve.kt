@@ -42,7 +42,7 @@ import kotlin.random.Random
  * even integer offset indicating where the sieve begins, and index is the
  * index of a bit in the sieve array.
  *
- * @see BigInteger
+ * @see CommonBigInteger
  *
  * @author  Michael McCloskey
  * @since   1.3
@@ -92,7 +92,7 @@ internal class BitSieve {
      * candidates. The new sieve begins at the specified base, which must
      * be even.
      */
-    constructor(base: BigInteger, searchLen: Int) {
+    constructor(base: CommonBigInteger, searchLen: Int) {
         /*
          * Candidates are indicated by clear bits in the sieve. As a candidates
          * nonprimality is calculated, a bit is set in the sieve to eliminate
@@ -176,7 +176,7 @@ internal class BitSieve {
     /**
      * Test probable primes in the sieve and return successful candidates.
      */
-    fun retrieve(initValue: BigInteger, certainty: Int, random: Random): BigInteger? {
+    fun retrieve(initValue: CommonBigInteger, certainty: Int, random: Random): CommonBigInteger? {
         // Examine the sieve one long at a time to find possible primes
         var offset = 1
         for (i in bits!!.indices) {
@@ -184,7 +184,7 @@ internal class BitSieve {
             for (j in 0..63) {
                 if (nextLong and 1 == 1L) {
                     val candidate = initValue.plus(
-                        BigInteger.of(offset.toLong())
+                        CommonBigInteger.of(offset.toLong())
                     )
                     if (candidate.primeToCertainty(certainty, random))
                         return candidate

@@ -15,7 +15,7 @@ public class TestBigDecimalOnJava {
         assertEquals(BigDecimal.ONE, BigDecimal.of(1));
         assertEquals(BigDecimal.ONE, BigDecimal.of(1.0).stripTrailingZeros());
         assertEquals(BigDecimal.ONE, BigDecimal.of(1.0f).stripTrailingZeros());
-        assertEquals(BigDecimal.ONE, BigDecimal.of(BigInteger.of(1)));
+        assertEquals(BigDecimal.ONE, BigDecimal.of(CommonBigInteger.of(1)));
         assertEquals(BigDecimal.ONE, BigDecimal.of("1"));
         assertEquals(BigDecimal.ONE, BigDecimal.of("1.0").stripTrailingZeros());
         assertEquals(BigDecimal.ONE, BigDecimal.of("1.00").stripTrailingZeros());
@@ -23,7 +23,7 @@ public class TestBigDecimalOnJava {
         assertEquals(BigDecimal.ZERO, BigDecimal.of(0));
         assertEquals(BigDecimal.ZERO, BigDecimal.of(0.0).stripTrailingZeros());
         assertEquals(BigDecimal.ZERO, BigDecimal.of(0.0f).stripTrailingZeros());
-        assertEquals(BigDecimal.ZERO, BigDecimal.of(BigInteger.of(0)));
+        assertEquals(BigDecimal.ZERO, BigDecimal.of(CommonBigInteger.of(0)));
         assertEquals(BigDecimal.ZERO, BigDecimal.of("0"));
         assertEquals(BigDecimal.ZERO, BigDecimal.of("0.0").stripTrailingZeros());
         assertEquals(BigDecimal.ZERO, BigDecimal.of("0.00").stripTrailingZeros());
