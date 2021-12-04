@@ -36,14 +36,14 @@ package org.gciatto.kt.math
  * a new number for every step of the calculation as occurs with
  * BigIntegers.
  *
- * @see BigInteger
+ * @see CommonBigDecimal
  *
  * @author  Michael McCloskey
  * @author  Timothy Buktu
  * @since   1.3
  */
 
-import org.gciatto.kt.math.BigDecimal.Companion.INFLATED
+import org.gciatto.kt.math.CommonBigDecimal.Companion.INFLATED
 import org.gciatto.kt.math.CommonBigInteger.Companion.LONG_MASK
 import kotlin.math.*
 
@@ -226,21 +226,21 @@ internal open class MutableBigInteger {
      * Convert this MutableBigInteger to BigDecimal object with the specified sign
      * and setScale.
      */
-    fun toBigDecimal(sign: Int, scale: Int): BigDecimal {
+    fun toBigDecimal(sign: Int, scale: Int): CommonBigDecimal {
         if (intLen == 0 || sign == 0)
-            return BigDecimal.zeroValueOf(scale)
+            return CommonBigDecimal.zeroValueOf(scale)
         val mag = magnitudeArray
         val len = mag.size
         val d = mag[0]
         // If this MutableBigInteger can't be fit into long, we need to
         // make a BigInteger object for the resultant BigDecimal object.
         if (len > 2 || d < 0 && len == 2)
-            return BigDecimal(CommonBigInteger(mag, sign), INFLATED, scale, 0)
+            return CommonBigDecimal(CommonBigInteger(mag, sign), INFLATED, scale, 0)
         val v = if (len == 2)
             mag[1].toLong() and LONG_MASK or (d.toLong() and LONG_MASK shl 32)
         else
             d.toLong() and LONG_MASK
-        return BigDecimal.of(if (sign == -1) -v else v, scale)
+        return CommonBigDecimal.of(if (sign == -1) -v else v, scale)
     }
 
     /**

@@ -29,6 +29,27 @@ internal expect fun bigIntegerOf(value: String, radix: Int): BigInteger
 
 internal expect fun bigIntegerOf(value: IntArray): BigInteger
 
+internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int): BigDecimal
+
+internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int, prec: Int): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: Int): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: Long): BigDecimal
+
+internal expect fun bigDecimalOf(intVal: BigInteger, scale: Int, prec: Int): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: Double, ctx: MathContext = MathContext.UNLIMITED): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: Float, ctx: MathContext = MathContext.UNLIMITED): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: String, ctx: MathContext? = null): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: BigInteger, ctx: MathContext? = null): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: Int, ctx: MathContext): BigDecimal
+
+internal expect fun bigDecimalOf(`val`: Long, ctx: MathContext): BigDecimal
 
 internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
