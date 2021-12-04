@@ -20,7 +20,7 @@ fun assertReprEquals(repr: Any, obj: Any, m: String? = "Failed: $obj.toString() 
     }
 }
 
-fun assertBigDecimalsAreEquals(x: BigDecimal, y: BigDecimal, m: String? = "Failed: $x == $y") {
+fun assertBigDecimalsAreEquals(x: BigDecimal, y: BigDecimal, m: String? = "Failed: ${x.toPlainString()} == ${y.toPlainString()}") {
     if (m === null) {
         assertEquals(0, x.compareTo(y))
         assertEquals(0, y.compareTo(x))

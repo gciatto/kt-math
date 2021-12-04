@@ -110,10 +110,7 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
     }
 
     @Suppress("NAME_SHADOWING")
-    override fun equals(other: Any?): Boolean {
-        val other: JavaBigIntegerAdapter = other.castTo()
-        return value == other.value
-    }
+    override fun equals(other: Any?): Boolean = other is JavaBigDecimalAdapter && value == other.value
 
     override fun min(other: BigInteger): BigInteger =
         if (this <= other) this else other

@@ -128,7 +128,7 @@ import kotlin.random.Random
  */
 
 @Suppress("NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
-class CommonBigInteger : BigInteger {
+internal class CommonBigInteger : BigInteger {
 
     /**
      * The _signum of this BigInteger: -1 for negative, 0 for zero, or
@@ -965,7 +965,7 @@ class CommonBigInteger : BigInteger {
         var v = other
         if (v == 0L || _signum == 0)
             return ZERO
-        if (v == BigDecimal.INFLATED)
+        if (v == CommonBigDecimal.INFLATED)
             return times(of(v))
         val rsign = if (v > 0) _signum else -_signum
         if (v < 0)
