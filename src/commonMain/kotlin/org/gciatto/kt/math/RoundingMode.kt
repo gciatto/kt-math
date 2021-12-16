@@ -360,14 +360,14 @@ enum class RoundingMode {
      */
     internal val oldMode: Int
         get() = when (this) {
-                CEILING -> BigDecimal.ROUND_CEILING
-                UP -> BigDecimal.ROUND_UP
-                DOWN -> BigDecimal.ROUND_DOWN
-                FLOOR -> BigDecimal.ROUND_FLOOR
-                HALF_UP -> BigDecimal.ROUND_HALF_UP
-                HALF_EVEN -> BigDecimal.ROUND_HALF_EVEN
-                HALF_DOWN -> BigDecimal.ROUND_HALF_DOWN
-                UNNECESSARY -> BigDecimal.ROUND_UNNECESSARY
+                CEILING -> CommonBigDecimal.ROUND_CEILING
+                UP -> CommonBigDecimal.ROUND_UP
+                DOWN -> CommonBigDecimal.ROUND_DOWN
+                FLOOR -> CommonBigDecimal.ROUND_FLOOR
+                HALF_UP -> CommonBigDecimal.ROUND_HALF_UP
+                HALF_EVEN -> CommonBigDecimal.ROUND_HALF_EVEN
+                HALF_DOWN -> CommonBigDecimal.ROUND_HALF_DOWN
+                UNNECESSARY -> CommonBigDecimal.ROUND_UNNECESSARY
             }
 
 
@@ -383,27 +383,16 @@ enum class RoundingMode {
          */
         @JvmStatic
         @JsName("valueOfInt")
-        fun valueOf(rm: Int): RoundingMode {
-            when (rm) {
-
-                BigDecimal.ROUND_UP -> return UP
-
-                BigDecimal.ROUND_DOWN -> return DOWN
-
-                BigDecimal.ROUND_CEILING -> return CEILING
-
-                BigDecimal.ROUND_FLOOR -> return FLOOR
-
-                BigDecimal.ROUND_HALF_UP -> return HALF_UP
-
-                BigDecimal.ROUND_HALF_DOWN -> return HALF_DOWN
-
-                BigDecimal.ROUND_HALF_EVEN -> return HALF_EVEN
-
-                BigDecimal.ROUND_UNNECESSARY -> return UNNECESSARY
-
-                else -> throw IllegalArgumentException("Argument out of range: $rm")
-            }
+        fun valueOf(rm: Int): RoundingMode = when (rm) {
+            CommonBigDecimal.ROUND_UP -> UP
+            CommonBigDecimal.ROUND_DOWN -> DOWN
+            CommonBigDecimal.ROUND_CEILING -> CEILING
+            CommonBigDecimal.ROUND_FLOOR -> FLOOR
+            CommonBigDecimal.ROUND_HALF_UP -> HALF_UP
+            CommonBigDecimal.ROUND_HALF_DOWN -> HALF_DOWN
+            CommonBigDecimal.ROUND_HALF_EVEN -> HALF_EVEN
+            CommonBigDecimal.ROUND_UNNECESSARY -> UNNECESSARY
+            else -> throw IllegalArgumentException("Argument out of range: $rm")
         }
     }
 }

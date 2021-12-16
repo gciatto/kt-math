@@ -6,7 +6,7 @@ internal actual fun logImpl(lazyObject: () -> Any) {
     console.warn(lazyObject())
 }
 
-internal actual inline fun <T, reified U : T> T.castTo(): U {
+internal actual inline fun <T, reified U : T> T?.castTo(): U {
     return this.unsafeCast<U>()
 }
 
@@ -64,14 +64,14 @@ internal actual fun bigDecimalOf(
 
 internal actual fun bigDecimalOf(
     `val`: Double,
-    ctx: MathContext
+    ctx: MathContext?
 ): BigDecimal {
     TODO("Not yet implemented")
 }
 
 internal actual fun bigDecimalOf(
     `val`: Float,
-    ctx: MathContext
+    ctx: MathContext?
 ): BigDecimal {
     TODO("Not yet implemented")
 }

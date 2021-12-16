@@ -15,7 +15,7 @@ internal fun log(lazyObject: () -> Any) {
 
 internal expect fun logImpl(lazyObject: () -> Any)
 
-internal expect inline fun <T, reified U : T> T.castTo(): U
+internal expect inline fun <T, reified U : T> T?.castTo(): U
 
 internal expect fun bigProbablePrimeInteger(bitLength: Int, rnd: Random): BigInteger
 
@@ -39,9 +39,9 @@ internal expect fun bigDecimalOf(`val`: Long): BigDecimal
 
 internal expect fun bigDecimalOf(intVal: BigInteger, scale: Int, prec: Int): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Double, ctx: MathContext = MathContext.UNLIMITED): BigDecimal
+internal expect fun bigDecimalOf(`val`: Double, ctx: MathContext? = null): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Float, ctx: MathContext = MathContext.UNLIMITED): BigDecimal
+internal expect fun bigDecimalOf(`val`: Float, ctx: MathContext? = null): BigDecimal
 
 internal expect fun bigDecimalOf(`val`: String, ctx: MathContext? = null): BigDecimal
 

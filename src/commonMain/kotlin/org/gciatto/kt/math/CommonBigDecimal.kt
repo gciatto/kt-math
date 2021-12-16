@@ -2422,8 +2422,7 @@ internal class CommonBigDecimal : BigDecimal {
         return if (xsign > 0) cmp else -cmp
     }
     
-    override fun compareMagnitude(`val`: BigDecimal): Int {
-        val `val`: CommonBigDecimal = `val`.castTo()
+    private fun compareMagnitude(`val`: CommonBigDecimal): Int {
         // Match scales, avoid unnecessary inflation
         var ys = `val`._intCompact
         var xs = this._intCompact

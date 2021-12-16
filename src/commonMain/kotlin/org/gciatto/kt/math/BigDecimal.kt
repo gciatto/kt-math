@@ -723,11 +723,6 @@ interface BigDecimal : Comparable<BigDecimal> {
     override fun compareTo(other: BigDecimal): Int
 
     /**
-     * Version of compareTo that ignores sign.
-     */
-    fun compareMagnitude(`val`: BigDecimal): Int
-
-    /**
      * Returns the minimum of this [BigDecimal] and
      * `val`.
      *

@@ -3,218 +3,201 @@ package org.gciatto.kt.math
 import java.math.BigDecimal as JavaBigDecimal
 
 class JavaBigDecimalAdapter(val value: JavaBigDecimal) : BigDecimal {
+
+    private inline fun adapt(f: () -> JavaBigDecimal): JavaBigDecimalAdapter =
+        JavaBigDecimalAdapter(f())
+
+    private inline fun adapt(other: JavaBigDecimalAdapter, f: (JavaBigDecimal) -> JavaBigDecimal): JavaBigDecimalAdapter =
+        JavaBigDecimalAdapter(f(other.value))
+
+    private inline fun adapt(other: BigDecimal?, f: (JavaBigDecimal) -> JavaBigDecimal): JavaBigDecimalAdapter =
+        adapt(other.castTo(), f)
+    
     override val absoluteValue: BigDecimal
-        get() = TODO("Not yet implemented")
+        get() = adapt { value.abs() }
 
     override val signum: Int
-        get() = TODO("Not yet implemented")
+        get() = value.signum()
 
     override val scale: Int
-        get() = TODO("Not yet implemented")
+        get() = value.scale()
 
     override val precision: Int
-        get() = TODO("Not yet implemented")
+        get() = value.precision()
 
     override val unscaledValue: BigInteger
-        get() = TODO("Not yet implemented")
+        get() = JavaBigIntegerAdapter(value.unscaledValue())
 
-    override fun plus(augend: BigDecimal?): BigDecimal {
-        TODO("Not yet implemented")
+    override fun plus(augend: BigDecimal?): BigDecimal = adapt(augend) {
+        value.add(it)
     }
 
-    override fun plus(augend: BigDecimal?, mc: MathContext): BigDecimal {
-        TODO("Not yet implemented")
+    override fun plus(augend: BigDecimal?, mc: MathContext): BigDecimal = adapt(augend) {
+        value.add(it, mc.toJava())
     }
 
-    override fun minus(subtrahend: BigDecimal): BigDecimal {
-        TODO("Not yet implemented")
+    override fun minus(subtrahend: BigDecimal): BigDecimal = adapt(subtrahend) {
+        value.subtract(it)
     }
 
-    override fun minus(subtrahend: BigDecimal, mc: MathContext): BigDecimal {
-        TODO("Not yet implemented")
+    override fun minus(subtrahend: BigDecimal, mc: MathContext): BigDecimal = adapt(subtrahend) {
+        value.subtract(it, mc.toJava())
     }
 
-    override fun times(multiplicand: BigDecimal?): BigDecimal {
-        TODO("Not yet implemented")
+    override fun times(multiplicand: BigDecimal?): BigDecimal = adapt(multiplicand) {
+        value.multiply(it)
     }
 
-    override fun times(multiplicand: BigDecimal, mc: MathContext): BigDecimal {
-        TODO("Not yet implemented")
+    override fun times(multiplicand: BigDecimal, mc: MathContext): BigDecimal = adapt(multiplicand) {
+        value.multiply(it, mc.toJava())
     }
 
-    override fun div(divisor: BigDecimal): BigDecimal {
-        TODO("Not yet implemented")
+    override fun div(divisor: BigDecimal): BigDecimal = adapt(divisor) {
+        value.divide(it)
     }
 
-    override fun div(divisor: BigDecimal, mc: MathContext): BigDecimal? {
-        TODO("Not yet implemented")
+    override fun div(divisor: BigDecimal, mc: MathContext): BigDecimal = adapt(divisor) {
+        value.divide(it, mc.toJava())
     }
 
-    override fun divideToIntegralValue(divisor: BigDecimal): BigDecimal {
-        TODO("Not yet implemented")
+    override fun divideToIntegralValue(divisor: BigDecimal): BigDecimal = adapt(divisor) {
+        value.divideToIntegralValue(it)
     }
 
-    override fun divideToIntegralValue(divisor: BigDecimal, mc: MathContext): BigDecimal {
-        TODO("Not yet implemented")
+    override fun divideToIntegralValue(divisor: BigDecimal, mc: MathContext): BigDecimal = adapt(divisor) {
+        value.divideToIntegralValue(it, mc.toJava())
     }
 
-    override fun rem(divisor: BigDecimal): BigDecimal {
-        TODO("Not yet implemented")
+    override fun rem(divisor: BigDecimal): BigDecimal = adapt(divisor) {
+        value.remainder(it)
     }
 
-    override fun rem(divisor: BigDecimal, mc: MathContext): BigDecimal {
-        TODO("Not yet implemented")
+    override fun rem(divisor: BigDecimal, mc: MathContext): BigDecimal = adapt(divisor) {
+        value.remainder(it, mc.toJava())
     }
 
-    override fun divideAndRemainder(divisor: BigDecimal): Pair<BigDecimal, BigDecimal> {
-        TODO("Not yet implemented")
+    private fun Array<JavaBigDecimal>.toKotlinPair(): Pair<BigDecimal, BigDecimal> =
+        this[0].toKotlin() to this[1].toKotlin()
+
+    override fun divideAndRemainder(divisor: BigDecimal): Pair<BigDecimal, BigDecimal> =
+        value.divideAndRemainder(divisor.toJava()).toKotlinPair()
+
+    override fun divideAndRemainder(divisor: BigDecimal, mc: MathContext): Pair<BigDecimal, BigDecimal> =
+        value.divideAndRemainder(divisor.toJava(), mc.toJava()).toKotlinPair()
+
+    override fun sqrt(mc: MathContext): BigDecimal = adapt {
+        value.sqrt(mc.toJava())
     }
 
-    override fun divideAndRemainder(divisor: BigDecimal, mc: MathContext): Pair<BigDecimal, BigDecimal> {
-        TODO("Not yet implemented")
+    override fun pow(n: Int): BigDecimal = adapt {
+        value.pow(n)
     }
 
-    override fun sqrt(mc: MathContext): BigDecimal {
-        TODO("Not yet implemented")
+    override fun pow(n: Int, mc: MathContext): BigDecimal = adapt {
+        value.pow(n, mc.toJava())
     }
 
-    override fun pow(n: Int): BigDecimal {
-        TODO("Not yet implemented")
+    override fun absoluteValue(mc: MathContext): BigDecimal = adapt {
+        value.abs(mc.toJava())
     }
 
-    override fun pow(n: Int, mc: MathContext): BigDecimal? {
-        TODO("Not yet implemented")
+    override fun unaryMinus(): BigDecimal = adapt {
+        value.negate()
     }
 
-    override fun absoluteValue(mc: MathContext): BigDecimal? {
-        TODO("Not yet implemented")
+    override fun unaryMinus(mc: MathContext): BigDecimal = adapt {
+        value.negate(mc.toJava())
     }
 
-    override fun unaryMinus(): BigDecimal {
-        TODO("Not yet implemented")
+    override fun unaryPlus(): BigDecimal = this
+
+    override fun unaryPlus(mc: MathContext): BigDecimal = adapt {
+        value.plus(mc.toJava())
     }
 
-    override fun unaryMinus(mc: MathContext): BigDecimal? {
-        TODO("Not yet implemented")
+    override fun round(mc: MathContext): BigDecimal = adapt {
+        value.round(mc.toJava())
     }
 
-    override fun unaryPlus(): BigDecimal {
-        TODO("Not yet implemented")
+    override fun setScale(newScale: Int, roundingMode: RoundingMode): BigDecimal = adapt {
+        value.setScale(newScale, roundingMode.toJava())
     }
 
-    override fun unaryPlus(mc: MathContext): BigDecimal? {
-        TODO("Not yet implemented")
+    @Suppress("DEPRECATION")
+    override fun setScale(newScale: Int, roundingMode: Int): BigDecimal = adapt {
+        value.setScale(newScale, roundingMode)
     }
 
-    override fun round(mc: MathContext): BigDecimal? {
-        TODO("Not yet implemented")
+    override fun setScale(newScale: Int): BigDecimal = adapt {
+        value.setScale(newScale)
     }
 
-    override fun setScale(newScale: Int, roundingMode: RoundingMode): BigDecimal {
-        TODO("Not yet implemented")
+    override fun movePointLeft(n: Int): BigDecimal = adapt {
+        value.movePointLeft(n)
     }
 
-    override fun setScale(newScale: Int, roundingMode: Int): BigDecimal {
-        TODO("Not yet implemented")
+    override fun movePointRight(n: Int): BigDecimal = adapt {
+        value.movePointRight(n)
     }
 
-    override fun setScale(newScale: Int): BigDecimal {
-        TODO("Not yet implemented")
+    override fun scaleByPowerOfTen(n: Int): BigDecimal = adapt {
+        value.scaleByPowerOfTen(n)
     }
 
-    override fun movePointLeft(n: Int): BigDecimal {
-        TODO("Not yet implemented")
+    override fun stripTrailingZeros(): BigDecimal = adapt {
+        value.stripTrailingZeros()
     }
 
-    override fun movePointRight(n: Int): BigDecimal {
-        TODO("Not yet implemented")
-    }
-
-    override fun scaleByPowerOfTen(n: Int): BigDecimal {
-        TODO("Not yet implemented")
-    }
-
-    override fun stripTrailingZeros(): BigDecimal {
-        TODO("Not yet implemented")
-    }
-
+    @Suppress("NAME_SHADOWING")
     override fun compareTo(other: BigDecimal): Int {
-        TODO("Not yet implemented")
+        val other: JavaBigDecimalAdapter = other.castTo()
+        return value.compareTo(other.value)
     }
 
-    override fun compareMagnitude(`val`: BigDecimal): Int {
-        TODO("Not yet implemented")
+    override fun min(`val`: BigDecimal): BigDecimal = adapt(`val`) {
+        value.min(it)
     }
 
-    override fun min(`val`: BigDecimal): BigDecimal {
-        TODO("Not yet implemented")
+    override fun max(`val`: BigDecimal): BigDecimal = adapt(`val`) {
+        value.max(it)
     }
 
-    override fun max(`val`: BigDecimal): BigDecimal {
-        TODO("Not yet implemented")
-    }
+    override fun toEngineeringString(): String = value.toEngineeringString()
 
-    override fun toEngineeringString(): String {
-        TODO("Not yet implemented")
-    }
+    override fun toPlainString(): String = value.toPlainString()
 
-    override fun toPlainString(): String {
-        TODO("Not yet implemented")
-    }
+    override fun toBigInteger(): BigInteger = value.toBigInteger().toKotlin()
 
-    override fun toBigInteger(): BigInteger {
-        TODO("Not yet implemented")
-    }
+    override fun toBigIntegerExact(): BigInteger = value.toBigIntegerExact().toKotlin()
 
-    override fun toBigIntegerExact(): BigInteger {
-        TODO("Not yet implemented")
-    }
+    override fun toLong(): Long = value.toLong()
 
-    override fun toLong(): Long {
-        TODO("Not yet implemented")
-    }
+    override fun toLongExact(): Long = value.longValueExact()
 
-    override fun toLongExact(): Long {
-        TODO("Not yet implemented")
-    }
+    override fun toInt(): Int = value.toInt()
 
-    override fun toInt(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun toIntExact(): Int = value.intValueExact()
 
-    override fun toByte(): Byte {
-        TODO("Not yet implemented")
-    }
+    override fun toByte(): Byte = value.toByte()
 
-    override fun toChar(): Char {
-        TODO("Not yet implemented")
-    }
+    override fun toByteExact(): Byte = value.byteValueExact()
 
-    override fun toShort(): Short {
-        TODO("Not yet implemented")
-    }
+    override fun toChar(): Char = value.toChar()
 
-    override fun toIntExact(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun toShort(): Short = value.toShort()
 
-    override fun toShortExact(): Short {
-        TODO("Not yet implemented")
-    }
+    override fun toShortExact(): Short = value.shortValueExact()
 
-    override fun toByteExact(): Byte {
-        TODO("Not yet implemented")
-    }
+    override fun toFloat(): Float = value.toFloat()
 
-    override fun toFloat(): Float {
-        TODO("Not yet implemented")
-    }
+    override fun toDouble(): Double = value.toDouble()
 
-    override fun toDouble(): Double {
-        TODO("Not yet implemented")
-    }
+    override fun ulp(): BigDecimal = value.ulp().toKotlin()
 
-    override fun ulp(): BigDecimal {
-        TODO("Not yet implemented")
-    }
+    override fun equals(other: Any?): Boolean =
+        other is JavaBigDecimalAdapter && value == other.value
+
+    override fun hashCode(): Int = value.hashCode()
+
+    override fun toString(): String = value.toString()
 }
