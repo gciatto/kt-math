@@ -55,7 +55,8 @@ public class TestBigIntegerOnJava {
         );
 
         for (BigInteger x : toTest) {
-            assertEquals(x, toKotlin(toJava(x)));
+            BigInteger converted = toKotlin(toJava(x));
+            assertEquals(x, converted);
         }
     }
 }
