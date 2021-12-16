@@ -86,18 +86,14 @@ internal actual fun bigDecimalOf(intVal: BigInteger, scale: Int, prec: Int): Big
 
 internal actual fun bigDecimalOf(`val`: Double, ctx: MathContext?): BigDecimal =
     if (ctx == null) {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toString()))
+        JavaBigDecimalAdapter(JavaBigDecimal(`val`))
     } else {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toString(), ctx.toJava()))
+        JavaBigDecimalAdapter(JavaBigDecimal(`val`, ctx.toJava()))
     }
 
 
 internal actual fun bigDecimalOf(`val`: Float, ctx: MathContext?): BigDecimal =
-    if (ctx == null) {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toString()))
-    } else {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toString(), ctx.toJava()))
-    }
+    bigDecimalOf(`val`.toDouble(), ctx)
 
 internal actual fun bigDecimalOf(`val`: String, ctx: MathContext?): BigDecimal =
     if (ctx == null) {

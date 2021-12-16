@@ -603,7 +603,7 @@ internal class CommonBigInteger : BigInteger {
      * @since 1.5
      */
     @Suppress("UNREACHABLE_CODE", "UNUSED_VARIABLE")
-    @JsName("nextProbablePrime")
+
     override fun nextProbablePrime(): CommonBigInteger {
         if (this._signum < 0)
             throw ArithmeticException("start < 0: $this")
@@ -839,7 +839,7 @@ internal class CommonBigInteger : BigInteger {
      * @param  other value to be added to this BigInteger.
      * @return `this + val`
      */
-    @JsName("plus")
+
     override operator fun plus(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         if (other.signum == 0)
@@ -889,7 +889,7 @@ internal class CommonBigInteger : BigInteger {
      * @param  other value to be subtracted from this BigInteger.
      * @return `this - val`
      */
-    @JsName("minus")
+
     override operator fun minus(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         if (other._signum == 0)
@@ -919,7 +919,7 @@ internal class CommonBigInteger : BigInteger {
      * @param  other value to be multiplied by this BigInteger.
      * @return `this * val`
      */
-    @JsName("times")
+
     override operator fun times(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
 
@@ -1255,7 +1255,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `this / val`
      * @throws ArithmeticException if other is zero.
      */
-    @JsName("div")
     override operator fun div(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
@@ -1293,7 +1292,6 @@ internal class CommonBigInteger : BigInteger {
      * is the final element.
      * @throws ArithmeticException if other is zero.
      */
-    @JsName("divideAndRemainder")
     override fun divideAndRemainder(other: BigInteger): Array<CommonBigInteger> {
         val other: CommonBigInteger = other.castTo()
         return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
@@ -1327,7 +1325,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `this % val`
      * @throws ArithmeticException if other is zero.
      */
-    @JsName("reminder")
     override fun remainder(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
@@ -1388,7 +1385,6 @@ internal class CommonBigInteger : BigInteger {
      * @throws ArithmeticException `exponent` is negative.  (This would
      * cause the operation to yield a non-integer value.)
      */
-    @JsName("pow")
     override infix fun pow(exponent: Int): CommonBigInteger {
         if (exponent < 0) {
             throw ArithmeticException("Negative exponent")
@@ -1519,7 +1515,6 @@ internal class CommonBigInteger : BigInteger {
      * `sqrt(-1)`.)
      * @since  9
      */
-    @JsName("sqrt")
     override fun sqrt(): CommonBigInteger {
         if (this._signum < 0) {
             throw ArithmeticException("Negative BigInteger")
@@ -1543,7 +1538,6 @@ internal class CommonBigInteger : BigInteger {
      * @see .sqrt
      * @since  9
      */
-    @JsName("sqrtAndRemainder")
     override fun sqrtAndRemainder(): Array<CommonBigInteger> {
         val s = sqrt()
         val r = this.minus(s.square())
@@ -1559,7 +1553,6 @@ internal class CommonBigInteger : BigInteger {
      * @param other value with which the GCD is to be computed.
      * @return `GCD(absoluteValue(this), absoluteValue(val))`
      */
-    @JsName("gcd")
     override fun gcd(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         if (other._signum == 0)
@@ -1591,12 +1584,10 @@ internal class CommonBigInteger : BigInteger {
      *
      * @return `-this`
      */
-    @JsName("unaryMinus")
     override operator fun unaryMinus(): CommonBigInteger {
         return CommonBigInteger(this._mag, -this._signum)
     }
 
-    @JsName("unaryPlus")
     override operator fun unaryPlus(): CommonBigInteger {
         return this
     }
@@ -1624,7 +1615,6 @@ internal class CommonBigInteger : BigInteger {
      * @throws ArithmeticException when `other` is 0
      * @see .remainder
      */
-    @JsName("rem")
     override operator fun rem(modulus: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = modulus.castTo()
         if (other._signum <= 0)
@@ -1647,7 +1637,6 @@ internal class CommonBigInteger : BigInteger {
      * prime* to `m`.
      * @see .modInverse
      */
-    @JsName("modPow")
     override fun modPow(exponent: BigInteger, modulus: BigInteger): CommonBigInteger {
         var exponent: CommonBigInteger = exponent.castTo()
         val modulus: CommonBigInteger = modulus.castTo()
@@ -2021,7 +2010,6 @@ internal class CommonBigInteger : BigInteger {
      * has no multiplicative inverse rem m (that is, this BigInteger
      * is not *relatively prime* to m).
      */
-    @JsName("modInverse")
     override fun modInverse(modulus: BigInteger): CommonBigInteger {
         val modulus: CommonBigInteger = modulus.castTo()
         if (modulus._signum != 1)
@@ -2057,7 +2045,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `this << n`
      * @see .shr
      */
-    @JsName("shl")
     override infix fun shl(n: Int): CommonBigInteger {
         if (_signum == 0)
             return ZERO
@@ -2082,7 +2069,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `this >> n`
      * @see .shl
      */
-    @JsName("shr")
     override infix fun shr(n: Int): CommonBigInteger {
         if (_signum == 0)
             return ZERO
@@ -2178,7 +2164,6 @@ internal class CommonBigInteger : BigInteger {
      * @param other value to be AND'ed with this BigInteger.
      * @return `this & val`
      */
-    @JsName("and")
     override fun and(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         val result = IntArray(max(intLength, other.intLength))
@@ -2196,7 +2181,6 @@ internal class CommonBigInteger : BigInteger {
      * @param other value to be OR'ed with this BigInteger.
      * @return `this | val`
      */
-    @JsName("or")
     override fun or(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         val result = IntArray(max(intLength, other.intLength))
@@ -2214,7 +2198,6 @@ internal class CommonBigInteger : BigInteger {
      * @param other value to be XOR'ed with this BigInteger.
      * @return `this ^ val`
      */
-    @JsName("xor")
     override fun xor(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         val result = IntArray(max(intLength, other.intLength))
@@ -2231,7 +2214,6 @@ internal class CommonBigInteger : BigInteger {
      *
      * @return `~this`
      */
-    @JsName("not")
     override operator fun not(): CommonBigInteger {
         val result = IntArray(intLength)
         for (i in result.indices)
@@ -2250,7 +2232,6 @@ internal class CommonBigInteger : BigInteger {
      * @param other value to be complemented and AND'ed with this BigInteger.
      * @return `this & ~val`
      */
-    @JsName("andNot")
     override fun andNot(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
         val result = IntArray(max(intLength, other.intLength))
@@ -2271,7 +2252,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `true` if and only if the designated bit is set.
      * @throws ArithmeticException `n` is negative.
      */
-    @JsName("testBit")
     override fun testBit(n: Int): Boolean {
         if (n < 0)
             throw ArithmeticException("Negative bit address")
@@ -2279,12 +2259,10 @@ internal class CommonBigInteger : BigInteger {
         return getInt(n.ushr(5)) and (1 shl (n and 31)) != 0
     }
 
-    @JsName("get")
     override operator fun get(n: Int): Boolean {
         return testBit(n)
     }
 
-    @JsName("set")
     override operator fun set(n: Int, b: Boolean): CommonBigInteger {
         return if (b) setBit(n) else clearBit(n)
     }
@@ -2297,7 +2275,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `this | (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
-    @JsName("setBit")
     override fun setBit(n: Int): CommonBigInteger {
         if (n < 0)
             throw ArithmeticException("Negative bit address")
@@ -2322,7 +2299,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `this & ~(1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
-    @JsName("clearBit")
     override fun clearBit(n: Int): CommonBigInteger {
         if (n < 0)
             throw ArithmeticException("Negative bit address")
@@ -2347,7 +2323,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `this ^ (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
-    @JsName("flipBit")
     override fun flipBit(n: Int): CommonBigInteger {
         if (n < 0)
             throw ArithmeticException("Negative bit address")
@@ -2455,7 +2430,6 @@ internal class CommonBigInteger : BigInteger {
      * @return `true` if this BigInteger is probably prime,
      * `false` if it's definitely composite.
      */
-    @JsName("isProbablePrime")
     override fun isProbablePrime(certainty: Int): Boolean {
         if (certainty <= 0)
             return true
@@ -2599,7 +2573,6 @@ internal class CommonBigInteger : BigInteger {
      * @return the BigInteger whose value is the lesser of this BigInteger and
      * other.  If they are equal, either may be returned.
      */
-    @JsName("min")
     override fun min(other: BigInteger): BigInteger {
         return if (this < other) this else other
     }
@@ -2611,7 +2584,6 @@ internal class CommonBigInteger : BigInteger {
      * @return the BigInteger whose value is the greater of this and
      * other.  If they are equal, either may be returned.
      */
-    @JsName("max")
     override fun max(other: BigInteger): BigInteger {
         return if (this > other) this else other
     }
@@ -2646,7 +2618,6 @@ internal class CommonBigInteger : BigInteger {
      * @return String representation of this BigInteger in the given radix.
      * @see Int.toString
      */
-    @JsName("toStringWithRadix")
     override fun toString(radix: Int): String {
         var radix = radix
         if (_signum == 0)
@@ -2744,7 +2715,6 @@ internal class CommonBigInteger : BigInteger {
      * @return a byte array containing the two's-complement representation of
      * this BigInteger.
      */
-    @JsName("toByteArray")
     override fun toByteArray(): ByteArray {
         val byteLen = bitLength / 8 + 1
         val byteArray = ByteArray(byteLen)
@@ -2783,8 +2753,7 @@ internal class CommonBigInteger : BigInteger {
      * @see CommonBigInteger.toIntExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    @JsName("toInt")
-    override/*override*/ fun toInt(): Int {
+    override fun toInt(): Int {
         var result = 0
         result = getInt(0)
         return result
@@ -2806,8 +2775,7 @@ internal class CommonBigInteger : BigInteger {
      * @see .toLongExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    @JsName("toLong")
-    override/*override*/ fun toLong(): Long {
+    override fun toLong(): Long {
         var result: Long = 0
 
         for (i in 1 downTo 0)
@@ -2815,28 +2783,23 @@ internal class CommonBigInteger : BigInteger {
         return result
     }
 
-    @JsName("toByte")
-    override/*override*/ fun toByte(): Byte {
+    override fun toByte(): Byte {
         return toInt().toByte()
     }
 
-    @JsName("toChar")
-    override/*override*/ fun toChar(): Char {
+    override fun toChar(): Char {
         return toInt().toChar()
     }
 
-    @JsName("toShort")
-    override/*override*/ fun toShort(): Short {
+    override fun toShort(): Short {
         return toInt().toShort()
     }
 
-    @JsName("toFloat")
-    override/*override*/ fun toFloat(): Float {
+    override fun toFloat(): Float {
         return toInt().toFloat()
     }
 
-    @JsName("toDouble")
-    override/*override*/ fun toDouble(): Double {
+    override fun toDouble(): Double {
         return toLong().toDouble()
     }
 
@@ -2973,7 +2936,6 @@ internal class CommonBigInteger : BigInteger {
      *
      * @since  1.8
      */
-    @JsName("toIntExact")
     override fun toIntExact(): Int {
         return if (_mag.size <= 1 && bitLength <= 31)
             toInt()
@@ -2994,7 +2956,6 @@ internal class CommonBigInteger : BigInteger {
      *
      * @since  1.8
      */
-    @JsName("toShortExact")
     override fun toShortExact(): Short {
         if (_mag.size <= 1 && bitLength <= 31) {
             val value = toInt()
@@ -3017,7 +2978,6 @@ internal class CommonBigInteger : BigInteger {
      *
      * @since  1.8
      */
-    @JsName("toByteExact")
     override fun toByteExact(): Byte {
         if (_mag.size <= 1 && bitLength <= 31) {
             val value = toInt()

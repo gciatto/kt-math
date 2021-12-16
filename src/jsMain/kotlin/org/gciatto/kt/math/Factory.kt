@@ -2,7 +2,7 @@ package org.gciatto.kt.math
 
 @Suppress("USELESS_CAST")
 @JsName("bigInteger")
-fun bigInteger(x: dynamic): CommonBigInteger {
+fun bigInteger(x: dynamic): BigInteger {
     return when (x) {
         is Long -> CommonBigInteger.of(x as Long)
         is Int -> CommonBigInteger.of(x as Int)
