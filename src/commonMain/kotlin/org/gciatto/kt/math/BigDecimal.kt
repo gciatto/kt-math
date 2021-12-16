@@ -1132,12 +1132,12 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JvmStatic
         @JsName("ofDouble")
         @JvmOverloads
-        fun of(`val`: Double, ctx: MathContext = MathContext.UNLIMITED): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(`val`: Double, ctx: MathContext? = null): BigDecimal = bigDecimalOf(`val`, ctx)
 
         @JvmStatic
         @JsName("ofFloat")
         @JvmOverloads
-        fun of(`val`: Float, ctx: MathContext = MathContext.UNLIMITED): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(`val`: Float, ctx: MathContext? = null): BigDecimal = bigDecimalOf(`val`, ctx)
 
         @JvmStatic
         @JsName("parse")
