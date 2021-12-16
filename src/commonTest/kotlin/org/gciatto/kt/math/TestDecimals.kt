@@ -44,12 +44,12 @@ class TestDecimals {
         assertBigDecimalsAreEquals(BigDecimal.TWO, BigDecimal.of(2.0))
         assertBigDecimalsAreEquals(BigDecimal.TEN, BigDecimal.of(10.0))
         assertBigDecimalsAreEquals(BigDecimal.ONE_HALF, BigDecimal.of(0.5))
-        assertBigDecimalsAreEquals(BigDecimal.ONE_TENTH, BigDecimal.of(0.1))
+        assertBigDecimalsAreEquals(BigDecimal.ONE_TENTH, BigDecimal.of("0.1"))
         assertBigDecimalsAreEquals(-BigDecimal.ONE, BigDecimal.of(-1.0))
         assertBigDecimalsAreEquals(-BigDecimal.TWO, BigDecimal.of(-2.0))
         assertBigDecimalsAreEquals(-BigDecimal.TEN, BigDecimal.of(-10.0))
         assertBigDecimalsAreEquals(-BigDecimal.ONE_HALF, BigDecimal.of(-0.5))
-        assertBigDecimalsAreEquals(-BigDecimal.ONE_TENTH, BigDecimal.of(-0.1))
+        assertBigDecimalsAreEquals(-BigDecimal.ONE_TENTH, BigDecimal.of("-0.1"))
     }
 
     @Test
@@ -91,9 +91,6 @@ class TestDecimals {
             BigDecimal.E + BigDecimal.ONE_HALF)
         assertReprEquals("2.818281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264",
             BigDecimal.E + BigDecimal.ONE_TENTH)
-
-        assertReprEquals("179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
-            BigDecimal.of(Double.MAX_VALUE) + BigDecimal.ONE)
     }
 
     @Test
@@ -168,7 +165,7 @@ class TestDecimals {
         assertBigDecimalsAreEquals(BigDecimal.ZERO, BigDecimal.ZERO.sqrt())
         assertBigDecimalsAreEquals(BigDecimal.ONE, BigDecimal.ONE.sqrt())
         assertBigDecimalsAreEquals(BigDecimal.of(2), BigDecimal.of(4).sqrt())
-        assertBigDecimalsAreEquals(BigDecimal.of(1.1), BigDecimal.of(1.21).sqrt())
+        assertBigDecimalsAreEquals(BigDecimal.of("1.1"), BigDecimal.of("1.21").sqrt())
     }
 
 }
