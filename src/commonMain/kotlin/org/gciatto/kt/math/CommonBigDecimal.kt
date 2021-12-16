@@ -1006,7 +1006,6 @@ internal class CommonBigDecimal : BigDecimal {
         this._precision = prec
     }
 
-    @JsName("plus")
     override operator fun plus(augend: BigDecimal?): CommonBigDecimal {
         val augend: CommonBigDecimal = augend!!.castTo()
         return if (this._intCompact != INFLATED) {
@@ -1024,7 +1023,6 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    @JsName("plusWithContext")
     override fun plus(augend: BigDecimal?, mc: MathContext): CommonBigDecimal {
         var augend: CommonBigDecimal = augend!!.castTo()
         if (mc.precision == 0)
@@ -1140,7 +1138,6 @@ internal class CommonBigDecimal : BigDecimal {
         return arrayOf(big, small)
     }
 
-    @JsName("minus")
     override operator fun minus(subtrahend: BigDecimal): CommonBigDecimal {
         val subtrahend: CommonBigDecimal = subtrahend.castTo()
         return if (this._intCompact != INFLATED) {
@@ -1161,15 +1158,12 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-
-    @JsName("minusWithContext")
     override fun minus(subtrahend: BigDecimal, mc: MathContext): CommonBigDecimal {
         val subtrahend: CommonBigDecimal = subtrahend.castTo()
         return if (mc.precision == 0) minus(subtrahend) else plus(subtrahend.unaryMinus(), mc)
         // share the special rounding code in plus()
     }
 
-    @JsName("times")
     override operator fun times(multiplicand: BigDecimal?): CommonBigDecimal {
         val multiplicand: CommonBigDecimal = multiplicand!!.castTo()
         val productScale = checkScale(_scale.toLong() + multiplicand._scale)
@@ -1188,7 +1182,6 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    @JsName("timesWithContext")
     override fun times(multiplicand: BigDecimal, mc: MathContext): CommonBigDecimal {
         val multiplicand: CommonBigDecimal = multiplicand.castTo()
         if (mc.precision == 0)
@@ -1307,7 +1300,6 @@ internal class CommonBigDecimal : BigDecimal {
         return this.div(divisor, _scale, roundingMode)
     }
 
-    @JsName("div")
     override operator fun div(divisor: BigDecimal): CommonBigDecimal {
         val divisor: CommonBigDecimal = divisor.castTo()
         /*
@@ -1363,7 +1355,6 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    @JsName("divWithContext")
     override fun div(divisor: BigDecimal, mc: MathContext): CommonBigDecimal? {
         val divisor: CommonBigDecimal = divisor.castTo()
         val mcp = mc.precision
@@ -1410,8 +1401,6 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-
-    @JsName("divideToIntegralValue")
     override fun divideToIntegralValue(divisor: BigDecimal): CommonBigDecimal {
         val divisor: CommonBigDecimal = divisor.castTo()
         // Calculate preferred _scale
@@ -1452,7 +1441,6 @@ internal class CommonBigDecimal : BigDecimal {
         return quotient
     }
 
-    @JsName("divideToIntegralValueWithContext")
     override fun divideToIntegralValue(divisor: BigDecimal, mc: MathContext): CommonBigDecimal {
         val divisor: CommonBigDecimal = divisor.castTo()
         if (mc.precision == 0 || // exact result
@@ -1507,19 +1495,16 @@ internal class CommonBigDecimal : BigDecimal {
         return stripZerosToMatchScale(result._intVal, result._intCompact, result._scale, preferredScale)
     }
     
-    @JsName("rem")
     override operator fun rem(divisor: BigDecimal): CommonBigDecimal {
         val divrem = this.divideAndRemainder(divisor)
         return divrem.second
     }
     
-    @JsName("remWithContext")
     override fun rem(divisor: BigDecimal, mc: MathContext): CommonBigDecimal {
         val divrem = this.divideAndRemainder(divisor, mc)
         return divrem.second
     }
 
-    @JsName("divideAndRemainder")
     override fun divideAndRemainder(divisor: BigDecimal): Pair<CommonBigDecimal, CommonBigDecimal> {
         // we use the identity  x = i * y + r to determine r
 //        val result = arrayOfNulls<CommonBigDecimal>(2)
@@ -1534,7 +1519,6 @@ internal class CommonBigDecimal : BigDecimal {
         )
     }
 
-    @JsName("divideAndRemainderWithContext")
     override fun divideAndRemainder(divisor: BigDecimal, mc: MathContext): Pair<CommonBigDecimal, CommonBigDecimal> {
         val divisor: CommonBigDecimal = divisor.castTo()
         if (mc.precision == 0)
@@ -1554,7 +1538,6 @@ internal class CommonBigDecimal : BigDecimal {
         )
     }
 
-    @JsName("sqrt")
     override fun sqrt(mc: MathContext): CommonBigDecimal {
         val signum = signum
         if (signum == 1) {
@@ -1813,7 +1796,6 @@ internal class CommonBigDecimal : BigDecimal {
      * @throws ArithmeticException if `n` is out of range.
      * @since  1.5
      */
-    @JsName("pow")
     override infix fun pow(n: Int): CommonBigDecimal {
         if (n < 0 || n > 999999999)
             throw ArithmeticException("Invalid operation")
@@ -1875,7 +1857,6 @@ internal class CommonBigDecimal : BigDecimal {
      * of range.
      * @since  1.5
      */
-    @JsName("powWithContext")
     override fun pow(n: Int, mc: MathContext): CommonBigDecimal? {
         if (mc.precision == 0)
             return pow(n)
@@ -1944,7 +1925,6 @@ internal class CommonBigDecimal : BigDecimal {
      * rounding mode is `UNNECESSARY`.
      * @since 1.5
      */
-    @JsName("absoluteValueWithContext")
     override fun absoluteValue(mc: MathContext): CommonBigDecimal? {
         return if (signum < 0) unaryMinus(mc) else unaryPlus(mc)
     }
@@ -1955,7 +1935,6 @@ internal class CommonBigDecimal : BigDecimal {
      *
      * @return `-this`.
      */
-    @JsName("unaryMinus")
     override operator fun unaryMinus(): CommonBigDecimal {
         return if (_intCompact == INFLATED) {
             CommonBigDecimal(_intVal!!.unaryMinus(), INFLATED, _scale, _precision)
@@ -1974,7 +1953,6 @@ internal class CommonBigDecimal : BigDecimal {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
-    @JsName("unaryMinusWithContext")
     override fun unaryMinus(mc: MathContext): CommonBigDecimal? {
         return unaryMinus().unaryPlus(mc)
     }
@@ -1991,7 +1969,6 @@ internal class CommonBigDecimal : BigDecimal {
      * @see .unaryMinus
      * @since  1.5
      */
-    @JsName("unaryPlus")
     override operator fun unaryPlus(): CommonBigDecimal {
         return this
     }
@@ -2011,7 +1988,6 @@ internal class CommonBigDecimal : BigDecimal {
      * @see .round
      * @since  1.5
      */
-    @JsName("unaryPlusWithContext")
     override fun unaryPlus(mc: MathContext): CommonBigDecimal? {
         return if (mc.precision == 0) this else doRound(this, mc)
     }
@@ -2104,7 +2080,6 @@ internal class CommonBigDecimal : BigDecimal {
      * @see .plus
      * @since  1.5
      */
-    @JsName("round")
     override fun round(mc: MathContext): CommonBigDecimal? {
         return unaryPlus(mc)
     }
@@ -2139,7 +2114,6 @@ internal class CommonBigDecimal : BigDecimal {
      *
      * @since  1.5
      */
-    @JsName("setScaleRounding")
     override fun setScale(newScale: Int, roundingMode: RoundingMode): CommonBigDecimal {
         return setScale(newScale, roundingMode.oldMode)
     }
@@ -2283,7 +2257,6 @@ internal class CommonBigDecimal : BigDecimal {
      * @see .setScale
      * @see .setScale
      */
-    @JsName("setScale")
     override fun setScale(newScale: Int): CommonBigDecimal {
         return setScale(newScale, ROUND_UNNECESSARY)
     }
@@ -2306,7 +2279,6 @@ internal class CommonBigDecimal : BigDecimal {
      * decimal point moved `n` places to the left.
      * @throws ArithmeticException if _scale overflows.
      */
-    @JsName("movePointLeft")
     override fun movePointLeft(n: Int): CommonBigDecimal {
         // Cannot use movePointRight(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() + n)
@@ -2329,7 +2301,6 @@ internal class CommonBigDecimal : BigDecimal {
      * with the decimal point moved `n` places to the right.
      * @throws ArithmeticException if _scale overflows.
      */
-    @JsName("movePointRight")
     override fun movePointRight(n: Int): CommonBigDecimal {
         // Cannot use movePointLeft(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() - n)
@@ -2350,7 +2321,6 @@ internal class CommonBigDecimal : BigDecimal {
      *
      * @since 1.5
      */
-    @JsName("scaleByPowerOfTen")
     override fun scaleByPowerOfTen(n: Int): CommonBigDecimal {
         return CommonBigDecimal(
             _intVal, _intCompact,
@@ -2373,7 +2343,6 @@ internal class CommonBigDecimal : BigDecimal {
      * trailing zeros removed.
      * @since 1.5
      */
-    @JsName("stripTrailingZeros")
     override fun stripTrailingZeros(): CommonBigDecimal {
         return if (_intCompact == 0L || _intVal != null && _intVal.signum == 0) {
             CommonBigDecimal.ZERO
@@ -2503,8 +2472,6 @@ internal class CommonBigDecimal : BigDecimal {
         return this.inflated() == xDec.inflated()
     }
 
-    
-    @JsName("min")
     override fun min(`val`: BigDecimal): BigDecimal {
         return if (this <= `val`) this else `val`
     }
@@ -2519,7 +2486,6 @@ internal class CommonBigDecimal : BigDecimal {
      * method, `this` is returned.
      * @see .compareTo
      */
-    @JsName("max")
     override fun max(`val`: BigDecimal): BigDecimal {
         return if (this >= `val`) this else `val`
     }
@@ -2656,12 +2622,10 @@ internal class CommonBigDecimal : BigDecimal {
         return sc
     }
     
-    @JsName("toEngineeringString")
     override fun toEngineeringString(): String {
         return layoutChars(false)
     }
 
-    @JsName("toPlainString")
     override fun toPlainString(): String {
         if (_scale == 0) {
             return if (_intCompact != INFLATED) {
@@ -2721,19 +2685,16 @@ internal class CommonBigDecimal : BigDecimal {
         return buf.toString()
     }
     
-    @JsName("toBigInteger")
     override fun toBigInteger(): CommonBigInteger {
         // force to an integer, quietly
         return this.setScale(0, ROUND_DOWN).inflated()
     }
 
-    @JsName("toBigIntegerExact")
     override fun toBigIntegerExact(): CommonBigInteger {
         // round to an integer, with Exception if decimal part non-0
         return this.setScale(0, ROUND_UNNECESSARY).inflated()
     }
 
-    @JsName("toLong")
     override fun toLong(): Long {
         return if (_intCompact != INFLATED && _scale == 0)
             _intCompact
@@ -2741,7 +2702,6 @@ internal class CommonBigDecimal : BigDecimal {
             toBigInteger().toLong()
     }
 
-    @JsName("toLongExact")
     override fun toLongExact(): Long {
         if (_intCompact != INFLATED && _scale == 0)
             return _intCompact
@@ -2777,7 +2737,6 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    @JsName("toInt")
     override fun toInt(): Int {
         return if (_intCompact != INFLATED && _scale == 0)
             _intCompact.toInt()
@@ -2785,22 +2744,18 @@ internal class CommonBigDecimal : BigDecimal {
             toBigInteger().toInt()
     }
 
-    @JsName("toByte")
     override fun toByte(): Byte {
         return toInt().toByte()
     }
 
-    @JsName("toChar")
     override fun toChar(): Char {
         return toInt().toChar()
     }
 
-    @JsName("toShort")
     override fun toShort(): Short {
         return toInt().toShort()
     }
 
-    @JsName("toIntExact")
     override fun toIntExact(): Int {
         val num: Long = this.toLongExact() // will check decimal part
 
@@ -2809,7 +2764,6 @@ internal class CommonBigDecimal : BigDecimal {
         return num.toInt()
     }
 
-    @JsName("toShortExact")
     override fun toShortExact(): Short {
         val num: Long = this.toLongExact()     // will check decimal part
 
@@ -2818,7 +2772,6 @@ internal class CommonBigDecimal : BigDecimal {
         return num.toShort()
     }
 
-    @JsName("toByteExact")
     override fun toByteExact(): Byte {
         val num: Long = this.toLongExact()     // will check decimal part
 
@@ -2827,7 +2780,6 @@ internal class CommonBigDecimal : BigDecimal {
         return num.toByte()
     }
 
-    @JsName("toFloat")
     override fun toFloat(): Float {
         if (_intCompact != INFLATED) {
             if (_scale == 0) {
@@ -2855,7 +2807,7 @@ internal class CommonBigDecimal : BigDecimal {
         return this.toString().toFloat()
     }
 
-    @JsName("toDouble")
+
     override fun toDouble(): Double {
         if (_intCompact != INFLATED) {
             if (_scale == 0) {
@@ -2883,7 +2835,7 @@ internal class CommonBigDecimal : BigDecimal {
         return this.toString().toDouble()
     }
 
-    @JsName("ulp")
+
     override fun ulp(): CommonBigDecimal {
         return of(1, this.scale, 1)
     }
@@ -3655,14 +3607,12 @@ internal class CommonBigDecimal : BigDecimal {
          */
         @JvmStatic
         @JsName("ofDouble")
-        @JvmOverloads
         fun of(`val`: Double, ctx: MathContext): CommonBigDecimal {
-            return CommonBigDecimal(`val`.toString(), ctx)
+            return CommonBigDecimal(`val`, ctx)
         }
 
         @JvmStatic
         @JsName("ofFloat")
-        @JvmOverloads
         fun of(`val`: Float, ctx: MathContext): CommonBigDecimal {
             return of(`val`.toDouble(), ctx)
         }
