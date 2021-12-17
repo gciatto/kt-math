@@ -1,15 +1,7 @@
-import de.fayard.dependencies.bootstrapRefreshVersionsAndDependencies
-
 rootProject.name = "kt-math"
 
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("de.fayard:dependencies:0.+")
-    }
-}
+enableFeaturePreview("VERSION_CATALOGS")
 
-bootstrapRefreshVersionsAndDependencies()
+dependencyResolutionManagement {
+//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+}

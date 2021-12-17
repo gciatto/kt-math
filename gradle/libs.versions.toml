@@ -1,0 +1,9 @@
+[versions]
+kotlin = "1.6.10"
+
+[plugins]
+gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:0.3.0"
+ktMppPP = "io.github.gciatto.kt-mpp-pp:0.3.5"
+nexusPublish = "de.marcphilipp.nexus-publish:0.4.0"
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
