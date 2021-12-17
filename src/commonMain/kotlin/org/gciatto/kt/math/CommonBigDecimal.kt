@@ -1779,23 +1779,6 @@ internal class CommonBigDecimal : BigDecimal {
         return this.compareTo(ZERO) == 0
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose value is
-     * `(this<sup>n</sup>)`, The power is computed exactly, to
-     * unlimited _precision.
-     *
-     *
-     * The parameter `n` must be in the range 0 through
-     * 999999999, inclusive.  `ZERO.pow(0)` returns [CommonBigDecimal.ONE].
-     *
-     * Note that future releases may expand the allowable exponent
-     * range of this method.
-     *
-     * @param  n power to raise this [CommonBigDecimal] to.
-     * @return `this<sup>n</sup>`
-     * @throws ArithmeticException if `n` is out of range.
-     * @since  1.5
-     */
     override infix fun pow(n: Int): CommonBigDecimal {
         if (n < 0 || n > 999999999)
             throw ArithmeticException("Invalid operation")
@@ -1805,58 +1788,6 @@ internal class CommonBigDecimal : BigDecimal {
         return CommonBigDecimal(this.inflated().pow(n), newScale)
     }
 
-
-    /**
-     * Returns a [CommonBigDecimal] whose value is
-     * `(this<sup>n</sup>)`.  The current implementation uses
-     * the core algorithm defined in ANSI standard X3.274-1996 with
-     * rounding according to the context settings.  In general, the
-     * returned numerical value is within two ulps of the exact
-     * numerical value for the chosen _precision.  Note that future
-     * releases may use a different algorithm with a decreased
-     * allowable error bound and increased allowable exponent range.
-     *
-     *
-     * The X3.274-1996 algorithm is:
-     *
-     *
-     *  *  An `ArithmeticException` exception is thrown if
-     *
-     *  * `absoluteValue(n) > 999999999`
-     *  * `mc._precision == 0` and `n < 0`
-     *  * `mc._precision > 0` and `n` has more than
-     * `mc._precision` decimal digits
-     *
-     *
-     *  *  if `n` is zero, [CommonBigDecimal.ONE] is returned even if
-     * `this` is zero, otherwise
-     *
-     *  *  if `n` is positive, the result is calculated via
-     * the repeated squaring technique into a single accumulator.
-     * The individual multiplications with the accumulator use the
-     * same math context settings as in `mc` except for a
-     * _precision increased to `mc._precision + elength + 1`
-     * where `elength` is the number of decimal digits in
-     * `n`.
-     *
-     *  *  if `n` is negative, the result is calculated as if
-     * `n` were positive; this value is then divided into one
-     * using the working _precision specified above.
-     *
-     *  *  The final value from either the positive or negative case
-     * is then rounded to the destination _precision.
-     *
-     *
-     *
-     * @param  n power to raise this [CommonBigDecimal] to.
-     * @param  mc the context to use.
-     * @return `this<sup>n</sup>` using the ANSI standard X3.274-1996
-     * algorithm
-     * @throws ArithmeticException if the result is inexact but the
-     * rounding mode is `UNNECESSARY`, or `n` is out
-     * of range.
-     * @since  1.5
-     */
     override fun pow(n: Int, mc: MathContext): CommonBigDecimal? {
         if (mc.precision == 0)
             return pow(n)
@@ -1902,39 +1833,15 @@ internal class CommonBigDecimal : BigDecimal {
         return doRound(acc, mc)
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose value is the absolute value
-     * of this [CommonBigDecimal], and whose _scale is
-     * `this._scale()`.
-     *
-     * @return `absoluteValue(this)`
-     */
     override val absoluteValue: CommonBigDecimal
         get() {
             return if (signum < 0) unaryMinus() else this
         }
 
-    /**
-     * Returns a [CommonBigDecimal] whose value is the absolute value
-     * of this [CommonBigDecimal], with rounding according to the
-     * context settings.
-     *
-     * @param mc the context to use.
-     * @return `absoluteValue(this)`, rounded as necessary.
-     * @throws ArithmeticException if the result is inexact but the
-     * rounding mode is `UNNECESSARY`.
-     * @since 1.5
-     */
     override fun absoluteValue(mc: MathContext): CommonBigDecimal? {
         return if (signum < 0) unaryMinus(mc) else unaryPlus(mc)
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose value is `(-this)`,
-     * and whose _scale is `this._scale()`.
-     *
-     * @return `-this`.
-     */
     override operator fun unaryMinus(): CommonBigDecimal {
         return if (_intCompact == INFLATED) {
             CommonBigDecimal(_intVal!!.unaryMinus(), INFLATED, _scale, _precision)
@@ -1943,61 +1850,18 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose value is `(-this)`,
-     * with rounding according to the context settings.
-     *
-     * @param mc the context to use.
-     * @return `-this`, rounded as necessary.
-     * @throws ArithmeticException if the result is inexact but the
-     * rounding mode is `UNNECESSARY`.
-     * @since  1.5
-     */
     override fun unaryMinus(mc: MathContext): CommonBigDecimal? {
         return unaryMinus().unaryPlus(mc)
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose value is `(+this)`, and whose
-     * _scale is `this._scale()`.
-     *
-     *
-     * This method, which simply returns this [CommonBigDecimal]
-     * is included for symmetry with the unary minus method [ ][CommonBigDecimal.unaryMinus].
-     *
-     * @return `this`.
-     * @see .unaryMinus
-     * @since  1.5
-     */
     override operator fun unaryPlus(): CommonBigDecimal {
         return this
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose value is `(+this)`,
-     * with rounding according to the context settings.
-     *
-     *
-     * The effect of this method is identical to that of the [ ][CommonBigDecimal.round] method.
-     *
-     * @param mc the context to use.
-     * @return `this`, rounded as necessary.  A zero result will
-     * have a _scale of 0.
-     * @throws ArithmeticException if the result is inexact but the
-     * rounding mode is `UNNECESSARY`.
-     * @see .round
-     * @since  1.5
-     */
     override fun unaryPlus(mc: MathContext): CommonBigDecimal? {
         return if (mc.precision == 0) this else doRound(this, mc)
     }
 
-    /**
-     * Returns the _signum function of this [CommonBigDecimal].
-     *
-     * @return -1, 0, or 1 as the value of this [CommonBigDecimal]
-     * is negative, zero, or positive.
-     */
     override val signum: Int
         get() {
             return if (_intCompact != INFLATED)
@@ -2006,31 +1870,11 @@ internal class CommonBigDecimal : BigDecimal {
                 _intVal!!.signum
         }
 
-    /**
-     * Returns the *_scale* of this [CommonBigDecimal].  If zero
-     * or positive, the _scale is the number of digits to the right of
-     * the decimal point.  If negative, the unscaled value of the
-     * number is multiplied by ten to the power of the negation of the
-     * _scale.  For example, a _scale of `-3` means the unscaled
-     * value is multiplied by 1000.
-     *
-     * @return the _scale of this [CommonBigDecimal].
-     */
     override val scale: Int
         get() {
             return _scale
         }
 
-    /**
-     * Returns the *_precision* of this [CommonBigDecimal].  (The
-     * _precision is the number of digits in the unscaled value.)
-     *
-     *
-     * The _precision of a zero value is 1.
-     *
-     * @return the _precision of this [CommonBigDecimal].
-     * @since  1.5
-     */
     override val precision: Int
         get() {
             var result = _precision
@@ -2045,123 +1889,19 @@ internal class CommonBigDecimal : BigDecimal {
             return result
         }
 
-
-    /**
-     * Returns a [CommonBigInteger] whose value is the *unscaled
-     * value* of this [CommonBigDecimal].  (Computes `(this *
-     * 10<sup>this._scale()</sup>)`.)
-     *
-     * @return the unscaled value of this [CommonBigDecimal].
-     * @since  1.2
-     */
     override val unscaledValue: CommonBigInteger
         get() {
             return this.inflated()
         }
 
-
-    // Scaling/Rounding Operations
-
-    /**
-     * Returns a [CommonBigDecimal] rounded according to the
-     * `MathContext` settings.  If the _precision setting is 0 then
-     * no rounding takes place.
-     *
-     *
-     * The effect of this method is identical to that of the
-     * [CommonBigDecimal.plus] method.
-     *
-     * @param mc the context to use.
-     * @return a [CommonBigDecimal] rounded according to the
-     * `MathContext` settings.
-     * @throws ArithmeticException if the rounding mode is
-     * `UNNECESSARY` and the
-     * [CommonBigDecimal]  operation would require rounding.
-     * @see .plus
-     * @since  1.5
-     */
     override fun round(mc: MathContext): CommonBigDecimal? {
         return unaryPlus(mc)
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose _scale is the specified
-     * value, and whose unscaled value is determined by multiplying or
-     * dividing this [CommonBigDecimal]'s unscaled value by the
-     * appropriate power of ten to maintain its overall value.  If the
-     * _scale is reduced by the operation, the unscaled value must be
-     * divided (rather than multiplied), and the value may be changed;
-     * in this case, the specified rounding mode is applied to the
-     * division.
-     *
-     * @apiNote Since CommonBigDecimal objects are immutable, calls of
-     * this method do *not* result in the original object being
-     * modified, contrary to the usual convention of having methods
-     * named `set*X*` mutate field *`X`*.
-     * Instead, `setScale` returns an object with the proper
-     * _scale; the returned object may or may not be newly allocated.
-     *
-     * @param  newScale _scale of the [CommonBigDecimal] value to be returned.
-     * @param  roundingMode The rounding mode to apply.
-     * @return a [CommonBigDecimal] whose _scale is the specified value,
-     * and whose unscaled value is determined by multiplying or
-     * dividing this [CommonBigDecimal]'s unscaled value by the
-     * appropriate power of ten to maintain its overall value.
-     * @throws ArithmeticException if `roundingMode==UNNECESSARY`
-     * and the specified scaling operation would require
-     * rounding.
-     * @see RoundingMode
-     *
-     * @since  1.5
-     */
     override fun setScale(newScale: Int, roundingMode: RoundingMode): CommonBigDecimal {
         return setScale(newScale, roundingMode.oldMode)
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose _scale is the specified
-     * value, and whose unscaled value is determined by multiplying or
-     * dividing this [CommonBigDecimal]'s unscaled value by the
-     * appropriate power of ten to maintain its overall value.  If the
-     * _scale is reduced by the operation, the unscaled value must be
-     * divided (rather than multiplied), and the value may be changed;
-     * in this case, the specified rounding mode is applied to the
-     * division.
-     *
-     * @apiNote Since CommonBigDecimal objects are immutable, calls of
-     * this method do *not* result in the original object being
-     * modified, contrary to the usual convention of having methods
-     * named `set*X*` mutate field *`X`*.
-     * Instead, `setScale` returns an object with the proper
-     * _scale; the returned object may or may not be newly allocated.
-     *
-     * @param  newScale _scale of the [CommonBigDecimal] value to be returned.
-     * @param  roundingMode The rounding mode to apply.
-     * @return a [CommonBigDecimal] whose _scale is the specified value,
-     * and whose unscaled value is determined by multiplying or
-     * dividing this [CommonBigDecimal]'s unscaled value by the
-     * appropriate power of ten to maintain its overall value.
-     * @throws ArithmeticException if `roundingMode==ROUND_UNNECESSARY`
-     * and the specified scaling operation would require
-     * rounding.
-     * @throws IllegalArgumentException if `roundingMode` does not
-     * represent a valid rounding mode.
-     * @see .ROUND_UP
-     *
-     * @see .ROUND_DOWN
-     *
-     * @see .ROUND_CEILING
-     *
-     * @see .ROUND_FLOOR
-     *
-     * @see .ROUND_HALF_UP
-     *
-     * @see .ROUND_HALF_DOWN
-     *
-     * @see .ROUND_HALF_EVEN
-     *
-     * @see .ROUND_UNNECESSARY
-     */
     @Deprecated(
         "The method {@link #setScale(int, RoundingMode)} should\n" +
                 "      be used in preference to this legacy method.\n" +
@@ -2219,66 +1959,10 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    /**
-     * Returns a [CommonBigDecimal] whose _scale is the specified
-     * value, and whose value is numerically equal to this
-     * [CommonBigDecimal]'s.  Throws an `ArithmeticException`
-     * if this is not possible.
-     *
-     *
-     * This call is typically used to increase the _scale, in which
-     * case it is guaranteed that there exists a [CommonBigDecimal]
-     * of the specified _scale and the correct value.  The call can
-     * also be used to reduce the _scale if the caller knows that the
-     * [CommonBigDecimal] has sufficiently many zeros at the end of
-     * its fractional part (i.e., factors of ten in its integer value)
-     * to allow for the rescaling without changing its value.
-     *
-     *
-     * This method returns the same result as the two-argument
-     * versions of `setScale`, but saves the caller the trouble
-     * of specifying a rounding mode in cases where it is irrelevant.
-     *
-     * @apiNote Since [CommonBigDecimal] objects are immutable,
-     * calls of this method do *not* result in the original
-     * object being modified, contrary to the usual convention of
-     * having methods named `set*X*` mutate field
-     * *`X`*.  Instead, `setScale` returns an
-     * object with the proper _scale; the returned object may or may
-     * not be newly allocated.
-     *
-     * @param  newScale _scale of the [CommonBigDecimal] value to be returned.
-     * @return a [CommonBigDecimal] whose _scale is the specified value, and
-     * whose unscaled value is determined by multiplying or dividing
-     * this [CommonBigDecimal]'s unscaled value by the appropriate
-     * power of ten to maintain its overall value.
-     * @throws ArithmeticException if the specified scaling operation would
-     * require rounding.
-     * @see .setScale
-     * @see .setScale
-     */
     override fun setScale(newScale: Int): CommonBigDecimal {
         return setScale(newScale, ROUND_UNNECESSARY)
     }
 
-
-    // Decimal Point Motion Operations
-
-    /**
-     * Returns a [CommonBigDecimal] which is equivalent to this one
-     * with the decimal point moved `n` places to the left.  If
-     * `n` is non-negative, the call merely adds `n` to
-     * the _scale.  If `n` is negative, the call is equivalent
-     * to `movePointRight(-n)`.  The [CommonBigDecimal]
-     * returned by this call has value `(this
-     * 10<sup>-n</sup>)` and _scale `max(this._scale()+n,
-     * 0)`.
-     *
-     * @param  n number of places to move the decimal point to the left.
-     * @return a [CommonBigDecimal] which is equivalent to this one with the
-     * decimal point moved `n` places to the left.
-     * @throws ArithmeticException if _scale overflows.
-     */
     override fun movePointLeft(n: Int): CommonBigDecimal {
         // Cannot use movePointRight(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() + n)
@@ -2286,21 +1970,6 @@ internal class CommonBigDecimal : BigDecimal {
         return if (num._scale < 0) num.setScale(0, ROUND_UNNECESSARY) else num
     }
 
-    /**
-     * Returns a [CommonBigDecimal] which is equivalent to this one
-     * with the decimal point moved `n` places to the right.
-     * If `n` is non-negative, the call merely subtracts
-     * `n` from the _scale.  If `n` is negative, the call
-     * is equivalent to `movePointLeft(-n)`.  The
-     * [CommonBigDecimal] returned by this call has value `(this
-     *  10<sup>n</sup>)` and _scale `max(this._scale()-n,
-     * 0)`.
-     *
-     * @param  n number of places to move the decimal point to the right.
-     * @return a [CommonBigDecimal] which is equivalent to this one
-     * with the decimal point moved `n` places to the right.
-     * @throws ArithmeticException if _scale overflows.
-     */
     override fun movePointRight(n: Int): CommonBigDecimal {
         // Cannot use movePointLeft(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() - n)
@@ -2308,19 +1977,6 @@ internal class CommonBigDecimal : BigDecimal {
         return if (num._scale < 0) num.setScale(0, ROUND_UNNECESSARY) else num
     }
 
-    /**
-     * Returns a CommonBigDecimal whose numerical value is equal to
-     * (`this` * 10<sup>n</sup>).  The _scale of
-     * the result is `(this._scale() - n)`.
-     *
-     * @param n the exponent power of ten to _scale by
-     * @return a CommonBigDecimal whose numerical value is equal to
-     * (`this` * 10<sup>n</sup>)
-     * @throws ArithmeticException if the _scale would be
-     * outside the range of a 32-bit integer.
-     *
-     * @since 1.5
-     */
     override fun scaleByPowerOfTen(n: Int): CommonBigDecimal {
         return CommonBigDecimal(
             _intVal, _intCompact,
@@ -2328,21 +1984,6 @@ internal class CommonBigDecimal : BigDecimal {
         )
     }
 
-    /**
-     * Returns a [CommonBigDecimal] which is numerically equal to
-     * this one but with any trailing zeros removed from the
-     * representation.  For example, stripping the trailing zeros from
-     * the [CommonBigDecimal] value `600.0`, which has
-     * [[CommonBigInteger], `_scale`] components equals to
-     * `[6000, 1]`, yields `6E2` with `[BigInteger,
-     * scale]` components equals to `[6, -2]`.  If
-     * this CommonBigDecimal is numerically equal to zero, then
-     * `CommonBigDecimal.ZERO` is returned.
-     *
-     * @return a numerically equal [CommonBigDecimal] with any
-     * trailing zeros removed.
-     * @since 1.5
-     */
     override fun stripTrailingZeros(): CommonBigDecimal {
         return if (_intCompact == 0L || _intVal != null && _intVal.signum == 0) {
             CommonBigDecimal.ZERO
@@ -2353,25 +1994,6 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    // Comparison Operations
-
-    /**
-     * Compares this [CommonBigDecimal] with the specified
-     * [CommonBigDecimal].  Two [CommonBigDecimal] objects that are
-     * equal in value but have a different _scale (like 2.0 and 2.00)
-     * are considered equal by this method.  This method is provided
-     * in preference to individual methods for each of the six boolean
-     * comparison operators (&lt;, ==,
-     * &gt;, &gt;=, !=, &lt;=).  The
-     * suggested idiom for performing these comparisons is:
-     * `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
-     * &lt;*op*&gt; is one of the six comparison operators.
-     *
-     * @param  other [CommonBigDecimal] to which this [CommonBigDecimal] is
-     * to be compared.
-     * @return -1, 0, or 1 as this [CommonBigDecimal] is numerically
-     * less than, equal to, or greater than `val`.
-     */
     override fun compareTo(other: BigDecimal): Int {
         val other: CommonBigDecimal = other.castTo()
         // Quick path for equal _scale and non-inflated case.
@@ -2437,37 +2059,24 @@ internal class CommonBigDecimal : BigDecimal {
             this._intVal!!.compareMagnitude(`val`._intVal!!)
     }
 
-    /**
-     * Compares this [CommonBigDecimal] with the specified
-     * `Object` for equality.  Unlike [CommonBigDecimal.compareTo], this method considers two
-     * [CommonBigDecimal] objects equal only if they are equal in
-     * value and _scale (thus 2.0 is not equal to 2.00 when compared by
-     * this method).
-     *
-     * @param  other `Object` to which this [CommonBigDecimal] is
-     * to be compared.
-     * @return `true` if and only if the specified `Object` is a
-     * [CommonBigDecimal] whose value and _scale are equal to this
-     * [CommonBigDecimal]'s.
-     * @see .compareTo
-     * @see .hashCode
-     */
     override fun equals(other: Any?): Boolean {
         if (other !is CommonBigDecimal)
             return false
-        val xDec = other as CommonBigDecimal?
+        val xDec: CommonBigDecimal = other
         if (other === this)
             return true
-        if (_scale != xDec!!._scale)
+        if (_scale != xDec._scale)
             return false
         val s = this._intCompact
         var xs = xDec._intCompact
         if (s != INFLATED) {
-            if (xs == INFLATED)
+            if (xs == INFLATED) {
                 xs = compactValFor(xDec._intVal!!)
+            }
             return xs == s
-        } else if (xs != INFLATED)
+        } else if (xs != INFLATED) {
             return xs == compactValFor(this._intVal!!)
+        }
 
         return this.inflated() == xDec.inflated()
     }
@@ -2476,31 +2085,10 @@ internal class CommonBigDecimal : BigDecimal {
         return if (this <= `val`) this else `val`
     }
 
-    /**
-     * Returns the maximum of this [CommonBigDecimal] and `val`.
-     *
-     * @param  val value with which the maximum is to be computed.
-     * @return the [CommonBigDecimal] whose value is the greater of this
-     * [CommonBigDecimal] and `val`.  If they are equal,
-     * as defined by the [compareTo][CommonBigDecimal.compareTo]
-     * method, `this` is returned.
-     * @see .compareTo
-     */
     override fun max(`val`: BigDecimal): BigDecimal {
         return if (this >= `val`) this else `val`
     }
 
-    // Hash Function
-
-    /**
-     * Returns the hash code for this [CommonBigDecimal].  Note that
-     * two [CommonBigDecimal] objects that are numerically equal but
-     * differ in _scale (like 2.0 and 2.00) will generally *not*
-     * have the same hash code.
-     *
-     * @return hash code for this [CommonBigDecimal].
-     * @see .equals
-     */
     override fun hashCode(): Int {
         return if (_intCompact != INFLATED) {
             val val2 = if (_intCompact < 0) -_intCompact else _intCompact
@@ -2509,110 +2097,7 @@ internal class CommonBigDecimal : BigDecimal {
         } else
             31 * _intVal!!.hashCode() + _scale
     }
-    
-    /**
-     * Returns the string representation of this [CommonBigDecimal],
-     * using scientific notation if an exponent is needed.
-     *
-     *
-     * A standard canonical string form of the [CommonBigDecimal]
-     * is created as though by the following steps: first, the
-     * absolute value of the unscaled value of the [CommonBigDecimal]
-     * is converted to a string in base ten using the characters
-     * `'0'` through `'9'` with no leading zeros (except
-     * if its value is zero, in which case a single `'0'`
-     * character is used).
-     *
-     *
-     * Next, an *adjusted exponent* is calculated; this is the
-     * negated _scale, plus the number of characters in the converted
-     * unscaled value, less one.  That is,
-     * `-_scale+(ulength-1)`, where `ulength` is the
-     * length of the absolute value of the unscaled value in decimal
-     * digits (its *_precision*).
-     *
-     *
-     * If the _scale is greater than or equal to zero and the
-     * adjusted exponent is greater than or equal to `-6`, the
-     * number will be converted to a character form without using
-     * exponential notation.  In this case, if the _scale is zero then
-     * no decimal point is added and if the _scale is positive a
-     * decimal point will be inserted with the _scale specifying the
-     * number of characters to the right of the decimal point.
-     * `'0'` characters are added to the left of the converted
-     * unscaled value as necessary.  If no character precedes the
-     * decimal point after this insertion then a conventional
-     * `'0'` character is prefixed.
-     *
-     *
-     * Otherwise (that is, if the _scale is negative, or the
-     * adjusted exponent is less than `-6`), the number will be
-     * converted to a character form using exponential notation.  In
-     * this case, if the converted [CommonBigInteger] has more than
-     * one digit a decimal point is inserted after the first digit.
-     * An exponent in character form is then suffixed to the converted
-     * unscaled value (perhaps with inserted decimal point); this
-     * comprises the letter `'E'` followed immediately by the
-     * adjusted exponent converted to a character form.  The latter is
-     * in base ten, using the characters `'0'` through
-     * `'9'` with no leading zeros, and is always prefixed by a
-     * sign character `'-'` (`'&#92;u002D'`) if the
-     * adjusted exponent is negative, `'+'`
-     * (`'&#92;u002B'`) otherwise).
-     *
-     *
-     * Finally, the entire string is prefixed by a minus sign
-     * character `'-'` (`'&#92;u002D'`) if the unscaled
-     * value is less than zero.  No sign character is prefixed if the
-     * unscaled value is zero or positive.
-     *
-     *
-     * **Examples:**
-     *
-     * For each representation `[unscaled value, scale]`
-     * on the left, the resulting string is shown on the right.
-     * <pre>
-     * [123,0]`      "123"
-     * [-123,0]     "-123"
-     * [123,-1]     "1.23E+3"
-     * [123,-3]     "1.23E+5"
-     * [123,1]      "12.3"
-     * [123,5]      "0.00123"
-     * [123,10]     "1.23E-8"
-     * [-123,12]    "-1.23E-10"
-    </pre> *
-     *
-     * **Notes:**
-     *
-     *
-     *  1. There is a one-to-one mapping between the distinguishable
-     * [CommonBigDecimal] values and the result of this conversion.
-     * That is, every distinguishable [CommonBigDecimal] value
-     * (unscaled value and _scale) has a unique string representation
-     * as a result of using `toString`.  If that string
-     * representation is converted back to a [CommonBigDecimal] using
-     * the aforementioned constructor, then the original
-     * value will be recovered.
-     *
-     *  1. The string produced for a given number is always the same;
-     * it is not affected by locale.  This means that it can be used
-     * as a canonical string representation for exchanging decimal
-     * data, or as a key for a Hashtable, etc.  Locale-sensitive
-     * number formatting and parsing is handled by the ??? class and its subclasses.
-     *
-     *  1. The [CommonBigDecimal.toEngineeringString] method may be used for
-     * presenting numbers with exponents in engineering notation, and the
-     * [setScale][CommonBigDecimal.setScale] method may be used for
-     * rounding a [CommonBigDecimal] so it has a known number of digits after
-     * the decimal point.
-     *
-     *  1. The digit-to-character mapping provided by
-     * `Character.forDigit` is used.
-     *
-     *
-     *
-     * @return string representation of this [CommonBigDecimal].
-     */
+
     override fun toString(): String {
         var sc = _stringCache
         if (sc == null) {
@@ -3424,15 +2909,12 @@ internal class CommonBigDecimal : BigDecimal {
 
         @JvmField
         @JsName("PI")
-        val PI = of("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648")
+        val PI = of(PI_STRING)
 
         @JvmField
         @JsName("E")
-        val E = of("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264")
+        val E = of(E_STRING)
 
-            /*
-         * parse exponent
-         */
         private fun parseExp(`in`: CharArray, offset: Int, len: Int): Long {
             var offset = offset
             var len = len

@@ -1019,7 +1019,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("ZERO")
-        val ZERO: BigDecimal = of(0)
+        val ZERO: BigDecimal = BigDecimals.zero
 
         /**
          * The value 1, with a _scale of 0.
@@ -1028,11 +1028,11 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("ONE")
-        val ONE: BigDecimal = of(1)
+        val ONE: BigDecimal = BigDecimals.one
 
         @JvmField
         @JsName("TWO")
-        val TWO: BigDecimal = of(2)
+        val TWO: BigDecimal = BigDecimals.two
 
         /**
          * The value 10, with a _scale of 0.
@@ -1041,33 +1041,29 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("TEN")
-        val TEN: BigDecimal = of(10)
+        val TEN: BigDecimal = BigDecimals.ten
 
         /**
          * The value 0.1, with a _scale of 1.
          */
         @JvmField
         @JsName("ONE_TENTH")
-        val ONE_TENTH: BigDecimal = of("0.1")
+        val ONE_TENTH: BigDecimal = BigDecimals.oneTenth
 
         /**
          * The value 0.5, with a _scale of 1.
          */
         @JvmField
         @JsName("ONE_HALF")
-        val ONE_HALF: BigDecimal = of("0.5")
+        val ONE_HALF: BigDecimal = BigDecimals.oneHalf
 
         @JvmField
         @JsName("PI")
-        val PI: BigDecimal = of("3.141592653589793238462643383279502884197169399375105820974944592307816406286" +
-                "20899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852" +
-                "1105559644622948954930381964428810975665933446128475648233786783165271201909145648")
+        val PI: BigDecimal = BigDecimals.pi
 
         @JvmField
         @JsName("E")
-        val E: BigDecimal = of("2.7182818284590452353602874713526624977572470936999595749669676277240766303535" +
-                "47594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490" +
-                "763233829880753195251019011573834187930702154089149934884167509244761460668082264")
+        val E: BigDecimal = BigDecimals.e
 
         /**
          * Translates a `long` unscaled value and an

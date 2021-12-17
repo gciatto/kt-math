@@ -106,7 +106,7 @@ internal actual fun bigDecimalOf(`val`: BigInteger, ctx: MathContext?): BigDecim
     if (ctx == null) {
         JavaBigDecimalAdapter(JavaBigDecimal(`val`.toJava()))
     } else {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toJava(), ctx?.toJava()))
+        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toJava(), ctx.toJava()))
     }
 
 internal actual fun bigDecimalOf(`val`: Int, ctx: MathContext): BigDecimal =
@@ -114,3 +114,33 @@ internal actual fun bigDecimalOf(`val`: Int, ctx: MathContext): BigDecimal =
 
 internal actual fun bigDecimalOf(`val`: Long, ctx: MathContext): BigDecimal =
     JavaBigDecimalAdapter(JavaBigDecimal(`val`, ctx.toJava()))
+
+internal actual object BigDecimals {
+    actual val zero: BigDecimal = JavaBigDecimal.ZERO.toKotlin()
+
+    actual val one: BigDecimal = JavaBigDecimal.ONE.toKotlin()
+
+    actual val two: BigDecimal = bigDecimalOf(2)
+
+    actual val ten: BigDecimal = JavaBigDecimal.TEN.toKotlin()
+
+    actual val oneTenth: BigDecimal = bigDecimalOf("0.1")
+
+    actual val oneHalf: BigDecimal = bigDecimalOf("0.5")
+
+    actual val pi: BigDecimal = bigDecimalOf(PI_STRING)
+
+    actual val e: BigDecimal = bigDecimalOf(E_STRING)
+}
+
+internal actual object BigIntegers {
+    actual val zero: BigInteger = JavaBigInteger.ZERO.toKotlin()
+
+    actual val one: BigInteger = JavaBigInteger.ONE.toKotlin()
+
+    actual val two: BigInteger = JavaBigInteger.TWO.toKotlin()
+
+    actual val ten: BigInteger = JavaBigInteger.TEN.toKotlin()
+
+    actual val negativeOne: BigInteger = JavaBigInteger.ONE.negate().toKotlin()
+}
