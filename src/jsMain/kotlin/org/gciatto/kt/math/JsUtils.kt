@@ -83,3 +83,33 @@ internal actual fun bigDecimalOf(`val`: BigInteger, ctx: MathContext?): BigDecim
 internal actual fun bigDecimalOf(`val`: Int, ctx: MathContext): BigDecimal = CommonBigDecimal.of(`val`, ctx)
 
 internal actual fun bigDecimalOf(`val`: Long, ctx: MathContext): BigDecimal = CommonBigDecimal.of(`val`, ctx)
+
+internal actual object BigDecimals {
+    actual val zero: BigDecimal = CommonBigDecimal.ZERO
+
+    actual val one: BigDecimal = CommonBigDecimal.ONE
+
+    actual val two: BigDecimal = CommonBigDecimal.TWO
+
+    actual val ten: BigDecimal = CommonBigDecimal.TEN
+
+    actual val oneTenth: BigDecimal = CommonBigDecimal.ONE_TENTH
+
+    actual val oneHalf: BigDecimal = CommonBigDecimal.ONE_HALF
+
+    actual val pi: BigDecimal = CommonBigDecimal.PI
+
+    actual val e: BigDecimal = CommonBigDecimal.E
+}
+
+internal actual object BigIntegers {
+    actual val zero: BigInteger = CommonBigInteger.ZERO
+
+    actual val one: BigInteger = CommonBigInteger.ONE
+
+    actual val two: BigInteger = CommonBigInteger.TWO
+
+    actual val ten: BigInteger = CommonBigInteger.TEN
+
+    actual val negativeOne: BigInteger = CommonBigInteger.NEGATIVE_ONE
+}

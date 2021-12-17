@@ -13,6 +13,10 @@ internal fun log(lazyObject: () -> Any) {
     }
 }
 
+internal val PI_STRING = "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648"
+
+internal val E_STRING = "2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264"
+
 internal expect fun logImpl(lazyObject: () -> Any)
 
 internal expect inline fun <T, reified U : T> T?.castTo(): U
@@ -50,6 +54,25 @@ internal expect fun bigDecimalOf(`val`: BigInteger, ctx: MathContext? = null): B
 internal expect fun bigDecimalOf(`val`: Int, ctx: MathContext): BigDecimal
 
 internal expect fun bigDecimalOf(`val`: Long, ctx: MathContext): BigDecimal
+
+internal expect object BigIntegers {
+    val zero: BigInteger
+    val one: BigInteger
+    val two: BigInteger
+    val ten: BigInteger
+    val negativeOne: BigInteger
+}
+
+internal expect object BigDecimals {
+    val zero: BigDecimal
+    val one: BigDecimal
+    val two: BigDecimal
+    val ten: BigDecimal
+    val oneTenth: BigDecimal
+    val oneHalf: BigDecimal
+    val pi: BigDecimal
+    val e: BigDecimal
+}
 
 internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6

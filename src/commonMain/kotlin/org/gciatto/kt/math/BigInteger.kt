@@ -613,7 +613,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JvmField
         @JsName("ZERO")
-        val ZERO: BigInteger = bigIntegerOf(0L)
+        val ZERO: BigInteger = BigIntegers.zero
 
         /**
          * The BigInteger constant one.
@@ -622,7 +622,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JvmField
         @JsName("ONE")
-        val ONE: BigInteger = bigIntegerOf(1L)
+        val ONE: BigInteger = BigIntegers.one
 
         /**
          * The BigInteger constant two.
@@ -631,14 +631,14 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JvmField
         @JsName("TWO")
-        val TWO: BigInteger = bigIntegerOf(2L)
+        val TWO: BigInteger = BigIntegers.two
 
         /**
          * The BigInteger constant -1.  (Not exported.)
          */
         @JvmField
         @JsName("NEGATIVE_ONE")
-        val NEGATIVE_ONE: BigInteger = bigIntegerOf(-1L)
+        val NEGATIVE_ONE: BigInteger = BigIntegers.negativeOne
 
         /**
          * The BigInteger constant ten.
@@ -647,7 +647,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JvmField
         @JsName("TEN")
-        val TEN: BigInteger = bigIntegerOf(10L)
+        val TEN: BigInteger = BigIntegers.ten
 
         /**
          * Returns a positive BigInteger that is probably prime, with the
