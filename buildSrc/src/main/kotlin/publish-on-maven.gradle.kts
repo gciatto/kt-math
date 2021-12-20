@@ -85,7 +85,7 @@ publishing {
         }
     }
 
-    configure<SigningExtension> {
+    signing {
         if (arrayOf(signingKey, signingPassword).none { it.isNullOrBlank() }) {
             useInMemoryPgpKeys(signingKey, signingPassword)
             sign(publications)

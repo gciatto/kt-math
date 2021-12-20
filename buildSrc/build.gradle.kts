@@ -10,20 +10,15 @@ repositories {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         allWarningsAsErrors = false
-        jvmTarget = JavaVersion.current().toString()
+        jvmTarget = libs.versions.jvm.get()
     }
 }
 
 java {
-    targetCompatibility = JavaVersion.current()
-    sourceCompatibility = JavaVersion.current()
+    targetCompatibility = libs.versions.jvm.map(JavaVersion::toVersion).get()
+    sourceCompatibility = libs.versions.jvm.map(JavaVersion::toVersion).get()
 }
 
-//gradlePlugin {
-//    plugins {
-//        register("hello-plugin") {
-//            id = "hello"
-//            implementationClass = "com.github.daggerok.plugin.HelloPlugin"
-//        }
-//    }
-//}
+dependencies {
+    implementation(libs.versions.kotlin.map { "org.jetbrains.kotlin:kotlin-gradle-plugin:$it" })
+}

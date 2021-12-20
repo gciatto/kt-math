@@ -1,7 +1,7 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
+    `kotlin-jvm-js`
     alias(libs.plugins.gitSemVer)
     alias(libs.plugins.npmPublish)
     alias(libs.plugins.dokka)
@@ -23,77 +23,7 @@ repositories {
     mavenCentral()
 }
 
-val mochaTimeout: String by project
-val jvmTarget = JavaVersion.VERSION_1_8
-
-kotlin {
-    jvm {
-        withJava()
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = jvmTarget.toString()
-                freeCompilerArgs = listOf("-Xjvm-default=all")
-            }
-        }
-    }
-
-    js {
-        nodejs {
-            testTask {
-                useMocha {
-                    timeout = mochaTimeout
-                }
-            }
-        }
-    }
-
-    sourceSets {
-        commonMain {
-            dependencies {
-                api(kotlin("stdlib-common"))
-            }
-        }
-        commonTest {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                api(kotlin("stdlib-jdk8"))
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-                implementation(kotlin("test-junit"))
-            }
-        }
-        val jsMain by getting {
-            dependencies {
-                api(kotlin("stdlib-js"))
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
-    }
-
-    targets.all {
-        compilations.all {
-            kotlinOptions {
-                allWarningsAsErrors = true
-            }
-        }
-    }
-}
-
-java {
-    sourceCompatibility = jvmTarget
-    targetCompatibility = jvmTarget
-}
+jvmVersion(libs.versions.jvm)
 
 tasks.withType<DokkaTask>().matching { "Html" in it.name }.all {
     val dokkaHtml = this
