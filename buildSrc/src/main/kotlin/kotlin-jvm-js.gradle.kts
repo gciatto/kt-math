@@ -3,13 +3,14 @@ plugins {
 }
 
 val mochaTimeout: String by project
+val ktCompilerArgs: String by project
 
 kotlin {
     jvm {
         withJava()
         compilations.all {
             kotlinOptions {
-                freeCompilerArgs = listOf("-Xjvm-default=all")
+                freeCompilerArgs = ktCompilerArgs.split(";")
             }
         }
     }

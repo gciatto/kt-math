@@ -2,6 +2,7 @@ package org.gciatto.kt.math
 
 @Suppress("USELESS_CAST")
 @JsName("bigInteger")
+@JsExport
 fun bigInteger(x: dynamic): BigInteger {
     return when (x) {
         is Long -> BigInteger.of(x as Long)
@@ -18,6 +19,7 @@ fun bigInteger(x: dynamic): BigInteger {
 }
 
 @JsName("bigDecimal")
+@JsExport
 fun bigDecimal(x: dynamic): BigDecimal {
     return when (x) {
         is Array<dynamic> -> {

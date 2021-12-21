@@ -24,6 +24,8 @@ repositories {
 }
 
 jvmVersion(libs.versions.jvm)
+nodeVersion(libs.versions.node)
+
 
 tasks.withType<DokkaTask>().matching { "Html" in it.name }.all {
     val dokkaHtml = this
