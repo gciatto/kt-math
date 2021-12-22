@@ -3,6 +3,7 @@ plugins {
 }
 
 val mochaTimeout: String by project
+val ktCompilerArgsJvm: String by project
 val ktCompilerArgs: String by project
 
 kotlin {
@@ -10,12 +11,18 @@ kotlin {
         withJava()
         compilations.all {
             kotlinOptions {
-                freeCompilerArgs = ktCompilerArgs.split(";")
+                freeCompilerArgs = freeCompilerArgs + ktCompilerArgsJvm.split(";")
             }
         }
     }
 
     js {
+        useCommonJs()
+        compilations.all {
+            kotlinOptions {
+                main = "noCall"
+            }
+        }
         nodejs {
             testTask {
                 useMocha {
@@ -64,6 +71,7 @@ kotlin {
         compilations.all {
             kotlinOptions {
                 allWarningsAsErrors = true
+                freeCompilerArgs = freeCompilerArgs + ktCompilerArgs.split(";")
             }
         }
     }

@@ -29,12 +29,8 @@
 
 package org.gciatto.kt.math
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
-import kotlin.jvm.JvmOverloads
-import kotlin.jvm.JvmStatic
 
 /**
  * Immutable objects which encapsulate the context settings which
@@ -61,7 +57,6 @@ import kotlin.jvm.JvmStatic
  * @author  Joseph D. Darcy
  * @since 1.5
  */
-@JsExport
 data class MathContext(val precision: Int, val roundingMode: RoundingMode) {
     init {
         require(precision >= 0)

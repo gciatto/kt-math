@@ -30,8 +30,6 @@ package org.gciatto.kt.math
  */
 
 import org.gciatto.kt.math.BigInteger.Companion.LONG_MASK
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
@@ -242,7 +240,6 @@ import kotlin.math.*
  * @since 1.1
  */
 @Suppress("NAME_SHADOWING", "DEPRECATION", "UNREACHABLE_CODE", "UNUSED_PARAMETER")
-@JsExport
 class BigDecimal : Comparable<BigDecimal> {
 
     /**

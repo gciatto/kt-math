@@ -30,8 +30,6 @@
 package org.gciatto.kt.math
 
 import kotlin.experimental.and
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -130,7 +128,6 @@ import kotlin.random.Random
  */
 
 @Suppress("NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
-@JsExport
 class BigInteger : Comparable<BigInteger> {
 
     /**
