@@ -3,9 +3,9 @@ import org.jetbrains.dokka.gradle.DokkaTask
 plugins {
     `kotlin-jvm-js`
     alias(libs.plugins.gitSemVer)
-    alias(libs.plugins.npmPublish)
     alias(libs.plugins.dokka)
     `publish-on-maven`
+    `publish-on-npm`
 }
 
 group = "io.github.gciatto"
@@ -28,9 +28,10 @@ jvmVersion(libs.versions.jvm)
 nodeVersion(libs.versions.node)
 
 packageJson {
-    dependencies += mapOf(
+    version = project.version.toString().split("+")[0]
+    dependencies {
         "kotlin" to libs.versions.kotlin.get()
-    )
+    }
 }
 
 tasks.withType<DokkaTask>().matching { "Html" in it.name }.all {

@@ -7,18 +7,21 @@ repositories {
     gradlePluginPortal()
 }
 
+val javaVersion = JavaVersion.current()
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        allWarningsAsErrors = false
-        jvmTarget = libs.versions.jvm.get()
+        allWarningsAsErrors = true
+        jvmTarget = javaVersion.toString()
     }
 }
 
 java {
-    targetCompatibility = libs.versions.jvm.map(JavaVersion::toVersion).get()
-    sourceCompatibility = libs.versions.jvm.map(JavaVersion::toVersion).get()
+    targetCompatibility = javaVersion
+    sourceCompatibility = javaVersion
 }
 
 dependencies {
-    implementation(libs.versions.kotlin.map { "org.jetbrains.kotlin:kotlin-gradle-plugin:$it" })
+    implementation(libs.kotlin.gradlePlugin)
+    implementation(libs.npmPublish)
 }

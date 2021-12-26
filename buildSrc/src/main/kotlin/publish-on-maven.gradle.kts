@@ -25,7 +25,7 @@ val mavenUsername: String? by project
 // env ORG_GRADLE_PROJECT_mavenPassword
 val mavenPassword: String? by project
 
-val publishableClassifiers = setOf("redist", "full", "javadoc")
+val publishableClassifiers = setOf("javadoc")
 
 publishing {
     repositories {
