@@ -67,11 +67,19 @@ jobs:
           - '12.22.9'
           - '14.18.3'
           - '16.13.2'
+        java-version: [ 17 ]
+        jdk-dist: [ adopt-hotspot ]
     runs-on: ${{ matrix.os }}
     name: Run tests via NodeJS ${{ matrix.node-version }}, on ${{ matrix.os }}
     env:
       ORG_GRADLE_PROJECT_nodeVersion: ${{ matrix.node-version }}
     steps:
+      - name: Set ${{ matrix.jdk-dist }} JDK v${{ matrix.java-version }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: ${{ matrix.jdk-dist }}
+          java-version: ${{ matrix.java-version }}
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
