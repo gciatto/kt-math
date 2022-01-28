@@ -25,7 +25,7 @@ repositories {
 
 jvmVersion(libs.versions.jvm)
 
-nodeVersion(libs.versions.node)
+nodeVersion(default = libs.versions.node, override = project.findProperty("nodeVersion"))
 
 packageJson {
     version = project.version.toString().split("+")[0]
