@@ -1,3 +1,5 @@
+kotlin-js-store/
+
 *.hprof
 # Created by https://www.gitignore.io/api/gradle,kotlin,intellij
 # Edit at https://www.gitignore.io/?templates=gradle,kotlin,intellij
@@ -8,7 +10,7 @@
 
 .idea/
 
-# User-specific stuff
+# Developer-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml

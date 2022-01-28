@@ -31,8 +31,6 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
-import kotlin.jvm.JvmOverloads
-import kotlin.jvm.JvmStatic
 
 /**
  * Immutable objects which encapsulate the context settings which
