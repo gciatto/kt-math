@@ -13,7 +13,7 @@ env:
   GRADLE_OPTIONS: "--console=plain --stacktrace"
 jobs:
   github-release:
-    name: Create GitHub Releast
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
     # && github.event.ref_type == 'tag'
@@ -95,4 +95,4 @@ jobs:
         run: git fetch --tags -f
 
       - name: Publish All Artifacts on NPM
-        run: gradle ${{ env.GRADLE_OPTIONS }} publishAllPublicationsToMavenRepository
+        run: gradle ${{ env.GRADLE_OPTIONS }} publishJsNpmPublicationToNpm
