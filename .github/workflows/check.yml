@@ -1,0 +1,100 @@
+name: check
+on:
+  push:
+    branches:
+      - '*'
+env:
+  PROJECT_NAME: kt-math
+  WORKFLOW: check
+  GRADLE_OPTIONS: "--no-daemon --console=plain --stacktrace"
+jobs:
+  test-jvm:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        java-version:
+          - 11
+          - 16
+          - 17
+        jdk-dist:
+          - adopt-hotspot
+          - adopt-openj9
+    #          - zulu
+    runs-on: ${{ matrix.os }}
+    name: Run tests via ${{ matrix.jdk-dist }} JDK v$${{ matrix.java-version }}, on ${{ matrix.os }}
+    steps:
+      - name: Set ${{ matrix.jdk-dist }} JDK v$${{ matrix.java-version }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: ${{ matrix.jdk-dist }}
+          java-version: $${{ matrix.java-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Get All Tags
+        run: git fetch --tags -f
+
+      - name: Show Env
+        run: gradle ${{ env.gradle-options }} --version
+
+      - name: Restore Gradle Dependencies
+        run: gradle ${{ env.gradle-options }}
+
+      - name: Build Main Classes
+        run: gradle ${{ env.gradle-options }} jvmMainClasses
+
+      - name: Build Test Classes
+        run: gradle ${{ env.gradle-options }} jvmTestClasses
+
+      - name: Test JVM
+        run: gradle ${{ env.gradle-options }} jvmTest
+
+  test-js:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        node-version:
+          - '12.22.9'
+          - '14.18.3'
+          - '16.13.2'
+    runs-on: ${{ matrix.os }}
+    name: Run tests via NodeJS ${{ matrix.node-version }}, on ${{ matrix.os }}
+    env:
+      ORG_GRADLE_PROJECT_nodeVersion: ${{ matrix.node-version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Get All Tags
+        run: git fetch --tags -f
+
+      - name: Show Env
+        run: gradle ${{ env.gradle-options }} --version
+
+      - name: Install Node
+        run: gradle ${{ env.gradle-options }} kotlinNodeJsSetup
+
+      - name: Restore Gradle and Node Dependencies
+        run: gradle ${{ env.gradle-options }} kotlinNpmInstall
+
+      - name: Build Main Classes
+        run: gradle ${{ env.gradle-options }} jsMainClasses
+
+      - name: Build Test Classes
+        run: gradle ${{ env.gradle-options }} jsTestClasses
+
+      - name: Test JS
+        run: gradle ${{ env.gradle-options }} jsTest
