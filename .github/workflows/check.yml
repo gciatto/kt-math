@@ -6,7 +6,7 @@ on:
 env:
   PROJECT_NAME: kt-math
   WORKFLOW: check
-  GRADLE_OPTIONS: "--no-daemon --console=plain --stacktrace"
+  GRADLE_OPTIONS: "--console=plain --stacktrace"
 jobs:
   test-jvm:
     strategy:
@@ -42,19 +42,19 @@ jobs:
         run: git fetch --tags -f
 
       - name: Show Env
-        run: gradle ${{ env.gradle-options }} --version
+        run: gradle ${{ env.GRADLE_OPTIONS }} --version
 
       - name: Restore Gradle Dependencies
-        run: gradle ${{ env.gradle-options }}
+        run: gradle ${{ env.GRADLE_OPTIONS }}
 
       - name: Build Main Classes
-        run: gradle ${{ env.gradle-options }} jvmMainClasses
+        run: gradle ${{ env.GRADLE_OPTIONS }} jvmMainClasses
 
       - name: Build Test Classes
-        run: gradle ${{ env.gradle-options }} jvmTestClasses
+        run: gradle ${{ env.GRADLE_OPTIONS }} jvmTestClasses
 
       - name: Test JVM
-        run: gradle ${{ env.gradle-options }} jvmTest
+        run: gradle ${{ env.GRADLE_OPTIONS }} jvmTest
 
   test-js:
     strategy:
@@ -90,19 +90,19 @@ jobs:
         run: git fetch --tags -f
 
       - name: Show Env
-        run: gradle ${{ env.gradle-options }} --version
+        run: gradle ${{ env.GRADLE_OPTIONS }} --version
 
       - name: Install Node
-        run: gradle ${{ env.gradle-options }} kotlinNodeJsSetup
+        run: gradle ${{ env.GRADLE_OPTIONS }} kotlinNodeJsSetup
 
       - name: Restore Gradle and Node Dependencies
-        run: gradle ${{ env.gradle-options }} kotlinNpmInstall
+        run: gradle ${{ env.GRADLE_OPTIONS }} kotlinNpmInstall
 
       - name: Build Main Classes
-        run: gradle ${{ env.gradle-options }} jsMainClasses
+        run: gradle ${{ env.GRADLE_OPTIONS }} jsMainClasses
 
       - name: Build Test Classes
-        run: gradle ${{ env.gradle-options }} jsTestClasses
+        run: gradle ${{ env.GRADLE_OPTIONS }} jsTestClasses
 
       - name: Test JS
-        run: gradle ${{ env.gradle-options }} jsTest
+        run: gradle ${{ env.GRADLE_OPTIONS }} jsTest
