@@ -14,4 +14,4 @@ npmPublish = "dev.petuska.npm.publish:2.1.2"
 nexusPublish = "de.marcphilipp.nexus-publish:0.4.0"
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-dokka = "org.jetbrains.dokka:1.6.0"
+dokka = "org.jetbrains.dokka:1.6.10"
