@@ -2,15 +2,16 @@
 kotlin = "1.6.10"
 jvm = "1.8"
 node = "16.13.1"
+npmPublish = "2.1.1"
 
 [libraries]
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-npmPublish = "dev.petuska:npm-publish:2.1.2"
+npmPublish = { module = "dev.petuska:npm-publish", version.ref = "npmPublish" }
 
 [plugins]
 gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:0.3.0"
 ktMppPP = "io.github.gciatto.kt-mpp-pp:0.3.5"
-npmPublish = "dev.petuska.npm.publish:2.1.2"
+npmPublish = { id = "dev.petuska.npm.publish", version.ref = "npmPublish" }
 nexusPublish = "de.marcphilipp.nexus-publish:0.4.0"
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
