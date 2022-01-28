@@ -10,7 +10,7 @@ npmPublish = "dev.petuska:npm-publish:2.1.2"
 [plugins]
 gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:0.3.0"
 ktMppPP = "io.github.gciatto.kt-mpp-pp:0.3.5"
-npmPublish = "dev.petuska.npm.publish:2.1.1"
+npmPublish = "dev.petuska.npm.publish:2.1.2"
 nexusPublish = "de.marcphilipp.nexus-publish:0.4.0"
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
