@@ -589,6 +589,12 @@ class BigInteger : Comparable<BigInteger> {
         _mag = prime._mag
     }
 
+    operator fun rangeTo(endInclusive: BigInteger): BigIntegerRange = BigIntegerRange(this, endInclusive)
+
+    operator fun rangeTo(endInclusive: Int): BigIntegerRange = BigIntegerRange(this, of(endInclusive))
+
+    operator fun rangeTo(endInclusive: Long): BigIntegerRange = BigIntegerRange(this, of(endInclusive))
+
     /**
      * Returns the first integer greater than this `BigInteger` that
      * is probably prime.  The probability that the number returned by this
