@@ -27,16 +27,16 @@ Test JVM:
 Test JS:
   stage: test
   script: $GCMD $BEFORE_TASK $TEST_JS_TASK $AFTER_TASK $GOPTS
-  allow_failure: true
 
 Deploy to Maven Central:
-   stage: deploy
-   script: $GCMD $BEFORE_TASK $MAVEN_TASK $AFTER_TASK $GOPTS
-   environment:
-     name: Nexus Repository Manager
-     url: "https://s01.oss.sonatype.org/#stagingRepositories"
-   only:
-     - /^(master)|(release)$/
+  stage: deploy
+  script: $GCMD $BEFORE_TASK $MAVEN_TASK $AFTER_TASK $GOPTS
+  environment:
+    name: Nexus Repository Manager
+    url: "https://s01.oss.sonatype.org/#stagingRepositories"
+  only:
+    - /^(master)|(release)$/
+  when: manual
 
 Deploy to NPM:
   stage: deploy
@@ -48,3 +48,4 @@ Deploy to NPM:
     url: "https://www.npmjs.com/package/kt-math"
   only:
     - /^(master)|(release)|(develop)$/
+  when: manual
