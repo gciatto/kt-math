@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.6.10"
 jvm = "1.8"
-node = "16.13.1"
+node = "16.13.2"
 npmPublish = "2.1.1"
 
 [libraries]
