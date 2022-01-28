@@ -17,7 +17,7 @@ gitSemVer {
     assignGitSemanticVersion()
 }
 
-println("${rootProject.name} version: $version")
+logger.log(LogLevel.LIFECYCLE, "${rootProject.name} version: $version")
 
 repositories {
     mavenCentral()
