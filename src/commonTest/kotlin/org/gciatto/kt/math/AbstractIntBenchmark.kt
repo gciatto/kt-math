@@ -4,12 +4,11 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.TimeSource
 
-abstract class AbstractIntBenchmark<T>(private val algos: IntAlgos<T>) {
+expect val REPETITIONS: Int
 
-    companion object {
-        const val REPETITIONS = 100
-        const val N = 1000
-    }
+expect val N: Int
+
+abstract class AbstractIntBenchmark<T>(private val algos: IntAlgos<T>) {
 
     protected abstract fun bigInt(value: Int): T
 
