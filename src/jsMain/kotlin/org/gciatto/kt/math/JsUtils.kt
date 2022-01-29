@@ -72,6 +72,7 @@ internal actual fun bigDecimalOf(`val`: String, ctx: MathContext?): BigDecimal =
     }
 
 internal actual fun bigDecimalOf(`val`: BigInteger, ctx: MathContext?): BigDecimal {
+    @Suppress("NAME_SHADOWING")
     val `val`: CommonBigInteger = `val`.castTo()
     return if (ctx == null) {
         CommonBigDecimal(`val`)
