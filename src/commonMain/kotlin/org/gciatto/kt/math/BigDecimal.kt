@@ -1,10 +1,12 @@
 package org.gciatto.kt.math
 
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
+@JsExport
 interface BigDecimal : Comparable<BigDecimal> {
     /**
      * Returns a [BigDecimal] whose value is the absolute value
@@ -537,7 +539,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      *
      * @since  1.5
      */
-    @JsName("setScaleRounding")
+    @JsName("setScaleRoundingMode")
     fun setScale(newScale: Int, roundingMode: RoundingMode): BigDecimal
 
     /**
@@ -590,6 +592,7 @@ interface BigDecimal : Comparable<BigDecimal> {
                 "     \n" +
                 "      "
     )
+    @JsName("setScaleInt")
     fun setScale(newScale: Int, roundingMode: Int): BigDecimal
 
     /**
@@ -865,7 +868,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toLong")
-    /*override*/ fun toLong(): Long
+            /*override*/ fun toLong(): Long
 
     /**
      * Converts this [BigDecimal] to a `long`, checking
@@ -900,16 +903,16 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toInt")
-    /*override*/ fun toInt(): Int
+            /*override*/ fun toInt(): Int
 
     @JsName("toByte")
-    /*override*/ fun toByte(): Byte
+            /*override*/ fun toByte(): Byte
 
     @JsName("toChar")
-    /*override*/ fun toChar(): Char
+            /*override*/ fun toChar(): Char
 
     @JsName("toShort")
-    /*override*/ fun toShort(): Short
+            /*override*/ fun toShort(): Short
 
     /**
      * Converts this [BigDecimal] to an `int`, checking
@@ -973,7 +976,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toFloat")
-    /*override*/ fun toFloat(): Float
+            /*override*/ fun toFloat(): Float
 
     /**
      * Converts this [BigDecimal] to a `double`.
@@ -992,7 +995,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toDouble")
-    /*override*/ fun toDouble(): Double
+            /*override*/ fun toDouble(): Double
 
     /**
      * Returns the size of an ulp, a unit in the last place, of this

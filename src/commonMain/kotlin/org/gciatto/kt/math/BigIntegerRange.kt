@@ -1,5 +1,8 @@
 package org.gciatto.kt.math
 
+import kotlin.js.JsExport
+
+@JsExport
 data class BigIntegerRange(
     override val start: BigInteger,
     override val endInclusive: BigInteger

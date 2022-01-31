@@ -29,8 +29,10 @@
 
 package org.gciatto.kt.math
 
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmOverloads
 
 /**
  * Immutable objects which encapsulate the context settings which
@@ -57,16 +59,17 @@ import kotlin.jvm.JvmField
  * @author  Joseph D. Darcy
  * @since 1.5
  */
-data class MathContext(val precision: Int, val roundingMode: RoundingMode) {
+@JsExport
+data class MathContext
+@JvmOverloads
+constructor(
+    val precision: Int = 9,
+    val roundingMode: RoundingMode = RoundingMode.HALF_UP
+) {
+
     init {
         require(precision >= 0)
     }
-
-    constructor() : this(9, RoundingMode.HALF_UP)
-
-    constructor(precision: Int) : this(precision, RoundingMode.HALF_UP)
-
-    constructor(roundingMode: RoundingMode) : this(9, roundingMode)
 
     companion object {
         /**
