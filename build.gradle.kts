@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.dokka)
     `publish-on-maven`
     `publish-on-npm`
+    `print-versions`
 }
 
 group = "io.github.gciatto"
@@ -28,7 +29,7 @@ jvmVersion(libs.versions.jvm)
 nodeVersion(default = libs.versions.node, override = project.findProperty("nodeVersion"))
 
 packageJson {
-    version = project.version.toString().split("+")[0]
+    version = project.npmCompliantVersion
     dependencies {
         "kotlin" to libs.versions.kotlin.get()
     }

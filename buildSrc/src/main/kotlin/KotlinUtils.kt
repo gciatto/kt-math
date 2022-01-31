@@ -23,6 +23,9 @@ fun Project.jvmVersion(provider: Provider<String>) {
     }
 }
 
+val Project.npmCompliantVersion: String
+    get() = version.toString().split("+")[0]
+
 fun Project.nodeVersion(default: Provider<String>, override: Any? = null) {
     configure<NodeJsRootExtension> {
         nodeVersion = override?.toString() ?: default.takeIf { it.isPresent }?.get() ?: nodeVersion
