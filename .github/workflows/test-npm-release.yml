@@ -1,0 +1,38 @@
+name: test-npm-release
+on:
+  workflow_run:
+    workflows:
+      - deploy
+    types:
+      - completed
+env:
+  PROJECT_NAME: kt-math
+  WORKFLOW: test-npm-release
+jobs:
+  ensure-npm-release-works:
+    name: Ensure NPM release work
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    # && github.event.ref_type == 'tag'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # all history
+
+      - name: Get All Tags
+        run: git fetch --tags -f
+
+      - name: Get Version
+        id: get-version
+        run: echo ::set-output name=version::$(gradle --console=plain -q printNpmVersion')
+
+      - name: Restore NPM Dependencies
+        id: restore-npm-dependencies
+        working-directory: .test-npm
+        run: npm install ${{ env.PROJECT_NAME }}@${{ steps.get-version.outputs.version }}
+
+      - name: Test NPM Package
+        id: test-npm-package
+        working-directory: .test-npm
+        run: npm test
