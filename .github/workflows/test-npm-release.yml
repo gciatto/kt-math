@@ -25,7 +25,7 @@ jobs:
 
       - name: Get Version
         id: get-version
-        run: echo ::set-output name=version::$(gradle --console=plain -q printNpmVersion')
+        run: echo ::set-output name=version::$(gradle --console=plain -q printNpmVersion)
 
       - name: Restore NPM Dependencies
         id: restore-npm-dependencies
