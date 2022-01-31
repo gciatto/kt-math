@@ -27,18 +27,21 @@ jobs:
         run: git fetch --tags -f
 
       - name: Generate Jars
-        run: gradle ${{ env.gradle-options }} jar --parallel
+        run: gradle ${{ env.gradle-options }} jar dokkaHtmlJar --parallel
+
+      - name: Generate Documentation
+        run: gradle ${{ env.gradle-options }} dokkaHtml --parallel
 
       - name: Get Version
         id: get-version
-        run: echo ::set-output name=version::$(gradle --console=plain -q printGitSemVer | awk -F ' ' '{print $5;}')
+        run: echo ::set-output name=version::$(gradle --console=plain -q printVersion')
 
       - name: Release Assets
         id: upload-release-assets
         run: |
           set -x
           ASSETS=()
-          for A in **/build/libs/*.jar; do
+          for A in build/libs/*.jar; do
             ASSETS+=("-a" "$A")
             echo "Releasing $A"
           done
