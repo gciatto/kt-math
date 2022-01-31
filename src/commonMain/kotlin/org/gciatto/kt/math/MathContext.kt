@@ -111,9 +111,4 @@ data class MathContext(val precision: Int, val roundingMode: RoundingMode) {
         @JsName("DECIMAL128")
         val DECIMAL128 = MathContext(34, RoundingMode.HALF_EVEN)
     }
-
-    override fun toString(): String {
-        return "precision=" + precision + " " +
-                "roundingMode=" + roundingMode.toString()
-    }
 }
