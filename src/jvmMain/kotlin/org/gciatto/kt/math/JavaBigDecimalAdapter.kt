@@ -124,6 +124,10 @@ class JavaBigDecimalAdapter(val value: JavaBigDecimal) : BigDecimal {
     }
 
     @Suppress("DEPRECATION")
+    @Deprecated(
+        "The method {@link #setScale(int, RoundingMode)} should " +
+                "be used in preference to this legacy method."
+    )
     override fun setScale(newScale: Int, roundingMode: Int): BigDecimal = adapt {
         value.setScale(newScale, roundingMode)
     }
