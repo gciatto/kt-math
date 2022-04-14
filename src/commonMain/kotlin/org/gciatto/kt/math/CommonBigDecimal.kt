@@ -1903,10 +1903,8 @@ internal class CommonBigDecimal : BigDecimal {
     }
 
     @Deprecated(
-        "The method {@link #setScale(int, RoundingMode)} should\n" +
-                "      be used in preference to this legacy method.\n" +
-                "     \n" +
-                "      "
+        "The method {@link #setScale(int, RoundingMode)} should " +
+                "be used in preference to this legacy method."
     )
     override fun setScale(newScale: Int, roundingMode: Int): CommonBigDecimal {
         if (roundingMode < ROUND_UP || roundingMode > ROUND_UNNECESSARY)
