@@ -701,5 +701,9 @@ interface BigInteger : Comparable<BigInteger> {
         @JsName("ofIntArray")
         @JvmStatic
         fun of(value: IntArray): BigInteger = bigIntegerOf(value)
+
+        @JsName("ofByteArray")
+        @JvmStatic
+        fun of(value: ByteArray): BigInteger = bigIntegerOf(value)
     }
 }

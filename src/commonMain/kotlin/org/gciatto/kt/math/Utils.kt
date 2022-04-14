@@ -33,6 +33,8 @@ internal expect fun bigIntegerOf(value: String, radix: Int): BigInteger
 
 internal expect fun bigIntegerOf(value: IntArray): BigInteger
 
+internal expect fun bigIntegerOf(value: ByteArray): BigInteger
+
 internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int): BigDecimal
 
 internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int, prec: Int): BigDecimal
