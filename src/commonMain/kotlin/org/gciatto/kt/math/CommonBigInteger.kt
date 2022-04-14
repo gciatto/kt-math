@@ -3459,6 +3459,12 @@ internal class CommonBigInteger : BigInteger {
             return if (other[0] > 0) CommonBigInteger(other, 1) else CommonBigInteger(other)
         }
 
+        @JsName("ofByteArrayArray")
+        @JvmStatic
+        fun of(other: ByteArray): CommonBigInteger {
+            return if (other[0] > 0) CommonBigInteger(other, 1) else CommonBigInteger(other)
+        }
+
         // Constants
 
         /**

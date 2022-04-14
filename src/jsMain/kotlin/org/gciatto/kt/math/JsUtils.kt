@@ -34,6 +34,10 @@ internal actual fun bigIntegerOf(value: IntArray): BigInteger {
     return CommonBigInteger.of(value)
 }
 
+internal actual fun bigIntegerOf(value: ByteArray): BigInteger {
+    return CommonBigInteger.of(value)
+}
+
 internal actual fun bigDecimalOf(unscaledVal: Long, scale: Int): BigDecimal {
     return CommonBigDecimal.of(unscaledVal, scale)
 }
