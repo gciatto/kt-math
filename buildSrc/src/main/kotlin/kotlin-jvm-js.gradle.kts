@@ -29,6 +29,7 @@ kotlin {
                     timeout = mochaTimeout
                 }
             }
+            binaries.library()
         }
     }
 

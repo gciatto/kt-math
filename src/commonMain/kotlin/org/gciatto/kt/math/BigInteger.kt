@@ -1,10 +1,13 @@
 package org.gciatto.kt.math
 
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 
+@JsExport
+@Suppress("WRONG_EXPORTED_DECLARATION", "NON_EXPORTABLE_TYPE")
 interface BigInteger : Comparable<BigInteger> {
     /**
      * Returns a BigInteger whose value is the absolute value of this
@@ -12,6 +15,7 @@ interface BigInteger : Comparable<BigInteger> {
      *
      * @return `absoluteValue(this)`
      */
+    @JsName("absoluteValue")
     val absoluteValue: BigInteger
 
     /**
@@ -20,6 +24,7 @@ interface BigInteger : Comparable<BigInteger> {
      * @return -1, 0 or 1 as the value of this BigInteger is negative, zero or
      * positive.
      */
+    @JsName("signum")
     val signum: Int
 
     /**
@@ -32,6 +37,7 @@ interface BigInteger : Comparable<BigInteger> {
      * @return number of bits in the minimal two's-complement
      * representation of this BigInteger, *excluding* a sign bit.
      */
+    @JsName("bitLength")
     val bitLength: Int
 
     /**
@@ -42,12 +48,16 @@ interface BigInteger : Comparable<BigInteger> {
      * @return number of bits in the two's complement representation
      * of this BigInteger that differ from its sign bit.
      */
+    @JsName("bitCount")
     val bitCount: Int
 
+    @JsName("rangeTo")
     operator fun rangeTo(endInclusive: BigInteger): BigIntegerRange = BigIntegerRange(this, endInclusive)
 
+    @JsName("rangeToInt")
     operator fun rangeTo(endInclusive: Int): BigIntegerRange = BigIntegerRange(this, of(endInclusive))
 
+    @JsName("rangeToLong")
     operator fun rangeTo(endInclusive: Long): BigIntegerRange = BigIntegerRange(this, of(endInclusive))
 
     /**
@@ -506,7 +516,7 @@ interface BigInteger : Comparable<BigInteger> {
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toInt")
-    /*override*/ fun toInt(): Int
+            /*override*/ fun toInt(): Int
 
     /**
      * Converts this BigInteger to a `long`.  This
@@ -525,22 +535,22 @@ interface BigInteger : Comparable<BigInteger> {
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
     @JsName("toLong")
-    /*override*/ fun toLong(): Long
+            /*override*/ fun toLong(): Long
 
     @JsName("toByte")
-    /*override*/ fun toByte(): Byte
+            /*override*/ fun toByte(): Byte
 
     @JsName("toChar")
-    /*override*/ fun toChar(): Char
+            /*override*/ fun toChar(): Char
 
     @JsName("toShort")
-    /*override*/ fun toShort(): Short
+            /*override*/ fun toShort(): Short
 
     @JsName("toFloat")
-    /*override*/ fun toFloat(): Float
+            /*override*/ fun toFloat(): Float
 
     @JsName("toDouble")
-    /*override*/ fun toDouble(): Double
+            /*override*/ fun toDouble(): Double
 
     /**
      * Converts this `BigInteger` to a `long`, checking

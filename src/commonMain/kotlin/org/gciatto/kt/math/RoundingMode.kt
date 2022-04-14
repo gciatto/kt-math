@@ -28,6 +28,7 @@
  */
 package org.gciatto.kt.math
 
+import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmStatic
 
@@ -103,6 +104,7 @@ import kotlin.jvm.JvmStatic
  */
 // Legacy rounding mode constants in BigDecimal
 @Suppress("DEPRECATION")
+@JsExport
 enum class RoundingMode {
 
     /**
