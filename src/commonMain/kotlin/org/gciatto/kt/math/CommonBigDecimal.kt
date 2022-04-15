@@ -434,7 +434,7 @@ internal class CommonBigDecimal : BigDecimal {
                 if (mcp > 0 && drop > 0) {  // do rounding
                     while (drop > 0) {
                         scl = checkScaleNonZero(scl.toLong() - drop)
-                        rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                        rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                         prec = longDigitLength(rs)
                         drop = prec - mcp
                     }
@@ -506,7 +506,7 @@ internal class CommonBigDecimal : BigDecimal {
                         var drop = prec - mcp
                         while (drop > 0) {
                             scl = checkScaleNonZero(scl.toLong() - drop)
-                            rb = divideAndRoundByTenPow(rb!!, drop, mc.roundingMode.oldMode)
+                            rb = divideAndRoundByTenPow(rb!!, drop, mc.roundingMode.value)
                             rs = compactValFor(rb)
                             if (rs != INFLATED) {
                                 prec = longDigitLength(rs)
@@ -520,7 +520,7 @@ internal class CommonBigDecimal : BigDecimal {
                         var drop = prec - mcp
                         while (drop > 0) {
                             scl = checkScaleNonZero(scl.toLong() - drop)
-                            rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                            rs = divideAndRound(rs, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                             prec = longDigitLength(rs)
                             drop = prec - mcp
                         }
@@ -764,7 +764,7 @@ internal class CommonBigDecimal : BigDecimal {
         var prec = 0
         val mcp = mc.precision
         if (mcp > 0) { // do rounding
-            val mode = mc.roundingMode.oldMode
+            val mode = mc.roundingMode.value
             var drop: Int
             if (compactVal == INFLATED) {
                 prec = bigDigitLength(rb!!)
@@ -785,7 +785,7 @@ internal class CommonBigDecimal : BigDecimal {
                 drop = prec - mcp
                 while (drop > 0) {
                     scl = checkScaleNonZero(scl.toLong() - drop)
-                    compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                    compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                     prec = longDigitLength(compactVal)
                     drop = prec - mcp
                 }
@@ -863,7 +863,7 @@ internal class CommonBigDecimal : BigDecimal {
         val mcp = mc.precision
         var prec = 0
         if (mcp > 0) { // do rounding
-            val mode = mc.roundingMode.oldMode
+            val mode = mc.roundingMode.value
             if (compactVal == INFLATED) {
                 prec = bigDigitLength(unscaledVal)
                 var drop = prec - mcp
@@ -931,7 +931,7 @@ internal class CommonBigDecimal : BigDecimal {
             var drop = prec - mcp // drop can't be more than 18
             while (drop > 0) {
                 scl = checkScaleNonZero(scl.toLong() - drop)
-                compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                 prec = longDigitLength(compactVal)
                 drop = prec - mcp
             }
@@ -969,7 +969,7 @@ internal class CommonBigDecimal : BigDecimal {
     internal constructor(`val`: Long, mc: MathContext) {
         var `val` = `val`
         val mcp = mc.precision
-        val mode = mc.roundingMode.oldMode
+        val mode = mc.roundingMode.value
         var prec = 0
         var scl = 0
         var rb: CommonBigInteger? = if (`val` == INFLATED) INFLATED_BIGINT else null
@@ -993,7 +993,7 @@ internal class CommonBigDecimal : BigDecimal {
                 var drop = prec - mcp
                 while (drop > 0) {
                     scl = checkScaleNonZero(scl.toLong() - drop)
-                    `val` = divideAndRound(`val`, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                    `val` = divideAndRound(`val`, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                     prec = longDigitLength(`val`)
                     drop = prec - mcp
                 }
@@ -1213,7 +1213,7 @@ internal class CommonBigDecimal : BigDecimal {
      * @param  roundingMode rounding mode to apply.
      * @return `this / divisor`
      * @throws ArithmeticException if `divisor` is zero,
-     * `roundingMode==ROUND_UNNECESSARY` and
+     * `roundingMode==RoundingMode.UNNECESSARY.oldMode` and
      * the specified _scale is insufficient to represent the result
      * of the division exactly.
      * @throws IllegalArgumentException if `roundingMode` does not
@@ -1241,7 +1241,7 @@ internal class CommonBigDecimal : BigDecimal {
                 "      "
     )
     private fun div(divisor: CommonBigDecimal, scale: Int, roundingMode: Int): CommonBigDecimal {
-        if (roundingMode < ROUND_UP || roundingMode > ROUND_UNNECESSARY)
+        if (roundingMode < RoundingMode.UP.value || roundingMode > RoundingMode.UNNECESSARY.value)
             throw IllegalArgumentException("Invalid rounding mode")
         return if (this._intCompact != INFLATED) {
             if (divisor._intCompact != INFLATED) {
@@ -1269,7 +1269,7 @@ internal class CommonBigDecimal : BigDecimal {
      * @param  roundingMode rounding mode to apply.
      * @return `this / divisor`
      * @throws ArithmeticException if `divisor==0`, or
-     * `roundingMode==ROUND_UNNECESSARY` and
+     * `roundingMode==RoundingMode.UNNECESSARY.oldMode` and
      * `this._scale()` is insufficient to represent the result
      * of the division exactly.
      * @throws IllegalArgumentException if `roundingMode` does not
@@ -1349,7 +1349,7 @@ internal class CommonBigDecimal : BigDecimal {
             // limit, we can plus zeros too.
             return if (preferredScale > quotientScale) quotient.setScale(
                 preferredScale,
-                ROUND_UNNECESSARY
+                RoundingMode.UNNECESSARY.value
             ) else quotient
 
         }
@@ -1411,7 +1411,7 @@ internal class CommonBigDecimal : BigDecimal {
         }
 
         if (this.signum == 0 && divisor.signum != 0)
-            return this.setScale(preferredScale, ROUND_UNNECESSARY)
+            return this.setScale(preferredScale, RoundingMode.UNNECESSARY.value)
 
         // Perform a div with enough digits to round to a correct
         // integer value; then remove any fractional digits
@@ -1435,7 +1435,7 @@ internal class CommonBigDecimal : BigDecimal {
 
         if (quotient._scale < preferredScale) {
             // pad with zeros if necessary
-            quotient = quotient.setScale(preferredScale, ROUND_UNNECESSARY)
+            quotient = quotient.setScale(preferredScale, RoundingMode.UNNECESSARY.value)
         }
 
         return quotient
@@ -1899,7 +1899,7 @@ internal class CommonBigDecimal : BigDecimal {
     }
 
     override fun setScale(newScale: Int, roundingMode: RoundingMode): CommonBigDecimal {
-        return setScale(newScale, roundingMode.oldMode)
+        return setScale(newScale, roundingMode.value)
     }
 
     @Deprecated(
@@ -1907,7 +1907,7 @@ internal class CommonBigDecimal : BigDecimal {
                 "be used in preference to this legacy method."
     )
     override fun setScale(newScale: Int, roundingMode: Int): CommonBigDecimal {
-        if (roundingMode < ROUND_UP || roundingMode > ROUND_UNNECESSARY)
+        if (roundingMode < RoundingMode.UP.value || roundingMode > RoundingMode.UNNECESSARY.value)
             throw IllegalArgumentException("Invalid rounding mode")
 
         val oldScale = this._scale
@@ -1958,21 +1958,21 @@ internal class CommonBigDecimal : BigDecimal {
     }
 
     override fun setScale(newScale: Int): CommonBigDecimal {
-        return setScale(newScale, ROUND_UNNECESSARY)
+        return setScale(newScale, RoundingMode.UNNECESSARY.value)
     }
 
     override fun movePointLeft(n: Int): CommonBigDecimal {
         // Cannot use movePointRight(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() + n)
         val num = CommonBigDecimal(_intVal!!, _intCompact, newScale, 0)
-        return if (num._scale < 0) num.setScale(0, ROUND_UNNECESSARY) else num
+        return if (num._scale < 0) num.setScale(0, RoundingMode.UNNECESSARY.value) else num
     }
 
     override fun movePointRight(n: Int): CommonBigDecimal {
         // Cannot use movePointLeft(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() - n)
         val num = CommonBigDecimal(_intVal!!, _intCompact, newScale, 0)
-        return if (num._scale < 0) num.setScale(0, ROUND_UNNECESSARY) else num
+        return if (num._scale < 0) num.setScale(0, RoundingMode.UNNECESSARY.value) else num
     }
 
     override fun scaleByPowerOfTen(n: Int): CommonBigDecimal {
@@ -2170,12 +2170,12 @@ internal class CommonBigDecimal : BigDecimal {
     
     override fun toBigInteger(): CommonBigInteger {
         // force to an integer, quietly
-        return this.setScale(0, ROUND_DOWN).inflated()
+        return this.setScale(0, RoundingMode.DOWN.value).inflated()
     }
 
     override fun toBigIntegerExact(): CommonBigInteger {
         // round to an integer, with Exception if decimal part non-0
-        return this.setScale(0, ROUND_UNNECESSARY).inflated()
+        return this.setScale(0, RoundingMode.UNNECESSARY.value).inflated()
     }
 
     override fun toLong(): Long {
@@ -2199,7 +2199,7 @@ internal class CommonBigDecimal : BigDecimal {
         if (this.precision - this._scale <= 0)
             throw ArithmeticException("Rounding necessary")
         // round to an integer, with Exception if decimal part non-0
-        val num = this.setScale(0, ROUND_UNNECESSARY)
+        val num = this.setScale(0, RoundingMode.UNNECESSARY.value)
         if (num.precision >= 19)
         // need to check carefully
             LongOverflow.check(num)
@@ -3131,103 +3131,6 @@ internal class CommonBigDecimal : BigDecimal {
             return CommonBigDecimal(`val`, ctx)
         }
 
-        // Rounding Modes
-
-        /**
-         * Rounding mode to round away from zero.  Always increments the
-         * digit prior to a nonzero discarded fraction.  Note that this rounding
-         * mode never decreases the magnitude of the calculated value.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#UP} instead.")
-        @JsName("ROUND_UP")
-        internal const val ROUND_UP = 0
-
-        /**
-         * Rounding mode to round towards zero.  Never increments the digit
-         * prior to a discarded fraction (i.e., truncates).  Note that this
-         * rounding mode never increases the magnitude of the calculated value.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#DOWN} instead.")
-        @JsName("ROUND_DOWN")
-        internal const val ROUND_DOWN = 1
-
-        /**
-         * Rounding mode to round towards positive infinity.  If the
-         * [CommonBigDecimal] is positive, behaves as for
-         * `ROUND_UP`; if negative, behaves as for
-         * `ROUND_DOWN`.  Note that this rounding mode never
-         * decreases the calculated value.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#CEILING} instead.")
-        @JsName("ROUND_CEILING")
-        internal const val ROUND_CEILING = 2
-
-        /**
-         * Rounding mode to round towards negative infinity.  If the
-         * [CommonBigDecimal] is positive, behave as for
-         * `ROUND_DOWN`; if negative, behave as for
-         * `ROUND_UP`.  Note that this rounding mode never
-         * increases the calculated value.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#FLOOR} instead.")
-        @JsName("ROUND_FLOOR")
-        internal const val ROUND_FLOOR = 3
-
-        /**
-         * Rounding mode to round towards &quot;nearest neighbor&quot;
-         * unless both neighbors are equidistant, in which case round up.
-         * Behaves as for `ROUND_UP` if the discarded fraction is
-         *  0.5; otherwise, behaves as for `ROUND_DOWN`.  Note
-         * that this is the rounding mode that most of us were taught in
-         * grade school.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#HALF_UP} instead.")
-        @JsName("ROUND_HALF_UP")
-        internal const val ROUND_HALF_UP = 4
-
-        /**
-         * Rounding mode to round towards &quot;nearest neighbor&quot;
-         * unless both neighbors are equidistant, in which case round
-         * down.  Behaves as for `ROUND_UP` if the discarded
-         * fraction is &gt; 0.5; otherwise, behaves as for
-         * `ROUND_DOWN`.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#HALF_DOWN} instead.")
-        @JsName("ROUND_HALF_DOWN")
-        internal const val ROUND_HALF_DOWN = 5
-
-        /**
-         * Rounding mode to round towards the &quot;nearest neighbor&quot;
-         * unless both neighbors are equidistant, in which case, round
-         * towards the even neighbor.  Behaves as for
-         * `ROUND_HALF_UP` if the digit to the left of the
-         * discarded fraction is odd; behaves as for
-         * `ROUND_HALF_DOWN` if it's even.  Note that this is the
-         * rounding mode that minimizes cumulative error when applied
-         * repeatedly over a sequence of calculations.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#HALF_EVEN} instead.")
-        @JsName("ROUND_HALF_EVEN")
-        internal const val ROUND_HALF_EVEN = 6
-
-        /**
-         * Rounding mode to require that the requested operation has an exact
-         * result, hence no rounding is necessary.  If this rounding mode is
-         * specified on an operation that yields an inexact result, an
-         * `ArithmeticException` is thrown.
-         *
-         */
-        @Deprecated("Use {@link RoundingMode#UNNECESSARY} instead.")
-        @JsName("ROUND_UNNECESSARY")
-        internal const val ROUND_UNNECESSARY = 7
-
         /**
          * Powers of 10 which can be represented exactly in `double`.
          */
@@ -3422,9 +3325,9 @@ internal class CommonBigDecimal : BigDecimal {
          */
         private fun matchScale(`val`: Array<CommonBigDecimal>) {
             if (`val`[0]._scale < `val`[1]._scale) {
-                `val`[0] = `val`[0].setScale(`val`[1]._scale, ROUND_UNNECESSARY)
+                `val`[0] = `val`[0].setScale(`val`[1]._scale, RoundingMode.UNNECESSARY.value)
             } else if (`val`[1]._scale < `val`[0]._scale) {
-                `val`[1] = `val`[1].setScale(`val`[0]._scale, ROUND_UNNECESSARY)
+                `val`[1] = `val`[1].setScale(`val`[0]._scale, RoundingMode.UNNECESSARY.value)
             }
         }
 
@@ -3577,7 +3480,7 @@ internal class CommonBigDecimal : BigDecimal {
                 var compactVal = `val`._intCompact
                 var scale = `val`._scale
                 var prec = `val`.precision
-                val mode = mc.roundingMode.oldMode
+                val mode = mc.roundingMode.value
                 var drop: Int
                 if (compactVal == INFLATED) {
                     drop = prec - mcp
@@ -3599,7 +3502,7 @@ internal class CommonBigDecimal : BigDecimal {
                     while (drop > 0) {
                         scale = checkScaleNonZero(scale.toLong() - drop)
                         compactVal =
-                            divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                            divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                         wasDivided = true
                         prec = longDigitLength(compactVal)
                         drop = prec - mcp
@@ -3624,7 +3527,7 @@ internal class CommonBigDecimal : BigDecimal {
                 var drop = prec - mcp  // drop can't be more than 18
                 while (drop > 0) {
                     scale = checkScaleNonZero(scale.toLong() - drop)
-                    compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                    compactVal = divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                     prec = longDigitLength(compactVal)
                     drop = prec - mcp
                 }
@@ -3644,7 +3547,7 @@ internal class CommonBigDecimal : BigDecimal {
             var prec = 0
             if (mcp > 0) {
                 var compactVal = compactValFor(intVal)
-                val mode = mc.roundingMode.oldMode
+                val mode = mc.roundingMode.value
                 var drop: Int
                 if (compactVal == INFLATED) {
                     prec = bigDigitLength(intVal)
@@ -3666,7 +3569,7 @@ internal class CommonBigDecimal : BigDecimal {
                     while (drop > 0) {
                         scale = checkScaleNonZero(scale.toLong() - drop)
                         compactVal =
-                            divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.oldMode)
+                            divideAndRound(compactVal, LONG_TEN_POWERS_TABLE[drop], mc.roundingMode.value)
                         prec = longDigitLength(compactVal)
                         drop = prec - mcp
                     }
@@ -3704,7 +3607,7 @@ internal class CommonBigDecimal : BigDecimal {
 
             val qsign: Int // quotient sign
             val q = ldividend / ldivisor // store quotient in long
-            if (roundingMode == ROUND_DOWN && scale == preferredScale)
+            if (roundingMode == RoundingMode.DOWN.value && scale == preferredScale)
                 return of(q, scale)
             val r = ldividend % ldivisor // store remainder in long
             qsign = if (ldividend < 0 == ldivisor < 0) 1 else -1
@@ -3726,7 +3629,7 @@ internal class CommonBigDecimal : BigDecimal {
         private fun divideAndRound(ldividend: Long, ldivisor: Long, roundingMode: Int): Long {
             val qsign: Int // quotient sign
             val q = ldividend / ldivisor // store quotient in long
-            if (roundingMode == ROUND_DOWN)
+            if (roundingMode == RoundingMode.DOWN.value)
                 return q
             val r = ldividend % ldivisor // store remainder in long
             qsign = if (ldividend < 0 == ldivisor < 0) 1 else -1
@@ -3746,23 +3649,23 @@ internal class CommonBigDecimal : BigDecimal {
             cmpFracHalf: Int, oddQuot: Boolean
         ): Boolean {
             when (roundingMode) {
-                ROUND_UNNECESSARY -> throw ArithmeticException("Rounding necessary")
+                RoundingMode.UNNECESSARY.value -> throw ArithmeticException("Rounding necessary")
 
-                ROUND_UP // Away from zero
+                RoundingMode.UP.value // Away from zero
                 -> return true
 
-                ROUND_DOWN // Towards zero
+                RoundingMode.DOWN.value // Towards zero
                 -> return false
 
-                ROUND_CEILING // Towards +infinity
+                RoundingMode.CEILING.value // Towards +infinity
                 -> return qsign > 0
 
-                ROUND_FLOOR // Towards -infinity
+                RoundingMode.FLOOR.value // Towards -infinity
                 -> return qsign < 0
 
                 else // Some kind of half-way rounding
                 -> {
-                    require(roundingMode >= ROUND_HALF_UP && roundingMode <= ROUND_HALF_EVEN) {
+                    require(roundingMode >= RoundingMode.HALF_UP.value && roundingMode <= RoundingMode.HALF_EVEN.value) {
                         "Unexpected rounding mode" + RoundingMode.valueOf(
                             roundingMode
                         )
@@ -3778,11 +3681,11 @@ internal class CommonBigDecimal : BigDecimal {
                         require(cmpFracHalf == 0)
 
                         when (roundingMode) {
-                            ROUND_HALF_DOWN -> return false
+                            RoundingMode.HALF_DOWN.value -> return false
 
-                            ROUND_HALF_UP -> return true
+                            RoundingMode.HALF_UP.value -> return true
 
-                            ROUND_HALF_EVEN -> return oddQuot
+                            RoundingMode.HALF_EVEN.value -> return oddQuot
 
                             else -> throw AssertionError("Unexpected rounding mode$roundingMode")
                         }
@@ -4160,7 +4063,7 @@ internal class CommonBigDecimal : BigDecimal {
         ): CommonBigDecimal? {
             var yscale = yscale
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode.oldMode
+            val roundingMode = mc.roundingMode.value
 
             require(xscale <= yscale && yscale < 18 && mcp < 18)
             val xraise = yscale - xscale // xraise >=0
@@ -4284,7 +4187,7 @@ internal class CommonBigDecimal : BigDecimal {
             if (compareMagnitudeNormalized(xs, xscale, ys, yscale) > 0) {// satisfy constraint (b)
                 yscale -= 1 // [that is, divisor *= 10]
             }
-            val roundingMode = mc.roundingMode.oldMode
+            val roundingMode = mc.roundingMode.value
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
             // return CommonBigDecimal object whose _scale will be set to 'scl'.
@@ -4340,7 +4243,7 @@ internal class CommonBigDecimal : BigDecimal {
                 yscale -= 1 // [that is, divisor *= 10]
             }
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode.oldMode
+            val roundingMode = mc.roundingMode.value
 
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
@@ -4389,7 +4292,7 @@ internal class CommonBigDecimal : BigDecimal {
                 yscale -= 1 // [that is, divisor *= 10]
             }
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode.also { log { it } }.oldMode
+            val roundingMode = mc.roundingMode.also { log { it } }.value
 
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
@@ -4429,7 +4332,7 @@ internal class CommonBigDecimal : BigDecimal {
                 yscale -= 1 // [that is, divisor *= 10]
             }
             val mcp = mc.precision
-            val roundingMode = mc.roundingMode.oldMode
+            val roundingMode = mc.roundingMode.value
 
             // In order to find out whether the div generates the exact result,
             // we avoid calling the above div method. 'quotient' holds the
@@ -4565,7 +4468,7 @@ internal class CommonBigDecimal : BigDecimal {
                 // result (which is positive and unsigned here)
                 // can't fit into long due to sign bit is used for value
                 val mq = MutableBigInteger(intArrayOf(q1.toInt(), q0.toInt()))
-                if (roundingMode == ROUND_DOWN && scale == preferredScale) {
+                if (roundingMode == RoundingMode.DOWN.value && scale == preferredScale) {
                     return mq.toBigDecimal(sign, scale)
                 }
                 val r = mulsub(u1, u0, v1, v0, q0).ushr(shift)
@@ -4587,7 +4490,7 @@ internal class CommonBigDecimal : BigDecimal {
             var q = make64(q1, q0)
             q *= sign.toLong()
 
-            if (roundingMode == ROUND_DOWN && scale == preferredScale)
+            if (roundingMode == RoundingMode.DOWN.value && scale == preferredScale)
                 return of(q, scale)
 
             val r = mulsub(u1, u0, v1, v0, q0).ushr(shift)
@@ -4826,7 +4729,7 @@ internal class CommonBigDecimal : BigDecimal {
                     LONG_TEN_POWERS_TABLE[drop],
                     sign,
                     scale,
-                    mc.roundingMode.oldMode,
+                    mc.roundingMode.value,
                     scale
                 )
             }

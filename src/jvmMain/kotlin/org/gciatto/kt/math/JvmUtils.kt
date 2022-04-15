@@ -25,7 +25,7 @@ fun BigDecimal.toJava(): JavaBigDecimal = when (this) {
 
 fun JavaRoundingMode.toKotlin(): RoundingMode = RoundingMode.valueOf(ordinal)
 
-fun RoundingMode.toJava(): JavaRoundingMode = JavaRoundingMode.valueOf(oldMode)
+fun RoundingMode.toJava(): JavaRoundingMode = JavaRoundingMode.valueOf(value)
 
 fun JavaMathContext.toKotlin(): MathContext = MathContext(precision, roundingMode.toKotlin())
 

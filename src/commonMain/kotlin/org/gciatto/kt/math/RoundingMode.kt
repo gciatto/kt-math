@@ -105,7 +105,7 @@ import kotlin.jvm.JvmStatic
 // Legacy rounding mode constants in BigDecimal
 @Suppress("DEPRECATION")
 @JsExport
-enum class RoundingMode {
+enum class RoundingMode(@JsName("value") val value: Int) {
 
     /**
      * Rounding mode to round away from zero.  Always increments the
@@ -135,7 +135,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    UP,
+    UP(0),
 
     /**
      * Rounding mode to round towards zero.  Never increments the digit
@@ -164,7 +164,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    DOWN,
+    DOWN(1),
 
     /**
      * Rounding mode to round towards positive infinity.  If the
@@ -194,7 +194,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    CEILING,
+    CEILING(2),
 
     /**
      * Rounding mode to round towards negative infinity.  If the
@@ -224,7 +224,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    FLOOR,
+    FLOOR(3),
 
     /**
      * Rounding mode to round towards &quot;nearest neighbor&quot;
@@ -256,7 +256,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    HALF_UP,
+    HALF_UP(4),
 
     /**
      * Rounding mode to round towards &quot;nearest neighbor&quot;
@@ -287,7 +287,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    HALF_DOWN,
+    HALF_DOWN(5),
 
     /**
      * Rounding mode to round towards the &quot;nearest neighbor&quot;
@@ -325,7 +325,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    HALF_EVEN,
+    HALF_EVEN(6),
 
     /**
      * Rounding mode to assert that the requested operation has an exact
@@ -354,23 +354,7 @@ enum class RoundingMode {
     </tr></tbody> *
     </table> *
      */
-    UNNECESSARY;
-
-    /**
-     * The `BigDecimal` constant corresponding to
-     * this mode
-     */
-    internal val oldMode: Int
-        get() = when (this) {
-                CEILING -> CommonBigDecimal.ROUND_CEILING
-                UP -> CommonBigDecimal.ROUND_UP
-                DOWN -> CommonBigDecimal.ROUND_DOWN
-                FLOOR -> CommonBigDecimal.ROUND_FLOOR
-                HALF_UP -> CommonBigDecimal.ROUND_HALF_UP
-                HALF_EVEN -> CommonBigDecimal.ROUND_HALF_EVEN
-                HALF_DOWN -> CommonBigDecimal.ROUND_HALF_DOWN
-                UNNECESSARY -> CommonBigDecimal.ROUND_UNNECESSARY
-            }
+    UNNECESSARY(7);
 
 
     companion object {
@@ -385,16 +369,6 @@ enum class RoundingMode {
          */
         @JvmStatic
         @JsName("valueOfInt")
-        fun valueOf(rm: Int): RoundingMode = when (rm) {
-            CommonBigDecimal.ROUND_UP -> UP
-            CommonBigDecimal.ROUND_DOWN -> DOWN
-            CommonBigDecimal.ROUND_CEILING -> CEILING
-            CommonBigDecimal.ROUND_FLOOR -> FLOOR
-            CommonBigDecimal.ROUND_HALF_UP -> HALF_UP
-            CommonBigDecimal.ROUND_HALF_DOWN -> HALF_DOWN
-            CommonBigDecimal.ROUND_HALF_EVEN -> HALF_EVEN
-            CommonBigDecimal.ROUND_UNNECESSARY -> UNNECESSARY
-            else -> throw IllegalArgumentException("Argument out of range: $rm")
-        }
+        fun valueOf(rm: Int): RoundingMode = values()[rm]
     }
 }
