@@ -44,3 +44,11 @@ tasks.withType<DokkaTask>().matching { "Html" in it.name }.all {
         dependsOn(dokkaHtml)
     }
 }
+
+kotlin {
+    js {
+        nodejs {
+//            binaries.library()
+        }
+    }
+}
