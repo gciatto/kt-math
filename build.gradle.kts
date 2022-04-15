@@ -48,7 +48,7 @@ tasks.withType<DokkaTask>().matching { "Html" in it.name }.all {
 kotlin {
     js {
         nodejs {
-//            binaries.library()
+            binaries.library()
         }
     }
 }
