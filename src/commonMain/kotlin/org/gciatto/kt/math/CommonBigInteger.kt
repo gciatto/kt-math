@@ -603,7 +603,6 @@ internal class CommonBigInteger : BigInteger {
      * @since 1.5
      */
     @Suppress("UNREACHABLE_CODE", "UNUSED_VARIABLE")
-
     override fun nextProbablePrime(): CommonBigInteger {
         if (this._signum < 0)
             throw ArithmeticException("start < 0: $this")

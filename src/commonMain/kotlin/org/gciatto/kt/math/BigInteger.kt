@@ -72,7 +72,6 @@ interface BigInteger : Comparable<BigInteger> {
      * @throws ArithmeticException `this < 0` or `this` is too large.
      * @since 1.5
      */
-    @Suppress("UNREACHABLE_CODE", "UNUSED_VARIABLE")
     @JsName("nextProbablePrime")
     fun nextProbablePrime(): BigInteger
 
@@ -85,6 +84,12 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("plus")
     operator fun plus(other: BigInteger): BigInteger
 
+    @JsName("plusInt")
+    operator fun plus(other: Int): BigInteger = plus(of(other))
+
+    @JsName("plusLong")
+    operator fun plus(other: Long): BigInteger = plus(of(other))
+
     /**
      * Returns a BigInteger whose value is `(this - val)`.
      *
@@ -93,6 +98,12 @@ interface BigInteger : Comparable<BigInteger> {
      */
     @JsName("minus")
     operator fun minus(other: BigInteger): BigInteger
+
+    @JsName("minusInt")
+    operator fun minus(other: Int): BigInteger = minus(of(other))
+
+    @JsName("minusLong")
+    operator fun minus(other: Long): BigInteger = minus(of(other))
 
     /**
      * Returns a BigInteger whose value is `(this * val)`.
@@ -106,6 +117,12 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("times")
     operator fun times(other: BigInteger): BigInteger
 
+    @JsName("timesInt")
+    operator fun times(other: Int): BigInteger = times(of(other))
+
+    @JsName("timesLong")
+    operator fun times(other: Long): BigInteger = times(of(other))
+
     /**
      * Returns a BigInteger whose value is `(this / val)`.
      *
@@ -115,6 +132,12 @@ interface BigInteger : Comparable<BigInteger> {
      */
     @JsName("div")
     operator fun div(other: BigInteger): BigInteger
+
+    @JsName("divInt")
+    operator fun div(other: Int): BigInteger = div(of(other))
+
+    @JsName("divLong")
+    operator fun div(other: Long): BigInteger = div(of(other))
 
     /**
      * Returns an array of two BigIntegers containing `(this / val)`
@@ -130,6 +153,12 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("divideAndRemainder")
     fun divideAndRemainder(other: BigInteger): Array<out BigInteger>
 
+    @JsName("divideAndRemainderInt")
+    fun divideAndRemainder(other: Int): Array<out BigInteger> = divideAndRemainder(of(other))
+
+    @JsName("divideAndRemainderLong")
+    fun divideAndRemainder(other: Long): Array<out BigInteger> = divideAndRemainder(of(other))
+
     /**
      * Returns a BigInteger whose value is `(this % val)`.
      *
@@ -140,6 +169,12 @@ interface BigInteger : Comparable<BigInteger> {
      */
     @JsName("reminder")
     fun remainder(other: BigInteger): BigInteger
+
+    @JsName("reminderInt")
+    fun remainder(other: Int): BigInteger = remainder(of(other))
+
+    @JsName("reminderLong")
+    fun remainder(other: Long): BigInteger = remainder(of(other))
 
     /**
      * Returns a BigInteger whose value is `(this<sup>exponent</sup>)`.
@@ -202,6 +237,12 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("gcd")
     fun gcd(other: BigInteger): BigInteger
 
+    @JsName("gcdInt")
+    fun gcd(other: Int): BigInteger = gcd(of(other))
+
+    @JsName("gcdLong")
+    fun gcd(other: Long): BigInteger = gcd(of(other))
+
     /**
      * Returns a BigInteger whose value is `(-this)`.
      *
@@ -225,6 +266,12 @@ interface BigInteger : Comparable<BigInteger> {
      */
     @JsName("rem")
     operator fun rem(modulus: BigInteger): BigInteger
+
+    @JsName("remInt")
+    operator fun rem(modulus: Int): BigInteger = rem(of(modulus))
+
+    @JsName("remLong")
+    operator fun rem(modulus: Long): BigInteger = rem(of(modulus))
 
     /**
      * Returns a BigInteger whose value is
@@ -253,6 +300,12 @@ interface BigInteger : Comparable<BigInteger> {
      */
     @JsName("modInverse")
     fun modInverse(modulus: BigInteger): BigInteger
+
+    @JsName("modInverseInt")
+    fun modInverse(modulus: Int): BigInteger = modInverse(of(modulus))
+
+    @JsName("modInverseLong")
+    fun modInverse(modulus: Long): BigInteger = modInverse(of(modulus))
 
     /**
      * Returns a BigInteger whose value is `(this << n)`.
@@ -291,6 +344,12 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("and")
     fun and(other: BigInteger): BigInteger
 
+    @JsName("andInt")
+    fun and(other: Int): BigInteger = and(of(other))
+
+    @JsName("andLong")
+    fun and(other: Long): BigInteger = and(of(other))
+
     /**
      * Returns a BigInteger whose value is `(this | val)`.  (This method
      * returns a negative BigInteger if and only if either this or val is
@@ -302,6 +361,12 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("or")
     fun or(other: BigInteger): BigInteger
 
+    @JsName("orInt")
+    fun or(other: Int): BigInteger = or(of(other))
+
+    @JsName("orLong")
+    fun or(other: Long): BigInteger = or(of(other))
+
     /**
      * Returns a BigInteger whose value is `(this ^ val)`.  (This method
      * returns a negative BigInteger if and only if exactly one of this and
@@ -312,6 +377,12 @@ interface BigInteger : Comparable<BigInteger> {
      */
     @JsName("xor")
     fun xor(other: BigInteger): BigInteger
+
+    @JsName("xorInt")
+    fun xor(other: Int): BigInteger = xor(of(other))
+
+    @JsName("xorLong")
+    fun xor(other: Long): BigInteger = xor(of(other))
 
     /**
      * Returns a BigInteger whose value is `(~this)`.  (This method
@@ -335,6 +406,12 @@ interface BigInteger : Comparable<BigInteger> {
      */
     @JsName("andNot")
     fun andNot(other: BigInteger): BigInteger
+
+    @JsName("andNotInt")
+    fun andNot(other: Int): BigInteger = andNot(of(other))
+
+    @JsName("andNotLong")
+    fun andNot(other: Long): BigInteger = andNot(of(other))
 
     /**
      * Returns `true` if and only if the designated bit is set.
