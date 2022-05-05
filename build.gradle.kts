@@ -29,7 +29,7 @@ jvmVersion(libs.versions.jvm)
 nodeVersion(default = libs.versions.node, override = project.findProperty("nodeVersion"))
 
 packageJson {
-    version = project.npmCompliantVersion
+    version.set(project.npmCompliantVersion)
     dependencies {
         "kotlin" to libs.versions.kotlin.get()
     }

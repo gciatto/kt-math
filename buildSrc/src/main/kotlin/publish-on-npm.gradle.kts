@@ -1,6 +1,6 @@
 import Developer.Companion.getAllDevs
 import dev.petuska.npm.publish.NpmPublishPlugin
-import dev.petuska.npm.publish.dsl.NpmPublishExtension
+import dev.petuska.npm.publish.extension.NpmPublishExtension
 
 apply<NpmPublishPlugin>()
 
@@ -19,37 +19,38 @@ val npmRepo: String? by project
 val npmDryRun: String? by project
 
 configure<NpmPublishExtension> {
-    readme = file("README.md")
-    bundleKotlinDependencies = true
-    dry = npmDryRun?.let { it.toBoolean() } ?: false
-    repositories {
-        repository("npm") {
-            registry = uri(npmRepo ?: "https://registry.npmjs.org")
-            npmToken?.let { authToken = it }
+    readme.set(file("README.md"))
+    // bundleKotlinDependencies.set(true)
+    dry.set(npmDryRun?.let { it.toBoolean() } ?: false)
+    registries {
+        npmjs {
+            npmToken?.let { authToken.set(it) }
         }
     }
-    publications {
+    packages {
         all {
             packageJson {
-                homepage = projectHomepage
-                description = projectDescription
+                homepage.set(projectHomepage)
+                description.set(projectDescription)
                 val developers = project.getAllDevs()
                 if (developers.isNotEmpty()) {
-                    author = developers.first().toPerson()
+                    author.set(person(developers.first()))
                 }
-                contributors = developers.asSequence()
-                    .drop(1)
-                    .map { Person(it.toPerson()) }
-                    .toCollection(mutableListOf())
-                license = projectLicense
-                private = false
+                contributors.set(
+                    developers.asSequence()
+                        .drop(1)
+                        .map { person(it) }
+                        .toCollection(mutableListOf())
+                )
+                license.set(projectLicense)
+                private.set(false)
                 bugs {
-                    url = issuesUrl
-                    email = issuesEmail
+                    url.set(issuesUrl)
+                    email.set(issuesEmail)
                 }
                 repository {
-                    type = "git"
-                    url = scmUrl
+                    type.set("git")
+                    url.set(scmUrl)
                 }
             }
         }
