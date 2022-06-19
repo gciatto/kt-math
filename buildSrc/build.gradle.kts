@@ -1,5 +1,7 @@
 plugins {
     `kotlin-dsl`
+    `java-gradle-plugin`
+    alias(libs.plugins.kotlin.jvm)
 }
 
 repositories {
@@ -16,7 +18,8 @@ java {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        allWarningsAsErrors = true
+        allWarningsAsErrors = false
+        languageVersion = "1.5"
         jvmTarget = javaVersion.toString()
     }
 }
