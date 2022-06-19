@@ -3419,21 +3419,6 @@ internal class CommonBigInteger : BigInteger {
             return of(value.toLong())
         }
 
-        private fun String.getRadix(): Pair<Int, String> {
-            return when {
-                this.contains("0B", ignoreCase = true) -> {
-                    Pair(2, this.replaceFirst("0B", "").replaceFirst("0b", ""))
-                }
-                this.contains("0O", ignoreCase = true) -> {
-                    Pair(8, this.replaceFirst("0O", "").replaceFirst("0o", ""))
-                }
-                this.contains("0X", ignoreCase = true) -> {
-                    Pair(16, this.replaceFirst("0X", "").replaceFirst("0x", ""))
-                }
-                else -> Pair(10, this)
-            }
-        }
-
         @JsName("parse")
         @JvmStatic
         fun of(value: String): CommonBigInteger {
