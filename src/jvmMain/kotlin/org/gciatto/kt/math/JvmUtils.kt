@@ -46,7 +46,10 @@ internal actual fun bigProbablePrimeInteger(bitLength: Int, rnd: Random): BigInt
 
 internal actual fun bigIntegerOf(value: Long): BigInteger = JavaBigIntegerAdapter(JavaBigInteger.valueOf(value))
 
-internal actual fun bigIntegerOf(value: String): BigInteger = JavaBigIntegerAdapter(JavaBigInteger(value))
+internal actual fun bigIntegerOf(value: String): BigInteger {
+    val (radix, string) = value.getRadix()
+    return bigIntegerOf(string, radix)
+}
 
 internal actual fun bigIntegerOf(value: Int): BigInteger =
     JavaBigIntegerAdapter(JavaBigInteger.valueOf(value.toLong()))
