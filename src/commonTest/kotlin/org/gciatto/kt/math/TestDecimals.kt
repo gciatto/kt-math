@@ -1,8 +1,18 @@
 package org.gciatto.kt.math
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TestDecimals {
+
+    @Test
+    fun testToChar() {
+        assertEquals((0).toChar(), BigDecimal.of(0.1).toChar())
+        assertEquals((1).toChar(), BigDecimal.of(1.1).toChar())
+        assertEquals((-1).toChar(), BigDecimal.of(-1.1).toChar())
+        assertEquals((2).toChar(), BigDecimal.of(2.1).toChar())
+        assertEquals((10).toChar(), BigDecimal.of(10.1).toChar())
+    }
 
     @Test
     fun testCreation() {

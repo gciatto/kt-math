@@ -186,7 +186,7 @@ class JavaBigDecimalAdapter(val value: JavaBigDecimal) : BigDecimal {
 
     override fun toByteExact(): Byte = value.byteValueExact()
 
-    override fun toChar(): Char = value.toChar()
+    override fun toChar(): Char = value.toInt().toChar()
 
     override fun toShort(): Short = value.toShort()
 
