@@ -6,6 +6,15 @@ import kotlin.test.assertEquals
 class TestIntegers {
 
     @Test
+    fun testToChar() {
+        assertEquals((0).toChar(), BigInteger.of(0).toChar())
+        assertEquals((1).toChar(), BigInteger.of(1).toChar())
+        assertEquals((-1).toChar(), BigInteger.of(-1).toChar())
+        assertEquals((2).toChar(), BigInteger.of(2).toChar())
+        assertEquals((10).toChar(), BigInteger.of(10).toChar())
+    }
+
+    @Test
     fun testLimits() {
         assertEquals("0", BigInteger.of(0).toString())
         assertEquals("1", BigInteger.of(1).toString())

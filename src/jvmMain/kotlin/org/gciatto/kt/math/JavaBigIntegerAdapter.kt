@@ -132,7 +132,7 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
 
     override fun toByte(): Byte = value.toByte()
 
-    override fun toChar(): Char = value.toChar()
+    override fun toChar(): Char = value.toInt().toChar()
 
     override fun toShort(): Short = value.toShort()
 
