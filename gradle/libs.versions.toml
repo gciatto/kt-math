@@ -2,11 +2,11 @@
 kotlin = "1.7.0"
 jvm = "1.8"
 node = "16.13.2"
-npmPublish = "2.1.2"
+npmPublish = "3.0.0"
 
 [libraries]
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-npmPublish = { module = "dev.petuska:npm-publish", version.ref = "npmPublish" }
+npmPublish = { module = "dev.petuska:npm-publish-gradle-plugin", version.ref = "npmPublish" }
 
 [plugins]
 gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:0.3.0"

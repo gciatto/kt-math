@@ -3,12 +3,6 @@ import org.gradle.api.Project
 
 data class Developer(val name: String, val url: String?, val email: String?, val org: Organization?) {
 
-    fun toPerson() = mutableMapOf<String, Any?>(
-        "name" to name,
-        "url" to url,
-        "email" to email,
-    )
-
     companion object {
         fun Project.getDev(key: String): Developer {
             val name = property("${key}Name")?.toString() ?: error("Missing property ${key}Name")
