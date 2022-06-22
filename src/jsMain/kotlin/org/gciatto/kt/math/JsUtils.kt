@@ -54,11 +54,13 @@ internal actual fun bigDecimalOf(intVal: BigInteger, scale: Int, prec: Int): Big
     return CommonBigDecimal.of(intVal.castTo<BigInteger, CommonBigInteger>(), scale, prec)
 }
 
+private val exceptionalDoubles = setOf(Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
+
 internal actual fun bigDecimalOf(`val`: Double, ctx: MathContext?): BigDecimal =
-    if (ctx == null) {
-        CommonBigDecimal(`val`)
-    } else {
-        CommonBigDecimal.of(`val`, ctx)
+    when {
+        `val` in exceptionalDoubles -> throw NumberFormatException("Infinite or NaN")
+        ctx == null -> CommonBigDecimal(`val`)
+        else -> CommonBigDecimal.of(`val`, ctx)
     }
 
 internal actual fun bigDecimalOf(`val`: Float, ctx: MathContext?): BigDecimal =

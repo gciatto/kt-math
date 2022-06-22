@@ -2,8 +2,24 @@ package org.gciatto.kt.math
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class TestDecimals {
+
+    @Test
+    fun testSpecialDoubles() {
+        assertFailsWith<NumberFormatException> { BigDecimal.of(Double.NaN) }
+        assertFailsWith<NumberFormatException> { BigDecimal.of(Double.NEGATIVE_INFINITY) }
+        assertFailsWith<NumberFormatException> { BigDecimal.of(Double.POSITIVE_INFINITY) }
+        assertFailsWith<NumberFormatException> { BigDecimal.of("NaN") }
+    }
+
+    @Test
+    fun testSpecialFloats() {
+        assertFailsWith<NumberFormatException> { BigDecimal.of(Float.NaN) }
+        assertFailsWith<NumberFormatException> { BigDecimal.of(Float.NEGATIVE_INFINITY) }
+        assertFailsWith<NumberFormatException> { BigDecimal.of(Float.POSITIVE_INFINITY) }
+    }
 
     @Test
     fun testToChar() {
