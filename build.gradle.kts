@@ -30,9 +30,6 @@ nodeVersion(default = libs.versions.node, override = project.findProperty("nodeV
 
 packageJson {
     version.set(project.npmCompliantVersion)
-    dependencies {
-        "kotlin" to libs.versions.kotlin.get()
-    }
 }
 
 tasks.withType<DokkaTask>().matching { "Html" in it.name }.all {

@@ -98,4 +98,4 @@ jobs:
         run: git fetch --tags -f
 
       - name: Publish All Artifacts on NPM
-        run: gradle ${{ env.GRADLE_OPTIONS }} publishJsNpmPublicationToNpm
+        run: gradle ${{ env.GRADLE_OPTIONS }} publishJsPackageToNpmjsRegistry
