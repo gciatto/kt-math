@@ -2,7 +2,7 @@
 kotlin = "1.7.0"
 jvm = "1.8"
 node = "16.13.2"
-npmPublish = "3.1.0"
+npmPublish = "3.2.0"
 
 [libraries]
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
