@@ -9,7 +9,7 @@ kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ve
 npmPublish = { module = "dev.petuska:npm-publish-gradle-plugin", version.ref = "npmPublish" }
 
 [plugins]
-gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:1.0.1"
+gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:1.0.2"
 npmPublish = { id = "dev.petuska.npm.publish", version.ref = "npmPublish" }
 nexusPublish = "de.marcphilipp.nexus-publish:0.4.0"
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
