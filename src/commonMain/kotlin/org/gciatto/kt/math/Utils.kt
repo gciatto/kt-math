@@ -48,6 +48,8 @@ internal expect fun bigIntegerOf(value: String, radix: Int): BigInteger
 
 internal expect fun bigIntegerOf(value: IntArray): BigInteger
 
+internal expect fun bigIntegerOf(signum: Int, magnitude: ByteArray, off: Int = 0, len: Int = magnitude.size): BigInteger
+
 internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int): BigDecimal
 
 internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int, prec: Int): BigDecimal

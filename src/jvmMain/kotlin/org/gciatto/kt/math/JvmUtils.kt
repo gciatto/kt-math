@@ -141,9 +141,16 @@ internal actual object BigIntegers {
 
     actual val one: BigInteger = JavaBigInteger.ONE.toKotlin()
 
-    actual val two: BigInteger = JavaBigInteger.TWO.toKotlin()
+    actual val two: BigInteger = JavaBigInteger.valueOf(2).toKotlin()
 
     actual val ten: BigInteger = JavaBigInteger.TEN.toKotlin()
 
     actual val negativeOne: BigInteger = JavaBigInteger.ONE.negate().toKotlin()
 }
+
+internal actual fun bigIntegerOf(
+    signum: Int,
+    magnitude: ByteArray,
+    off: Int,
+    len: Int
+): BigInteger = CommonBigInteger(signum, magnitude, off, len).toJava().toKotlin()

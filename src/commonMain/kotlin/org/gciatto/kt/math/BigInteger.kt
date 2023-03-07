@@ -788,5 +788,13 @@ interface BigInteger : Comparable<BigInteger> {
         @JsName("ofIntArray")
         @JvmStatic
         fun of(value: IntArray): BigInteger = bigIntegerOf(value)
+
+        @JsName("ofSlideIntArray")
+        fun of(
+            signum: Int,
+            magnitude: ByteArray,
+            off: Int,
+            len: Int
+        ): BigInteger = bigIntegerOf(signum, magnitude, off, len)
     }
 }

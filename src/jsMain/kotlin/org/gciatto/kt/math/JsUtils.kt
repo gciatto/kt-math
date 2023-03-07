@@ -116,3 +116,10 @@ internal actual object BigIntegers {
 
     actual val negativeOne: BigInteger = CommonBigInteger.NEGATIVE_ONE
 }
+
+internal actual fun bigIntegerOf(
+    signum: Int,
+    magnitude: ByteArray,
+    off: Int,
+    len: Int
+): BigInteger = CommonBigInteger(signum, magnitude, off, len)
