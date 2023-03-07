@@ -10,6 +10,7 @@ env:
 jobs:
   test-jvm:
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest

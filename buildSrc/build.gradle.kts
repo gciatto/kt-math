@@ -9,6 +9,10 @@ repositories {
     gradlePluginPortal()
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 dependencies {
     implementation(libs.kotlin.bom)
     implementation(libs.kotlin.gradlePlugin)
