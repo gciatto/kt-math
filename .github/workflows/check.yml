@@ -17,8 +17,8 @@ jobs:
           - macos-latest
         java-version:
           - 11
-          - 16
           - 17
+          - 19
         jdk-dist:
           - adopt-hotspot
           - adopt-openj9
@@ -65,9 +65,10 @@ jobs:
           - windows-latest
           - macos-latest
         node-version:
-          - '12.22.9'
-          - '14.18.3'
-          - '16.13.2'
+          - '14-latest'
+          - '16-latest'
+          - '18-latest'
+          - '19-latest'
         java-version: [ 17 ]
         jdk-dist: [ adopt-hotspot ]
     runs-on: ${{ matrix.os }}

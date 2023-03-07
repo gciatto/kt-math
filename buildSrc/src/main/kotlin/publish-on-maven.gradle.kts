@@ -5,9 +5,9 @@ plugins {
     signing
 }
 
-val projectLongName: String? by project
-val projectDescription: String? by project
-val projectHomepage: String? by project
+val projectLongName: String by project
+val projectDescription: String by project
+val projectHomepage: String by project
 val projectLicense: String? by project
 val projectLicenseUrl: String? by project
 val scmUrl: String? by project
@@ -40,13 +40,25 @@ publishing {
         }
     }
 
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        publications.maybeCreate<MavenPublication>("jvm").run {
+            from(components["java"])
+        }
+    }
+
+    plugins.withId("org.jetbrains.kotlin.js") {
+        publications.maybeCreate<MavenPublication>("js").run {
+            from(components["kotlin"])
+        }
+    }
+
     project.afterEvaluate {
         publications.withType<MavenPublication> {
             groupId = project.group.toString()
             version = project.version.toString()
 
             tasks.withType<Jar> {
-                if (archiveClassifier.getOrElse("") in publishableClassifiers) {
+                if ("Html" in name && archiveClassifier.getOrElse("") in publishableClassifiers) {
                     artifact(this)
                 }
             }
