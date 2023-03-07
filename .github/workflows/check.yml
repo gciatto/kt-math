@@ -18,7 +18,7 @@ jobs:
         java-version:
           - 11
           - 17
-          - 19
+          - 18
         jdk-dist:
           - adopt-hotspot
           - adopt-openj9
@@ -65,7 +65,6 @@ jobs:
           - windows-latest
           - macos-latest
         node-version:
-          - '14-latest'
           - '16-latest'
           - '18-latest'
           - '19-latest'
