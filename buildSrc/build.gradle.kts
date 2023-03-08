@@ -9,9 +9,21 @@ repositories {
     gradlePluginPortal()
 }
 
-kotlin {
-    jvmToolchain(11)
+// https://github.com/gradle/gradle/issues/20847
+configurations.configureEach {
+    if (isCanBeResolved) {
+        attributes {
+            attribute(
+                GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
+                project.objects.named(GradleVersion.current().version)
+            )
+        }
+    }
 }
+
+//kotlin {
+//    jvmToolchain(11)
+//}
 
 dependencies {
     implementation(libs.kotlin.bom)
