@@ -3,7 +3,7 @@ detekt = "1.22.0"
 dokka = "1.8.10"
 jvm = "1.8"
 kotlin = "1.8.10"
-ktlint = "10.3.0"
+ktlint = "11.3.1"
 node = "16-latest"
 npmPublish = "3.2.1"
 
