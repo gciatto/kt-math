@@ -1,11 +1,15 @@
-import org.jetbrains.dokka.gradle.DokkaTask
+import io.github.gciatto.kt.mpp.log
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    `kotlin-jvm-js`
     alias(libs.plugins.gitSemVer)
-    `publish-on-maven`
-    `publish-on-npm`
-    `print-versions`
+    alias(libs.plugins.ktMpp.multiplatform)
+    alias(libs.plugins.ktMpp.versions)
+    alias(libs.plugins.ktMpp.linter)
+    alias(libs.plugins.ktMpp.bugFinder)
+    alias(libs.plugins.ktMpp.documentation)
+    alias(libs.plugins.ktMpp.mavenPublish)
+    alias(libs.plugins.ktMpp.npmPublish)
 }
 
 group = "io.github.gciatto"
@@ -15,14 +19,11 @@ gitSemVer {
     assignGitSemanticVersion()
 }
 
-logger.log(LogLevel.LIFECYCLE, "${rootProject.name} version: $version")
+log("version: $version")
 
 repositories {
     mavenCentral()
 }
-
-jvmVersion(libs.versions.jvm)
-nodeVersion(libs.versions.node, rootProject.findProperty("nodeVersion"))
 
 kotlin {
     js {
@@ -30,4 +31,15 @@ kotlin {
             binaries.library()
         }
     }
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(libs.kotlin.reflect)
+            }
+        }
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    println(path)
 }
