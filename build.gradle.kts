@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ktMpp.multiplatform)
     alias(libs.plugins.ktMpp.versions)
     alias(libs.plugins.ktMpp.linter)
-    alias(libs.plugins.ktMpp.bugFinder)
+//    alias(libs.plugins.ktMpp.bugFinder)
     alias(libs.plugins.ktMpp.documentation)
     alias(libs.plugins.ktMpp.mavenPublish)
     alias(libs.plugins.ktMpp.npmPublish)
