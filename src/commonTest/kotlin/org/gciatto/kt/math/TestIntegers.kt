@@ -91,7 +91,7 @@ class TestIntegers {
         assertEquals(-1, BigInteger.of("-1").toInt())
         assertEquals(-10, BigInteger.of("-10").toInt())
     }
-    
+
     @Test
     fun testHexadecimalParsing() {
         assertEquals(0, BigInteger.of("0", 16).toInt())

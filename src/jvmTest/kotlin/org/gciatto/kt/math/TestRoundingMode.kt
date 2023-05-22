@@ -24,7 +24,7 @@ class TestRoundingMode {
             if (it.trySetAccessible()) {
                 it.getInt(this)
             } else {
-                System.err.println("w: cannot get ${this}.oldValue")
+                System.err.println("w: cannot get $this.oldValue")
                 this.ordinal
             }
         }

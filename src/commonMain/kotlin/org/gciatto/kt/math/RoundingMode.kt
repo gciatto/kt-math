@@ -97,9 +97,9 @@ import kotlin.jvm.JvmStatic
  *
  * @see MathContext
  *
- * @author  Josh Bloch
- * @author  Mike Cowlishaw
- * @author  Joseph D. Darcy
+ * @author Josh Bloch
+ * @author Mike Cowlishaw
+ * @author Joseph D. Darcy
  * @since 1.5
  */
 // Legacy rounding mode constants in BigDecimal
@@ -120,20 +120,20 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th scope="col">Input Number</th>
      * <th scope="col">Input rounded to one digit<br></br> with `UP` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>6</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>3</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>-3</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>3</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>-3</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
+     </tr></tbody> *
+     </table> *
      */
     UP(0),
 
@@ -149,20 +149,20 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th scope="col">Input Number</th>
      * <th scope="col">Input rounded to one digit<br></br> with `DOWN` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>5</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>1</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>-5</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>1</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>-5</td>
+     </tr></tbody> *
+     </table> *
      */
     DOWN(1),
 
@@ -179,20 +179,20 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th>Input Number</th>
      * <th>Input rounded to one digit<br></br> with `CEILING` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>6</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>3</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>-5</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>3</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>-5</td>
+     </tr></tbody> *
+     </table> *
      */
     CEILING(2),
 
@@ -209,20 +209,20 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th scope="col">Input Number</th>
      * <th scope="col">Input rounded to one digit<br></br> with `FLOOR` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>5</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>1</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>-3</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>1</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>-3</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
+     </tr></tbody> *
+     </table> *
      */
     FLOOR(3),
 
@@ -241,20 +241,20 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th scope="col">Input Number</th>
      * <th scope="col">Input rounded to one digit<br></br> with `HALF_UP` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>6</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>3</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>-3</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>3</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>-3</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
+     </tr></tbody> *
+     </table> *
      */
     HALF_UP(4),
 
@@ -272,20 +272,20 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th scope="col">Input Number</th>
      * <th scope="col">Input rounded to one digit<br></br> with `HALF_DOWN` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>5</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>-5</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>-5</td>
+     </tr></tbody> *
+     </table> *
      */
     HALF_DOWN(5),
 
@@ -310,20 +310,20 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th scope="col">Input Number</th>
      * <th scope="col">Input rounded to one digit<br></br> with `HALF_EVEN` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>6</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>2</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>1</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>-2</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>-6</td>
+     </tr></tbody> *
+     </table> *
      */
     HALF_EVEN(6),
 
@@ -339,23 +339,22 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      * <thead>
      * <tr style="vertical-align:top"><th scope="col">Input Number</th>
      * <th scope="col">Input rounded to one digit<br></br> with `UNNECESSARY` rounding
-    </th></tr></thead> *
+     </th></tr></thead> *
      * <tbody style="text-align:right">
      * <tr><th scope="row">5.5</th>  <td>throw `ArithmeticException`</td>
-    </tr> * <tr><th scope="row">2.5</th>  <td>throw `ArithmeticException`</td>
-    </tr> * <tr><th scope="row">1.6</th>  <td>throw `ArithmeticException`</td>
-    </tr> * <tr><th scope="row">1.1</th>  <td>throw `ArithmeticException`</td>
-    </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
-    </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
-    </tr> * <tr><th scope="row">-1.1</th> <td>throw `ArithmeticException`</td>
-    </tr> * <tr><th scope="row">-1.6</th> <td>throw `ArithmeticException`</td>
-    </tr> * <tr><th scope="row">-2.5</th> <td>throw `ArithmeticException`</td>
-    </tr> * <tr><th scope="row">-5.5</th> <td>throw `ArithmeticException`</td>
-    </tr></tbody> *
-    </table> *
+     </tr> * <tr><th scope="row">2.5</th>  <td>throw `ArithmeticException`</td>
+     </tr> * <tr><th scope="row">1.6</th>  <td>throw `ArithmeticException`</td>
+     </tr> * <tr><th scope="row">1.1</th>  <td>throw `ArithmeticException`</td>
+     </tr> * <tr><th scope="row">1.0</th>  <td>1</td>
+     </tr> * <tr><th scope="row">-1.0</th> <td>-1</td>
+     </tr> * <tr><th scope="row">-1.1</th> <td>throw `ArithmeticException`</td>
+     </tr> * <tr><th scope="row">-1.6</th> <td>throw `ArithmeticException`</td>
+     </tr> * <tr><th scope="row">-2.5</th> <td>throw `ArithmeticException`</td>
+     </tr> * <tr><th scope="row">-5.5</th> <td>throw `ArithmeticException`</td>
+     </tr></tbody> *
+     </table> *
      */
     UNNECESSARY(7);
-
 
     companion object {
 
@@ -363,7 +362,7 @@ enum class RoundingMode(@JsName("value") val value: Int) {
          * Returns the `RoundingMode` object corresponding to a
          * legacy integer rounding mode constant in [BigDecimal].
          *
-         * @param  rm legacy integer rounding mode to convert
+         * @param rm legacy integer rounding mode to convert
          * @return `RoundingMode` corresponding to the given integer.
          * @throws IllegalArgumentException integer is out of range
          */

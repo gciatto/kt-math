@@ -49,7 +49,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * The _precision of a zero value is 1.
      *
      * @return the _precision of this [BigDecimal].
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("precision")
     val precision: Int
@@ -60,7 +60,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * 10<sup>this._scale()</sup>)`.)
      *
      * @return the unscaled value of this [BigDecimal].
-     * @since  1.2
+     * @since 1.2
      */
     @JsName("unscaledValue")
     val unscaledValue: BigInteger
@@ -70,7 +70,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * augend)`, and whose _scale is `max(this._scale(),
      * augend._scale())`.
      *
-     * @param  augend value to be added to this [BigDecimal].
+     * @param augend value to be added to this [BigDecimal].
      * @return `this + augend`
      */
     @JsName("plus")
@@ -83,12 +83,12 @@ interface BigDecimal : Comparable<BigDecimal> {
      * If either number is zero and the _precision setting is nonzero then
      * the other number, rounded if necessary, is used as the result.
      *
-     * @param  augend value to be added to this [BigDecimal].
-     * @param  mc the context to use.
+     * @param augend value to be added to this [BigDecimal].
+     * @param mc the context to use.
      * @return `this + augend`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("plusWithContext")
     fun plus(augend: BigDecimal?, mc: MathContext): BigDecimal
@@ -98,7 +98,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * subtrahend)`, and whose _scale is `max(this._scale(),
      * subtrahend._scale())`.
      *
-     * @param  subtrahend value to be subtracted from this [BigDecimal].
+     * @param subtrahend value to be subtracted from this [BigDecimal].
      * @return `this - subtrahend`
      */
     @JsName("minus")
@@ -111,12 +111,12 @@ interface BigDecimal : Comparable<BigDecimal> {
      * If `subtrahend` is zero then this, rounded if necessary, is used as the
      * result.  If this is zero then the result is `subtrahend.unaryMinus(mc)`.
      *
-     * @param  subtrahend value to be subtracted from this [BigDecimal].
-     * @param  mc the context to use.
+     * @param subtrahend value to be subtracted from this [BigDecimal].
+     * @param mc the context to use.
      * @return `this - subtrahend`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("minusWithContext")
     fun minus(subtrahend: BigDecimal, mc: MathContext): BigDecimal
@@ -126,7 +126,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * multiplicand)`, and whose _scale is `(this._scale() +
      * multiplicand._scale())`.
      *
-     * @param  multiplicand value to be multiplied by this [BigDecimal].
+     * @param multiplicand value to be multiplied by this [BigDecimal].
      * @return `this * multiplicand`
      */
     @JsName("times")
@@ -136,12 +136,12 @@ interface BigDecimal : Comparable<BigDecimal> {
      * Returns a [BigDecimal] whose value is `(this
      * multiplicand)`, with rounding according to the context settings.
      *
-     * @param  multiplicand value to be multiplied by this [BigDecimal].
-     * @param  mc the context to use.
+     * @param multiplicand value to be multiplied by this [BigDecimal].
+     * @param mc the context to use.
      * @return `this * multiplicand`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("timesWithContext")
     fun times(multiplicand: BigDecimal, mc: MathContext): BigDecimal
@@ -153,7 +153,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * represented (because it has a non-terminating decimal
      * expansion) an `ArithmeticException` is thrown.
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided.
+     * @param divisor value by which this [BigDecimal] is to be divided.
      * @throws ArithmeticException if the exact quotient does not have a
      * terminating decimal expansion
      * @return `this / divisor`
@@ -167,14 +167,14 @@ interface BigDecimal : Comparable<BigDecimal> {
      * Returns a [BigDecimal] whose value is `(this /
      * divisor)`, with rounding according to the context settings.
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided.
-     * @param  mc the context to use.
+     * @param divisor value by which this [BigDecimal] is to be divided.
+     * @param mc the context to use.
      * @return `this / divisor`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY` or
      * `mc._precision == 0` and the quotient has a
      * non-terminating decimal expansion.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("divWithContext")
     fun div(divisor: BigDecimal, mc: MathContext): BigDecimal?
@@ -185,10 +185,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * preferred _scale of the result is `(this._scale() -
      * divisor._scale())`.
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided.
+     * @param divisor value by which this [BigDecimal] is to be divided.
      * @return The integer part of `this / divisor`.
      * @throws ArithmeticException if `divisor==0`
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("divideToIntegralValue")
     fun divideToIntegralValue(divisor: BigDecimal): BigDecimal
@@ -204,13 +204,13 @@ interface BigDecimal : Comparable<BigDecimal> {
      * the exact quotient needs more than `mc._precision`
      * digits.
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided.
-     * @param  mc the context to use.
+     * @param divisor value by which this [BigDecimal] is to be divided.
+     * @param mc the context to use.
      * @return The integer part of `this / divisor`.
      * @throws ArithmeticException if `divisor==0`
      * @throws ArithmeticException if `mc._precision` &gt; 0 and the result
      * requires a _precision of more than `mc._precision` digits.
-     * @since  1.5
+     * @since 1.5
      * @author Joseph D. Darcy
      */
     @JsName("divideToIntegralValueWithContext")
@@ -225,10 +225,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * Note that this is *not* the modulo operation (the result can be
      * negative).
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided.
+     * @param divisor value by which this [BigDecimal] is to be divided.
      * @return `this % divisor`.
      * @throws ArithmeticException if `divisor==0`
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("rem")
     operator fun rem(divisor: BigDecimal): BigDecimal
@@ -247,8 +247,8 @@ interface BigDecimal : Comparable<BigDecimal> {
      * mc).timesLong(divisor))`.  Note that this is not the modulo
      * operation (the result can be negative).
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided.
-     * @param  mc the context to use.
+     * @param divisor value by which this [BigDecimal] is to be divided.
+     * @param mc the context to use.
      * @return `this % divisor`, rounded as necessary.
      * @throws ArithmeticException if `divisor==0`
      * @throws ArithmeticException if the result is inexact but the
@@ -256,7 +256,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * &gt; 0 and the result of `this.divideToIntgralValue(divisor)` would
      * require a _precision of more than `mc._precision` digits.
      * @see .divideToIntegralValue
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("remWithContext")
     fun rem(divisor: BigDecimal, mc: MathContext): BigDecimal
@@ -272,7 +272,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * `divideToIntegralValue` and `remainder` methods
      * separately because the division need only be carried out once.
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided,
+     * @param divisor value by which this [BigDecimal] is to be divided,
      * and the remainder computed.
      * @return a two element [BigDecimal] array: the quotient
      * (the result of `divideToIntegralValue`) is the initial element
@@ -280,7 +280,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @throws ArithmeticException if `divisor==0`
      * @see BigDecimal.divideToIntegralValue
      * @see BigDecimal.rem
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("divideAndRemainder")
     fun divideAndRemainder(divisor: BigDecimal): Pair<BigDecimal, BigDecimal>
@@ -297,9 +297,9 @@ interface BigDecimal : Comparable<BigDecimal> {
      * `divideToIntegralValue` and `remainder` methods
      * separately because the division need only be carried out once.
      *
-     * @param  divisor value by which this [BigDecimal] is to be divided,
+     * @param divisor value by which this [BigDecimal] is to be divided,
      * and the remainder computed.
-     * @param  mc the context to use.
+     * @param mc the context to use.
      * @return a two element [BigDecimal] array: the quotient
      * (the result of `divideToIntegralValue`) is the
      * initial element and the remainder is the final element.
@@ -310,7 +310,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * require a _precision of more than `mc._precision` digits.
      * @see BigDecimal.divideToIntegralValue
      * @see BigDecimal.rem
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("divideAndRemainderWithContext")
     fun divideAndRemainder(divisor: BigDecimal, mc: MathContext): Pair<BigDecimal, BigDecimal>
@@ -346,7 +346,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * the exact result cannot fit in `mc.getPrecision()`
      * digits.
      * @see BigInteger.sqrt
-     * @since  9
+     * @since 9
      */
     @JsName("sqrt")
     fun sqrt(mc: MathContext = MathContext()): BigDecimal
@@ -363,10 +363,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * Note that future releases may expand the allowable exponent
      * range of this method.
      *
-     * @param  n power to raise this [BigDecimal] to.
+     * @param n power to raise this [BigDecimal] to.
      * @return `this<sup>n</sup>`
      * @throws ArithmeticException if `n` is out of range.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("pow")
     infix fun pow(n: Int): BigDecimal
@@ -413,14 +413,14 @@ interface BigDecimal : Comparable<BigDecimal> {
      *
      *
      *
-     * @param  n power to raise this [BigDecimal] to.
-     * @param  mc the context to use.
+     * @param n power to raise this [BigDecimal] to.
+     * @param mc the context to use.
      * @return `this<sup>n</sup>` using the ANSI standard X3.274-1996
      * algorithm
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`, or `n` is out
      * of range.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("powWithContext")
     fun pow(n: Int, mc: MathContext): BigDecimal?
@@ -456,7 +456,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return `-this`, rounded as necessary.
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("unaryMinusWithContext")
     fun unaryMinus(mc: MathContext): BigDecimal?
@@ -471,7 +471,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      *
      * @return `this`.
      * @see .unaryMinus
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("unaryPlus")
     operator fun unaryPlus(): BigDecimal
@@ -489,7 +489,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @throws ArithmeticException if the result is inexact but the
      * rounding mode is `UNNECESSARY`.
      * @see .round
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("unaryPlusWithContext")
     fun unaryPlus(mc: MathContext): BigDecimal?
@@ -510,7 +510,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * `UNNECESSARY` and the
      * [BigDecimal]  operation would require rounding.
      * @see .plus
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("round")
     fun round(mc: MathContext): BigDecimal?
@@ -532,8 +532,8 @@ interface BigDecimal : Comparable<BigDecimal> {
      * Instead, `setScale` returns an object with the proper
      * _scale; the returned object may or may not be newly allocated.
      *
-     * @param  newScale _scale of the [BigDecimal] value to be returned.
-     * @param  roundingMode The rounding mode to apply.
+     * @param newScale _scale of the [BigDecimal] value to be returned.
+     * @param roundingMode The rounding mode to apply.
      * @return a [BigDecimal] whose _scale is the specified value,
      * and whose unscaled value is determined by multiplying or
      * dividing this [BigDecimal]'s unscaled value by the
@@ -543,7 +543,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * rounding.
      * @see RoundingMode
      *
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("setScaleRounding")
     fun setScale(newScale: Int, roundingMode: RoundingMode): BigDecimal
@@ -565,8 +565,8 @@ interface BigDecimal : Comparable<BigDecimal> {
      * Instead, `setScale` returns an object with the proper
      * _scale; the returned object may or may not be newly allocated.
      *
-     * @param  newScale _scale of the [BigDecimal] value to be returned.
-     * @param  roundingMode The rounding mode to apply.
+     * @param newScale _scale of the [BigDecimal] value to be returned.
+     * @param roundingMode The rounding mode to apply.
      * @return a [BigDecimal] whose _scale is the specified value,
      * and whose unscaled value is determined by multiplying or
      * dividing this [BigDecimal]'s unscaled value by the
@@ -626,7 +626,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * object with the proper _scale; the returned object may or may
      * not be newly allocated.
      *
-     * @param  newScale _scale of the [BigDecimal] value to be returned.
+     * @param newScale _scale of the [BigDecimal] value to be returned.
      * @return a [BigDecimal] whose _scale is the specified value, and
      * whose unscaled value is determined by multiplying or dividing
      * this [BigDecimal]'s unscaled value by the appropriate
@@ -649,7 +649,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * 10<sup>-n</sup>)` and _scale `max(this._scale()+n,
      * 0)`.
      *
-     * @param  n number of places to move the decimal point to the left.
+     * @param n number of places to move the decimal point to the left.
      * @return a [BigDecimal] which is equivalent to this one with the
      * decimal point moved `n` places to the left.
      * @throws ArithmeticException if _scale overflows.
@@ -667,7 +667,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      *  10<sup>n</sup>)` and _scale `max(this._scale()-n,
      * 0)`.
      *
-     * @param  n number of places to move the decimal point to the right.
+     * @param n number of places to move the decimal point to the right.
      * @return a [BigDecimal] which is equivalent to this one
      * with the decimal point moved `n` places to the right.
      * @throws ArithmeticException if _scale overflows.
@@ -721,7 +721,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
      * &lt;*op*&gt; is one of the six comparison operators.
      *
-     * @param  other [BigDecimal] to which this [BigDecimal] is
+     * @param other [BigDecimal] to which this [BigDecimal] is
      * to be compared.
      * @return -1, 0, or 1 as this [BigDecimal] is numerically
      * less than, equal to, or greater than `val`.
@@ -732,7 +732,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * Returns the minimum of this [BigDecimal] and
      * `val`.
      *
-     * @param  val value with which the minimum is to be computed.
+     * @param val value with which the minimum is to be computed.
      * @return the [BigDecimal] whose value is the lesser of this
      * [BigDecimal] and `val`.  If they are equal,
      * as defined by the [compareTo][BigDecimal.compareTo]
@@ -745,7 +745,7 @@ interface BigDecimal : Comparable<BigDecimal> {
     /**
      * Returns the maximum of this [BigDecimal] and `val`.
      *
-     * @param  val value with which the maximum is to be computed.
+     * @param val value with which the maximum is to be computed.
      * @return the [BigDecimal] whose value is the greater of this
      * [BigDecimal] and `val`.  If they are equal,
      * as defined by the [compareTo][BigDecimal.compareTo]
@@ -777,7 +777,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      *
      * @return string representation of this [BigDecimal], using
      * engineering notation if an exponent is needed.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("toEngineeringString")
     fun toEngineeringString(): String
@@ -848,7 +848,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a [BigInteger].
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("toBigIntegerExact")
     fun toBigIntegerExact(): BigInteger
@@ -870,8 +870,9 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `long`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
+    /*override*/
     @JsName("toLong")
-            /*override*/ fun toLong(): Long
+    fun toLong(): Long
 
     /**
      * Converts this [BigDecimal] to a `long`, checking
@@ -883,7 +884,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `long`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in a `long`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("toLongExact")
     fun toLongExact(): Long
@@ -905,17 +906,21 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to an `int`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
+    /*override*/
     @JsName("toInt")
-            /*override*/ fun toInt(): Int
+    fun toInt(): Int
 
+    /*override*/
     @JsName("toByte")
-            /*override*/ fun toByte(): Byte
+    fun toByte(): Byte
 
+    /*override*/
     @JsName("toChar")
-            /*override*/ fun toChar(): Char
+    fun toChar(): Char
 
+    /*override*/
     @JsName("toShort")
-            /*override*/ fun toShort(): Short
+    fun toShort(): Short
 
     /**
      * Converts this [BigDecimal] to an `int`, checking
@@ -927,7 +932,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to an `int`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in an `int`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("toIntExact")
     fun toIntExact(): Int
@@ -942,7 +947,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `short`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in a `short`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("toShortExact")
     fun toShortExact(): Short
@@ -957,7 +962,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `byte`.
      * @throws ArithmeticException if `this` has a nonzero
      * fractional part, or will not fit in a `byte`.
-     * @since  1.5
+     * @since 1.5
      */
     @JsName("toByteExact")
     fun toByteExact(): Byte
@@ -978,8 +983,9 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `float`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
+    /*override*/
     @JsName("toFloat")
-            /*override*/ fun toFloat(): Float
+    fun toFloat(): Float
 
     /**
      * Converts this [BigDecimal] to a `double`.
@@ -997,8 +1003,9 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `double`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
+    /*override*/
     @JsName("toDouble")
-            /*override*/ fun toDouble(): Double
+    fun toDouble(): Double
 
     /**
      * Returns the size of an ulp, a unit in the last place, of this
@@ -1021,7 +1028,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         /**
          * The value 0, with a _scale of 0.
          *
-         * @since  1.5
+         * @since 1.5
          */
         @JvmField
         @JsName("ZERO")
@@ -1030,7 +1037,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         /**
          * The value 1, with a _scale of 0.
          *
-         * @since  1.5
+         * @since 1.5
          */
         @JvmField
         @JsName("ONE")
@@ -1043,7 +1050,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         /**
          * The value 10, with a _scale of 0.
          *
-         * @since  1.5
+         * @since 1.5
          */
         @JvmField
         @JsName("TEN")
@@ -1125,11 +1132,11 @@ interface BigDecimal : Comparable<BigDecimal> {
          * the value returned is equal to that resulting from constructing
          * a [BigDecimal] from the result of using [ ][Double.toString].
          *
-         * @param  val `double` to convert to a [BigDecimal].
+         * @param val `double` to convert to a [BigDecimal].
          * @return a [BigDecimal] whose value is equal to or approximately
          * equal to the value of `val`.
          * @throws NumberFormatException if `val` is infinite or NaN.
-         * @since  1.5
+         * @since 1.5
          */
         @JvmStatic
         @JsName("ofDouble")

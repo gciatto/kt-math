@@ -56,22 +56,19 @@ internal actual fun bigDecimalOf(intVal: BigInteger, scale: Int, prec: Int): Big
 
 private val exceptionalDoubles = setOf(Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
 
-internal actual fun bigDecimalOf(`val`: Double, ctx: MathContext?): BigDecimal =
-    when {
-        `val` in exceptionalDoubles -> throw NumberFormatException("Infinite or NaN")
-        ctx == null -> CommonBigDecimal(`val`)
-        else -> CommonBigDecimal.of(`val`, ctx)
-    }
+internal actual fun bigDecimalOf(`val`: Double, ctx: MathContext?): BigDecimal = when {
+    `val` in exceptionalDoubles -> throw NumberFormatException("Infinite or NaN")
+    ctx == null -> CommonBigDecimal(`val`)
+    else -> CommonBigDecimal.of(`val`, ctx)
+}
 
-internal actual fun bigDecimalOf(`val`: Float, ctx: MathContext?): BigDecimal =
-    bigDecimalOf(`val`.toDouble(), ctx)
+internal actual fun bigDecimalOf(`val`: Float, ctx: MathContext?): BigDecimal = bigDecimalOf(`val`.toDouble(), ctx)
 
-internal actual fun bigDecimalOf(`val`: String, ctx: MathContext?): BigDecimal =
-    if (ctx == null) {
-        CommonBigDecimal(`val`)
-    } else {
-        CommonBigDecimal.of(`val`, ctx)
-    }
+internal actual fun bigDecimalOf(`val`: String, ctx: MathContext?): BigDecimal = if (ctx == null) {
+    CommonBigDecimal(`val`)
+} else {
+    CommonBigDecimal.of(`val`, ctx)
+}
 
 internal actual fun bigDecimalOf(`val`: BigInteger, ctx: MathContext?): BigDecimal {
     @Suppress("NAME_SHADOWING")
@@ -117,9 +114,5 @@ internal actual object BigIntegers {
     actual val negativeOne: BigInteger = CommonBigInteger.NEGATIVE_ONE
 }
 
-internal actual fun bigIntegerOf(
-    signum: Int,
-    magnitude: ByteArray,
-    off: Int,
-    len: Int
-): BigInteger = CommonBigInteger(signum, magnitude, off, len)
+internal actual fun bigIntegerOf(signum: Int, magnitude: ByteArray, off: Int, len: Int): BigInteger =
+    CommonBigInteger(signum, magnitude, off, len)

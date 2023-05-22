@@ -4,15 +4,16 @@ import java.math.BigDecimal as JavaBigDecimal
 
 class JavaBigDecimalAdapter(val value: JavaBigDecimal) : BigDecimal {
 
-    private inline fun adapt(f: () -> JavaBigDecimal): JavaBigDecimalAdapter =
-        JavaBigDecimalAdapter(f())
+    private inline fun adapt(f: () -> JavaBigDecimal): JavaBigDecimalAdapter = JavaBigDecimalAdapter(f())
 
-    private inline fun adapt(other: JavaBigDecimalAdapter, f: (JavaBigDecimal) -> JavaBigDecimal): JavaBigDecimalAdapter =
-        JavaBigDecimalAdapter(f(other.value))
+    private inline fun adapt(
+        other: JavaBigDecimalAdapter,
+        f: (JavaBigDecimal) -> JavaBigDecimal
+    ): JavaBigDecimalAdapter = JavaBigDecimalAdapter(f(other.value))
 
     private inline fun adapt(other: BigDecimal?, f: (JavaBigDecimal) -> JavaBigDecimal): JavaBigDecimalAdapter =
         adapt(other.castTo(), f)
-    
+
     override val absoluteValue: BigDecimal
         get() = adapt { value.abs() }
 
@@ -126,7 +127,7 @@ class JavaBigDecimalAdapter(val value: JavaBigDecimal) : BigDecimal {
     @Suppress("DEPRECATION")
     @Deprecated(
         "The method {@link #setScale(int, RoundingMode)} should " +
-                "be used in preference to this legacy method."
+            "be used in preference to this legacy method."
     )
     override fun setScale(newScale: Int, roundingMode: Int): BigDecimal = adapt {
         value.setScale(newScale, roundingMode)
@@ -198,8 +199,7 @@ class JavaBigDecimalAdapter(val value: JavaBigDecimal) : BigDecimal {
 
     override fun ulp(): BigDecimal = value.ulp().toKotlin()
 
-    override fun equals(other: Any?): Boolean =
-        other is JavaBigDecimalAdapter && value == other.value
+    override fun equals(other: Any?): Boolean = other is JavaBigDecimalAdapter && value == other.value
 
     override fun hashCode(): Int = value.hashCode()
 
