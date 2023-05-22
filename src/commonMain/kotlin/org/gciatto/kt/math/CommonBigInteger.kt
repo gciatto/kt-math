@@ -33,7 +33,12 @@ import kotlin.experimental.and
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
-import kotlin.math.*
+import kotlin.math.absoluteValue
+import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.round
+import kotlin.math.sign
 import kotlin.random.Random
 
 /**
@@ -1302,7 +1307,9 @@ internal class CommonBigInteger : BigInteger {
      */
     override operator fun div(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
-        return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        val magSizeBelowThreshold = _mag.size < BURNIKEL_ZIEGLER_THRESHOLD
+        val magSizeDiffIsOffset = _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET
+        return if (magSizeBelowThreshold || magSizeDiffIsOffset) {
             divideKnuth(other)
         } else {
             divideBurnikelZiegler(other)
@@ -1339,7 +1346,9 @@ internal class CommonBigInteger : BigInteger {
      */
     override fun divideAndRemainder(other: BigInteger): Array<CommonBigInteger> {
         val other: CommonBigInteger = other.castTo()
-        return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        val magSizeBelowThreshold = _mag.size < BURNIKEL_ZIEGLER_THRESHOLD
+        val magSizeDiffIsOffset = _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET
+        return if (magSizeBelowThreshold || magSizeDiffIsOffset) {
             divideAndRemainderKnuth(other)
         } else {
             divideAndRemainderBurnikelZiegler(other)
@@ -1372,7 +1381,9 @@ internal class CommonBigInteger : BigInteger {
      */
     override fun remainder(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
-        return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        val magSizeBelowThreshold = _mag.size < BURNIKEL_ZIEGLER_THRESHOLD
+        val magSizeDiffIsOffset = _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET
+        return if (magSizeBelowThreshold || magSizeDiffIsOffset) {
             remainderKnuth(other)
         } else {
             remainderBurnikelZiegler(other)
@@ -3836,8 +3847,9 @@ internal class CommonBigInteger : BigInteger {
 
             // Subtract common parts of both numbers
             while (littleIndex > 0) {
-                difference =
-                    (big[--bigIndex].toLong() and LONG_MASK) - (little[--littleIndex].toLong() and LONG_MASK) + (difference shr 32)
+                difference = (big[--bigIndex].toLong() and LONG_MASK) -
+                    (little[--littleIndex].toLong() and LONG_MASK) +
+                    (difference shr 32)
                 result[bigIndex] = difference.toInt()
             }
 

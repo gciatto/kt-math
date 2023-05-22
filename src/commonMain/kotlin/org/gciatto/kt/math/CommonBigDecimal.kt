@@ -34,7 +34,13 @@ import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
-import kotlin.math.*
+import kotlin.math.absoluteValue
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sign
+import kotlin.math.sqrt
 
 /**
  * Immutable, arbitrary-precision signed decimal numbers.  A
@@ -1660,7 +1666,7 @@ internal class CommonBigDecimal : BigDecimal {
             val working = stripped.scaleByPowerOfTen(scaleAdjust)
 
             require( // Verify 0.1 <= working < 10
-                ONE_TENTH.compareTo(working) <= 0 && working.compareTo(TEN) < 0
+                ONE_TENTH <= working && working < TEN
             )
 
             // Use good ole' Math.sqrt to get the initial guess for
@@ -1786,14 +1792,13 @@ internal class CommonBigDecimal : BigDecimal {
             }
 
             when (rm) {
-                RoundingMode.DOWN, RoundingMode.FLOOR -> return result.times(result).compareTo(this) <= 0 && neighborUp.times(
-                    neighborUp
-                ).compareTo(this) > 0
+                RoundingMode.DOWN, RoundingMode.FLOOR -> {
+                    return result * result <= this && neighborUp * neighborUp > this
+                }
 
-                RoundingMode.UP, RoundingMode.CEILING -> return result.times(result).compareTo(this) >= 0 && neighborDown.times(
-                    neighborDown
-                ).compareTo(this) < 0
-
+                RoundingMode.UP, RoundingMode.CEILING -> {
+                    return result * result >= this && neighborDown * neighborDown < this
+                }
                 RoundingMode.HALF_DOWN, RoundingMode.HALF_EVEN, RoundingMode.HALF_UP -> {
                     val err = result.times(result).minus(this).absoluteValue
                     val errUp = neighborUp.times(neighborUp).minus(this)
@@ -1801,17 +1806,17 @@ internal class CommonBigDecimal : BigDecimal {
                     // All error values should be positive so don't need to
                     // compare absolute values.
 
-                    val err_comp_errUp = err.compareTo(errUp)
-                    val err_comp_errDown = err.compareTo(errDown)
+                    val errCompErrup = err.compareTo(errUp)
+                    val errCompErrdown = err.compareTo(errDown)
 
                     return errUp.signum == 1 &&
                         errDown.signum == 1 &&
 
-                        err_comp_errUp <= 0 &&
-                        err_comp_errDown <= 0 &&
+                        errCompErrup <= 0 &&
+                        errCompErrdown <= 0 &&
 
-                        (if (err_comp_errUp == 0) err_comp_errDown < 0 else true) &&
-                        if (err_comp_errDown == 0) err_comp_errUp < 0 else true
+                        (if (errCompErrup == 0) errCompErrdown < 0 else true) &&
+                        if (errCompErrdown == 0) errCompErrup < 0 else true
                 }
                 // && could check for digit conditions for ties too
 
@@ -3548,7 +3553,8 @@ internal class CommonBigDecimal : BigDecimal {
          */
         private fun print(name: String, bd: CommonBigDecimal) {
             println(
-                "$name:\t_intCompact ${bd._intCompact}\t_intVal ${bd._intVal}\t_scale ${bd._scale}\t_precision ${bd._precision}"
+                "$name:\t_intCompact ${bd._intCompact}\t_intVal " +
+                    "${bd._intVal}\t_scale ${bd._scale}\t_precision ${bd._precision}"
             )
         }
 
@@ -3792,10 +3798,11 @@ internal class CommonBigDecimal : BigDecimal {
 
                 else // Some kind of half-way rounding
                 -> {
-                    require(roundingMode >= RoundingMode.HALF_UP.value && roundingMode <= RoundingMode.HALF_EVEN.value) {
-                        "Unexpected rounding mode" + RoundingMode.valueOf(
-                            roundingMode
-                        )
+                    require(
+                        roundingMode >= RoundingMode.HALF_UP.value &&
+                            roundingMode <= RoundingMode.HALF_EVEN.value
+                    ) {
+                        "Unexpected rounding mode" + RoundingMode.valueOf(roundingMode)
                     }
 
                     if (cmpFracHalf < 0) {

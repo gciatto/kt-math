@@ -134,11 +134,11 @@ class TestDecimals {
             BigDecimal.E + BigDecimal.TEN
         )
         assertReprEquals(
-            PI_REPR.replace("2.7", "3.2"),
+            E_REPR.replace("2.7", "3.2"),
             BigDecimal.E + BigDecimal.ONE_HALF
         )
         assertReprEquals(
-            PI_REPR.replace(".7", ".8"),
+            E_REPR.replace(".7", ".8"),
             BigDecimal.E + BigDecimal.ONE_TENTH
         )
     }
@@ -162,11 +162,11 @@ class TestDecimals {
             BigDecimal.PI - BigDecimal.ZERO
         )
         assertReprEquals(
-            "3" + PI_REPR.subSequence(1, PI_REPR.length),
+            "2" + PI_REPR.subSequence(1, PI_REPR.length),
             BigDecimal.PI - BigDecimal.ONE
         )
         assertReprEquals(
-            "2" + PI_REPR.subSequence(1, PI_REPR.length),
+            "1" + PI_REPR.subSequence(1, PI_REPR.length),
             BigDecimal.PI - BigDecimal.TWO
         )
         assertReprEquals(
@@ -193,7 +193,7 @@ class TestDecimals {
             BigDecimal.E - BigDecimal.ONE
         )
         assertReprEquals(
-            E_REPR.replace("2.", "1."),
+            E_REPR.replace("2.", "0."),
             BigDecimal.E - BigDecimal.TWO
         )
         assertReprEquals(
