@@ -43,7 +43,7 @@ jobs:
       - uses: DanySK/build-check-deploy-gradle-action@2.2.6
         with:
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
-          maven-central-username: ${{ secrets.MAVEN_USER }}
+          maven-central-username: gciatto
           should-run-codecov: false
           should-deploy: true
           build-command: true
@@ -91,7 +91,7 @@ jobs:
           should-run-codecov: ${{ runner.os == 'Linux' }}
           should-deploy: ${{ contains(needs.staging-repo.result, 'success') }}
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
-          maven-central-username: ${{ secrets.MAVEN_USER }}
+          maven-central-username: gciatto
           signing-key: ${{ secrets.SIGNING_KEY }}
           signing-password: ${{ secrets.SIGNING_PASSWORD }}
   close-staging-repos:
@@ -106,7 +106,7 @@ jobs:
       - uses: DanySK/build-check-deploy-gradle-action@2.2.6
         with:
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
-          maven-central-username: ${{ secrets.MAVEN_USER }}
+          maven-central-username: gciatto
           should-run-codecov: false
           should-deploy: true
           build-command: true
@@ -154,7 +154,7 @@ jobs:
           should-deploy: true
           github-token: ${{ github.token }}
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
-          maven-central-username: ${{ secrets.MAVEN_USER }}
+          maven-central-username: gciatto
           npm-token: ${{ secrets.NPM_TOKEN }}
           signing-key: ${{ secrets.SIGNING_KEY }}
           signing-password: ${{ secrets.SIGNING_PASSWORD }}
