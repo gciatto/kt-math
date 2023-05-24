@@ -1,8 +1,8 @@
 [versions]
-kotlin = "1.8.10"
+kotlin = "1.8.21"
 jvm = "1.8"
 node = "16-latest"
-ktMpp = "1.2.1"
+ktMpp = "2.0.3"
 
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }

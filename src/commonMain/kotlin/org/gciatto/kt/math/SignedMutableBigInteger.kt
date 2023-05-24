@@ -41,8 +41,8 @@ package org.gciatto.kt.math
  *
  * @see CommonBigInteger
  *
- * @author  Michael McCloskey
- * @since   1.3
+ * @author Michael McCloskey
+ * @since 1.3
  */
 
 internal class SignedMutableBigInteger : MutableBigInteger {
@@ -78,45 +78,47 @@ internal class SignedMutableBigInteger : MutableBigInteger {
      * Signed addition built upon unsigned plus and minus.
      */
     fun signedAdd(addend: SignedMutableBigInteger) {
-        if (sign == addend.sign)
+        if (sign == addend.sign) {
             add(addend)
-        else
+        } else {
             sign = sign * subtract(addend)
-
+        }
     }
 
     /**
      * Signed addition built upon unsigned plus and minus.
      */
     fun signedAdd(addend: MutableBigInteger) {
-        if (sign == 1)
+        if (sign == 1) {
             add(addend)
-        else
+        } else {
             sign = sign * subtract(addend)
-
+        }
     }
 
     /**
      * Signed subtraction built upon unsigned plus and minus.
      */
     fun signedSubtract(addend: SignedMutableBigInteger) {
-        if (sign == addend.sign)
+        if (sign == addend.sign) {
             sign = sign * subtract(addend)
-        else
+        } else {
             add(addend)
-
+        }
     }
 
     /**
      * Signed subtraction built upon unsigned plus and minus.
      */
     fun signedSubtract(addend: MutableBigInteger) {
-        if (sign == 1)
+        if (sign == 1) {
             sign = sign * subtract(addend)
-        else
+        } else {
             add(addend)
-        if (intLen == 0)
+        }
+        if (intLen == 0) {
             sign = 1
+        }
     }
 
     /**
@@ -126,5 +128,4 @@ internal class SignedMutableBigInteger : MutableBigInteger {
     override fun toString(): String {
         return this.toBigInteger(sign).toString()
     }
-
 }

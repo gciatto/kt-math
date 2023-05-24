@@ -33,7 +33,12 @@ import kotlin.experimental.and
 import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
-import kotlin.math.*
+import kotlin.math.absoluteValue
+import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.round
+import kotlin.math.sign
 import kotlin.random.Random
 
 /**
@@ -119,11 +124,11 @@ import kotlin.random.Random
  *
  * @see BigDecimal
  *
- * @jls     4.2.2 Integer Operations
- * @author  Josh Bloch
- * @author  Michael McCloskey
- * @author  Alan Eliasen
- * @author  Timothy Buktu
+ * @jls 4.2.2 Integer Operations
+ * @author Josh Bloch
+ * @author Michael McCloskey
+ * @author Alan Eliasen
+ * @author Timothy Buktu
  * @since 1.1
  */
 
@@ -222,7 +227,6 @@ internal class CommonBigInteger : BigInteger {
             return lsb
         }
 
-
     // Constructors
 
     /**
@@ -238,10 +242,10 @@ internal class CommonBigInteger : BigInteger {
      * is negative, or `off+len` is greater than the length of
      * other.
      *
-     * @param  other byte array containing a sub-array which is the big-endian
+     * @param other byte array containing a sub-array which is the big-endian
      * two's-complement binary representation of a BigInteger.
-     * @param  off the start offset of the binary representation.
-     * @param  len the number of bytes to use.
+     * @param off the start offset of the binary representation.
+     * @param len the number of bytes to use.
      * @throws NumberFormatException other is zero bytes long.
      * @throws IndexOutOfBoundsException if the provided array offset and
      * length would cause an index into the byte array to be
@@ -278,8 +282,9 @@ internal class CommonBigInteger : BigInteger {
      * the constructor call.
      */
     private constructor(other: IntArray) {
-        if (other.isEmpty())
+        if (other.isEmpty()) {
             throw NumberFormatException("Zero length BigInteger")
+        }
 
         if (other[0] < 0) {
             _mag = makePositive(other)
@@ -308,12 +313,12 @@ internal class CommonBigInteger : BigInteger {
      * `len` is negative, or `off+len` is greater than the length of
      * `magnitude`.
      *
-     * @param  signum _signum of the number (-1 for negative, 0 for zero, 1
+     * @param signum _signum of the number (-1 for negative, 0 for zero, 1
      * for positive).
-     * @param  magnitude big-endian binary representation of the magnitude of
+     * @param magnitude big-endian binary representation of the magnitude of
      * the number.
-     * @param  off the start offset of the binary representation.
-     * @param  len the number of bytes to use.
+     * @param off the start offset of the binary representation.
+     * @param len the number of bytes to use.
      * @throws NumberFormatException `_signum` is not one of the three
      * legal values (-1, 0, and 1), or `_signum` is 0 and
      * `magnitude` contains one or more non-zero bytes.
@@ -337,8 +342,9 @@ internal class CommonBigInteger : BigInteger {
         if (this._mag.isEmpty()) {
             this._signum = 0
         } else {
-            if (signum == 0)
+            if (signum == 0) {
                 throw NumberFormatException("_signum-magnitude mismatch")
+            }
             this._signum = signum
         }
         if (_mag.size >= MAX_MAG_LENGTH) {
@@ -356,14 +362,16 @@ internal class CommonBigInteger : BigInteger {
     private constructor(signum: Int, magnitude: IntArray) {
         this._mag = stripLeadingZeroInts(magnitude)
 
-        if (signum < -1 || signum > 1)
+        if (signum < -1 || signum > 1) {
             throw NumberFormatException("Invalid _signum value")
+        }
 
         if (this._mag.isEmpty()) {
             this._signum = 0
         } else {
-            if (signum == 0)
+            if (signum == 0) {
                 throw NumberFormatException("_signum-magnitude mismatch")
+            }
             this._signum = signum
         }
         if (_mag.size >= MAX_MAG_LENGTH) {
@@ -392,10 +400,12 @@ internal class CommonBigInteger : BigInteger {
         val numDigits: Int
         val len = other.length
 
-        if (radix < CHAR_MIN_RADIX || radix > CHAR_MAX_RADIX)
+        if (radix < CHAR_MIN_RADIX || radix > CHAR_MAX_RADIX) {
             throw NumberFormatException("Radix out of range")
-        if (len == 0)
+        }
+        if (len == 0) {
             throw NumberFormatException("Zero length BigInteger")
+        }
 
         // Check for at most one leading sign
         var sign = 1
@@ -413,8 +423,9 @@ internal class CommonBigInteger : BigInteger {
             }
             cursor = 1
         }
-        if (cursor == len)
+        if (cursor == len) {
             throw NumberFormatException("Zero length BigInteger")
+        }
 
         // Skip leading zeros and compute number of digits in magnitude
         while (cursor < len && other[cursor].toDigit(radix) == 0) {
@@ -441,13 +452,15 @@ internal class CommonBigInteger : BigInteger {
 
         // Process first (potentially short) digit group
         var firstGroupLen = numDigits % digitsPerInt[radix]
-        if (firstGroupLen == 0)
+        if (firstGroupLen == 0) {
             firstGroupLen = digitsPerInt[radix]
+        }
         var group = other.substring(cursor, cursor + firstGroupLen)
         cursor += firstGroupLen
         magnitude[numWords - 1] = group.toInt(radix)
-        if (magnitude[numWords - 1] < 0)
+        if (magnitude[numWords - 1] < 0) {
             throw NumberFormatException("Illegal digit")
+        }
 
         // Process remaining digit groups
         val superRadix = intRadix[radix]
@@ -456,8 +469,9 @@ internal class CommonBigInteger : BigInteger {
             group = other.substring(cursor, cursor + digitsPerInt[radix])
             cursor += digitsPerInt[radix]
             groupVal = group.toInt(radix)
-            if (groupVal < 0)
+            if (groupVal < 0) {
                 throw NumberFormatException("Illegal digit")
+            }
             destructiveMulAdd(magnitude, superRadix, groupVal)
         }
         // Required for cases where the array was overallocated.
@@ -504,8 +518,9 @@ internal class CommonBigInteger : BigInteger {
 
         // Process first (potentially short) digit group
         var firstGroupLen = numDigits % digitsPerInt[10]
-        if (firstGroupLen == 0)
+        if (firstGroupLen == 0) {
             firstGroupLen = digitsPerInt[10]
+        }
         magnitude[numWords - 1] = parseInt(other, cursor, cursor + firstGroupLen)
         cursor += firstGroupLen
 
@@ -530,13 +545,15 @@ internal class CommonBigInteger : BigInteger {
     // is to be treated as an unsigned value.
     private fun parseInt(source: CharArray, start: Int, end: Int): Int {
         var result = source[start].toDigit(10)
-        if (result == -1)
+        if (result == -1) {
             throw NumberFormatException(source.concatToString())
+        }
 
         for (index in (start + 1) until end) {
             val nextVal = source[index].toDigit(10)
-            if (nextVal == -1)
+            if (nextVal == -1) {
                 throw NumberFormatException(source.concatToString())
+            }
             result = 10 * result + nextVal
         }
 
@@ -550,8 +567,8 @@ internal class CommonBigInteger : BigInteger {
      * bits is provided in `rnd`.  Note that this constructor always
      * constructs a non-negative BigInteger.
      *
-     * @param  numBits maximum bitLength of the new BigInteger.
-     * @param  rnd source of randomness to be used in computing the new
+     * @param numBits maximum bitLength of the new BigInteger.
+     * @param rnd source of randomness to be used in computing the new
      * BigInteger.
      * @throws IllegalArgumentException `numBits` is negative.
      * @see .bitLength
@@ -566,13 +583,13 @@ internal class CommonBigInteger : BigInteger {
      * method be used in preference to this constructor unless there
      * is a compelling need to specify a certainty.
      *
-     * @param  bitLength bitLength of the returned BigInteger.
-     * @param  certainty a measure of the uncertainty that the caller is
+     * @param bitLength bitLength of the returned BigInteger.
+     * @param certainty a measure of the uncertainty that the caller is
      * willing to tolerate.  The probability that the new BigInteger
      * represents a prime number will exceed
      * (1 - 1/2<sup>`certainty`</sup>).  The execution time of
      * this constructor is proportional to the value of this parameter.
-     * @param  rnd source of random bits used to select candidates to be
+     * @param rnd source of random bits used to select candidates to be
      * tested for primality.
      * @throws ArithmeticException `bitLength < 2` or `bitLength` is too large.
      * @see .bitLength
@@ -580,12 +597,14 @@ internal class CommonBigInteger : BigInteger {
     constructor(bitLength: Int, certainty: Int, rnd: Random) {
         val prime: CommonBigInteger
 
-        if (bitLength < 2)
+        if (bitLength < 2) {
             throw ArithmeticException("bitLength < 2")
-        prime = if (bitLength < SMALL_PRIME_THRESHOLD)
+        }
+        prime = if (bitLength < SMALL_PRIME_THRESHOLD) {
             smallPrime(bitLength, certainty, rnd)
-        else
+        } else {
             largePrime(bitLength, certainty, rnd)
+        }
         _signum = 1
         _mag = prime._mag
     }
@@ -604,21 +623,23 @@ internal class CommonBigInteger : BigInteger {
      */
     @Suppress("UNREACHABLE_CODE", "UNUSED_VARIABLE")
     override fun nextProbablePrime(): CommonBigInteger {
-        if (this._signum < 0)
+        if (this._signum < 0) {
             throw ArithmeticException("start < 0: $this")
+        }
 
         // Handle trivial cases
-        if (this._signum == 0 || this == ONE)
+        if (this._signum == 0 || this == ONE) {
             return TWO
+        }
 
         var result = this.plus(ONE)
 
         // Fastpath for small numbers
         if (result.bitLength < SMALL_PRIME_THRESHOLD) {
-
             // Ensure an odd number
-            if (!result.testBit(0))
+            if (!result.testBit(0)) {
                 result = result.plus(ONE)
+            }
 
             while (true) {
                 // Do cheap "pre-test" if applicable
@@ -634,20 +655,23 @@ internal class CommonBigInteger : BigInteger {
                 }
 
                 // All candidates of bitLength 2 and 3 are prime by this point
-                if (result.bitLength < 4)
+                if (result.bitLength < 4) {
                     return result
+                }
 
                 // The expensive test
-                if (result.primeToCertainty(DEFAULT_PRIME_CERTAINTY, null))
+                if (result.primeToCertainty(DEFAULT_PRIME_CERTAINTY, null)) {
                     return result
+                }
 
                 result = result.plus(TWO)
             }
         }
 
         // Start at previous even number
-        if (result.testBit(0))
+        if (result.testBit(0)) {
             result = result.minus(ONE)
+        }
 
         // Looking for the next large prime
         val searchLen = getPrimeSearchLen(result.bitLength)
@@ -656,10 +680,12 @@ internal class CommonBigInteger : BigInteger {
             val searchSieve = BitSieve(result, searchLen)
             val candidate = searchSieve.retrieve(
                 result,
-                DEFAULT_PRIME_CERTAINTY, null!!
+                DEFAULT_PRIME_CERTAINTY,
+                null!!
             )
-            if (candidate != null)
+            if (candidate != null) {
                 return candidate
+            }
             result = result.plus(of((2 * searchLen).toLong()))
         }
     }
@@ -670,7 +696,7 @@ internal class CommonBigInteger : BigInteger {
      *
      * This method assumes bitLength > 2.
      *
-     * @param  certainty a measure of the uncertainty that the caller is
+     * @param certainty a measure of the uncertainty that the caller is
      * willing to tolerate: if the call returns `true`
      * the probability that this BigInteger is prime exceeds
      * `(1 - 1/2<sup>certainty</sup>)`.  The execution time of
@@ -748,8 +774,9 @@ internal class CommonBigInteger : BigInteger {
         val a = m.lowestSetBit
         m = m.shr(a)
 
-        if (rnd == null)
+        if (rnd == null) {
             rnd = Random.Default
+        }
         // Do the tests
         for (i in 0 until iterations) {
             // Generate a uniform random on (1, this)
@@ -761,8 +788,9 @@ internal class CommonBigInteger : BigInteger {
             var j = 0
             var z = b.modPow(m, this)
             while (!(j == 0 && z == ONE || z == thisMinusOne)) {
-                if (j > 0 && z == ONE || ++j == a)
+                if (j > 0 && z == ONE || ++j == a) {
                     return false
+                }
                 z = z.modPow(TWO, this)
             }
         }
@@ -835,26 +863,31 @@ internal class CommonBigInteger : BigInteger {
     /**
      * Returns a BigInteger whose value is `(this + val)`.
      *
-     * @param  other value to be added to this BigInteger.
+     * @param other value to be added to this BigInteger.
      * @return `this + val`
      */
 
     override operator fun plus(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
-        if (other.signum == 0)
+        if (other.signum == 0) {
             return this
-        if (_signum == 0)
+        }
+        if (_signum == 0) {
             return other
-        if (other._signum == _signum)
+        }
+        if (other._signum == _signum) {
             return CommonBigInteger(sum(_mag, other._mag), _signum)
+        }
 
         val cmp = compareMagnitude(other)
-        if (cmp == 0)
+        if (cmp == 0) {
             return ZERO
-        var resultMag = if (cmp > 0)
+        }
+        var resultMag = if (cmp > 0) {
             subtract(_mag, other._mag)
-        else
+        } else {
             subtract(other._mag, _mag)
+        }
         resultMag = trustedStripLeadingZeroInts(resultMag)
 
         return CommonBigInteger(resultMag, if (cmp == _signum) 1 else -1)
@@ -865,19 +898,27 @@ internal class CommonBigInteger : BigInteger {
      * with a long. Assumes val is not equal to INFLATED.
      */
     internal fun plusLong(other: Long): CommonBigInteger {
-        if (other == 0L)
+        if (other == 0L) {
             return this
-        if (_signum == 0)
+        }
+        if (_signum == 0) {
             return of(other)
-        if (other.sign == _signum)
+        }
+        if (other.sign == _signum) {
             return CommonBigInteger(sum(_mag, other.absoluteValue), _signum)
+        }
         val cmp = compareMagnitude(other)
-        if (cmp == 0)
+        if (cmp == 0) {
             return ZERO
-        var resultMag = if (cmp > 0) subtract(
-            _mag,
-            other.absoluteValue
-        ) else subtract(other.absoluteValue, _mag)
+        }
+        var resultMag = if (cmp > 0) {
+            subtract(
+                _mag,
+                other.absoluteValue
+            )
+        } else {
+            subtract(other.absoluteValue, _mag)
+        }
         resultMag = trustedStripLeadingZeroInts(resultMag)
         return CommonBigInteger(resultMag, if (cmp == _signum) 1 else -1)
     }
@@ -885,26 +926,31 @@ internal class CommonBigInteger : BigInteger {
     /**
      * Returns a BigInteger whose value is `(this - val)`.
      *
-     * @param  other value to be subtracted from this BigInteger.
+     * @param other value to be subtracted from this BigInteger.
      * @return `this - val`
      */
 
     override operator fun minus(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
-        if (other._signum == 0)
+        if (other._signum == 0) {
             return this
-        if (_signum == 0)
+        }
+        if (_signum == 0) {
             return other.unaryMinus()
-        if (other._signum != _signum)
+        }
+        if (other._signum != _signum) {
             return CommonBigInteger(sum(_mag, other._mag), _signum)
+        }
 
         val cmp = compareMagnitude(other)
-        if (cmp == 0)
+        if (cmp == 0) {
             return ZERO
-        var resultMag = if (cmp > 0)
+        }
+        var resultMag = if (cmp > 0) {
             subtract(_mag, other._mag)
-        else
+        } else {
             subtract(other._mag, _mag)
+        }
         resultMag = trustedStripLeadingZeroInts(resultMag)
         return CommonBigInteger(resultMag, if (cmp == _signum) 1 else -1)
     }
@@ -915,15 +961,16 @@ internal class CommonBigInteger : BigInteger {
      * @implNote An implementation may offer better algorithmic
      * performance when `val == this`.
      *
-     * @param  other value to be multiplied by this BigInteger.
+     * @param other value to be multiplied by this BigInteger.
      * @return `this * val`
      */
 
     override operator fun times(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
 
-        if (other._signum == 0 || _signum == 0)
+        if (other._signum == 0 || _signum == 0) {
             return ZERO
+        }
 
         val xlen = _mag.size
 
@@ -942,8 +989,11 @@ internal class CommonBigInteger : BigInteger {
                 return multiplyByInt(other._mag, _mag[0], resultSign)
             }
             var result = multiplyToLen(
-                _mag, xlen,
-                other._mag, ylen, null
+                _mag,
+                xlen,
+                other._mag,
+                ylen,
+                null
             )
             result = trustedStripLeadingZeroInts(result)
             return CommonBigInteger(result, resultSign)
@@ -962,14 +1012,17 @@ internal class CommonBigInteger : BigInteger {
      */
     internal fun timesLong(other: Long): CommonBigInteger {
         var v = other
-        if (v == 0L || _signum == 0)
+        if (v == 0L || _signum == 0) {
             return ZERO
-        if (v == CommonBigDecimal.INFLATED)
+        }
+        if (v == CommonBigDecimal.INFLATED) {
             return times(of(v))
+        }
         val rsign = if (v > 0) _signum else -_signum
-        if (v < 0)
+        if (v < 0) {
             v = -v
-        val dh = v.ushr(32)      // higher order bits
+        }
+        val dh = v.ushr(32) // higher order bits
         val dl = v and LONG_MASK // lower order bits
 
         val xlen = _mag.size
@@ -988,17 +1041,17 @@ internal class CommonBigInteger : BigInteger {
             rstart = rmag.size - 2
             for (i in xlen - 1 downTo 0) {
                 val product = (value[i].toLong() and LONG_MASK) * dh +
-                        (rmag[rstart].toLong() and LONG_MASK) + carry
+                    (rmag[rstart].toLong() and LONG_MASK) + carry
                 rmag[rstart--] = product.toInt()
                 carry = product.ushr(32)
             }
             rmag[0] = carry.toInt()
         }
-        if (carry == 0L)
+        if (carry == 0L) {
             rmag = rmag.copyOfRange(1, rmag.size)
+        }
         return CommonBigInteger(rmag, rsign)
     }
-
 
     /**
      * Returns a slice of a BigInteger for use in Toom-Cook multiplication.
@@ -1013,10 +1066,7 @@ internal class CommonBigInteger : BigInteger {
      * slices to the appropriate position when multiplying different-sized
      * numbers.
      */
-    private fun getToomSlice(
-        lowerSize: Int, upperSize: Int, slice: Int,
-        fullsize: Int
-    ): CommonBigInteger {
+    private fun getToomSlice(lowerSize: Int, upperSize: Int, slice: Int, fullsize: Int): CommonBigInteger {
         var start: Int
         val end: Int
         val sliceSize: Int
@@ -1078,7 +1128,7 @@ internal class CommonBigInteger : BigInteger {
         for (i in len - 1 downTo 0) {
             x = _mag[i].toLong() and LONG_MASK
             w = x - borrow
-            if (borrow > x) {      // Did we make the number go negative?
+            if (borrow > x) { // Did we make the number go negative?
                 borrow = 1L
             } else {
                 borrow = 0L
@@ -1094,8 +1144,9 @@ internal class CommonBigInteger : BigInteger {
             // eliminated if the first fails.
             if (q >= 0x55555556L) {
                 borrow++
-                if (q >= 0xAAAAAAABL)
+                if (q >= 0xAAAAAAABL) {
                     borrow++
+                }
             }
         }
         result = trustedStripLeadingZeroInts(result)
@@ -1176,8 +1227,8 @@ internal class CommonBigInteger : BigInteger {
         val xl = getLower(half)
         val xh = getUpper(half)
 
-        val xhs = xh.square()  // xhs = xh^2
-        val xls = xl.square()  // xls = xl^2
+        val xhs = xh.square() // xhs = xh^2
+        val xls = xl.square() // xls = xl^2
 
         // xh^2 << 64  +  (((xl+xh)^2 - (xh^2 + xl^2)) << 32) + xl^2
         return xhs.shl(half * 32).plus(xl.plus(xh).square().minus(xhs.plus(xls))).shl(half * 32).plus(xls)
@@ -1194,7 +1245,7 @@ internal class CommonBigInteger : BigInteger {
         val len = _mag.size
 
         // k is the size (in ints) of the lower-order slices.
-        val k = (len + 2) / 3   // Equal to ceil(largest/3)
+        val k = (len + 2) / 3 // Equal to ceil(largest/3)
 
         // r is the size (in ints) of the highest-order slice.
         val r = len - 2 * k
@@ -1250,13 +1301,15 @@ internal class CommonBigInteger : BigInteger {
     /**
      * Returns a BigInteger whose value is `(this / val)`.
      *
-     * @param  other value by which this BigInteger is to be divided.
+     * @param other value by which this BigInteger is to be divided.
      * @return `this / val`
      * @throws ArithmeticException if other is zero.
      */
     override operator fun div(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
-        return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        val magSizeBelowThreshold = _mag.size < BURNIKEL_ZIEGLER_THRESHOLD
+        val magSizeDiffIsOffset = _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET
+        return if (magSizeBelowThreshold || magSizeDiffIsOffset) {
             divideKnuth(other)
         } else {
             divideBurnikelZiegler(other)
@@ -1293,7 +1346,9 @@ internal class CommonBigInteger : BigInteger {
      */
     override fun divideAndRemainder(other: BigInteger): Array<CommonBigInteger> {
         val other: CommonBigInteger = other.castTo()
-        return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        val magSizeBelowThreshold = _mag.size < BURNIKEL_ZIEGLER_THRESHOLD
+        val magSizeDiffIsOffset = _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET
+        return if (magSizeBelowThreshold || magSizeDiffIsOffset) {
             divideAndRemainderKnuth(other)
         } else {
             divideAndRemainderBurnikelZiegler(other)
@@ -1326,7 +1381,9 @@ internal class CommonBigInteger : BigInteger {
      */
     override fun remainder(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
-        return if (other._mag.size < BURNIKEL_ZIEGLER_THRESHOLD || _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+        val magSizeBelowThreshold = _mag.size < BURNIKEL_ZIEGLER_THRESHOLD
+        val magSizeDiffIsOffset = _mag.size - other._mag.size < BURNIKEL_ZIEGLER_OFFSET
+        return if (magSizeBelowThreshold || magSizeDiffIsOffset) {
             remainderKnuth(other)
         } else {
             remainderBurnikelZiegler(other)
@@ -1379,7 +1436,7 @@ internal class CommonBigInteger : BigInteger {
      * Returns a BigInteger whose value is `(this<sup>exponent</sup>)`.
      * Note that `exponent` is an integer rather than a BigInteger.
      *
-     * @param  exponent exponent to which this BigInteger is to be raised.
+     * @param exponent exponent to which this BigInteger is to be raised.
      * @return `this<sup>exponent</sup>`
      * @throws ArithmeticException `exponent` is negative.  (This would
      * cause the operation to yield a non-integer value.)
@@ -1410,7 +1467,7 @@ internal class CommonBigInteger : BigInteger {
         if (powersOfTwo > 0) {
             partToSquare = partToSquare.shr(powersOfTwo)
             remainingBits = partToSquare.bitLength
-            if (remainingBits == 1) {  // Nothing left but +/- 1?
+            if (remainingBits == 1) { // Nothing left but +/- 1?
                 return if (_signum < 0 && exponent and 1 == 1) {
                     NEGATIVE_ONE.shl(powersOfTwo * exponent)
                 } else {
@@ -1512,7 +1569,7 @@ internal class CommonBigInteger : BigInteger {
      * `(i * sqrt(-val))` where *i* is the
      * *imaginary unit* and is equal to
      * `sqrt(-1)`.)
-     * @since  9
+     * @since 9
      */
     override fun sqrt(): CommonBigInteger {
         if (this._signum < 0) {
@@ -1535,7 +1592,7 @@ internal class CommonBigInteger : BigInteger {
      * *imaginary unit* and is equal to
      * `sqrt(-1)`.)
      * @see .sqrt
-     * @since  9
+     * @since 9
      */
     override fun sqrtAndRemainder(): Array<CommonBigInteger> {
         val s = sqrt()
@@ -1554,10 +1611,11 @@ internal class CommonBigInteger : BigInteger {
      */
     override fun gcd(other: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = other.castTo()
-        if (other._signum == 0)
+        if (other._signum == 0) {
             return this.absoluteValue
-        else if (this._signum == 0)
+        } else if (this._signum == 0) {
             return other.absoluteValue
+        }
 
         val a = MutableBigInteger(this)
         val b = MutableBigInteger(other)
@@ -1609,15 +1667,16 @@ internal class CommonBigInteger : BigInteger {
      * differs from `remainder` in that it always returns a
      * *non-negative* BigInteger.
      *
-     * @param  modulus the modulus.
+     * @param modulus the modulus.
      * @return `this rem other`
      * @throws ArithmeticException when `other` is 0
      * @see .remainder
      */
     override operator fun rem(modulus: BigInteger): CommonBigInteger {
         val other: CommonBigInteger = modulus.castTo()
-        if (other._signum <= 0)
+        if (other._signum <= 0) {
             throw ArithmeticException("BigInteger: modulus not positive")
+        }
 
         val result = this.remainder(other)
         return if (result._signum >= 0) result else result.plus(other)
@@ -1628,8 +1687,8 @@ internal class CommonBigInteger : BigInteger {
      * `(this<sup>exponent</sup> rem m)`.  (Unlike `pow`, this
      * method permits negative exponents.)
      *
-     * @param  exponent the exponent.
-     * @param  modulus the modulus.
+     * @param exponent the exponent.
+     * @param modulus the modulus.
      * @return `this<sup>exponent</sup> rem m`
      * @throws ArithmeticException `m`  0 or the exponent is
      * negative and this BigInteger is not *relatively
@@ -1639,30 +1698,37 @@ internal class CommonBigInteger : BigInteger {
     override fun modPow(exponent: BigInteger, modulus: BigInteger): CommonBigInteger {
         var exponent: CommonBigInteger = exponent.castTo()
         val modulus: CommonBigInteger = modulus.castTo()
-        if (modulus._signum <= 0)
+        if (modulus._signum <= 0) {
             throw ArithmeticException("BigInteger: modulus not positive")
+        }
 
         // Trivial cases
-        if (exponent._signum == 0)
+        if (exponent._signum == 0) {
             return if (modulus == ONE) ZERO else ONE
+        }
 
-        if (this == ONE)
+        if (this == ONE) {
             return if (modulus == ONE) ZERO else ONE
+        }
 
-        if (this == ZERO && exponent._signum >= 0)
+        if (this == ZERO && exponent._signum >= 0) {
             return ZERO
+        }
 
-        if (this == negConst[1] && !exponent.testBit(0))
+        if (this == negConst[1] && !exponent.testBit(0)) {
             return if (modulus == ONE) ZERO else ONE
+        }
 
         val invertResult: Boolean = exponent._signum < 0
-        if (invertResult)
+        if (invertResult) {
             exponent = exponent.unaryMinus()
+        }
 
-        val base = if (this._signum < 0 || this >= modulus)
+        val base = if (this._signum < 0 || this >= modulus) {
             this.rem(modulus)
-        else
+        } else {
             this
+        }
         val result: CommonBigInteger
         if (modulus.testBit(0)) { // odd modulus
             result = base.oddModPow(exponent, modulus)
@@ -1674,22 +1740,24 @@ internal class CommonBigInteger : BigInteger {
              */
 
             // Tear m apart into odd part (m1) and power of 2 (m2)
-            val p = modulus.lowestSetBit   // Max pow of 2 that divides m
+            val p = modulus.lowestSetBit // Max pow of 2 that divides m
 
-            val m1 = modulus.shr(p)  // m/2**p
+            val m1 = modulus.shr(p) // m/2**p
             val m2 = ONE.shl(p) // 2**p
 
             // Calculate new base from m1
-            val base2 = if (this._signum < 0 || this.compareTo(m1) >= 0)
+            val base2 = if (this._signum < 0 || this.compareTo(m1) >= 0) {
                 this.rem(m1)
-            else
+            } else {
                 this
+            }
 
             // Caculate (base ** exponent) rem m1.
-            val a1 = if (m1 == ONE)
+            val a1 = if (m1 == ONE) {
                 ZERO
-            else
+            } else {
                 base2.oddModPow(exponent, m1)
+            }
 
             // Calculate (this ** exponent) rem m2
             val a2 = base.modPow2(exponent, p)
@@ -1777,12 +1845,14 @@ internal class CommonBigInteger : BigInteger {
          * hurt in the case k = 1, either.)
          */
         // Special case for exponent of one
-        if (y == ONE)
+        if (y == ONE) {
             return this
+        }
 
         // Special case for base of zero
-        if (_signum == 0)
+        if (_signum == 0) {
             return ZERO
+        }
 
         val base = _mag.cloneArray()
         val exp = y._mag
@@ -1883,8 +1953,9 @@ internal class CommonBigInteger : BigInteger {
         var mult = table[buf.ushr(1)]
 
         buf = 0
-        if (multpos == ebits)
+        if (multpos == ebits) {
             isone = false
+        }
 
         // The main loop
         while (true) {
@@ -1928,8 +1999,9 @@ internal class CommonBigInteger : BigInteger {
             }
 
             // Check if done
-            if (ebits == 0)
+            if (ebits == 0) {
                 break
+            }
 
             // Square the input
             if (!isone) {
@@ -1966,15 +2038,18 @@ internal class CommonBigInteger : BigInteger {
 
         var limit = exponent.bitLength
 
-        if (this.testBit(0))
+        if (this.testBit(0)) {
             limit = if (p - 1 < limit) p - 1 else limit
+        }
 
         while (expOffset < limit) {
-            if (exponent.testBit(expOffset))
+            if (exponent.testBit(expOffset)) {
                 result = result.times(baseToPow2).mod2(p)
+            }
             expOffset++
-            if (expOffset < limit)
+            if (expOffset < limit) {
                 baseToPow2 = baseToPow2.square().mod2(p)
+            }
         }
 
         return result
@@ -1985,8 +2060,9 @@ internal class CommonBigInteger : BigInteger {
      * Assumes that this `BigInteger >= 0` and `p > 0`.
      */
     private fun mod2(p: Int): CommonBigInteger {
-        if (bitLength <= p)
+        if (bitLength <= p) {
             return this
+        }
 
         // Copy remaining ints of _mag
         val numInts = (p + 31).ushr(5)
@@ -2003,7 +2079,7 @@ internal class CommonBigInteger : BigInteger {
     /**
      * Returns a BigInteger whose value is `(this`<sup>-1</sup> `rem m)`.
      *
-     * @param  modulus the modulus.
+     * @param modulus the modulus.
      * @return `this`<sup>-1</sup> `rem m`.
      * @throws ArithmeticException `m`  0, or this BigInteger
      * has no multiplicative inverse rem m (that is, this BigInteger
@@ -2011,19 +2087,23 @@ internal class CommonBigInteger : BigInteger {
      */
     override fun modInverse(modulus: BigInteger): CommonBigInteger {
         val modulus: CommonBigInteger = modulus.castTo()
-        if (modulus._signum != 1)
+        if (modulus._signum != 1) {
             throw ArithmeticException("BigInteger: modulus not positive")
+        }
 
-        if (modulus == ONE)
+        if (modulus == ONE) {
             return ZERO
+        }
 
         // Calculate (this rem m)
         var modVal = this
-        if (_signum < 0 || this.compareMagnitude(modulus) >= 0)
+        if (_signum < 0 || this.compareMagnitude(modulus) >= 0) {
             modVal = this.rem(modulus)
+        }
 
-        if (modVal == ONE)
+        if (modVal == ONE) {
             return ONE
+        }
 
         val a = MutableBigInteger(modVal)
         val b = MutableBigInteger(modulus)
@@ -2040,13 +2120,14 @@ internal class CommonBigInteger : BigInteger {
      * this method performs a right shift.
      * (Computes `floor(this * 2<sup>n</sup>)`.)
      *
-     * @param  n shift distance, in bits.
+     * @param n shift distance, in bits.
      * @return `this << n`
      * @see .shr
      */
     override infix fun shl(n: Int): CommonBigInteger {
-        if (_signum == 0)
+        if (_signum == 0) {
             return ZERO
+        }
         return if (n > 0) {
             CommonBigInteger(shl(_mag, n), _signum)
         } else if (n == 0) {
@@ -2064,13 +2145,14 @@ internal class CommonBigInteger : BigInteger {
      * negative, in which case this method performs a left shift.
      * (Computes `floor(this / 2<sup>n</sup>)`.)
      *
-     * @param  n shift distance, in bits.
+     * @param n shift distance, in bits.
      * @return `this >> n`
      * @see .shl
      */
     override infix fun shr(n: Int): CommonBigInteger {
-        if (_signum == 0)
+        if (_signum == 0) {
             return ZERO
+        }
         return if (n > 0) {
             shiftRightImpl(n)
         } else if (n == 0) {
@@ -2087,7 +2169,7 @@ internal class CommonBigInteger : BigInteger {
      * distance, `n`, is considered unsigned.
      * (Computes `floor(this * 2<sup>-n</sup>)`.)
      *
-     * @param  n unsigned shift distance, in bits.
+     * @param n unsigned shift distance, in bits.
      * @return `this >> n`
      */
     private fun shiftRightImpl(n: Int): CommonBigInteger {
@@ -2097,8 +2179,9 @@ internal class CommonBigInteger : BigInteger {
         var newMag: IntArray? = null
 
         // Special case: entire contents shifted off the end
-        if (nInts >= magLen)
+        if (nInts >= magLen) {
             return if (_signum >= 0) ZERO else (negConst[1] ?: throw IllegalStateException())
+        }
 
         if (nBits == 0) {
             val newMagLen = magLen - nInts
@@ -2128,11 +2211,13 @@ internal class CommonBigInteger : BigInteger {
                 onesLost = _mag[i] != 0
                 i--
             }
-            if (!onesLost && nBits != 0)
+            if (!onesLost && nBits != 0) {
                 onesLost = _mag[magLen - nInts - 1] shl 32 - nBits != 0
+            }
 
-            if (onesLost)
+            if (onesLost) {
                 newMag = javaIncrement(newMag)
+            }
         }
 
         return CommonBigInteger(newMag, _signum)
@@ -2240,20 +2325,20 @@ internal class CommonBigInteger : BigInteger {
         return of(result)
     }
 
-
     // Single Bit Operations
 
     /**
      * Returns `true` if and only if the designated bit is set.
      * (Computes `((this & (1<<n)) != 0)`.)
      *
-     * @param  n index of bit to test.
+     * @param n index of bit to test.
      * @return `true` if and only if the designated bit is set.
      * @throws ArithmeticException `n` is negative.
      */
     override fun testBit(n: Int): Boolean {
-        if (n < 0)
+        if (n < 0) {
             throw ArithmeticException("Negative bit address")
+        }
 
         return getInt(n.ushr(5)) and (1 shl (n and 31)) != 0
     }
@@ -2270,13 +2355,14 @@ internal class CommonBigInteger : BigInteger {
      * Returns a BigInteger whose value is equivalent to this BigInteger
      * with the designated bit set.  (Computes `(this | (1<<n))`.)
      *
-     * @param  n index of bit to set.
+     * @param n index of bit to set.
      * @return `this | (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
     override fun setBit(n: Int): CommonBigInteger {
-        if (n < 0)
+        if (n < 0) {
             throw ArithmeticException("Negative bit address")
+        }
 
         val intNum = n.ushr(5)
         val result = IntArray(max(intLength, intNum + 2))
@@ -2294,13 +2380,14 @@ internal class CommonBigInteger : BigInteger {
      * with the designated bit cleared.
      * (Computes `(this & ~(1<<n))`.)
      *
-     * @param  n index of bit to clear.
+     * @param n index of bit to clear.
      * @return `this & ~(1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
     override fun clearBit(n: Int): CommonBigInteger {
-        if (n < 0)
+        if (n < 0) {
             throw ArithmeticException("Negative bit address")
+        }
 
         val intNum = n.ushr(5)
         val result = IntArray(max(intLength, (n + 1).ushr(5) + 1))
@@ -2318,13 +2405,14 @@ internal class CommonBigInteger : BigInteger {
      * with the designated bit flipped.
      * (Computes `(this ^ (1<<n))`.)
      *
-     * @param  n index of bit to flip.
+     * @param n index of bit to flip.
      * @return `this ^ (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
     override fun flipBit(n: Int): CommonBigInteger {
-        if (n < 0)
+        if (n < 0) {
             throw ArithmeticException("Negative bit address")
+        }
 
         val intNum = n.ushr(5)
         val result = IntArray(max(intLength, intNum + 2))
@@ -2336,7 +2424,6 @@ internal class CommonBigInteger : BigInteger {
 
         return of(result)
     }
-
 
     // Miscellaneous Bit Operations
 
@@ -2391,8 +2478,8 @@ internal class CommonBigInteger : BigInteger {
     override val bitCount: Int
         get() {
             var bc = _bitCountPlusOne - 1
-            if (bc == -1) {  // bitCount not initialized yet
-                bc = 0      // offset by one to initialize
+            if (bc == -1) { // bitCount not initialized yet
+                bc = 0 // offset by one to initialize
                 // Count the bits in the magnitude
                 for (i in _mag.indices)
                     bc += _mag[i].bitCount()
@@ -2421,7 +2508,7 @@ internal class CommonBigInteger : BigInteger {
      * `certainty` is  0, `true` is
      * returned.
      *
-     * @param  certainty a measure of the uncertainty that the caller is
+     * @param certainty a measure of the uncertainty that the caller is
      * willing to tolerate: if the call returns `true`
      * the probability that this BigInteger is prime exceeds
      * (1 - 1/2<sup>`certainty`</sup>).  The execution time of
@@ -2430,13 +2517,14 @@ internal class CommonBigInteger : BigInteger {
      * `false` if it's definitely composite.
      */
     override fun isProbablePrime(certainty: Int): Boolean {
-        if (certainty <= 0)
+        if (certainty <= 0) {
             return true
+        }
         val w = this.absoluteValue
-        if (w == TWO)
+        if (w == TWO) {
             return true
+        }
         return if (!w.testBit(0) || w == ONE) false else w.primeToCertainty(certainty, null)
-
     }
 
     // Comparison Operations
@@ -2449,7 +2537,7 @@ internal class CommonBigInteger : BigInteger {
      * idiom for performing these comparisons is: `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
      * &lt;*op*&gt; is one of the six comparison operators.
      *
-     * @param  other BigInteger to which this BigInteger is to be compared.
+     * @param other BigInteger to which this BigInteger is to be compared.
      * @return -1, 0 or 1 as this BigInteger is numerically less than, equal
      * to, or greater than other.
      */
@@ -2478,15 +2566,18 @@ internal class CommonBigInteger : BigInteger {
         val len1 = m1.size
         val m2 = other._mag
         val len2 = m2.size
-        if (len1 < len2)
+        if (len1 < len2) {
             return -1
-        if (len1 > len2)
+        }
+        if (len1 > len2) {
             return 1
+        }
         for (i in 0 until len1) {
             val a = m1[i]
             val b = m2[i]
-            if (a != b)
+            if (a != b) {
                 return if (a.toLong() and LONG_MASK < b.toLong() and LONG_MASK) -1 else 1
+            }
         }
         return 0
     }
@@ -2508,18 +2599,23 @@ internal class CommonBigInteger : BigInteger {
         }
         val highWord = other.ushr(32).toInt()
         if (highWord == 0) {
-            if (len < 1)
+            if (len < 1) {
                 return -1
-            if (len > 1)
+            }
+            if (len > 1) {
                 return 1
+            }
             val a = m1[0]
             val b = other.toInt()
             return if (a != b) {
                 if (a.toLong() and LONG_MASK < b.toLong() and LONG_MASK) -1 else 1
-            } else 0
+            } else {
+                0
+            }
         } else {
-            if (len < 2)
+            if (len < 2) {
                 return -1
+            }
             var a = m1[0]
             var b = highWord
             if (a != b) {
@@ -2529,38 +2625,45 @@ internal class CommonBigInteger : BigInteger {
             b = other.toInt()
             return if (a != b) {
                 if (a.toLong() and LONG_MASK < b.toLong() and LONG_MASK) -1 else 1
-            } else 0
+            } else {
+                0
+            }
         }
     }
 
     /**
      * Compares this BigInteger with the specified Object for equality.
      *
-     * @param  other Object to which this BigInteger is to be compared.
+     * @param other Object to which this BigInteger is to be compared.
      * @return `true` if and only if the specified Object is a
      * BigInteger whose value is numerically equal to this BigInteger.
      */
     override fun equals(other: Any?): Boolean {
         // This test is just an optimization, which may or may not help
-        if (other === this)
+        if (other === this) {
             return true
+        }
 
-        if (other !is CommonBigInteger)
+        if (other !is CommonBigInteger) {
             return false
+        }
 
         val xInt = other as CommonBigInteger?
-        if (xInt!!._signum != _signum)
+        if (xInt!!._signum != _signum) {
             return false
+        }
 
         val m = _mag
         val len = m.size
         val xm = xInt._mag
-        if (len != xm.size)
+        if (len != xm.size) {
             return false
+        }
 
         for (i in 0 until len)
-            if (xm[i] != m[i])
+            if (xm[i] != m[i]) {
                 return false
+            }
 
         return true
     }
@@ -2587,7 +2690,6 @@ internal class CommonBigInteger : BigInteger {
         return if (this > other) this else other
     }
 
-
     // Hash Function
 
     /**
@@ -2613,20 +2715,23 @@ internal class CommonBigInteger : BigInteger {
      * sign is prepended if appropriate.  (This representation is
      * compatible with the String constructor.)
      *
-     * @param  radix  radix of the String representation.
+     * @param radix  radix of the String representation.
      * @return String representation of this BigInteger in the given radix.
      * @see Int.toString
      */
     override fun toString(radix: Int): String {
         var radix = radix
-        if (_signum == 0)
+        if (_signum == 0) {
             return "0"
-        if (radix < CHAR_MIN_RADIX || radix > CHAR_MAX_RADIX)
+        }
+        if (radix < CHAR_MIN_RADIX || radix > CHAR_MAX_RADIX) {
             radix = 10
+        }
 
         // If it's small enough, use smallToString.
-        if (_mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD)
+        if (_mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD) {
             return smallToString(radix)
+        }
 
         // Otherwise use recursive toString, which requires positive arguments.
         // The results will be concatenated into this StringBuilder
@@ -2634,8 +2739,9 @@ internal class CommonBigInteger : BigInteger {
         if (_signum < 0) {
             toString(this.unaryMinus(), sb, radix, 0)
             sb = sb.insertChar(0, '-')
-        } else
+        } else {
             toString(this, sb, radix, 0)
+        }
 
         return sb.toString()
     }
@@ -2835,17 +2941,20 @@ internal class CommonBigInteger : BigInteger {
      * sign ints).
      */
     private fun getInt(n: Int): Int {
-        if (n < 0)
+        if (n < 0) {
             return 0
-        if (n >= _mag.size)
+        }
+        if (n >= _mag.size) {
             return signInt
+        }
 
         val magInt = _mag[_mag.size - n - 1]
 
-        return if (_signum >= 0)
+        return if (_signum >= 0) {
             magInt
-        else
+        } else {
             if (n <= firstNonzeroIntNum()) -magInt else magInt.inv()
+        }
     }
 
     /**
@@ -2872,7 +2981,6 @@ internal class CommonBigInteger : BigInteger {
         }
         return fn
     }
-
 
     /**
      * Returns the _mag array as an array of bytes.
@@ -2913,13 +3021,14 @@ internal class CommonBigInteger : BigInteger {
      * not exactly fit in a `long`.
      * @see CommonBigInteger.toLong
      *
-     * @since  1.8
+     * @since 1.8
      */
     override fun toLongExact(): Long {
-        return if (_mag.size <= 2 && bitLength <= 63)
+        return if (_mag.size <= 2 && bitLength <= 63) {
             toLong()
-        else
+        } else {
             throw ArithmeticException("BigInteger out of long range")
+        }
     }
 
     /**
@@ -2933,13 +3042,14 @@ internal class CommonBigInteger : BigInteger {
      * not exactly fit in an `int`.
      * @see CommonBigInteger.toInt
      *
-     * @since  1.8
+     * @since 1.8
      */
     override fun toIntExact(): Int {
-        return if (_mag.size <= 1 && bitLength <= 31)
+        return if (_mag.size <= 1 && bitLength <= 31) {
             toInt()
-        else
+        } else {
             throw ArithmeticException("BigInteger out of int range")
+        }
     }
 
     /**
@@ -2953,13 +3063,14 @@ internal class CommonBigInteger : BigInteger {
      * not exactly fit in a `short`.
      * @see CommonBigInteger.toShort
      *
-     * @since  1.8
+     * @since 1.8
      */
     override fun toShortExact(): Short {
         if (_mag.size <= 1 && bitLength <= 31) {
             val value = toInt()
-            if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE)
+            if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE) {
                 return toShort()
+            }
         }
         throw ArithmeticException("BigInteger out of short range")
     }
@@ -2975,13 +3086,14 @@ internal class CommonBigInteger : BigInteger {
      * not exactly fit in a `byte`.
      * @see CommonBigInteger.toByte
      *
-     * @since  1.8
+     * @since 1.8
      */
     override fun toByteExact(): Byte {
         if (_mag.size <= 1 && bitLength <= 31) {
             val value = toInt()
-            if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE)
+            if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE) {
                 return toByte()
+            }
         }
         throw ArithmeticException("BigInteger out of byte range")
     }
@@ -3149,8 +3261,9 @@ internal class CommonBigInteger : BigInteger {
         }
 
         private fun randomBits(numBits: Int, rnd: Random): ByteArray {
-            if (numBits < 0)
+            if (numBits < 0) {
                 throw IllegalArgumentException("numBits must be non-negative")
+            }
             val numBytes = ((numBits.toLong() + 7) / 8).toInt() // avoid overflow
             val randomBits = ByteArray(numBytes)
 
@@ -3176,8 +3289,8 @@ internal class CommonBigInteger : BigInteger {
          * specified bitLength. The probability that a BigInteger returned
          * by this method is composite does not exceed 2<sup>-100</sup>.
          *
-         * @param  bitLength bitLength of the returned BigInteger.
-         * @param  rnd source of random bits used to select candidates to be
+         * @param bitLength bitLength of the returned BigInteger.
+         * @param rnd source of random bits used to select candidates to be
          * tested for primality.
          * @return a BigInteger of `bitLength` bits that is probably prime
          * @throws ArithmeticException `bitLength < 2` or `bitLength` is too large.
@@ -3187,21 +3300,23 @@ internal class CommonBigInteger : BigInteger {
         @JvmStatic
         @JsName("probablePrime")
         fun probablePrime(bitLength: Int, rnd: Random): CommonBigInteger {
-            if (bitLength < 2)
+            if (bitLength < 2) {
                 throw ArithmeticException("bitLength < 2")
+            }
 
-            return if (bitLength < SMALL_PRIME_THRESHOLD)
+            return if (bitLength < SMALL_PRIME_THRESHOLD) {
                 smallPrime(
                     bitLength,
                     DEFAULT_PRIME_CERTAINTY,
                     rnd
                 )
-            else
+            } else {
                 largePrime(
                     bitLength,
                     DEFAULT_PRIME_CERTAINTY,
                     rnd
                 )
+            }
         }
 
         /**
@@ -3214,16 +3329,17 @@ internal class CommonBigInteger : BigInteger {
         private fun smallPrime(bitLength: Int, certainty: Int, rnd: Random): CommonBigInteger {
             val magLen = (bitLength + 31).ushr(5)
             val temp = IntArray(magLen)
-            val highBit = 1 shl (bitLength + 31 and 0x1f)  // High bit of high int
-            val highMask = (highBit shl 1) - 1  // Bits to keep in high int
+            val highBit = 1 shl (bitLength + 31 and 0x1f) // High bit of high int
+            val highMask = (highBit shl 1) - 1 // Bits to keep in high int
 
             while (true) {
                 // Construct a candidate
                 for (i in 0 until magLen)
                     temp[i] = rnd.nextInt()
-                temp[0] = temp[0] and highMask or highBit  // Ensure exact length
-                if (bitLength > 2)
-                    temp[magLen - 1] = temp[magLen - 1] or 1  // Make odd if bitlen > 2
+                temp[0] = temp[0] and highMask or highBit // Ensure exact length
+                if (bitLength > 2) {
+                    temp[magLen - 1] = temp[magLen - 1] or 1 // Make odd if bitlen > 2
+                }
 
                 val p = CommonBigInteger(temp, 1)
 
@@ -3233,17 +3349,20 @@ internal class CommonBigInteger : BigInteger {
                     if (r % 3 == 0L || r % 5 == 0L || r % 7 == 0L || r % 11 == 0L ||
                         r % 13 == 0L || r % 17 == 0L || r % 19 == 0L || r % 23 == 0L ||
                         r % 29 == 0L || r % 31 == 0L || r % 37 == 0L || r % 41 == 0L
-                    )
+                    ) {
                         continue // Candidate is composite; try another
+                    }
                 }
 
                 // All candidates of bitLength 2 and 3 are prime by this point
-                if (bitLength < 4)
+                if (bitLength < 4) {
                     return p
+                }
 
                 // Do expensive test if we survive pre-test (or it's inapplicable)
-                if (p.primeToCertainty(certainty, rnd))
+                if (p.primeToCertainty(certainty, rnd)) {
                     return p
+                }
             }
         }
 
@@ -3267,8 +3386,9 @@ internal class CommonBigInteger : BigInteger {
 
             while (candidate == null || candidate.bitLength != bitLength) {
                 p = p.plus(of((2 * searchLen).toLong()))
-                if (p.bitLength != bitLength)
+                if (p.bitLength != bitLength) {
                     p = CommonBigInteger(bitLength, rnd).setBit(bitLength - 1)
+                }
                 p._mag[p._mag.size - 1] = p._mag[p._mag.size - 1] and -0x2
                 searchSieve = BitSieve(p, searchLen)
                 candidate = searchSieve.retrieve(p, certainty, rnd)
@@ -3289,8 +3409,9 @@ internal class CommonBigInteger : BigInteger {
          */
         private fun jacobiSymbol(p: Int, n: CommonBigInteger): Int {
             var p = p
-            if (p == 0)
+            if (p == 0) {
                 return 0
+            }
 
             // Algorithm and comments adapted from Colin Plumb's C library.
             var j = 1
@@ -3300,8 +3421,9 @@ internal class CommonBigInteger : BigInteger {
             if (p < 0) {
                 p = -p
                 val n8 = u and 7
-                if (n8 == 3 || n8 == 7)
+                if (n8 == 3 || n8 == 7) {
                     j = -j // 3 (011) or 7 (111) rem 8
+                }
             }
 
             // Get rid of factors of 2 in p
@@ -3309,15 +3431,18 @@ internal class CommonBigInteger : BigInteger {
                 p = p shr 2
             if (p and 1 == 0) {
                 p = p shr 1
-                if (u xor (u shr 1) and 2 != 0)
+                if (u xor (u shr 1) and 2 != 0) {
                     j = -j // 3 (011) or 5 (101) rem 8
+                }
             }
-            if (p == 1)
+            if (p == 1) {
                 return j
+            }
             // Then, apply quadratic reciprocity
-            if (p and u and 2 != 0)
-            // p = u = 3 (rem 4)?
+            if (p and u and 2 != 0) {
+                // p = u = 3 (rem 4)?
                 j = -j
+            }
             // And reduce u rem p
             u = n.rem(of(p.toLong())).toInt()
 
@@ -3327,19 +3452,22 @@ internal class CommonBigInteger : BigInteger {
                     u = u shr 2
                 if (u and 1 == 0) {
                     u = u shr 1
-                    if (p xor (p shr 1) and 2 != 0)
-                        j = -j     // 3 (011) or 5 (101) rem 8
+                    if (p xor (p shr 1) and 2 != 0) {
+                        j = -j // 3 (011) or 5 (101) rem 8
+                    }
                 }
-                if (u == 1)
+                if (u == 1) {
                     return j
+                }
                 // Now both u and p are odd, so use quadratic reciprocity
                 require(u < p)
                 val t = u
                 u = p
                 p = t
-                if (u and p and 2 != 0)
-                // u = p = 3 (rem 4)?
+                if (u and p and 2 != 0) {
+                    // u = p = 3 (rem 4)?
                     j = -j
+                }
                 // Now u >= p, so it can be reduced
                 u %= p
             }
@@ -3357,8 +3485,9 @@ internal class CommonBigInteger : BigInteger {
                 u2 = u.times(v).rem(n)
 
                 v2 = v.square().plus(d.times(u.square())).rem(n)
-                if (v2.testBit(0))
+                if (v2.testBit(0)) {
                     v2 = v2.minus(n)
+                }
 
                 v2 = v2.shr(1)
 
@@ -3366,13 +3495,15 @@ internal class CommonBigInteger : BigInteger {
                 v = v2
                 if (k.testBit(i)) {
                     u2 = u.plus(v).rem(n)
-                    if (u2.testBit(0))
+                    if (u2.testBit(0)) {
                         u2 = u2.minus(n)
+                    }
 
                     u2 = u2.shr(1)
                     v2 = v.plus(d.times(u)).rem(n)
-                    if (v2.testBit(0))
+                    if (v2.testBit(0)) {
                         v2 = v2.minus(n)
+                    }
                     v2 = v2.shr(1)
 
                     u = u2
@@ -3386,7 +3517,7 @@ internal class CommonBigInteger : BigInteger {
             throw ArithmeticException("BigInteger would overflow supported range")
         }
 
-        //Static Factory Methods
+        // Static Factory Methods
 
         /**
          * Returns a BigInteger whose value is equal to that of the
@@ -3403,12 +3534,14 @@ internal class CommonBigInteger : BigInteger {
         @JvmStatic
         fun of(other: Long): CommonBigInteger {
             // If -MAX_CONSTANT < val < MAX_CONSTANT, return stashed constant
-            if (other == 0L)
+            if (other == 0L) {
                 return ZERO
-            if (other in 1..MAX_CONSTANT)
+            }
+            if (other in 1..MAX_CONSTANT) {
                 return posConst[other.toInt()] ?: throw IllegalStateException()
-            else if (other < 0 && other >= -MAX_CONSTANT)
+            } else if (other < 0 && other >= -MAX_CONSTANT) {
                 return negConst[(-other).toInt()] ?: throw IllegalStateException()
+            }
 
             return CommonBigInteger(other)
         }
@@ -3474,10 +3607,10 @@ internal class CommonBigInteger : BigInteger {
             }
 
             /*
-         * Initialize the cache of radix^(2^x) values used for base conversion
-         * with just the very first value.  Additional values will be created
-         * on demand.
-         */
+             * Initialize the cache of radix^(2^x) values used for base conversion
+             * with just the very first value.  Additional values will be created
+             * on demand.
+             */
             powerCache = arrayOfNulls(CHAR_MAX_RADIX + 1)
             logCache = DoubleArray(CHAR_MAX_RADIX + 1)
 
@@ -3490,7 +3623,7 @@ internal class CommonBigInteger : BigInteger {
         /**
          * The BigInteger constant zero.
          *
-         * @since   1.2
+         * @since 1.2
          */
         @JvmField
         @JsName("ZERO")
@@ -3499,7 +3632,7 @@ internal class CommonBigInteger : BigInteger {
         /**
          * The BigInteger constant one.
          *
-         * @since   1.2
+         * @since 1.2
          */
         @JvmField
         @JsName("ONE")
@@ -3508,7 +3641,7 @@ internal class CommonBigInteger : BigInteger {
         /**
          * The BigInteger constant two.
          *
-         * @since   9
+         * @since 9
          */
         @JvmField
         @JsName("TWO")
@@ -3524,7 +3657,7 @@ internal class CommonBigInteger : BigInteger {
         /**
          * The BigInteger constant ten.
          *
-         * @since   1.5
+         * @since 1.5
          */
         @JvmField
         @JsName("TEN")
@@ -3606,14 +3739,14 @@ internal class CommonBigInteger : BigInteger {
                 // Add common parts of both numbers
                 while (yIndex > 0) {
                     sum = (x[--xIndex].toLong() and LONG_MASK) +
-                            (y[--yIndex].toLong() and LONG_MASK) + sum.ushr(32)
+                        (y[--yIndex].toLong() and LONG_MASK) + sum.ushr(32)
                     result[xIndex] = sum.toInt()
                 }
             }
             // Copy remainder of longer number while carry propagation is required
             var carry = sum.ushr(32) != 0L
             while (xIndex > 0 && carry) {
-                //carry = ((result[--xIndex] = x[xIndex] + 1) == 0)
+                // carry = ((result[--xIndex] = x[xIndex] + 1) == 0)
                 result[--xIndex] = x[xIndex] + 1
                 carry = result[xIndex] == 0
             }
@@ -3647,7 +3780,7 @@ internal class CommonBigInteger : BigInteger {
                     val borrow = difference shr 32 != 0L
                     if (borrow) {
                         result[0] = highWord - 1
-                    } else {        // Copy remainder of longer number
+                    } else { // Copy remainder of longer number
                         result[0] = highWord
                     }
                     return result
@@ -3714,8 +3847,9 @@ internal class CommonBigInteger : BigInteger {
 
             // Subtract common parts of both numbers
             while (littleIndex > 0) {
-                difference =
-                    (big[--bigIndex].toLong() and LONG_MASK) - (little[--littleIndex].toLong() and LONG_MASK) + (difference shr 32)
+                difference = (big[--bigIndex].toLong() and LONG_MASK) -
+                    (little[--littleIndex].toLong() and LONG_MASK) +
+                    (difference shr 32)
                 result[bigIndex] = difference.toInt()
             }
 
@@ -3739,7 +3873,8 @@ internal class CommonBigInteger : BigInteger {
                     shl(
                         x,
                         y.numberOfTrailingZeros()
-                    ), sign
+                    ),
+                    sign
                 )
             }
             val xlen = x.size
@@ -3775,8 +3910,9 @@ internal class CommonBigInteger : BigInteger {
             val xstart = xlen - 1
             val ystart = ylen - 1
 
-            if (z == null || z.size < xlen + ylen)
+            if (z == null || z.size < xlen + ylen) {
                 z = IntArray(xlen + ylen)
+            }
 
             var carry: Long = 0
             run {
@@ -3798,7 +3934,7 @@ internal class CommonBigInteger : BigInteger {
                 var k = ystart + 1 + i
                 while (j >= 0) {
                     val product = (y[j].toLong() and LONG_MASK) * (x[i].toLong() and LONG_MASK) +
-                            (z[k].toLong() and LONG_MASK) + carry
+                        (z[k].toLong() and LONG_MASK) + carry
                     z[k] = product.toInt()
                     carry = product.ushr(32)
                     j--
@@ -3811,7 +3947,7 @@ internal class CommonBigInteger : BigInteger {
 
         private fun multiplyToLenCheck(array: IntArray, length: Int) {
             if (length <= 0) {
-                return   // not an error because multiplyToLen won't execute if len <= 0
+                return // not an error because multiplyToLen won't execute if len <= 0
             }
 
             if (length > array.size) {
@@ -3848,8 +3984,8 @@ internal class CommonBigInteger : BigInteger {
             val yl = y.getLower(half)
             val yh = y.getUpper(half)
 
-            val p1 = xh.times(yh)  // p1 = xh*yh
-            val p2 = xl.times(yl)  // p2 = xl*yl
+            val p1 = xh.times(yh) // p1 = xh*yh
+            val p2 = xl.times(yl) // p2 = xl*yl
 
             // p3=(xh+xl)*(yh+yl)
             val p3 = xh.plus(xl).times(yh.plus(yl))
@@ -3899,7 +4035,7 @@ internal class CommonBigInteger : BigInteger {
             val largest = max(alen, blen)
 
             // k is the size (in ints) of the lower-order slices.
-            val k = (largest + 2) / 3   // Equal to ceil(largest/3)
+            val k = (largest + 2) / 3 // Equal to ceil(largest/3)
 
             // r is the size (in ints) of the highest-order slice.
             val r = largest - 2 * k
@@ -3975,8 +4111,9 @@ internal class CommonBigInteger : BigInteger {
         private fun squareToLen(x: IntArray, len: Int, z: IntArray?): IntArray {
             var z = z
             val zlen = len shl 1
-            if (z == null || z.size < zlen)
+            if (z == null || z.size < zlen) {
                 z = IntArray(zlen)
+            }
 
             // Execute checks before calling intrinsified method.
             implSquareToLenChecks(x, len, z, zlen)
@@ -3993,13 +4130,13 @@ internal class CommonBigInteger : BigInteger {
             if (len > x.size) {
                 throw IllegalArgumentException(
                     "input length out of bound: " +
-                            len + " > " + x.size
+                        len + " > " + x.size
                 )
             }
             if (len * 2 > z.size) {
                 throw IllegalArgumentException(
                     "input length out of bound: " +
-                            len * 2 + " > " + z.size
+                        len * 2 + " > " + z.size
                 )
             }
             if (zlen < 1) {
@@ -4008,7 +4145,7 @@ internal class CommonBigInteger : BigInteger {
             if (zlen > z.size) {
                 throw IllegalArgumentException(
                     "input length out of bound: " +
-                            len + " > " + z.size
+                        len + " > " + z.size
                 )
             }
         }
@@ -4018,39 +4155,39 @@ internal class CommonBigInteger : BigInteger {
          */
         private fun implSquareToLen(x: IntArray, len: Int, z: IntArray, zlen: Int): IntArray {
             /*
-         * The algorithm used here is adapted from Colin Plumb's C library.
-         * Technique: Consider the partial products in the multiplication
-         * of "abcde" by itself:
-         *
-         *               a  b  c  d  e
-         *            *  a  b  c  d  e
-         *          ==================
-         *              ae be ce de ee
-         *           ad bd cd dd de
-         *        ac bc cc cd ce
-         *     ab bb bc bd be
-         *  aa ab ac ad ae
-         *
-         * Note that everything above the main diagonal:
-         *              ae be ce de = (abcd) * e
-         *           ad bd cd       = (abc) * d
-         *        ac bc             = (ab) * c
-         *     ab                   = (a) * b
-         *
-         * is a copy of everything below the main diagonal:
-         *                       de
-         *                 cd ce
-         *           bc bd be
-         *     ab ac ad ae
-         *
-         * Thus, the sum is 2 * (off the diagonal) + diagonal.
-         *
-         * This is accumulated beginning with the diagonal (which
-         * consist of the squares of the digits of the input), which is then
-         * divided by two, the off-diagonal added, and multiplied by two
-         * again.  The low bit is simply a copy of the low bit of the
-         * input, so it doesn't need special care.
-         */
+             * The algorithm used here is adapted from Colin Plumb's C library.
+             * Technique: Consider the partial products in the multiplication
+             * of "abcde" by itself:
+             *
+             *               a  b  c  d  e
+             *            *  a  b  c  d  e
+             *          ==================
+             *              ae be ce de ee
+             *           ad bd cd dd de
+             *        ac bc cc cd ce
+             *     ab bb bc bd be
+             *  aa ab ac ad ae
+             *
+             * Note that everything above the main diagonal:
+             *              ae be ce de = (abcd) * e
+             *           ad bd cd       = (abc) * d
+             *        ac bc             = (ab) * c
+             *     ab                   = (a) * b
+             *
+             * is a copy of everything below the main diagonal:
+             *                       de
+             *                 cd ce
+             *           bc bd be
+             *     ab ac ad ae
+             *
+             * Thus, the sum is 2 * (off the diagonal) + diagonal.
+             *
+             * This is accumulated beginning with the diagonal (which
+             * consist of the squares of the digits of the input), which is then
+             * divided by two, the off-diagonal added, and multiplied by two
+             * again.  The low bit is simply a copy of the low bit of the
+             * input, so it doesn't need special care.
+             */
 
             // Store the squares, right shifted one bit (i.e., divided by 2)
             var lastProductLowWord = 0
@@ -4136,8 +4273,9 @@ internal class CommonBigInteger : BigInteger {
 
         // shifts a up to len left n bits assumes no leading zeros, 0<=n<32
         private fun primitiveLeftShift(a: IntArray, len: Int, n: Int) {
-            if (len == 0 || n == 0)
+            if (len == 0 || n == 0) {
                 return
+            }
 
             val n2 = 32 - n
             var i = 0
@@ -4166,7 +4304,11 @@ internal class CommonBigInteger : BigInteger {
         // very large operands: MONTGOMERY_INTRINSIC_THRESHOLD should be
         // larger than any reasonable crypto key.
         private fun montgomeryMultiply(
-            a: IntArray, b: IntArray, n: IntArray, len: Int, inv: Long,
+            a: IntArray,
+            b: IntArray,
+            n: IntArray,
+            len: Int,
+            inv: Long,
             product: IntArray?
         ): IntArray {
             var product = product
@@ -4187,10 +4329,7 @@ internal class CommonBigInteger : BigInteger {
             }
         }
 
-        private fun montgomerySquare(
-            a: IntArray, n: IntArray, len: Int, inv: Long,
-            product: IntArray?
-        ): IntArray {
+        private fun montgomerySquare(a: IntArray, n: IntArray, len: Int, inv: Long, product: IntArray?): IntArray {
             var product = product
             implMontgomeryMultiplyChecks(a, a, n, len, product)
             if (len > MONTGOMERY_INTRINSIC_THRESHOLD) {
@@ -4231,26 +4370,28 @@ internal class CommonBigInteger : BigInteger {
         // sufficiently large.
         private fun materialize(z: IntArray?, len: Int): IntArray {
             var z = z
-            if (z == null || z.size < len)
+            if (z == null || z.size < len) {
                 z = IntArray(len)
+            }
             return z
         }
 
         // These methods are intended to be be replaced by virtual machine
         // intrinsics.
         private fun implMontgomeryMultiply(
-            a: IntArray, b: IntArray, n: IntArray, len: Int,
-            inv: Long, product: IntArray
+            a: IntArray,
+            b: IntArray,
+            n: IntArray,
+            len: Int,
+            inv: Long,
+            product: IntArray
         ): IntArray {
             var product = product
             product = multiplyToLen(a, len, b, len, product)
             return montReduce(product, n, len, inv.toInt())
         }
 
-        private fun implMontgomerySquare(
-            a: IntArray, n: IntArray, len: Int,
-            inv: Long, product: IntArray
-        ): IntArray {
+        private fun implMontgomerySquare(a: IntArray, n: IntArray, len: Int, inv: Long, product: IntArray): IntArray {
             var product = product
             product = squareToLen(a, len, product)
             return montReduce(product, n, len, inv.toInt())
@@ -4283,19 +4424,20 @@ internal class CommonBigInteger : BigInteger {
             return n
         }
 
-
         /*
-     * Returns -1, 0 or +1 as big-endian unsigned int array arg1 is less than,
-     * equal to, or greater than arg2 up to length len.
-     */
+         * Returns -1, 0 or +1 as big-endian unsigned int array arg1 is less than,
+         * equal to, or greater than arg2 up to length len.
+         */
         private fun intArrayCmpToLen(arg1: IntArray, arg2: IntArray, len: Int): Int {
             for (i in 0 until len) {
                 val b1 = arg1[i].toLong() and LONG_MASK
                 val b2 = arg2[i].toLong() and LONG_MASK
-                if (b1 < b2)
+                if (b1 < b2) {
                     return -1
-                if (b1 > b2)
+                }
+                if (b1 > b2) {
                     return 1
+                }
             }
             return 0
         }
@@ -4353,7 +4495,7 @@ internal class CommonBigInteger : BigInteger {
             offset = out.size - offset - 1
             for (j in len - 1 downTo 0) {
                 val product = (`in`[j].toLong() and LONG_MASK) * kLong +
-                        (out[offset].toLong() and LONG_MASK) + carry
+                    (out[offset].toLong() and LONG_MASK) + carry
                 out[offset--] = product.toInt()
                 carry = product.ushr(32)
             }
@@ -4371,15 +4513,17 @@ internal class CommonBigInteger : BigInteger {
             val t = (a[offset].toLong() and LONG_MASK) + (carry.toLong() and LONG_MASK)
 
             a[offset] = t.toInt()
-            if (t.ushr(32) == 0L)
+            if (t.ushr(32) == 0L) {
                 return 0
+            }
             while (--mlen >= 0) {
                 if (--offset < 0) { // Carry out of number
                     return 1
                 } else {
                     a[offset]++
-                    if (a[offset] != 0)
+                    if (a[offset] != 0) {
                         return 0
+                    }
                 }
             }
             return 1
@@ -4391,7 +4535,7 @@ internal class CommonBigInteger : BigInteger {
          * (Computes `this * 2<sup>n</sup>`.)
          *
          * @param mag magnitude, the most-significant int (`_mag[0]`) must be non-zero.
-         * @param  n unsigned shift distance, in bits.
+         * @param n unsigned shift distance, in bits.
          * @return `_mag << n`
          */
         private fun shl(mag: IntArray, n: Int): IntArray {
@@ -4435,10 +4579,7 @@ internal class CommonBigInteger : BigInteger {
          * @param radix  The base to convert to.
          * @param digits The minimum number of digits to pad to.
          */
-        private fun toString(
-            u: CommonBigInteger, sb: StringBuilder, radix: Int,
-            digits: Int
-        ) {
+        private fun toString(u: CommonBigInteger, sb: StringBuilder, radix: Int, digits: Int) {
             // If we're smaller than a certain threshold, use the smallToString
             // method, padding with leading zeroes when necessary.
             if (u._mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD) {
@@ -4590,9 +4731,8 @@ internal class CommonBigInteger : BigInteger {
                 keep++
             }
 
-
             /* Allocate output array.  If all non-sign bytes are 0x00, we must
-         * allocate space for one extra output byte. */
+             * allocate space for one extra output byte. */
             k = keep
             while (k < indexBound && a[k].toInt() == 0) {
                 k++
@@ -4603,13 +4743,14 @@ internal class CommonBigInteger : BigInteger {
             val result = IntArray(intLength)
 
             /* Copy one's complement of input into output, leaving extra
-         * byte (if it exists) == 0x00 */
+             * byte (if it exists) == 0x00 */
             var b = indexBound - 1
             for (i in intLength - 1 downTo 0) {
                 result[i] = a[b--].toInt() and 0xff
                 var numBytesToTransfer = min(3, b - keep + 1)
-                if (numBytesToTransfer < 0)
+                if (numBytesToTransfer < 0) {
                     numBytesToTransfer = 0
+                }
                 var j = 8
                 while (j <= 8 * numBytesToTransfer) {
                     result[i] = result[i] or (a[b--].toInt() and 0xff shl j)
@@ -4624,8 +4765,9 @@ internal class CommonBigInteger : BigInteger {
             // Add one to one's complement to generate two's complement
             for (i in result.indices.reversed()) {
                 result[i] = ((result[i].toLong() and LONG_MASK) + 1L).toInt()
-                if (result[i] != 0)
+                if (result[i] != 0) {
                     break
+                }
             }
 
             return result
@@ -4646,7 +4788,7 @@ internal class CommonBigInteger : BigInteger {
             }
 
             /* Allocate output array.  If all non-sign ints are 0x00, we must
-         * allocate space for one extra output int. */
+             * allocate space for one extra output int. */
             j = keep
             while (j < a.size && a[j] == 0) {
                 j++
@@ -4655,7 +4797,7 @@ internal class CommonBigInteger : BigInteger {
             val result = IntArray(a.size - keep + extraInt)
 
             /* Copy one's complement of input into output, leaving extra
-         * int (if it exists) == 0x00 */
+             * int (if it exists) == 0x00 */
             for (i in keep until a.size)
                 result[i - keep + extraInt] = a[i].inv()
 

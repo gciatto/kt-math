@@ -44,8 +44,8 @@ import kotlin.random.Random
  *
  * @see CommonBigInteger
  *
- * @author  Michael McCloskey
- * @since   1.3
+ * @author Michael McCloskey
+ * @since 1.3
  */
 @Suppress("NAME_SHADOWING")
 internal class BitSieve {
@@ -116,8 +116,9 @@ internal class BitSieve {
 
             // Take each multiple of step out of sieve
             start = convertedStep - start
-            if (start % 2 == 0)
+            if (start % 2 == 0) {
                 start += convertedStep
+            }
             sieveSingle(searchLen, (start - 1) / 2, convertedStep)
 
             // Find next prime from small sieve
@@ -148,13 +149,15 @@ internal class BitSieve {
      * specified limit. It returns -1 if there is no such clear bit.
      */
     private fun sieveSearch(limit: Int, start: Int): Int {
-        if (start >= limit)
+        if (start >= limit) {
             return -1
+        }
 
         var index = start
         do {
-            if (!get(index))
+            if (!get(index)) {
                 return index
+            }
             index++
         } while (index < limit - 1)
         return -1
@@ -186,8 +189,9 @@ internal class BitSieve {
                     val candidate = initValue.plus(
                         CommonBigInteger.of(offset.toLong())
                     )
-                    if (candidate.primeToCertainty(certainty, random))
+                    if (candidate.primeToCertainty(certainty, random)) {
                         return candidate
+                    }
                 }
                 nextLong = nextLong ushr 1
                 offset += 2

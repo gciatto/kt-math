@@ -78,7 +78,7 @@ interface BigInteger : Comparable<BigInteger> {
     /**
      * Returns a BigInteger whose value is `(this + val)`.
      *
-     * @param  other value to be added to this BigInteger.
+     * @param other value to be added to this BigInteger.
      * @return `this + val`
      */
     @JsName("plus")
@@ -93,7 +93,7 @@ interface BigInteger : Comparable<BigInteger> {
     /**
      * Returns a BigInteger whose value is `(this - val)`.
      *
-     * @param  other value to be subtracted from this BigInteger.
+     * @param other value to be subtracted from this BigInteger.
      * @return `this - val`
      */
     @JsName("minus")
@@ -180,7 +180,7 @@ interface BigInteger : Comparable<BigInteger> {
      * Returns a BigInteger whose value is `(this<sup>exponent</sup>)`.
      * Note that `exponent` is an integer rather than a BigInteger.
      *
-     * @param  exponent exponent to which this BigInteger is to be raised.
+     * @param exponent exponent to which this BigInteger is to be raised.
      * @return `this<sup>exponent</sup>`
      * @throws ArithmeticException `exponent` is negative.  (This would
      * cause the operation to yield a non-integer value.)
@@ -203,7 +203,7 @@ interface BigInteger : Comparable<BigInteger> {
      * `(i * sqrt(-val))` where *i* is the
      * *imaginary unit* and is equal to
      * `sqrt(-1)`.)
-     * @since  9
+     * @since 9
      */
     @JsName("sqrt")
     fun sqrt(): BigInteger
@@ -221,7 +221,7 @@ interface BigInteger : Comparable<BigInteger> {
      * *imaginary unit* and is equal to
      * `sqrt(-1)`.)
      * @see .sqrt
-     * @since  9
+     * @since 9
      */
     @JsName("sqrtAndRemainder")
     fun sqrtAndRemainder(): Array<out BigInteger>
@@ -259,7 +259,7 @@ interface BigInteger : Comparable<BigInteger> {
      * differs from `remainder` in that it always returns a
      * *non-negative* BigInteger.
      *
-     * @param  modulus the modulus.
+     * @param modulus the modulus.
      * @return `this rem m`
      * @throws ArithmeticException `m`  0
      * @see .remainder
@@ -278,8 +278,8 @@ interface BigInteger : Comparable<BigInteger> {
      * `(this<sup>exponent</sup> rem m)`.  (Unlike `pow`, this
      * method permits negative exponents.)
      *
-     * @param  exponent the exponent.
-     * @param  modulus the modulus.
+     * @param exponent the exponent.
+     * @param modulus the modulus.
      * @return `this<sup>exponent</sup> rem m`
      * @throws ArithmeticException `m`  0 or the exponent is
      * negative and this BigInteger is not *relatively
@@ -292,7 +292,7 @@ interface BigInteger : Comparable<BigInteger> {
     /**
      * Returns a BigInteger whose value is `(this`<sup>-1</sup> `rem m)`.
      *
-     * @param  modulus the modulus.
+     * @param modulus the modulus.
      * @return `this`<sup>-1</sup> `rem m`.
      * @throws ArithmeticException `m`  0, or this BigInteger
      * has no multiplicative inverse rem m (that is, this BigInteger
@@ -313,7 +313,7 @@ interface BigInteger : Comparable<BigInteger> {
      * this method performs a right shift.
      * (Computes `floor(this * 2<sup>n</sup>)`.)
      *
-     * @param  n shift distance, in bits.
+     * @param n shift distance, in bits.
      * @return `this << n`
      * @see .shr
      */
@@ -326,7 +326,7 @@ interface BigInteger : Comparable<BigInteger> {
      * negative, in which case this method performs a left shift.
      * (Computes `floor(this / 2<sup>n</sup>)`.)
      *
-     * @param  n shift distance, in bits.
+     * @param n shift distance, in bits.
      * @return `this >> n`
      * @see .shl
      */
@@ -417,7 +417,7 @@ interface BigInteger : Comparable<BigInteger> {
      * Returns `true` if and only if the designated bit is set.
      * (Computes `((this & (1<<n)) != 0)`.)
      *
-     * @param  n index of bit to test.
+     * @param n index of bit to test.
      * @return `true` if and only if the designated bit is set.
      * @throws ArithmeticException `n` is negative.
      */
@@ -434,7 +434,7 @@ interface BigInteger : Comparable<BigInteger> {
      * Returns a BigInteger whose value is equivalent to this BigInteger
      * with the designated bit set.  (Computes `(this | (1<<n))`.)
      *
-     * @param  n index of bit to set.
+     * @param n index of bit to set.
      * @return `this | (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
@@ -446,7 +446,7 @@ interface BigInteger : Comparable<BigInteger> {
      * with the designated bit cleared.
      * (Computes `(this & ~(1<<n))`.)
      *
-     * @param  n index of bit to clear.
+     * @param n index of bit to clear.
      * @return `this & ~(1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
@@ -458,7 +458,7 @@ interface BigInteger : Comparable<BigInteger> {
      * with the designated bit flipped.
      * (Computes `(this ^ (1<<n))`.)
      *
-     * @param  n index of bit to flip.
+     * @param n index of bit to flip.
      * @return `this ^ (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
@@ -471,7 +471,7 @@ interface BigInteger : Comparable<BigInteger> {
      * `certainty` is  0, `true` is
      * returned.
      *
-     * @param  certainty a measure of the uncertainty that the caller is
+     * @param certainty a measure of the uncertainty that the caller is
      * willing to tolerate: if the call returns `true`
      * the probability that this BigInteger is prime exceeds
      * (1 - 1/2<sup>`certainty`</sup>).  The execution time of
@@ -490,7 +490,7 @@ interface BigInteger : Comparable<BigInteger> {
      * idiom for performing these comparisons is: `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
      * &lt;*op*&gt; is one of the six comparison operators.
      *
-     * @param  other BigInteger to which this BigInteger is to be compared.
+     * @param other BigInteger to which this BigInteger is to be compared.
      * @return -1, 0 or 1 as this BigInteger is numerically less than, equal
      * to, or greater than other.
      */
@@ -499,7 +499,7 @@ interface BigInteger : Comparable<BigInteger> {
     /**
      * Compares this BigInteger with the specified Object for equality.
      *
-     * @param  other Object to which this BigInteger is to be compared.
+     * @param other Object to which this BigInteger is to be compared.
      * @return `true` if and only if the specified Object is a
      * BigInteger whose value is numerically equal to this BigInteger.
      */
@@ -541,7 +541,7 @@ interface BigInteger : Comparable<BigInteger> {
      * sign is prepended if appropriate.  (This representation is
      * compatible with the String constructor.)
      *
-     * @param  radix  radix of the String representation.
+     * @param radix  radix of the String representation.
      * @return String representation of this BigInteger in the given radix.
      * @see Int.toString
      */
@@ -592,8 +592,9 @@ interface BigInteger : Comparable<BigInteger> {
      * @see BigInteger.toIntExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
+    /*override*/
     @JsName("toInt")
-            /*override*/ fun toInt(): Int
+    fun toInt(): Int
 
     /**
      * Converts this BigInteger to a `long`.  This
@@ -611,23 +612,29 @@ interface BigInteger : Comparable<BigInteger> {
      * @see .toLongExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
+    /*override*/
     @JsName("toLong")
-            /*override*/ fun toLong(): Long
+    fun toLong(): Long
 
+    /*override*/
     @JsName("toByte")
-            /*override*/ fun toByte(): Byte
+    fun toByte(): Byte
 
+    /*override*/
     @JsName("toChar")
-            /*override*/ fun toChar(): Char
+    fun toChar(): Char
 
+    /*override*/
     @JsName("toShort")
-            /*override*/ fun toShort(): Short
+    fun toShort(): Short
 
+    /*override*/
     @JsName("toFloat")
-            /*override*/ fun toFloat(): Float
+    fun toFloat(): Float
 
+    /*override*/
     @JsName("toDouble")
-            /*override*/ fun toDouble(): Double
+    fun toDouble(): Double
 
     /**
      * Converts this `BigInteger` to a `long`, checking
@@ -640,7 +647,7 @@ interface BigInteger : Comparable<BigInteger> {
      * not exactly fit in a `long`.
      * @see BigInteger.toLong
      *
-     * @since  1.8
+     * @since 1.8
      */
     fun toLongExact(): Long
 
@@ -655,7 +662,7 @@ interface BigInteger : Comparable<BigInteger> {
      * not exactly fit in an `int`.
      * @see BigInteger.toInt
      *
-     * @since  1.8
+     * @since 1.8
      */
     @JsName("toIntExact")
     fun toIntExact(): Int
@@ -671,7 +678,7 @@ interface BigInteger : Comparable<BigInteger> {
      * not exactly fit in a `short`.
      * @see BigInteger.toShort
      *
-     * @since  1.8
+     * @since 1.8
      */
     @JsName("toShortExact")
     fun toShortExact(): Short
@@ -687,7 +694,7 @@ interface BigInteger : Comparable<BigInteger> {
      * not exactly fit in a `byte`.
      * @see BigInteger.toByte
      *
-     * @since  1.8
+     * @since 1.8
      */
     @JsName("toByteExact")
     fun toByteExact(): Byte
@@ -696,7 +703,7 @@ interface BigInteger : Comparable<BigInteger> {
         /**
          * The BigInteger constant zero.
          *
-         * @since   1.2
+         * @since 1.2
          */
         @JvmField
         @JsName("ZERO")
@@ -705,7 +712,7 @@ interface BigInteger : Comparable<BigInteger> {
         /**
          * The BigInteger constant one.
          *
-         * @since   1.2
+         * @since 1.2
          */
         @JvmField
         @JsName("ONE")
@@ -714,7 +721,7 @@ interface BigInteger : Comparable<BigInteger> {
         /**
          * The BigInteger constant two.
          *
-         * @since   9
+         * @since 9
          */
         @JvmField
         @JsName("TWO")
@@ -730,7 +737,7 @@ interface BigInteger : Comparable<BigInteger> {
         /**
          * The BigInteger constant ten.
          *
-         * @since   1.5
+         * @since 1.5
          */
         @JvmField
         @JsName("TEN")
@@ -741,8 +748,8 @@ interface BigInteger : Comparable<BigInteger> {
          * specified bitLength. The probability that a BigInteger returned
          * by this method is composite does not exceed 2<sup>-100</sup>.
          *
-         * @param  bitLength bitLength of the returned BigInteger.
-         * @param  rnd source of random bits used to select candidates to be
+         * @param bitLength bitLength of the returned BigInteger.
+         * @param rnd source of random bits used to select candidates to be
          * tested for primality.
          * @return a BigInteger of `bitLength` bits that is probably prime
          * @throws ArithmeticException `bitLength < 2` or `bitLength` is too large.
@@ -790,11 +797,7 @@ interface BigInteger : Comparable<BigInteger> {
         fun of(value: IntArray): BigInteger = bigIntegerOf(value)
 
         @JsName("ofSlideIntArray")
-        fun of(
-            signum: Int,
-            magnitude: ByteArray,
-            off: Int,
-            len: Int
-        ): BigInteger = bigIntegerOf(signum, magnitude, off, len)
+        fun of(signum: Int, magnitude: ByteArray, off: Int, len: Int): BigInteger =
+            bigIntegerOf(signum, magnitude, off, len)
     }
 }

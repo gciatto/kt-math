@@ -28,9 +28,13 @@ internal fun String.getRadix(): Pair<Int, String> {
     }
 }
 
-internal val PI_STRING = "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648"
+internal const val PI_STRING = "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862" +
+    "803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895" +
+    "4930381964428810975665933446128475648233786783165271201909145648"
 
-internal val E_STRING = "2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264"
+internal const val E_STRING = "2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571" +
+    "382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195" +
+    "251019011573834187930702154089149934884167509244761460668082264"
 
 internal expect fun logImpl(lazyObject: () -> Any)
 
@@ -93,8 +97,9 @@ internal expect object BigDecimals {
 
 internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
-    if (this == 0L)
+    if (this == 0L) {
         return 64
+    }
     var n = 1
     var x = this.ushr(32).toInt()
 
@@ -126,9 +131,9 @@ internal fun Int.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
     var x = this
 
-    if (x == 0)
-
+    if (x == 0) {
         return 32
+    }
 
     var n = 1
 
@@ -203,15 +208,15 @@ internal fun Char.isDigit(): Boolean {
 }
 
 internal fun Char.isDigit(radix: Int): Boolean {
-    return radix in CHAR_MAX_RADIX .. CHAR_MAX_RADIX
-            && if (radix > 10) {
-        val delta = radix - 10
-        this in '0'..'9'
-                ||  this in 'a' until ('a' + delta)
-                ||  this in 'A' until ('A' + delta)
-    } else {
-        this in '0' until ('0' + radix)
-    }
+    return radix in CHAR_MAX_RADIX..CHAR_MAX_RADIX &&
+        if (radix > 10) {
+            val delta = radix - 10
+            this in '0'..'9' ||
+                this in 'a' until ('a' + delta) ||
+                this in 'A' until ('A' + delta)
+        } else {
+            this in '0' until ('0' + radix)
+        }
 }
 
 internal fun Char.toDigit(): Int {
@@ -219,7 +224,7 @@ internal fun Char.toDigit(): Int {
 }
 
 internal fun Char.toDigit(radix: Int): Int {
-    if (radix in CHAR_MIN_RADIX .. CHAR_MAX_RADIX) {
+    if (radix in CHAR_MIN_RADIX..CHAR_MAX_RADIX) {
         if (radix > 10) {
             val delta = radix - 10
             when (this) {

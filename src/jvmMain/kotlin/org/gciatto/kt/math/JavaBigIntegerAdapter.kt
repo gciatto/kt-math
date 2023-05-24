@@ -4,11 +4,12 @@ import java.math.BigInteger as JavaBigInteger
 
 internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
 
-    private inline fun adapt(f: () -> JavaBigInteger): JavaBigIntegerAdapter =
-        JavaBigIntegerAdapter(f())
+    private inline fun adapt(f: () -> JavaBigInteger): JavaBigIntegerAdapter = JavaBigIntegerAdapter(f())
 
-    private inline fun adapt(other: JavaBigIntegerAdapter, f: (JavaBigInteger) -> JavaBigInteger): JavaBigIntegerAdapter =
-        JavaBigIntegerAdapter(f(other.value))
+    private inline fun adapt(
+        other: JavaBigIntegerAdapter,
+        f: (JavaBigInteger) -> JavaBigInteger
+    ): JavaBigIntegerAdapter = JavaBigIntegerAdapter(f(other.value))
 
     private inline fun adapt(other: BigInteger, f: (JavaBigInteger) -> JavaBigInteger): JavaBigIntegerAdapter =
         adapt(other.castTo(), f)
@@ -18,7 +19,10 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
         return Array(javaInts.size) { index -> adapt { javaInts[index] } }
     }
 
-    private inline fun adaptAll(other: BigInteger, f: (JavaBigInteger) -> Array<JavaBigInteger>): Array<out JavaBigIntegerAdapter> {
+    private inline fun adaptAll(
+        other: BigInteger,
+        f: (JavaBigInteger) -> Array<JavaBigInteger>
+    ): Array<out JavaBigIntegerAdapter> {
         val javaInts = f(other.castTo())
         return Array(javaInts.size) { index -> adapt { javaInts[index] } }
     }
@@ -112,11 +116,9 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
     @Suppress("NAME_SHADOWING")
     override fun equals(other: Any?): Boolean = other is JavaBigIntegerAdapter && value == other.value
 
-    override fun min(other: BigInteger): BigInteger =
-        if (this <= other) this else other
+    override fun min(other: BigInteger): BigInteger = if (this <= other) this else other
 
-    override fun max(other: BigInteger): BigInteger =
-        if (this >= other) this else other
+    override fun max(other: BigInteger): BigInteger = if (this >= other) this else other
 
     override fun hashCode(): Int = value.hashCode()
 

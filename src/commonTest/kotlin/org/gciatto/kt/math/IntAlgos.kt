@@ -9,4 +9,3 @@ interface IntAlgos<T> {
 
     fun factorialBasedBenchmark(max: T)
 }
-

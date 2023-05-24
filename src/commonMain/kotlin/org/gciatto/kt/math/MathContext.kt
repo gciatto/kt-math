@@ -54,8 +54,8 @@ import kotlin.jvm.JvmField
  *
  * @see RoundingMode
  *
- * @author  Mike Cowlishaw
- * @author  Joseph D. Darcy
+ * @author Mike Cowlishaw
+ * @author Joseph D. Darcy
  * @since 1.5
  */
 @JsExport
@@ -71,7 +71,7 @@ data class MathContext(val precision: Int = 9, val roundingMode: RoundingMode = 
          * The values of the settings are:
          * `
          * precision=0 roundingMode=HALF_UP
-        ` *
+         ` *
          */
         @JvmField
         @JsName("UNLIMITED")
