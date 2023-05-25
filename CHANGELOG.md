@@ -1,3 +1,23 @@
+## [0.8.4](https://github.com/gciatto/kt-math/compare/0.8.3...0.8.4) (2023-05-25)
+
+
+### Bug Fixes
+
+* **ci:** show gradle scans in ci ([2300d87](https://github.com/gciatto/kt-math/commit/2300d87677e0a36cbaa4aef541295cfba0fadd12))
+
+
+### Dependency updates
+
+* **deps:** update plugin com.gradle.enterprise to v3.13.3 ([0bbee2c](https://github.com/gciatto/kt-math/commit/0bbee2cda5930bc79673a701ee7e7e8ee0144af6))
+
+
+### General maintenance
+
+* **ci:** use matrix to do platform specific tests ([2fcf70f](https://github.com/gciatto/kt-math/commit/2fcf70f8b9dd883a7106e2978d697caea42ca68b))
+* remove .test-npm ([054e867](https://github.com/gciatto/kt-math/commit/054e867abd613b864af4742528d4fa18aae9198f))
+* **style:** format settings.gradle.kts ([79dbe97](https://github.com/gciatto/kt-math/commit/79dbe9796f88bafd2ec61ebf55e3403c6bdb3d77))
+* support node version overriding via property ([cb9f1a0](https://github.com/gciatto/kt-math/commit/cb9f1a0ce3e0b777c07116315bafe8ae008217ed))
+
 ## [0.8.3](https://github.com/gciatto/kt-math/compare/0.8.2...0.8.3) (2023-05-25)
 
 
