@@ -70,11 +70,14 @@ jobs:
       - check-secrets
       - staging-repo
     if: always() && !contains(needs.staging-repo.result, 'failure')
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ windows-2022, macos-12, ubuntu-22.04 ]
-    runs-on: ${{ matrix.os }}
+    # Uncomment if cross-compilation is needed
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [ windows-2022, macos-12, ubuntu-22.04 ]
+#    runs-on: ${{ matrix.os }}
+    # Comment if cross-compilation is needed
+    runs-on: ubuntu-22.04
     concurrency:
       group: build-${{ github.workflow }}-${{ matrix.os }}-${{ github.event.number || github.ref }}
       cancel-in-progress: true
@@ -94,9 +97,17 @@ jobs:
           maven-central-username: gciatto
           signing-key: ${{ secrets.SIGNING_KEY }}
           signing-password: ${{ secrets.SIGNING_PASSWORD }}
+
+  test-extensively:
+    needs:
+      - build
+    uses: ./.github/workflows/test-extensively.yml
+#    secrets: inherit
+
   close-staging-repos:
     needs:
       - staging-repo
+      - test-extensively
       - build
     runs-on: ubuntu-22.04
     if: needs.check-secrets.outputs.run-with-secrets == 'true'
