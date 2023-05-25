@@ -144,6 +144,7 @@ jobs:
       - uses: DanySK/build-check-deploy-gradle-action@2.2.6
         env:
           STAGING_REPO_ID: ${{ needs.staging-repo.outputs.maven-central-repo-id }}
+          ENFORCE_VERSION: "${{ needs.staging-repo.outputs.next-version }}"
         with:
           build-command: true
           check-command: true
