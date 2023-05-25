@@ -1,3 +1,10 @@
+## [0.8.3](https://github.com/gciatto/kt-math/compare/0.8.2...0.8.3) (2023-05-25)
+
+
+### Bug Fixes
+
+* **release:** version numbering on NPM release ([31420f4](https://github.com/gciatto/kt-math/commit/31420f402882e93a5dbe19717549f59dd7a934a4))
+
 ## [0.8.2](https://github.com/gciatto/kt-math/compare/0.8.1...0.8.2) (2023-05-25)
 
 
