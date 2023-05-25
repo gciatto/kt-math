@@ -32,7 +32,7 @@ gradleEnterprise {
         publishOnFailure()
         buildScanPublished {
             if (ci) {
-                println("::error title=Gradle scan for ${osTag}, ${jvmTag}::$buildScanUri")
+                println("::error title=Gradle scan for $osTag, $jvmTag::$buildScanUri")
             }
         }
     }
