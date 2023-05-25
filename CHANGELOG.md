@@ -1,3 +1,15 @@
+## [0.8.2](https://github.com/gciatto/kt-math/compare/0.8.1...0.8.2) (2023-05-25)
+
+
+### Bug Fixes
+
+* **release:** remove tuProlog org from NPM release ([bb40962](https://github.com/gciatto/kt-math/commit/bb409621e0bda3e38d668c3de5fd2a904f5cfa28))
+
+
+### Dependency updates
+
+* **deps:** update ktmpp to v2.0.4 ([e3a372c](https://github.com/gciatto/kt-math/commit/e3a372cf4d2430b6f313fabc1c2196a3a7e5a476))
+
 ## [0.8.1](https://github.com/gciatto/kt-math/compare/0.8.0...0.8.1) (2023-05-24)
 
 
