@@ -1,3 +1,16 @@
+## [0.8.5](https://github.com/gciatto/kt-math/compare/0.8.4...0.8.5) (2023-06-08)
+
+
+### Dependency updates
+
+* **core-deps:** update dependency org.jetbrains.kotlin:kotlin-reflect to v1.8.22 ([187a314](https://github.com/gciatto/kt-math/commit/187a314649cd2688bef456676026a7a53e13902d))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.27 ([45dccaa](https://github.com/gciatto/kt-math/commit/45dccaa3ef87f6c26980a4ac921696a50f9b2aee))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.30 ([1f1e087](https://github.com/gciatto/kt-math/commit/1f1e0879eca649dab9f4f91f996587f6f900559f))
+* **deps:** update ktmpp to v2.0.5 ([1e01511](https://github.com/gciatto/kt-math/commit/1e01511e8a185c732a1548febd17c9289c83d778))
+* **deps:** update plugin gitsemver to v1.1.10 ([aee9cf4](https://github.com/gciatto/kt-math/commit/aee9cf4c3ab97622310d9309b88994501b11d239))
+* **deps:** update plugin org.danilopianini.gradle-pre-commit-git-hooks to v1.1.8 ([a26a723](https://github.com/gciatto/kt-math/commit/a26a72394881e5ca3ac703fbc11c930bc957b2e7))
+* **deps:** update plugin org.danilopianini.gradle-pre-commit-git-hooks to v1.1.9 ([c00e9ab](https://github.com/gciatto/kt-math/commit/c00e9abe8939e3bda214fb9dcce90501cd09f9ae))
+
 ## [0.8.4](https://github.com/gciatto/kt-math/compare/0.8.3...0.8.4) (2023-05-25)
 
 
