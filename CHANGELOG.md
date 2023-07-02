@@ -1,3 +1,30 @@
+## [0.9.0](https://github.com/gciatto/kt-math/compare/0.8.5...0.9.0) (2023-07-02)
+
+
+### Features
+
+* remove dependency from kotlin-bom ([05ad715](https://github.com/gciatto/kt-math/commit/05ad715e9b8e47146db26bf241a33af48d81b418))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v3.5.3 ([023e888](https://github.com/gciatto/kt-math/commit/023e888cea576f3dd81f5483d34bd98ed22f85d8))
+* **deps:** update danysk/action-checkout action to v0.2.10 ([c03edb3](https://github.com/gciatto/kt-math/commit/c03edb36e482420dbd67e0e45ebc64d0079b2a81))
+
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v8.2 ([83431cf](https://github.com/gciatto/kt-math/commit/83431cf72b77c4c189d77c0ef1aa9b252fb0fc3f))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.32 ([51c0e7d](https://github.com/gciatto/kt-math/commit/51c0e7d5cc9b65ee6f9c6779ba825d72db8f6b39))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.33 ([d340dc2](https://github.com/gciatto/kt-math/commit/d340dc2f704f169f0f7ed19916bf101a25785802))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.35 ([9b4f071](https://github.com/gciatto/kt-math/commit/9b4f071c3455517e82662beca4a22a1da71c1482))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.36 ([7f422f7](https://github.com/gciatto/kt-math/commit/7f422f75f4e7e368589350fbe3b84ecb718a2b24))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.37 ([6bbf16d](https://github.com/gciatto/kt-math/commit/6bbf16d9380bfcdaf662ef3b234c72d2032c5465))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.38 ([818b7e7](https://github.com/gciatto/kt-math/commit/818b7e768307fdb394066d4df8a6eff13319b93c))
+* **deps:** update ktmpp to v2.1.1 ([9439cc4](https://github.com/gciatto/kt-math/commit/9439cc436d2c27ef3ef58d6e001a9708e145885a))
+* **deps:** update ktmpp to v2.1.2 ([52b8f9a](https://github.com/gciatto/kt-math/commit/52b8f9a26db87fd74b7e41827dd83dc7025cd5c5))
+* **deps:** update plugin com.gradle.enterprise to v3.13.4 ([9205d79](https://github.com/gciatto/kt-math/commit/9205d7956917a5c55129efb497ae162aafeabf8c))
+
 ## [0.8.5](https://github.com/gciatto/kt-math/compare/0.8.4...0.8.5) (2023-06-08)
 
 
