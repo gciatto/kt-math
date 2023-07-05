@@ -111,7 +111,10 @@ jobs:
       - test-extensively
       - build
     runs-on: ubuntu-22.04
-    if: needs.check-secrets.outputs.run-with-secrets == 'true'
+    if: |
+      always() &&
+      needs.check-secrets.outputs.run-with-secrets == 'true' &&
+      (needs.test-extensively.result == 'success' || needs.test-extensively.result == 'skipped')
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3.5.3
