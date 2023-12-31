@@ -1,8 +1,8 @@
 [versions]
-kotlin = "1.8.22"
+kotlin = "1.9.22"
 jvm = "1.8"
 node = "16-latest"
-ktMpp = "2.2.1"
+ktMpp = "4.0.1"
 
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
@@ -19,4 +19,3 @@ ktMpp-jsOnly = { id = "io.github.gciatto.kt-mpp.js-only", version.ref = "ktMpp" 
 ktMpp-jvmOnly = { id = "io.github.gciatto.kt-mpp.jvm-only", version.ref = "ktMpp" }
 ktMpp-multiplatform = { id = "io.github.gciatto.kt-mpp.multiplatform", version.ref = "ktMpp" }
 ktMpp-multiProjectHelper = { id = "io.github.gciatto.kt-mpp.multi-project-helper", version.ref = "ktMpp" }
-nexusPublish = "de.marcphilipp.nexus-publish:0.4.0"

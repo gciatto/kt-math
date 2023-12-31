@@ -1,5 +1,4 @@
-import io.github.gciatto.kt.mpp.log
-import io.github.gciatto.kt.mpp.nodeVersion
+import io.github.gciatto.kt.mpp.utils.log
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -27,11 +26,6 @@ repositories {
 }
 
 kotlin {
-    js {
-        nodejs {
-            binaries.library()
-        }
-    }
     sourceSets {
         commonMain {
             dependencies {
@@ -39,9 +33,4 @@ kotlin {
             }
         }
     }
-}
-
-project.findProperty("nodeVersion")?.let { it.toString() }?.takeIf { it.isNotBlank() }?.let {
-    nodeVersion(it)
-    log("override NodeJS version: $it", LogLevel.LIFECYCLE)
 }
