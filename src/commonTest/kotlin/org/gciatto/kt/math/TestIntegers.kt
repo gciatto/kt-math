@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TestIntegers {
-
     @Test
     fun testToChar() {
         assertEquals((0).toChar(), BigInteger.of(0).toChar())

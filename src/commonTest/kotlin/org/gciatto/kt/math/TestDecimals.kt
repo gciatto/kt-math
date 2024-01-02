@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class TestDecimals {
-
     @Test
     fun testSpecialDoubles() {
         assertFailsWith<NumberFormatException> { BigDecimal.of(Double.NaN) }
@@ -94,52 +93,52 @@ class TestDecimals {
 
         assertReprEquals(
             PI_REPR,
-            BigDecimal.PI + BigDecimal.ZERO
+            BigDecimal.PI + BigDecimal.ZERO,
         )
         assertReprEquals(
             "4" + PI_REPR.subSequence(1, PI_REPR.length),
-            BigDecimal.PI + BigDecimal.ONE
+            BigDecimal.PI + BigDecimal.ONE,
         )
         assertReprEquals(
             "5" + PI_REPR.subSequence(1, PI_REPR.length),
-            BigDecimal.PI + BigDecimal.TWO
+            BigDecimal.PI + BigDecimal.TWO,
         )
         assertReprEquals(
             "13" + PI_REPR.subSequence(1, PI_REPR.length),
-            BigDecimal.PI + BigDecimal.TEN
+            BigDecimal.PI + BigDecimal.TEN,
         )
         assertReprEquals(
             PI_REPR.replace(".1", ".6"),
-            BigDecimal.PI + BigDecimal.ONE_HALF
+            BigDecimal.PI + BigDecimal.ONE_HALF,
         )
         assertReprEquals(
             PI_REPR.replace(".1", ".2"),
-            BigDecimal.PI + BigDecimal.ONE_TENTH
+            BigDecimal.PI + BigDecimal.ONE_TENTH,
         )
 
         assertReprEquals(
             E_REPR,
-            BigDecimal.E + BigDecimal.ZERO
+            BigDecimal.E + BigDecimal.ZERO,
         )
         assertReprEquals(
             "3" + E_REPR.subSequence(1, E_REPR.length),
-            BigDecimal.E + BigDecimal.ONE
+            BigDecimal.E + BigDecimal.ONE,
         )
         assertReprEquals(
             "4" + E_REPR.subSequence(1, E_REPR.length),
-            BigDecimal.E + BigDecimal.TWO
+            BigDecimal.E + BigDecimal.TWO,
         )
         assertReprEquals(
             "12" + E_REPR.subSequence(1, E_REPR.length),
-            BigDecimal.E + BigDecimal.TEN
+            BigDecimal.E + BigDecimal.TEN,
         )
         assertReprEquals(
             E_REPR.replace("2.7", "3.2"),
-            BigDecimal.E + BigDecimal.ONE_HALF
+            BigDecimal.E + BigDecimal.ONE_HALF,
         )
         assertReprEquals(
             E_REPR.replace(".7", ".8"),
-            BigDecimal.E + BigDecimal.ONE_TENTH
+            BigDecimal.E + BigDecimal.ONE_TENTH,
         )
     }
 
@@ -159,62 +158,62 @@ class TestDecimals {
 
         assertReprEquals(
             PI_REPR,
-            BigDecimal.PI - BigDecimal.ZERO
+            BigDecimal.PI - BigDecimal.ZERO,
         )
         assertReprEquals(
             "2" + PI_REPR.subSequence(1, PI_REPR.length),
-            BigDecimal.PI - BigDecimal.ONE
+            BigDecimal.PI - BigDecimal.ONE,
         )
         assertReprEquals(
             "1" + PI_REPR.subSequence(1, PI_REPR.length),
-            BigDecimal.PI - BigDecimal.TWO
+            BigDecimal.PI - BigDecimal.TWO,
         )
         assertReprEquals(
             "-6.85840734641020676153735661672049711580283060062489417902505540769218359371379100137196517465788" +
                 "293201785191348671769335290615539044941776827464059187151888254971589729806147889444035537705104" +
                 "5069618035571189024334066553871524351766213216834728798090854352",
-            BigDecimal.PI - BigDecimal.TEN
+            BigDecimal.PI - BigDecimal.TEN,
         )
         assertReprEquals(
             PI_REPR.replace("3.1", "2.6"),
-            BigDecimal.PI - BigDecimal.ONE_HALF
+            BigDecimal.PI - BigDecimal.ONE_HALF,
         )
         assertReprEquals(
             PI_REPR.replace(".1", ".0"),
-            BigDecimal.PI - BigDecimal.ONE_TENTH
+            BigDecimal.PI - BigDecimal.ONE_TENTH,
         )
 
         assertReprEquals(
             E_REPR,
-            BigDecimal.E - BigDecimal.ZERO
+            BigDecimal.E - BigDecimal.ZERO,
         )
         assertReprEquals(
             E_REPR.replace("2.7", "1.7"),
-            BigDecimal.E - BigDecimal.ONE
+            BigDecimal.E - BigDecimal.ONE,
         )
         assertReprEquals(
             E_REPR.replace("2.", "0."),
-            BigDecimal.E - BigDecimal.TWO
+            BigDecimal.E - BigDecimal.TWO,
         )
         assertReprEquals(
             "-7.28171817154095476463971252864733750224275290630004042503303237227592336964645240542861782147483" +
                 "357257253360806799694007818258640337095642709966570473940436926186767137205650923676617011924680" +
                 "4748980988426165812069297845910850065115832490755238539331917736",
-            BigDecimal.E - BigDecimal.TEN
+            BigDecimal.E - BigDecimal.TEN,
         )
         assertReprEquals(
             E_REPR.replace("2.7", "2.2"),
-            BigDecimal.E - BigDecimal.ONE_HALF
+            BigDecimal.E - BigDecimal.ONE_HALF,
         )
         assertReprEquals(
             E_REPR.replace("2.7", "2.6"),
-            BigDecimal.E - BigDecimal.ONE_TENTH
+            BigDecimal.E - BigDecimal.ONE_TENTH,
         )
 
         log { "Notice that Double.MIN_VALUE=${Double.MIN_VALUE}" }
         assertReprEquals(
             BigDecimal.of(DOUBLE_MIN_VALUE_REPR) - BigDecimal.ONE,
-            BigDecimal.of(Double.MIN_VALUE) - BigDecimal.ONE
+            BigDecimal.of(Double.MIN_VALUE) - BigDecimal.ONE,
         )
     }
 
@@ -234,24 +233,24 @@ class TestDecimals {
 
         assertBigDecimalsAreEquals(
             BigDecimal.PI,
-            BigDecimal.of(PI_REPR)
+            BigDecimal.of(PI_REPR),
         )
         assertBigDecimalsAreEquals(
             -BigDecimal.PI,
-            BigDecimal.of("-$PI_REPR")
+            BigDecimal.of("-$PI_REPR"),
         )
         assertBigDecimalsAreEquals(
             BigDecimal.E,
-            BigDecimal.of(E_REPR)
+            BigDecimal.of(E_REPR),
         )
         assertBigDecimalsAreEquals(
             -BigDecimal.E,
-            BigDecimal.of("-$E_REPR")
+            BigDecimal.of("-$E_REPR"),
         )
 
         assertBigDecimalsAreEquals(
             BigDecimal.of(1, 1000),
-            BigDecimal.of("0." + (0 until 999).map { "0" }.joinToString("") + "1")
+            BigDecimal.of("0." + (0 until 999).map { "0" }.joinToString("") + "1"),
         )
     }
 

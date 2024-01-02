@@ -21,9 +21,7 @@
  * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
  * or visit www.oracle.com if you need additional information or have any
  * questions.
- */
-
-/*
+ *
  * Portions Copyright IBM Corporation, 2001. All Rights Reserved.
  */
 package org.gciatto.kt.math
@@ -102,11 +100,11 @@ import kotlin.jvm.JvmStatic
  * @author Joseph D. Darcy
  * @since 1.5
  */
-// Legacy rounding mode constants in BigDecimal
 @Suppress("DEPRECATION")
 @JsExport
-enum class RoundingMode(@JsName("value") val value: Int) {
-
+enum class RoundingMode(
+    @JsName("value") val value: Int,
+) {
     /**
      * Rounding mode to round away from zero.  Always increments the
      * digit prior to a non-zero discarded fraction.  Note that this
@@ -354,10 +352,10 @@ enum class RoundingMode(@JsName("value") val value: Int) {
      </tr></tbody> *
      </table> *
      */
-    UNNECESSARY(7);
+    UNNECESSARY(7),
+    ;
 
     companion object {
-
         /**
          * Returns the `RoundingMode` object corresponding to a
          * legacy integer rounding mode constant in [BigDecimal].

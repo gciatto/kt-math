@@ -9,7 +9,6 @@ expect val REPETITIONS: Int
 expect val N: Int
 
 abstract class AbstractIntBenchmark<T>(private val algos: IntAlgos<T>) {
-
     protected abstract fun bigInt(value: Int): T
 
     @ExperimentalTime
@@ -20,7 +19,10 @@ abstract class AbstractIntBenchmark<T>(private val algos: IntAlgos<T>) {
     }
 
     @ExperimentalTime
-    private inline fun <R> benchmark(times: Int, f: () -> R): Duration {
+    private inline fun <R> benchmark(
+        times: Int,
+        f: () -> R,
+    ): Duration {
         var cumulative = Duration.ZERO
         repeat(times) {
             cumulative += chrono(f).second
@@ -30,17 +32,19 @@ abstract class AbstractIntBenchmark<T>(private val algos: IntAlgos<T>) {
 
     @ExperimentalTime
     open fun benchmarkSumsViaFibonacci() {
-        val avgTime = benchmark(REPETITIONS) {
-            algos.fibonacciBasedBenchmark(bigInt(N))
-        }
+        val avgTime =
+            benchmark(REPETITIONS) {
+                algos.fibonacciBasedBenchmark(bigInt(N))
+            }
         println("[Fibonacci] Average duration on $REPETITIONS repetitions: $avgTime")
     }
 
     @ExperimentalTime
     open fun benchmarkMultiplicationsViaFactorial() {
-        val avgTime = benchmark(REPETITIONS) {
-            algos.factorialBasedBenchmark(bigInt(N))
-        }
+        val avgTime =
+            benchmark(REPETITIONS) {
+                algos.factorialBasedBenchmark(bigInt(N))
+            }
         println("[Factorial] Average duration on $REPETITIONS repetitions: $avgTime")
     }
 }

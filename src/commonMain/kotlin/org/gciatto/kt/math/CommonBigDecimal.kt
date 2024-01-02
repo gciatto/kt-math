@@ -23,9 +23,7 @@ package org.gciatto.kt.math
  * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
  * or visit www.oracle.com if you need additional information or have any
  * questions.
- */
-
-/*
+ *
  * Portions Copyright IBM Corporation, 2001. All Rights Reserved.
  */
 
@@ -34,8 +32,8 @@ import kotlin.js.JsName
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
-import kotlin.math.absoluteValue
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -247,7 +245,6 @@ import kotlin.math.sqrt
  */
 @Suppress("NAME_SHADOWING", "DEPRECATION", "UNREACHABLE_CODE", "UNUSED_PARAMETER")
 internal class CommonBigDecimal : BigDecimal {
-
     /**
      * The unscaled value of this CommonBigDecimal, as returned by [CommonBigDecimal.unscaledValue].
      *
@@ -332,7 +329,7 @@ internal class CommonBigDecimal : BigDecimal {
         `in`: CharArray,
         offset: Int = 0,
         len: Int = `in`.size,
-        mc: MathContext = MathContext.UNLIMITED
+        mc: MathContext = MathContext.UNLIMITED,
     ) {
         var offset = offset
         var len = len
@@ -433,7 +430,7 @@ internal class CommonBigDecimal : BigDecimal {
                         throw NumberFormatException(
                             "Character " + c +
                                 " is neither a decimal digit number, decimal point, nor" +
-                                " \"e\" notation exponential mark."
+                                " \"e\" notation exponential mark.",
                         )
                     }
                     offset++
@@ -568,7 +565,10 @@ internal class CommonBigDecimal : BigDecimal {
         this._intVal = rb
     }
 
-    private fun adjustScale(scl: Int, exp: Long): Int {
+    private fun adjustScale(
+        scl: Int,
+        exp: Long,
+    ): Int {
         var scl = scl
         val adjustedScale = scl - exp
         if (adjustedScale > Int.MAX_VALUE || adjustedScale < Int.MIN_VALUE) {
@@ -751,11 +751,12 @@ internal class CommonBigDecimal : BigDecimal {
         val valBits = `val`.toBits()
         val sign = if (valBits shr 63 == 0L) 1 else -1
         var exponent = (valBits shr 52 and 0x7ffL).toInt()
-        var significand = if (exponent == 0) {
-            valBits and (1L shl 52) - 1 shl 1
-        } else {
-            valBits and (1L shl 52) - 1 or (1L shl 52)
-        }
+        var significand =
+            if (exponent == 0) {
+                valBits and (1L shl 52) - 1 shl 1
+            } else {
+                valBits and (1L shl 52) - 1 or (1L shl 52)
+            }
         exponent -= 1075
         // At this point, val == sign * significand * 2**exponent.
 
@@ -1052,7 +1053,10 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    override fun plus(augend: BigDecimal?, mc: MathContext): CommonBigDecimal {
+    override fun plus(
+        augend: BigDecimal?,
+        mc: MathContext,
+    ): CommonBigDecimal {
         var augend: CommonBigDecimal = augend!!.castTo()
         if (mc.precision == 0) {
             return plus(augend)
@@ -1129,7 +1133,7 @@ internal class CommonBigDecimal : BigDecimal {
         lhs: CommonBigDecimal,
         augend: CommonBigDecimal,
         padding: Long,
-        mc: MathContext
+        mc: MathContext,
     ): Array<CommonBigDecimal> {
         require(padding != 0L)
         val big: CommonBigDecimal
@@ -1164,10 +1168,11 @@ internal class CommonBigDecimal : BigDecimal {
         if (smallHighDigitPos > big._scale + 2 && // big and small disjoint
             smallHighDigitPos > estResultUlpScale + 2
         ) { // small digits not visible
-            small = CommonBigDecimal.of(
-                small.signum.toLong(),
-                this.checkScale(max(big._scale.toLong(), estResultUlpScale) + 3)
-            )
+            small =
+                CommonBigDecimal.of(
+                    small.signum.toLong(),
+                    this.checkScale(max(big._scale.toLong(), estResultUlpScale) + 3),
+                )
         }
 
         // Since addition is symmetric, preserving input order in
@@ -1195,7 +1200,10 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    override fun minus(subtrahend: BigDecimal, mc: MathContext): CommonBigDecimal {
+    override fun minus(
+        subtrahend: BigDecimal,
+        mc: MathContext,
+    ): CommonBigDecimal {
         val subtrahend: CommonBigDecimal = subtrahend.castTo()
         return if (mc.precision == 0) minus(subtrahend) else plus(subtrahend.unaryMinus(), mc)
         // share the special rounding code in plus()
@@ -1219,7 +1227,10 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    override fun times(multiplicand: BigDecimal, mc: MathContext): CommonBigDecimal {
+    override fun times(
+        multiplicand: BigDecimal,
+        mc: MathContext,
+    ): CommonBigDecimal {
         val multiplicand: CommonBigDecimal = multiplicand.castTo()
         if (mc.precision == 0) {
             return times(multiplicand)
@@ -1276,9 +1287,13 @@ internal class CommonBigDecimal : BigDecimal {
         "The method {@link #div(CommonBigDecimal, int, RoundingMode)}\n" +
             "      should be used in preference to this legacy method.\n" +
             "     \n" +
-            "      "
+            "      ",
     )
-    private fun div(divisor: CommonBigDecimal, scale: Int, roundingMode: Int): CommonBigDecimal {
+    private fun div(
+        divisor: CommonBigDecimal,
+        scale: Int,
+        roundingMode: Int,
+    ): CommonBigDecimal {
         if (roundingMode < RoundingMode.UP.value || roundingMode > RoundingMode.UNNECESSARY.value) {
             throw IllegalArgumentException("Invalid rounding mode")
         }
@@ -1332,9 +1347,12 @@ internal class CommonBigDecimal : BigDecimal {
         "The method {@link #div(CommonBigDecimal, RoundingMode)}\n" +
             "      should be used in preference to this legacy method.\n" +
             "     \n" +
-            "      "
+            "      ",
     )
-    private fun div(divisor: CommonBigDecimal, roundingMode: Int): CommonBigDecimal {
+    private fun div(
+        divisor: CommonBigDecimal,
+        roundingMode: Int,
+    ): CommonBigDecimal {
         return this.div(divisor, _scale, roundingMode)
     }
 
@@ -1366,19 +1384,20 @@ internal class CommonBigDecimal : BigDecimal {
              * _precision and do a div with the UNNECESSARY rounding
              * mode.
              */
-            val mc = MathContext(
-                min(
-                    this.precision + ceil(10.0 * divisor.precision / 3.0).toLong(),
-                    Int.MAX_VALUE.toLong()
-                ).toInt(),
-                RoundingMode.UNNECESSARY
-            )
+            val mc =
+                MathContext(
+                    min(
+                        this.precision + ceil(10.0 * divisor.precision / 3.0).toLong(),
+                        Int.MAX_VALUE.toLong(),
+                    ).toInt(),
+                    RoundingMode.UNNECESSARY,
+                )
             val quotient: CommonBigDecimal?
             try {
                 quotient = this.div(divisor, mc)
             } catch (e: ArithmeticException) {
                 throw ArithmeticException(
-                    "Non-terminating decimal expansion; " + "no exact representable decimal result."
+                    "Non-terminating decimal expansion; " + "no exact representable decimal result.",
                 )
             }
 
@@ -1391,7 +1410,7 @@ internal class CommonBigDecimal : BigDecimal {
             return if (preferredScale > quotientScale) {
                 quotient.setScale(
                     preferredScale,
-                    RoundingMode.UNNECESSARY.value
+                    RoundingMode.UNNECESSARY.value,
                 )
             } else {
                 quotient
@@ -1399,7 +1418,10 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    override fun div(divisor: BigDecimal, mc: MathContext): CommonBigDecimal? {
+    override fun div(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): CommonBigDecimal? {
         val divisor: CommonBigDecimal = divisor.castTo()
         val mcp = mc.precision
         if (mcp == 0) {
@@ -1464,19 +1486,21 @@ internal class CommonBigDecimal : BigDecimal {
         // Perform a div with enough digits to round to a correct
         // integer value; then remove any fractional digits
 
-        val maxDigits = min(
-            this.precision.toLong() +
-                ceil(10.0 * divisor.precision / 3.0).toLong() +
-                abs(this.scale.toLong() - divisor.scale) + 2,
-            Int.MAX_VALUE.toLong()
-        ).toInt()
-        var quotient = this.div(
-            divisor,
-            MathContext(
-                maxDigits,
-                RoundingMode.DOWN
+        val maxDigits =
+            min(
+                this.precision.toLong() +
+                    ceil(10.0 * divisor.precision / 3.0).toLong() +
+                    abs(this.scale.toLong() - divisor.scale) + 2,
+                Int.MAX_VALUE.toLong(),
+            ).toInt()
+        var quotient =
+            this.div(
+                divisor,
+                MathContext(
+                    maxDigits,
+                    RoundingMode.DOWN,
+                ),
             )
-        )
         if (quotient!!._scale > 0) {
             quotient = quotient.setScale(0, RoundingMode.DOWN)
             quotient = stripZerosToMatchScale(quotient._intVal, quotient._intCompact, quotient._scale, preferredScale)
@@ -1490,7 +1514,10 @@ internal class CommonBigDecimal : BigDecimal {
         return quotient
     }
 
-    override fun divideToIntegralValue(divisor: BigDecimal, mc: MathContext): CommonBigDecimal {
+    override fun divideToIntegralValue(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): CommonBigDecimal {
         val divisor: CommonBigDecimal = divisor.castTo()
         if (mc.precision == 0 || // exact result
             this.compareMagnitude(divisor) < 0
@@ -1551,7 +1578,10 @@ internal class CommonBigDecimal : BigDecimal {
         return divrem.second
     }
 
-    override fun rem(divisor: BigDecimal, mc: MathContext): CommonBigDecimal {
+    override fun rem(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): CommonBigDecimal {
         val divrem = this.divideAndRemainder(divisor, mc)
         return divrem.second
     }
@@ -1566,11 +1596,14 @@ internal class CommonBigDecimal : BigDecimal {
         val temp = this.divideToIntegralValue(divisor)
         return Pair(
             temp,
-            temp.times(divisor)
+            temp.times(divisor),
         )
     }
 
-    override fun divideAndRemainder(divisor: BigDecimal, mc: MathContext): Pair<CommonBigDecimal, CommonBigDecimal> {
+    override fun divideAndRemainder(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): Pair<CommonBigDecimal, CommonBigDecimal> {
         val divisor: CommonBigDecimal = divisor.castTo()
         if (mc.precision == 0) {
             return divideAndRemainder(divisor)
@@ -1586,7 +1619,7 @@ internal class CommonBigDecimal : BigDecimal {
         val temp = lhs.divideToIntegralValue(divisor, mc)
         return Pair(
             temp,
-            lhs.minus(temp.times(divisor))
+            lhs.minus(temp.times(divisor)),
         )
     }
 
@@ -1657,16 +1690,18 @@ internal class CommonBigDecimal : BigDecimal {
 
             // Now the _precision / _scale adjustment
             val scale = stripped.scale - stripped.precision + 1
-            val scaleAdjust: Int = if (scale % 2 == 0) {
-                scale
-            } else {
-                scale - 1
-            }
+            val scaleAdjust: Int =
+                if (scale % 2 == 0) {
+                    scale
+                } else {
+                    scale - 1
+                }
 
             val working = stripped.scaleByPowerOfTen(scaleAdjust)
 
-            require( // Verify 0.1 <= working < 10
-                ONE_TENTH <= working && working < TEN
+            require(
+                // Verify 0.1 <= working < 10
+                ONE_TENTH <= working && working < TEN,
             )
 
             // Use good ole' Math.sqrt to get the initial guess for
@@ -1715,10 +1750,11 @@ internal class CommonBigDecimal : BigDecimal {
             var approx = guess
             val workingPrecision = working.precision
             do {
-                val tmpPrecision = max(
-                    max(guessPrecision, targetPrecision + 2),
-                    workingPrecision
-                )
+                val tmpPrecision =
+                    max(
+                        max(guessPrecision, targetPrecision + 2),
+                        workingPrecision,
+                    )
                 val mcTmp = MathContext(tmpPrecision, RoundingMode.HALF_EVEN)
                 // approx = 0.5 * (approx + fraction / approx)
                 approx = ONE_HALF.times(approx.plus(working.div(approx, mcTmp), mcTmp))
@@ -1748,10 +1784,11 @@ internal class CommonBigDecimal : BigDecimal {
                 // stripTrailingZeros(), adding a zero of the
                 // preferred _scale rounding the correct _precision will
                 // perform the proper _scale vs _precision tradeoffs.
-                result = result.stripTrailingZeros().plus(
-                    zeroWithFinalPreferredScale,
-                    MathContext(originalPrecision, RoundingMode.UNNECESSARY)
-                )
+                result =
+                    result.stripTrailingZeros().plus(
+                        zeroWithFinalPreferredScale,
+                        MathContext(originalPrecision, RoundingMode.UNNECESSARY),
+                    )
             }
             require(squareRootResultAssertions(result, mc))
             return result
@@ -1773,7 +1810,10 @@ internal class CommonBigDecimal : BigDecimal {
      * input. Conversely, for UP and CEIL, result^2 must be `>=` the
      * input and (result-ulp)^2 must be `<` the input.
      */
-    private fun squareRootResultAssertions(result: CommonBigDecimal, mc: MathContext): Boolean {
+    private fun squareRootResultAssertions(
+        result: CommonBigDecimal,
+        mc: MathContext,
+    ): Boolean {
         if (result.signum == 0) {
             return squareRootZeroResultAssertions(result, mc)
         } else {
@@ -1826,7 +1866,10 @@ internal class CommonBigDecimal : BigDecimal {
         }
     }
 
-    private fun squareRootZeroResultAssertions(result: CommonBigDecimal, mc: MathContext): Boolean {
+    private fun squareRootZeroResultAssertions(
+        result: CommonBigDecimal,
+        mc: MathContext,
+    ): Boolean {
         return this.compareTo(ZERO) == 0
     }
 
@@ -1840,7 +1883,10 @@ internal class CommonBigDecimal : BigDecimal {
         return CommonBigDecimal(this.inflated().pow(n), newScale)
     }
 
-    override fun pow(n: Int, mc: MathContext): CommonBigDecimal? {
+    override fun pow(
+        n: Int,
+        mc: MathContext,
+    ): CommonBigDecimal? {
         if (mc.precision == 0) {
             return pow(n)
         }
@@ -1859,10 +1905,11 @@ internal class CommonBigDecimal : BigDecimal {
                 // X3.274 rule
                 throw ArithmeticException("Invalid operation")
             }
-            workmc = MathContext(
-                mc.precision + elength + 1,
-                mc.roundingMode
-            )
+            workmc =
+                MathContext(
+                    mc.precision + elength + 1,
+                    mc.roundingMode,
+                )
         }
         // ready to carry out power calculation...
         var acc = ONE // accumulator
@@ -1959,15 +2006,21 @@ internal class CommonBigDecimal : BigDecimal {
         return unaryPlus(mc)
     }
 
-    override fun setScale(newScale: Int, roundingMode: RoundingMode): CommonBigDecimal {
+    override fun setScale(
+        newScale: Int,
+        roundingMode: RoundingMode,
+    ): CommonBigDecimal {
         return setScale(newScale, roundingMode.value)
     }
 
     @Deprecated(
         "The method {@link #setScale(int, RoundingMode)} should " +
-            "be used in preference to this legacy method."
+            "be used in preference to this legacy method.",
     )
-    override fun setScale(newScale: Int, roundingMode: Int): CommonBigDecimal {
+    override fun setScale(
+        newScale: Int,
+        roundingMode: Int,
+    ): CommonBigDecimal {
         if (roundingMode < RoundingMode.UP.value || roundingMode > RoundingMode.UNNECESSARY.value) {
             throw IllegalArgumentException("Invalid rounding mode")
         }
@@ -2016,7 +2069,7 @@ internal class CommonBigDecimal : BigDecimal {
                         LONG_TEN_POWERS_TABLE[drop],
                         newScale,
                         roundingMode,
-                        newScale
+                        newScale,
                     )
                 } else {
                     divideAndRound(this._intVal!!, bigTenToThe(drop), newScale, roundingMode, newScale)
@@ -2048,7 +2101,7 @@ internal class CommonBigDecimal : BigDecimal {
             _intVal,
             _intCompact,
             checkScale(_scale.toLong() - n),
-            _precision
+            _precision,
         )
     }
 
@@ -2069,7 +2122,15 @@ internal class CommonBigDecimal : BigDecimal {
             val xs = _intCompact
             val ys = other._intCompact
             if (xs != INFLATED && ys != INFLATED) {
-                return if (xs != ys) if (xs > ys) 1 else -1 else 0
+                return if (xs != ys) {
+                    if (xs > ys) {
+                        1
+                    } else {
+                        -1
+                    }
+                } else {
+                    0
+                }
             }
         }
         val xsign = this.signum
@@ -2109,7 +2170,12 @@ internal class CommonBigDecimal : BigDecimal {
             if (sdiff < 0) {
                 // The cases sdiff <= Int.MIN_VALUE intentionally fall through.
                 if (sdiff > Int.MIN_VALUE &&
-                    (xs == INFLATED || run { xs = longMultiplyPowerTen(xs, (-sdiff).toInt()); xs } == INFLATED) &&
+                    (
+                        xs == INFLATED || run {
+                            xs = longMultiplyPowerTen(xs, (-sdiff).toInt())
+                            xs
+                        } == INFLATED
+                    ) &&
                     ys == INFLATED
                 ) {
                     val rb = bigMultiplyPowerTen((-sdiff).toInt())
@@ -2118,7 +2184,12 @@ internal class CommonBigDecimal : BigDecimal {
             } else { // sdiff > 0
                 // The cases sdiff > Int.MAX_VALUE intentionally fall through.
                 if (sdiff <= Int.MAX_VALUE &&
-                    (ys == INFLATED || run { ys = longMultiplyPowerTen(ys, sdiff.toInt()); ys } == INFLATED) &&
+                    (
+                        ys == INFLATED || run {
+                            ys = longMultiplyPowerTen(ys, sdiff.toInt())
+                            ys
+                        } == INFLATED
+                    ) &&
                     xs == INFLATED
                 ) {
                     val rb = `val`.bigMultiplyPowerTen(sdiff.toInt())
@@ -2227,9 +2298,13 @@ internal class CommonBigDecimal : BigDecimal {
         return getValueString(signum, str, _scale)
     }
 
-    /* Returns a digit.digit string */
-    private fun getValueString(signum: Int, intString: String, scale: Int): String {
-        /* Insert decimal point */
+    // Returns a digit.digit string
+    private fun getValueString(
+        signum: Int,
+        intString: String,
+        scale: Int,
+    ): String {
+        // Insert decimal point
         val buf: StringBuilder
         val insertionPoint = intString.length - scale
         if (insertionPoint == 0) { // Point goes right before _intVal
@@ -2422,12 +2497,13 @@ internal class CommonBigDecimal : BigDecimal {
     // the compact representation of CommonBigDecimal (except for '-' sign' if it is
     // negative) if its _intCompact field is not INFLATED. It is shared by all
     // calls to toString() and its variants in that particular thread.
-    internal class StringBuilderHelper( // Placeholder for CommonBigDecimal string
+    internal class StringBuilderHelper(
+        // Placeholder for CommonBigDecimal string
         // All non negative longs can be made to fit into 19 character array.
-        val sb: StringBuilder = StringBuilder(), // character array to place the _intCompact
-        val compactCharArray: CharArray = CharArray(19)
+        val sb: StringBuilder = StringBuilder(),
+        // character array to place the _intCompact
+        val compactCharArray: CharArray = CharArray(19),
     ) {
-
         // Accessors.
         val stringBuilder: StringBuilder
             get() {
@@ -2483,212 +2559,213 @@ internal class CommonBigDecimal : BigDecimal {
         }
 
         companion object {
+            val DIGIT_TENS =
+                charArrayOf(
+                    '0',
+                    '0',
+                    '0',
+                    '0',
+                    '0',
+                    '0',
+                    '0',
+                    '0',
+                    '0',
+                    '0',
+                    '1',
+                    '1',
+                    '1',
+                    '1',
+                    '1',
+                    '1',
+                    '1',
+                    '1',
+                    '1',
+                    '1',
+                    '2',
+                    '2',
+                    '2',
+                    '2',
+                    '2',
+                    '2',
+                    '2',
+                    '2',
+                    '2',
+                    '2',
+                    '3',
+                    '3',
+                    '3',
+                    '3',
+                    '3',
+                    '3',
+                    '3',
+                    '3',
+                    '3',
+                    '3',
+                    '4',
+                    '4',
+                    '4',
+                    '4',
+                    '4',
+                    '4',
+                    '4',
+                    '4',
+                    '4',
+                    '4',
+                    '5',
+                    '5',
+                    '5',
+                    '5',
+                    '5',
+                    '5',
+                    '5',
+                    '5',
+                    '5',
+                    '5',
+                    '6',
+                    '6',
+                    '6',
+                    '6',
+                    '6',
+                    '6',
+                    '6',
+                    '6',
+                    '6',
+                    '6',
+                    '7',
+                    '7',
+                    '7',
+                    '7',
+                    '7',
+                    '7',
+                    '7',
+                    '7',
+                    '7',
+                    '7',
+                    '8',
+                    '8',
+                    '8',
+                    '8',
+                    '8',
+                    '8',
+                    '8',
+                    '8',
+                    '8',
+                    '8',
+                    '9',
+                    '9',
+                    '9',
+                    '9',
+                    '9',
+                    '9',
+                    '9',
+                    '9',
+                    '9',
+                    '9',
+                )
 
-            val DIGIT_TENS = charArrayOf(
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '2',
-                '2',
-                '2',
-                '2',
-                '2',
-                '2',
-                '2',
-                '2',
-                '2',
-                '2',
-                '3',
-                '3',
-                '3',
-                '3',
-                '3',
-                '3',
-                '3',
-                '3',
-                '3',
-                '3',
-                '4',
-                '4',
-                '4',
-                '4',
-                '4',
-                '4',
-                '4',
-                '4',
-                '4',
-                '4',
-                '5',
-                '5',
-                '5',
-                '5',
-                '5',
-                '5',
-                '5',
-                '5',
-                '5',
-                '5',
-                '6',
-                '6',
-                '6',
-                '6',
-                '6',
-                '6',
-                '6',
-                '6',
-                '6',
-                '6',
-                '7',
-                '7',
-                '7',
-                '7',
-                '7',
-                '7',
-                '7',
-                '7',
-                '7',
-                '7',
-                '8',
-                '8',
-                '8',
-                '8',
-                '8',
-                '8',
-                '8',
-                '8',
-                '8',
-                '8',
-                '9',
-                '9',
-                '9',
-                '9',
-                '9',
-                '9',
-                '9',
-                '9',
-                '9',
-                '9'
-            )
-
-            val DIGIT_ONES = charArrayOf(
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9',
-                '0',
-                '1',
-                '2',
-                '3',
-                '4',
-                '5',
-                '6',
-                '7',
-                '8',
-                '9'
-            )
+            val DIGIT_ONES =
+                charArrayOf(
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                )
         }
     }
 
@@ -2850,7 +2927,13 @@ internal class CommonBigDecimal : BigDecimal {
         if (asInt.toLong() != `val`) {
             asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
             val b: CommonBigInteger?
-            if (_intCompact != 0L && (run { b = _intVal; b } == null || b!!.signum != 0)) {
+            if (_intCompact != 0L && (
+                    run {
+                        b = _intVal
+                        b
+                    } == null || b!!.signum != 0
+                )
+            ) {
                 throw ArithmeticException(if (asInt > 0) "Underflow" else "Overflow")
             }
         }
@@ -2894,7 +2977,7 @@ internal class CommonBigDecimal : BigDecimal {
                     print("audit", this)
                     throw AssertionError(
                         "Inconsistent state, _intCompact=" +
-                            _intCompact + "\t _intVal=" + `val`
+                            _intCompact + "\t _intVal=" + `val`,
                     )
                 }
             }
@@ -2908,7 +2991,6 @@ internal class CommonBigDecimal : BigDecimal {
     }
 
     companion object {
-
         /**
          * Sentinel value for [CommonBigDecimal._intCompact] indicating the
          * significand information is only available from `_intVal`.
@@ -2922,45 +3004,46 @@ internal class CommonBigDecimal : BigDecimal {
         private const val MAX_COMPACT_DIGITS = 18
 
         // Cache of common small CommonBigDecimal values.
-        private val ZERO_THROUGH_TEN = arrayOf(
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 0, 1),
-            CommonBigDecimal(CommonBigInteger.ONE, 1, 0, 1),
-            CommonBigDecimal(CommonBigInteger.TWO, 2, 0, 1),
-            CommonBigDecimal(CommonBigInteger.of(3), 3, 0, 1),
-            CommonBigDecimal(CommonBigInteger.of(4), 4, 0, 1),
-            CommonBigDecimal(CommonBigInteger.of(5), 5, 0, 1),
-            CommonBigDecimal(CommonBigInteger.of(6), 6, 0, 1),
-            CommonBigDecimal(CommonBigInteger.of(7), 7, 0, 1),
-            CommonBigDecimal(CommonBigInteger.of(8), 8, 0, 1),
-            CommonBigDecimal(CommonBigInteger.of(9), 9, 0, 1),
-            CommonBigDecimal(CommonBigInteger.TEN, 10, 0, 2)
-        )
+        private val ZERO_THROUGH_TEN =
+            arrayOf(
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 0, 1),
+                CommonBigDecimal(CommonBigInteger.ONE, 1, 0, 1),
+                CommonBigDecimal(CommonBigInteger.TWO, 2, 0, 1),
+                CommonBigDecimal(CommonBigInteger.of(3), 3, 0, 1),
+                CommonBigDecimal(CommonBigInteger.of(4), 4, 0, 1),
+                CommonBigDecimal(CommonBigInteger.of(5), 5, 0, 1),
+                CommonBigDecimal(CommonBigInteger.of(6), 6, 0, 1),
+                CommonBigDecimal(CommonBigInteger.of(7), 7, 0, 1),
+                CommonBigDecimal(CommonBigInteger.of(8), 8, 0, 1),
+                CommonBigDecimal(CommonBigInteger.of(9), 9, 0, 1),
+                CommonBigDecimal(CommonBigInteger.TEN, 10, 0, 2),
+            )
 
         // Cache of zero scaled by 0 - 15
-        private val ZERO_SCALED_BY = arrayOf(
-            ZERO_THROUGH_TEN[0],
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 1, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 2, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 3, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 4, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 5, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 6, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 7, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 8, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 9, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 10, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 11, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 12, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 13, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 14, 1),
-            CommonBigDecimal(CommonBigInteger.ZERO, 0, 15, 1)
-        )
+        private val ZERO_SCALED_BY =
+            arrayOf(
+                ZERO_THROUGH_TEN[0],
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 1, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 2, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 3, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 4, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 5, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 6, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 7, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 8, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 9, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 10, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 11, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 12, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 13, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 14, 1),
+                CommonBigDecimal(CommonBigInteger.ZERO, 0, 15, 1),
+            )
 
         // Half of Long.MIN_VALUE & Long.MAX_VALUE.
         private const val HALF_LONG_MAX_VALUE = Long.MAX_VALUE / 2
         private const val HALF_LONG_MIN_VALUE = Long.MIN_VALUE / 2
 
-        // Constants
         /**
          * The value 0, with a _scale of 0.
          *
@@ -3014,7 +3097,11 @@ internal class CommonBigDecimal : BigDecimal {
         @JsName("E")
         val E = of(E_STRING)
 
-        private fun parseExp(`in`: CharArray, offset: Int, len: Int): Long {
+        private fun parseExp(
+            `in`: CharArray,
+            offset: Int,
+            len: Int,
+        ): Long {
             var offset = offset
             var len = len
             var exp: Long = 0
@@ -3069,8 +3156,6 @@ internal class CommonBigDecimal : BigDecimal {
             return exp
         }
 
-        // Static Factory Methods
-
         /**
          * Translates a `long` unscaled value and an
          * `int` _scale into a [CommonBigDecimal].
@@ -3086,7 +3171,10 @@ internal class CommonBigDecimal : BigDecimal {
          */
         @JvmStatic
         @JsName("ofScaledLong")
-        fun of(unscaledVal: Long, scale: Int): CommonBigDecimal {
+        fun of(
+            unscaledVal: Long,
+            scale: Int,
+        ): CommonBigDecimal {
             if (scale == 0) {
                 return of(unscaledVal)
             } else if (unscaledVal == 0L) {
@@ -3100,8 +3188,35 @@ internal class CommonBigDecimal : BigDecimal {
                 },
                 unscaledVal,
                 scale,
-                0
+                0,
             )
+        }
+
+        @JvmStatic
+        @JsName("ofScaledLongWithPrecision")
+        fun of(
+            unscaledVal: Long,
+            scale: Int,
+            prec: Int,
+        ): CommonBigDecimal {
+            return if (scale == 0 && unscaledVal >= 0 && unscaledVal < ZERO_THROUGH_TEN.size) {
+                ZERO_THROUGH_TEN[unscaledVal.toInt()]
+            } else if (unscaledVal == 0L) {
+                zeroValueOf(scale)
+            } else {
+                CommonBigDecimal(
+                    if (unscaledVal == INFLATED) INFLATED_BIGINT else null,
+                    unscaledVal,
+                    scale,
+                    prec,
+                )
+            }
+        }
+
+        @JvmStatic
+        @JsName("ofInt")
+        fun of(`val`: Int): CommonBigDecimal {
+            return of(`val`.toLong())
         }
 
         /**
@@ -3115,36 +3230,6 @@ internal class CommonBigDecimal : BigDecimal {
          * @param val value of the [CommonBigDecimal].
          * @return a [CommonBigDecimal] whose value is `val`.
          */
-//        fun of(`val`: Long): CommonBigDecimal {
-//            if (`val` >= 0 && `val` < ZERO_THROUGH_TEN.size)
-//                return ZERO_THROUGH_TEN[`val`.toInt()]
-//            else if (`val` != INFLATED)
-//                return CommonBigDecimal(null, `val`, 0, 0)
-//            return CommonBigDecimal(INFLATED_BIGINT, `val`, 0, 0)
-//        }
-        @JvmStatic
-        @JsName("ofScaledLongWithPrecision")
-        fun of(unscaledVal: Long, scale: Int, prec: Int): CommonBigDecimal {
-            return if (scale == 0 && unscaledVal >= 0 && unscaledVal < ZERO_THROUGH_TEN.size) {
-                ZERO_THROUGH_TEN[unscaledVal.toInt()]
-            } else if (unscaledVal == 0L) {
-                zeroValueOf(scale)
-            } else {
-                CommonBigDecimal(
-                    if (unscaledVal == INFLATED) INFLATED_BIGINT else null,
-                    unscaledVal,
-                    scale,
-                    prec
-                )
-            }
-        }
-
-        @JvmStatic
-        @JsName("ofInt")
-        fun of(`val`: Int): CommonBigDecimal {
-            return of(`val`.toLong())
-        }
-
         @JvmStatic
         @JsName("of")
         fun of(`val`: Long): CommonBigDecimal {
@@ -3158,7 +3243,7 @@ internal class CommonBigDecimal : BigDecimal {
                         INFLATED_BIGINT,
                         `val`,
                         0,
-                        0
+                        0,
                     )
                 }
             }
@@ -3166,7 +3251,11 @@ internal class CommonBigDecimal : BigDecimal {
 
         @JvmStatic
         @JsName("ofScaledBigIntegerWithPrecision")
-        fun of(intVal: CommonBigInteger, scale: Int, prec: Int): CommonBigDecimal {
+        fun of(
+            intVal: CommonBigInteger,
+            scale: Int,
+            prec: Int,
+        ): CommonBigDecimal {
             val `val` = compactValFor(intVal)
             if (`val` == 0L) {
                 return zeroValueOf(scale)
@@ -3202,20 +3291,29 @@ internal class CommonBigDecimal : BigDecimal {
          */
         @JvmStatic
         @JsName("ofDouble")
-        fun of(`val`: Double, ctx: MathContext): CommonBigDecimal {
+        fun of(
+            `val`: Double,
+            ctx: MathContext,
+        ): CommonBigDecimal {
             return CommonBigDecimal(`val`, ctx)
         }
 
         @JvmStatic
         @JsName("ofFloat")
-        fun of(`val`: Float, ctx: MathContext): CommonBigDecimal {
+        fun of(
+            `val`: Float,
+            ctx: MathContext,
+        ): CommonBigDecimal {
             return of(`val`.toDouble(), ctx)
         }
 
         @JvmStatic
         @JsName("parse")
         @JvmOverloads
-        fun of(`val`: String, ctx: MathContext? = null): CommonBigDecimal {
+        fun of(
+            `val`: String,
+            ctx: MathContext? = null,
+        ): CommonBigDecimal {
             return if (ctx === null) {
                 CommonBigDecimal(`val`)
             } else {
@@ -3226,7 +3324,10 @@ internal class CommonBigDecimal : BigDecimal {
         @JvmStatic
         @JsName("ofBigInteger")
         @JvmOverloads
-        fun of(`val`: CommonBigInteger, ctx: MathContext? = null): CommonBigDecimal {
+        fun of(
+            `val`: CommonBigInteger,
+            ctx: MathContext? = null,
+        ): CommonBigDecimal {
             return if (ctx === null) {
                 CommonBigDecimal(`val`)
             } else {
@@ -3236,44 +3337,51 @@ internal class CommonBigDecimal : BigDecimal {
 
         @JvmStatic
         @JsName("ofIntWithContext")
-        fun of(`val`: Int, ctx: MathContext): CommonBigDecimal {
+        fun of(
+            `val`: Int,
+            ctx: MathContext,
+        ): CommonBigDecimal {
             return CommonBigDecimal(`val`.toLong(), ctx)
         }
 
         @JvmStatic
         @JsName("ofWithContext")
-        fun of(`val`: Long, ctx: MathContext): CommonBigDecimal {
+        fun of(
+            `val`: Long,
+            ctx: MathContext,
+        ): CommonBigDecimal {
             return CommonBigDecimal(`val`, ctx)
         }
 
         /**
          * Powers of 10 which can be represented exactly in `double`.
          */
-        private val DOUBLE_10_POW = doubleArrayOf(
-            1.0e0,
-            1.0e1,
-            1.0e2,
-            1.0e3,
-            1.0e4,
-            1.0e5,
-            1.0e6,
-            1.0e7,
-            1.0e8,
-            1.0e9,
-            1.0e10,
-            1.0e11,
-            1.0e12,
-            1.0e13,
-            1.0e14,
-            1.0e15,
-            1.0e16,
-            1.0e17,
-            1.0e18,
-            1.0e19,
-            1.0e20,
-            1.0e21,
-            1.0e22
-        )
+        private val DOUBLE_10_POW =
+            doubleArrayOf(
+                1.0e0,
+                1.0e1,
+                1.0e2,
+                1.0e3,
+                1.0e4,
+                1.0e5,
+                1.0e6,
+                1.0e7,
+                1.0e8,
+                1.0e9,
+                1.0e10,
+                1.0e11,
+                1.0e12,
+                1.0e13,
+                1.0e14,
+                1.0e15,
+                1.0e16,
+                1.0e17,
+                1.0e18,
+                1.0e19,
+                1.0e20,
+                1.0e21,
+                1.0e22,
+            )
 
         /**
          * Powers of 10 which can be represented exactly in `float`.
@@ -3338,80 +3446,86 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private val LONG_TEN_POWERS_TABLE = longArrayOf(
-            1, // 0 / 10^0
-            10, // 1 / 10^1
-            100, // 2 / 10^2
-            1000, // 3 / 10^3
-            10000, // 4 / 10^4
-            100000, // 5 / 10^5
-            1000000, // 6 / 10^6
-            10000000, // 7 / 10^7
-            100000000, // 8 / 10^8
-            1000000000, // 9 / 10^9
-            10000000000L, // 10 / 10^10
-            100000000000L, // 11 / 10^11
-            1000000000000L, // 12 / 10^12
-            10000000000000L, // 13 / 10^13
-            100000000000000L, // 14 / 10^14
-            1000000000000000L, // 15 / 10^15
-            10000000000000000L, // 16 / 10^16
-            100000000000000000L, // 17 / 10^17
-            1000000000000000000L // 18 / 10^18
-        )
+        private val LONG_TEN_POWERS_TABLE =
+            longArrayOf(
+                1,
+                10,
+                100,
+                1000,
+                10000,
+                100000,
+                1000000,
+                10000000,
+                100000000,
+                1000000000,
+                10000000000L,
+                100000000000L,
+                1000000000000L,
+                10000000000000L,
+                100000000000000L,
+                1000000000000000L,
+                10000000000000000L,
+                100000000000000000L,
+                1000000000000000000L,
+            )
 
-        private var BIG_TEN_POWERS_TABLE = arrayOf<CommonBigInteger?>(
-            CommonBigInteger.ONE,
-            CommonBigInteger.of(10),
-            CommonBigInteger.of(100),
-            CommonBigInteger.of(1000),
-            CommonBigInteger.of(10000),
-            CommonBigInteger.of(100000),
-            CommonBigInteger.of(1000000),
-            CommonBigInteger.of(10000000),
-            CommonBigInteger.of(100000000),
-            CommonBigInteger.of(1000000000),
-            CommonBigInteger.of(10000000000L),
-            CommonBigInteger.of(100000000000L),
-            CommonBigInteger.of(1000000000000L),
-            CommonBigInteger.of(10000000000000L),
-            CommonBigInteger.of(100000000000000L),
-            CommonBigInteger.of(1000000000000000L),
-            CommonBigInteger.of(10000000000000000L),
-            CommonBigInteger.of(100000000000000000L),
-            CommonBigInteger.of(1000000000000000000L)
-        )
+        private var BIG_TEN_POWERS_TABLE =
+            arrayOf<CommonBigInteger?>(
+                CommonBigInteger.ONE,
+                CommonBigInteger.of(10),
+                CommonBigInteger.of(100),
+                CommonBigInteger.of(1000),
+                CommonBigInteger.of(10000),
+                CommonBigInteger.of(100000),
+                CommonBigInteger.of(1000000),
+                CommonBigInteger.of(10000000),
+                CommonBigInteger.of(100000000),
+                CommonBigInteger.of(1000000000),
+                CommonBigInteger.of(10000000000L),
+                CommonBigInteger.of(100000000000L),
+                CommonBigInteger.of(1000000000000L),
+                CommonBigInteger.of(10000000000000L),
+                CommonBigInteger.of(100000000000000L),
+                CommonBigInteger.of(1000000000000000L),
+                CommonBigInteger.of(10000000000000000L),
+                CommonBigInteger.of(100000000000000000L),
+                CommonBigInteger.of(1000000000000000000L),
+            )
 
         private val BIG_TEN_POWERS_TABLE_INITLEN = BIG_TEN_POWERS_TABLE.size
         private val BIG_TEN_POWERS_TABLE_MAX = 16 * BIG_TEN_POWERS_TABLE_INITLEN
 
-        private val THRESHOLDS_TABLE = longArrayOf(
-            Long.MAX_VALUE, // 0
-            Long.MAX_VALUE / 10L, // 1
-            Long.MAX_VALUE / 100L, // 2
-            Long.MAX_VALUE / 1000L, // 3
-            Long.MAX_VALUE / 10000L, // 4
-            Long.MAX_VALUE / 100000L, // 5
-            Long.MAX_VALUE / 1000000L, // 6
-            Long.MAX_VALUE / 10000000L, // 7
-            Long.MAX_VALUE / 100000000L, // 8
-            Long.MAX_VALUE / 1000000000L, // 9
-            Long.MAX_VALUE / 10000000000L, // 10
-            Long.MAX_VALUE / 100000000000L, // 11
-            Long.MAX_VALUE / 1000000000000L, // 12
-            Long.MAX_VALUE / 10000000000000L, // 13
-            Long.MAX_VALUE / 100000000000000L, // 14
-            Long.MAX_VALUE / 1000000000000000L, // 15
-            Long.MAX_VALUE / 10000000000000000L, // 16
-            Long.MAX_VALUE / 100000000000000000L, // 17
-            Long.MAX_VALUE / 1000000000000000000L // 18
-        )
+        private val THRESHOLDS_TABLE =
+            longArrayOf(
+                Long.MAX_VALUE,
+                Long.MAX_VALUE / 10L,
+                Long.MAX_VALUE / 100L,
+                Long.MAX_VALUE / 1000L,
+                Long.MAX_VALUE / 10000L,
+                Long.MAX_VALUE / 100000L,
+                Long.MAX_VALUE / 1000000L,
+                Long.MAX_VALUE / 10000000L,
+                Long.MAX_VALUE / 100000000L,
+                Long.MAX_VALUE / 1000000000L,
+                Long.MAX_VALUE / 10000000000L,
+                Long.MAX_VALUE / 100000000000L,
+                Long.MAX_VALUE / 1000000000000L,
+                Long.MAX_VALUE / 10000000000000L,
+                Long.MAX_VALUE / 100000000000000L,
+                Long.MAX_VALUE / 1000000000000000L,
+                Long.MAX_VALUE / 10000000000000000L,
+                Long.MAX_VALUE / 100000000000000000L,
+                Long.MAX_VALUE / 1000000000000000000L,
+            )
 
         /**
          * Compute val * 10 ^ n; return this product if it is
          * representable as a long, INFLATED otherwise.
          */
-        private fun longMultiplyPowerTen(`val`: Long, n: Int): Long {
+        private fun longMultiplyPowerTen(
+            `val`: Long,
+            n: Int,
+        ): Long {
             if (`val` == 0L || n <= 0) {
                 return `val`
             }
@@ -3523,15 +3637,19 @@ internal class CommonBigDecimal : BigDecimal {
                 return INFLATED
             }
 
-            val u = if (len == 2) {
-                (m[1].toLong() and LONG_MASK) + (d.toLong() shl 32)
-            } else {
-                d.toLong() and LONG_MASK
-            }
+            val u =
+                if (len == 2) {
+                    (m[1].toLong() and LONG_MASK) + (d.toLong() shl 32)
+                } else {
+                    d.toLong() and LONG_MASK
+                }
             return if (b._signum < 0) -u else u
         }
 
-        private fun longCompareMagnitude(x: Long, y: Long): Int {
+        private fun longCompareMagnitude(
+            x: Long,
+            y: Long,
+        ): Int {
             var x = x
             var y = y
             if (x < 0) {
@@ -3540,25 +3658,40 @@ internal class CommonBigDecimal : BigDecimal {
             if (y < 0) {
                 y = -y
             }
-            return if (x < y) -1 else if (x == y) 0 else 1
+            return if (x < y) {
+                -1
+            } else if (x == y) {
+                0
+            } else {
+                1
+            }
         }
 
         private fun saturateLong(s: Long): Int {
             val i = s.toInt()
-            return if (s == i.toLong()) i else if (s < 0) Int.MIN_VALUE else Int.MAX_VALUE
+            return if (s == i.toLong()) {
+                i
+            } else if (s < 0) {
+                Int.MIN_VALUE
+            } else {
+                Int.MAX_VALUE
+            }
         }
 
         /*
          * Internal printing routine
          */
-        private fun print(name: String, bd: CommonBigDecimal) {
+        private fun print(
+            name: String,
+            bd: CommonBigDecimal,
+        ) {
             println(
                 "$name:\t_intCompact ${bd._intCompact}\t_intVal " +
-                    "${bd._intVal}\t_scale ${bd._scale}\t_precision ${bd._precision}"
+                    "${bd._intVal}\t_scale ${bd._scale}\t_precision ${bd._precision}",
             )
         }
 
-        /* the same as checkScale where value!=0 */
+        // the same as checkScale where value!=0
         private fun checkScaleNonZero(`val`: Long): Int {
             val asInt = `val`.toInt()
             if (asInt.toLong() != `val`) {
@@ -3567,7 +3700,10 @@ internal class CommonBigDecimal : BigDecimal {
             return asInt
         }
 
-        private fun checkScale(intCompact: Long, `val`: Long): Int {
+        private fun checkScale(
+            intCompact: Long,
+            `val`: Long,
+        ): Int {
             var asInt = `val`.toInt()
             if (asInt.toLong() != `val`) {
                 asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
@@ -3578,7 +3714,10 @@ internal class CommonBigDecimal : BigDecimal {
             return asInt
         }
 
-        private fun checkScale(intVal: CommonBigInteger?, `val`: Long): Int {
+        private fun checkScale(
+            intVal: CommonBigInteger?,
+            `val`: Long,
+        ): Int {
             var asInt = `val`.toInt()
             if (asInt.toLong() != `val`) {
                 asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
@@ -3602,7 +3741,10 @@ internal class CommonBigDecimal : BigDecimal {
          * `RoundingMode.UNNECESSARY` and the
          * result is inexact.
          */
-        private fun doRound(`val`: CommonBigDecimal?, mc: MathContext): CommonBigDecimal? {
+        private fun doRound(
+            `val`: CommonBigDecimal?,
+            mc: MathContext,
+        ): CommonBigDecimal? {
             val mcp = mc.precision
             var wasDivided = false
             if (mcp > 0) {
@@ -3648,7 +3790,11 @@ internal class CommonBigDecimal : BigDecimal {
          * Returns a {@code CommonBigDecimal} created from {@code long} value with
          * given _scale rounded according to the MathContext settings
          */
-        private fun doRound(compactVal: Long, scale: Int, mc: MathContext): CommonBigDecimal {
+        private fun doRound(
+            compactVal: Long,
+            scale: Int,
+            mc: MathContext,
+        ): CommonBigDecimal {
             var compactVal = compactVal
             var scale = scale
             val mcp = mc.precision
@@ -3670,7 +3816,11 @@ internal class CommonBigDecimal : BigDecimal {
          * Returns a {@code CommonBigDecimal} created from {@code BigInteger} value with
          * given _scale rounded according to the MathContext settings
          */
-        private fun doRound(intVal: CommonBigInteger, scale: Int, mc: MathContext): CommonBigDecimal {
+        private fun doRound(
+            intVal: CommonBigInteger,
+            scale: Int,
+            mc: MathContext,
+        ): CommonBigDecimal {
             var intVal = intVal
             var scale = scale
             val mcp = mc.precision
@@ -3712,7 +3862,11 @@ internal class CommonBigDecimal : BigDecimal {
         /*
          * Divides {@code BigInteger} value by ten power.
          */
-        private fun divideAndRoundByTenPow(intVal: CommonBigInteger, tenPow: Int, roundingMode: Int): CommonBigInteger {
+        private fun divideAndRoundByTenPow(
+            intVal: CommonBigInteger,
+            tenPow: Int,
+            roundingMode: Int,
+        ): CommonBigInteger {
             var intVal = intVal
             if (tenPow < LONG_TEN_POWERS_TABLE.size) {
                 intVal = divideAndRound(intVal, LONG_TEN_POWERS_TABLE[tenPow], roundingMode)
@@ -3736,7 +3890,7 @@ internal class CommonBigDecimal : BigDecimal {
             ldivisor: Long,
             scale: Int,
             roundingMode: Int,
-            preferredScale: Int
+            preferredScale: Int,
         ): CommonBigDecimal {
             val qsign: Int // quotient sign
             val q = ldividend / ldivisor // store quotient in long
@@ -3761,7 +3915,11 @@ internal class CommonBigDecimal : BigDecimal {
          * Divides `long` by `long` and do rounding based on the
          * passed in roundingMode.
          */
-        private fun divideAndRound(ldividend: Long, ldivisor: Long, roundingMode: Int): Long {
+        private fun divideAndRound(
+            ldividend: Long,
+            ldivisor: Long,
+            roundingMode: Int,
+        ): Long {
             val qsign: Int // quotient sign
             val q = ldividend / ldivisor // store quotient in long
             if (roundingMode == RoundingMode.DOWN.value) {
@@ -3780,27 +3938,32 @@ internal class CommonBigDecimal : BigDecimal {
         /**
          * Shared logic of need increment computation.
          */
-        private fun commonNeedIncrement(roundingMode: Int, qsign: Int, cmpFracHalf: Int, oddQuot: Boolean): Boolean {
+        private fun commonNeedIncrement(
+            roundingMode: Int,
+            qsign: Int,
+            cmpFracHalf: Int,
+            oddQuot: Boolean,
+        ): Boolean {
             when (roundingMode) {
                 RoundingMode.UNNECESSARY.value -> throw ArithmeticException("Rounding necessary")
 
-                RoundingMode.UP.value // Away from zero
+                RoundingMode.UP.value, // Away from zero
                 -> return true
 
-                RoundingMode.DOWN.value // Towards zero
+                RoundingMode.DOWN.value, // Towards zero
                 -> return false
 
-                RoundingMode.CEILING.value // Towards +infinity
+                RoundingMode.CEILING.value, // Towards +infinity
                 -> return qsign > 0
 
-                RoundingMode.FLOOR.value // Towards -infinity
+                RoundingMode.FLOOR.value, // Towards -infinity
                 -> return qsign < 0
 
                 else // Some kind of half-way rounding
                 -> {
                     require(
                         roundingMode >= RoundingMode.HALF_UP.value &&
-                            roundingMode <= RoundingMode.HALF_EVEN.value
+                            roundingMode <= RoundingMode.HALF_EVEN.value,
                     ) {
                         "Unexpected rounding mode" + RoundingMode.valueOf(roundingMode)
                     }
@@ -3831,7 +3994,13 @@ internal class CommonBigDecimal : BigDecimal {
         /**
          * Tests if quotient has to be incremented according the roundingMode
          */
-        private fun needIncrement(ldivisor: Long, roundingMode: Int, qsign: Int, q: Long, r: Long): Boolean {
+        private fun needIncrement(
+            ldivisor: Long,
+            roundingMode: Int,
+            qsign: Int,
+            q: Long,
+            r: Long,
+        ): Boolean {
             require(r != 0L)
 
             val cmpFracHalf: Int
@@ -3848,7 +4017,11 @@ internal class CommonBigDecimal : BigDecimal {
          * Divides [CommonBigInteger] value by `long` value and
          * do rounding based on the passed in roundingMode.
          */
-        private fun divideAndRound(bdividend: CommonBigInteger, ldivisor: Long, roundingMode: Int): CommonBigInteger {
+        private fun divideAndRound(
+            bdividend: CommonBigInteger,
+            ldivisor: Long,
+            roundingMode: Int,
+        ): CommonBigInteger {
             // Descend into mutables for faster remainder checks
             val mdividend = MutableBigInteger(bdividend._mag)
             // store quotient
@@ -3881,7 +4054,7 @@ internal class CommonBigDecimal : BigDecimal {
             ldivisor: Long,
             scale: Int,
             roundingMode: Int,
-            preferredScale: Int
+            preferredScale: Int,
         ): CommonBigDecimal {
             // Descend into mutables for faster remainder checks
             val mdividend = MutableBigInteger(bdividend._mag)
@@ -3920,7 +4093,7 @@ internal class CommonBigDecimal : BigDecimal {
             roundingMode: Int,
             qsign: Int,
             mq: MutableBigInteger,
-            r: Long
+            r: Long,
         ): Boolean {
             require(r != 0L)
 
@@ -3941,7 +4114,7 @@ internal class CommonBigDecimal : BigDecimal {
         private fun divideAndRound(
             bdividend: CommonBigInteger,
             bdivisor: CommonBigInteger,
-            roundingMode: Int
+            roundingMode: Int,
         ): CommonBigInteger {
             val isRemainderZero: Boolean // record remainder is zero or not
             val qsign: Int // quotient sign
@@ -3974,7 +4147,7 @@ internal class CommonBigDecimal : BigDecimal {
             bdivisor: CommonBigInteger,
             scale: Int,
             roundingMode: Int,
-            preferredScale: Int
+            preferredScale: Int,
         ): CommonBigDecimal {
             val isRemainderZero: Boolean // record remainder is zero or not
             val qsign: Int // quotient sign
@@ -4012,7 +4185,7 @@ internal class CommonBigDecimal : BigDecimal {
             roundingMode: Int,
             qsign: Int,
             mq: MutableBigInteger,
-            mr: MutableBigInteger
+            mr: MutableBigInteger,
         ): Boolean {
             require(!mr.isZero)
             val cmpFracHalf = mr.compareHalf(mdivisor)
@@ -4031,7 +4204,7 @@ internal class CommonBigDecimal : BigDecimal {
         private fun createAndStripZerosToMatchScale(
             intVal: CommonBigInteger,
             scale: Int,
-            preferredScale: Long
+            preferredScale: Long,
         ): CommonBigDecimal {
             var intVal = intVal
             var scale = scale
@@ -4062,7 +4235,7 @@ internal class CommonBigDecimal : BigDecimal {
         private fun createAndStripZerosToMatchScale(
             compactVal: Long,
             scale: Int,
-            preferredScale: Long
+            preferredScale: Long,
         ): CommonBigDecimal {
             var compactVal = compactVal
             var scale = scale
@@ -4084,7 +4257,7 @@ internal class CommonBigDecimal : BigDecimal {
             intVal: CommonBigInteger?,
             intCompact: Long,
             scale: Int,
-            preferredScale: Int
+            preferredScale: Int,
         ): CommonBigDecimal {
             return if (intCompact != INFLATED) {
                 createAndStripZerosToMatchScale(intCompact, scale, preferredScale.toLong())
@@ -4092,7 +4265,7 @@ internal class CommonBigDecimal : BigDecimal {
                 createAndStripZerosToMatchScale(
                     intVal ?: INFLATED_BIGINT,
                     scale,
-                    preferredScale.toLong()
+                    preferredScale.toLong(),
                 )
             }
         }
@@ -4100,7 +4273,10 @@ internal class CommonBigDecimal : BigDecimal {
         /*
          * returns INFLATED if oveflow
          */
-        private fun sum(xs: Long, ys: Long): Long {
+        private fun sum(
+            xs: Long,
+            ys: Long,
+        ): Long {
             val sum = xs + ys
             // See "Hacker's Delight" section 2-12 for explanation of
             // the overflow test.
@@ -4111,19 +4287,28 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun sum(xs: Long, ys: Long, scale: Int): CommonBigDecimal {
+        private fun sum(
+            xs: Long,
+            ys: Long,
+            scale: Int,
+        ): CommonBigDecimal {
             val sum = sum(xs, ys)
             return if (sum != INFLATED) {
                 CommonBigDecimal.of(sum, scale)
             } else {
                 CommonBigDecimal(
                     CommonBigInteger.of(xs).plusLong(ys),
-                    scale
+                    scale,
                 )
             }
         }
 
-        private fun sum(xs: Long, scale1: Int, ys: Long, scale2: Int): CommonBigDecimal {
+        private fun sum(
+            xs: Long,
+            scale1: Int,
+            ys: Long,
+            scale2: Int,
+        ): CommonBigDecimal {
             val sdiff = scale1.toLong() - scale2
             if (sdiff == 0L) {
                 return sum(xs, ys, scale1)
@@ -4157,7 +4342,12 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun sum(xs: Long, scale1: Int, snd: CommonBigInteger, scale2: Int): CommonBigDecimal {
+        private fun sum(
+            xs: Long,
+            scale1: Int,
+            snd: CommonBigInteger,
+            scale2: Int,
+        ): CommonBigDecimal {
             var snd = snd
             var rscale = scale1
             val sdiff = rscale.toLong() - scale2
@@ -4184,7 +4374,12 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun sum(fst: CommonBigInteger?, scale1: Int, snd: CommonBigInteger?, scale2: Int): CommonBigDecimal {
+        private fun sum(
+            fst: CommonBigInteger?,
+            scale1: Int,
+            snd: CommonBigInteger?,
+            scale2: Int,
+        ): CommonBigDecimal {
             var fst = fst
             var snd = snd
             var rscale = scale1
@@ -4207,11 +4402,17 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun bigMultiplyPowerTen(value: Long, n: Int): CommonBigInteger {
+        private fun bigMultiplyPowerTen(
+            value: Long,
+            n: Int,
+        ): CommonBigInteger {
             return if (n <= 0) CommonBigInteger.of(value) else bigTenToThe(n).timesLong(value)
         }
 
-        private fun bigMultiplyPowerTen(value: CommonBigInteger?, n: Int): CommonBigInteger? {
+        private fun bigMultiplyPowerTen(
+            value: CommonBigInteger?,
+            n: Int,
+        ): CommonBigInteger? {
             if (n <= 0) {
                 return value
             }
@@ -4235,7 +4436,7 @@ internal class CommonBigDecimal : BigDecimal {
             ys: Long,
             yscale: Int,
             preferredScale: Long,
-            mc: MathContext
+            mc: MathContext,
         ): CommonBigDecimal? {
             var yscale = yscale
             val mcp = mc.precision
@@ -4243,11 +4444,12 @@ internal class CommonBigDecimal : BigDecimal {
 
             require(xscale <= yscale && yscale < 18 && mcp < 18)
             val xraise = yscale - xscale // xraise >=0
-            val scaledX = if (xraise == 0) {
-                xs
-            } else {
-                longMultiplyPowerTen(xs, xraise) // can't overflow here!
-            }
+            val scaledX =
+                if (xraise == 0) {
+                    xs
+                } else {
+                    longMultiplyPowerTen(xs, xraise) // can't overflow here!
+                }
             var quotient: CommonBigDecimal?
 
             val cmp = longCompareMagnitude(scaledX, ys)
@@ -4262,24 +4464,26 @@ internal class CommonBigDecimal : BigDecimal {
                     if (scaledXs == INFLATED) {
                         quotient = null
                         if (mcp - 1 >= 0 && mcp - 1 < LONG_TEN_POWERS_TABLE.size) {
-                            quotient = multiplyDivideAndRound(
-                                LONG_TEN_POWERS_TABLE[mcp - 1],
-                                scaledX,
-                                ys,
-                                scl,
-                                roundingMode,
-                                checkScaleNonZero(preferredScale)
-                            )
+                            quotient =
+                                multiplyDivideAndRound(
+                                    LONG_TEN_POWERS_TABLE[mcp - 1],
+                                    scaledX,
+                                    ys,
+                                    scl,
+                                    roundingMode,
+                                    checkScaleNonZero(preferredScale),
+                                )
                         }
                         if (quotient == null) {
                             val rb = bigMultiplyPowerTen(scaledX, mcp - 1)
-                            quotient = divideAndRound(
-                                rb,
-                                ys,
-                                scl,
-                                roundingMode,
-                                checkScaleNonZero(preferredScale)
-                            )
+                            quotient =
+                                divideAndRound(
+                                    rb,
+                                    ys,
+                                    scl,
+                                    roundingMode,
+                                    checkScaleNonZero(preferredScale),
+                                )
                         }
                     } else {
                         quotient = divideAndRound(scaledXs, ys, scl, roundingMode, checkScaleNonZero(preferredScale))
@@ -4294,13 +4498,14 @@ internal class CommonBigDecimal : BigDecimal {
                         val scaledYs: Long = longMultiplyPowerTen(ys, raise)
                         if (scaledYs == INFLATED) {
                             val rb = bigMultiplyPowerTen(ys, raise)
-                            quotient = divideAndRound(
-                                CommonBigInteger.of(xs),
-                                rb,
-                                scl,
-                                roundingMode,
-                                checkScaleNonZero(preferredScale)
-                            )
+                            quotient =
+                                divideAndRound(
+                                    CommonBigInteger.of(xs),
+                                    rb,
+                                    scl,
+                                    roundingMode,
+                                    checkScaleNonZero(preferredScale),
+                                )
                         } else {
                             quotient =
                                 divideAndRound(xs, scaledYs, scl, roundingMode, checkScaleNonZero(preferredScale))
@@ -4313,36 +4518,39 @@ internal class CommonBigDecimal : BigDecimal {
                 val scl = checkScaleNonZero(preferredScale + yscale - xscale + mcp)
                 if (cmp == 0) {
                     // absoluteValue(scaleX)== absoluteValue(ys) => result will be scaled 10^mcp + correct sign
-                    quotient = roundedTenPower(
-                        if (scaledX < 0 == ys < 0) 1 else -1,
-                        mcp,
-                        scl,
-                        checkScaleNonZero(preferredScale)
-                    )
+                    quotient =
+                        roundedTenPower(
+                            if (scaledX < 0 == ys < 0) 1 else -1,
+                            mcp,
+                            scl,
+                            checkScaleNonZero(preferredScale),
+                        )
                 } else {
                     // absoluteValue(scaledX) < absoluteValue(ys)
                     val scaledXs: Long = longMultiplyPowerTen(scaledX, mcp)
                     if (scaledXs == INFLATED) {
                         quotient = null
                         if (mcp < LONG_TEN_POWERS_TABLE.size) {
-                            quotient = multiplyDivideAndRound(
-                                LONG_TEN_POWERS_TABLE[mcp],
-                                scaledX,
-                                ys,
-                                scl,
-                                roundingMode,
-                                checkScaleNonZero(preferredScale)
-                            )
+                            quotient =
+                                multiplyDivideAndRound(
+                                    LONG_TEN_POWERS_TABLE[mcp],
+                                    scaledX,
+                                    ys,
+                                    scl,
+                                    roundingMode,
+                                    checkScaleNonZero(preferredScale),
+                                )
                         }
                         if (quotient == null) {
                             val rb = bigMultiplyPowerTen(scaledX, mcp)
-                            quotient = divideAndRound(
-                                rb,
-                                ys,
-                                scl,
-                                roundingMode,
-                                checkScaleNonZero(preferredScale)
-                            )
+                            quotient =
+                                divideAndRound(
+                                    rb,
+                                    ys,
+                                    scl,
+                                    roundingMode,
+                                    checkScaleNonZero(preferredScale),
+                                )
                         }
                     } else {
                         quotient = divideAndRound(scaledXs, ys, scl, roundingMode, checkScaleNonZero(preferredScale))
@@ -4363,7 +4571,7 @@ internal class CommonBigDecimal : BigDecimal {
             ys: Long,
             yscale: Int,
             preferredScale: Long,
-            mc: MathContext
+            mc: MathContext,
         ): CommonBigDecimal? {
             var yscale = yscale
             val mcp = mc.precision
@@ -4398,13 +4606,14 @@ internal class CommonBigDecimal : BigDecimal {
                     val scaledYs: Long = longMultiplyPowerTen(ys, raise)
                     if (scaledYs == INFLATED) {
                         val rb = bigMultiplyPowerTen(ys, raise)
-                        quotient = divideAndRound(
-                            CommonBigInteger.of(xs),
-                            rb,
-                            scl,
-                            roundingMode,
-                            checkScaleNonZero(preferredScale)
-                        )
+                        quotient =
+                            divideAndRound(
+                                CommonBigInteger.of(xs),
+                                rb,
+                                scl,
+                                roundingMode,
+                                checkScaleNonZero(preferredScale),
+                            )
                     } else {
                         quotient = divideAndRound(xs, scaledYs, scl, roundingMode, checkScaleNonZero(preferredScale))
                     }
@@ -4424,7 +4633,7 @@ internal class CommonBigDecimal : BigDecimal {
             ys: Long,
             yscale: Int,
             preferredScale: Long,
-            mc: MathContext
+            mc: MathContext,
         ): CommonBigDecimal? {
             var yscale = yscale
             // Normalize dividend & divisor so that both fall into [0.1, 0.999...]
@@ -4473,7 +4682,7 @@ internal class CommonBigDecimal : BigDecimal {
             ys: CommonBigInteger?,
             yscale: Int,
             preferredScale: Long,
-            mc: MathContext
+            mc: MathContext,
         ): CommonBigDecimal? {
             var yscale = yscale
             // Normalize dividend & divisor so that both fall into [0.1, 0.999...]
@@ -4513,7 +4722,7 @@ internal class CommonBigDecimal : BigDecimal {
             ys: CommonBigInteger?,
             yscale: Int,
             preferredScale: Long,
-            mc: MathContext
+            mc: MathContext,
         ): CommonBigDecimal? {
             var yscale = yscale
             // Normalize dividend & divisor so that both fall into [0.1, 0.999...]
@@ -4552,7 +4761,7 @@ internal class CommonBigDecimal : BigDecimal {
             divisor: Long,
             scale: Int,
             roundingMode: Int,
-            preferredScale: Int
+            preferredScale: Int,
         ): CommonBigDecimal? {
             var dividend0 = dividend0
             var dividend1 = dividend1
@@ -4600,7 +4809,7 @@ internal class CommonBigDecimal : BigDecimal {
             sign: Int,
             scale: Int,
             roundingMode: Int,
-            preferredScale: Int
+            preferredScale: Int,
         ): CommonBigDecimal? {
             var divisor = divisor
             if (dividendHi >= divisor) {
@@ -4711,7 +4920,12 @@ internal class CommonBigDecimal : BigDecimal {
          * calculate divideAndRound for ldividend*10^raise / divisor
          * when absoluteValue(dividend)==absoluteValue(divisor);
          */
-        private fun roundedTenPower(qsign: Int, raise: Int, scale: Int, preferredScale: Int): CommonBigDecimal {
+        private fun roundedTenPower(
+            qsign: Int,
+            raise: Int,
+            scale: Int,
+            preferredScale: Int,
+        ): CommonBigDecimal {
             if (scale > preferredScale) {
                 val diff = scale - preferredScale
                 return if (diff < raise) {
@@ -4724,7 +4938,11 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        internal fun scaledTenPow(n: Int, sign: Int, scale: Int): CommonBigDecimal {
+        internal fun scaledTenPow(
+            n: Int,
+            sign: Int,
+            scale: Int,
+        ): CommonBigDecimal {
             if (n < LONG_TEN_POWERS_TABLE.size) {
                 return of(sign * LONG_TEN_POWERS_TABLE[n], scale)
             } else {
@@ -4745,7 +4963,10 @@ internal class CommonBigDecimal : BigDecimal {
          * @return a two-element {@long} array with the remainder and quotient in
          * the initial and final elements, respectively
          */
-        private fun divRemNegativeLong(n: Long, d: Long): LongArray {
+        private fun divRemNegativeLong(
+            n: Long,
+            d: Long,
+        ): LongArray {
             require(n < 0) { "Non-negative numerator $n" }
             require(d != 1L) { "Unity denominator" }
 
@@ -4767,25 +4988,45 @@ internal class CommonBigDecimal : BigDecimal {
             return longArrayOf(r, q)
         }
 
-        private fun make64(hi: Long, lo: Long): Long {
+        private fun make64(
+            hi: Long,
+            lo: Long,
+        ): Long {
             return hi shl 32 or lo
         }
 
-        private fun mulsub(u1: Long, u0: Long, v1: Long, v0: Long, q0: Long): Long {
+        private fun mulsub(
+            u1: Long,
+            u0: Long,
+            v1: Long,
+            v0: Long,
+            q0: Long,
+        ): Long {
             val tmp = u0 - q0 * v0
             return make64(u1 + tmp.ushr(32) - q0 * v1, tmp and LONG_MASK)
         }
 
-        private fun unsignedLongCompare(one: Long, two: Long): Boolean {
+        private fun unsignedLongCompare(
+            one: Long,
+            two: Long,
+        ): Boolean {
             return one + Long.MIN_VALUE > two + Long.MIN_VALUE
         }
 
-        private fun unsignedLongCompareEq(one: Long, two: Long): Boolean {
+        private fun unsignedLongCompareEq(
+            one: Long,
+            two: Long,
+        ): Boolean {
             return one + Long.MIN_VALUE >= two + Long.MIN_VALUE
         }
 
         // Compare Normalize dividend & divisor so that both fall into [0.1, 0.999...]
-        private fun compareMagnitudeNormalized(xs: Long, xscale: Int, ys: Long, yscale: Int): Int {
+        private fun compareMagnitudeNormalized(
+            xs: Long,
+            xscale: Int,
+            ys: Long,
+            yscale: Int,
+        ): Int {
             var xs = xs
             var ys = ys
             // require xs!=0 && ys!=0
@@ -4805,7 +5046,12 @@ internal class CommonBigDecimal : BigDecimal {
         }
 
         // Compare Normalize dividend & divisor so that both fall into [0.1, 0.999...]
-        private fun compareMagnitudeNormalized(xs: Long, xscale: Int, ys: CommonBigInteger?, yscale: Int): Int {
+        private fun compareMagnitudeNormalized(
+            xs: Long,
+            xscale: Int,
+            ys: CommonBigInteger?,
+            yscale: Int,
+        ): Int {
             // require "ys can't be represented as long"
             if (xs == 0L) {
                 return -1
@@ -4824,7 +5070,7 @@ internal class CommonBigDecimal : BigDecimal {
             xs: CommonBigInteger?,
             xscale: Int,
             ys: CommonBigInteger?,
-            yscale: Int
+            yscale: Int,
         ): Int {
             val sdiff = xscale - yscale
             return if (sdiff < 0) {
@@ -4834,7 +5080,10 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun multiply(x: Long, y: Long): Long {
+        private fun multiply(
+            x: Long,
+            y: Long,
+        ): Long {
             val product = x * y
             val ax = abs(x)
             val ay = abs(y)
@@ -4845,7 +5094,11 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun multiply(x: Long, y: Long, scale: Int): CommonBigDecimal {
+        private fun multiply(
+            x: Long,
+            y: Long,
+            scale: Int,
+        ): CommonBigDecimal {
             val product = multiply(x, y)
             return if (product != INFLATED) {
                 of(product, scale)
@@ -4854,7 +5107,11 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun multiply(x: Long, y: CommonBigInteger?, scale: Int): CommonBigDecimal {
+        private fun multiply(
+            x: Long,
+            y: CommonBigInteger?,
+            scale: Int,
+        ): CommonBigDecimal {
             return if (x == 0L) {
                 zeroValueOf(scale)
             } else {
@@ -4862,14 +5119,23 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private fun multiply(x: CommonBigInteger, y: CommonBigInteger?, scale: Int): CommonBigDecimal {
+        private fun multiply(
+            x: CommonBigInteger,
+            y: CommonBigInteger?,
+            scale: Int,
+        ): CommonBigDecimal {
             return CommonBigDecimal(x.times(y!!), INFLATED, scale, 0)
         }
 
         /**
          * Multiplies two long values and rounds according `MathContext`
          */
-        private fun multiplyAndRound(x: Long, y: Long, scale: Int, mc: MathContext): CommonBigDecimal {
+        private fun multiplyAndRound(
+            x: Long,
+            y: Long,
+            scale: Int,
+            mc: MathContext,
+        ): CommonBigDecimal {
             var x = x
             var y = y
             var product = multiply(x, y)
@@ -4915,7 +5181,12 @@ internal class CommonBigDecimal : BigDecimal {
             return doRound(res, mc)!!
         }
 
-        private fun multiplyAndRound(x: Long, y: CommonBigInteger?, scale: Int, mc: MathContext): CommonBigDecimal {
+        private fun multiplyAndRound(
+            x: Long,
+            y: CommonBigInteger?,
+            scale: Int,
+            mc: MathContext,
+        ): CommonBigDecimal {
             return if (x == 0L) {
                 zeroValueOf(scale)
             } else {
@@ -4927,7 +5198,7 @@ internal class CommonBigDecimal : BigDecimal {
             x: CommonBigInteger,
             y: CommonBigInteger?,
             scale: Int,
-            mc: MathContext
+            mc: MathContext,
         ): CommonBigDecimal {
             return doRound(x.times(y!!), scale, mc)
         }
@@ -4936,22 +5207,29 @@ internal class CommonBigDecimal : BigDecimal {
          * rounds 128-bit value according `MathContext`
          * returns null if result can't be repsented as compact CommonBigDecimal.
          */
-        private fun doRound128(hi: Long, lo: Long, sign: Int, scale: Int, mc: MathContext): CommonBigDecimal? {
+        private fun doRound128(
+            hi: Long,
+            lo: Long,
+            sign: Int,
+            scale: Int,
+            mc: MathContext,
+        ): CommonBigDecimal? {
             var scale = scale
             val mcp = mc.precision
             val drop: Int = precision(hi, lo) - mcp
             var res: CommonBigDecimal? = null
             if (drop > 0 && drop < LONG_TEN_POWERS_TABLE.size) {
                 scale = checkScaleNonZero(scale.toLong() - drop)
-                res = divideAndRound128(
-                    hi,
-                    lo,
-                    LONG_TEN_POWERS_TABLE[drop],
-                    sign,
-                    scale,
-                    mc.roundingMode.value,
-                    scale
-                )
+                res =
+                    divideAndRound128(
+                        hi,
+                        lo,
+                        LONG_TEN_POWERS_TABLE[drop],
+                        sign,
+                        scale,
+                        mc.roundingMode.value,
+                        scale,
+                    )
             }
             return if (res != null) {
                 doRound(res, mc)
@@ -4960,33 +5238,57 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
 
-        private val LONGLONG_TEN_POWERS_TABLE = arrayOf(
-            longArrayOf(0L, -0x7538dcfb76180000L), // 10^19
-            longArrayOf(0x5L, 0x6bc75e2d63100000L), // 10^20
-            longArrayOf(0x36L, 0x35c9adc5dea00000L), // 10^21
-            longArrayOf(0x21eL, 0x19e0c9bab2400000L), // 10^22
-            longArrayOf(0x152dL, 0x02c7e14af6800000L), // 10^23
-            longArrayOf(0xd3c2L, 0x1bcecceda1000000L), // 10^24
-            longArrayOf(0x84595L, 0x161401484a000000L), // 10^25
-            longArrayOf(0x52b7d2L, -0x2337f32d1c000000L), // 10^26
-            longArrayOf(0x33b2e3cL, -0x602f7fc318000000L), // 10^27
-            longArrayOf(0x204fce5eL, 0x3e25026110000000L), // 10^28
-            longArrayOf(0x1431e0faeL, 0x6d7217caa0000000L), // 10^29
-            longArrayOf(0xc9f2c9cd0L, 0x4674edea40000000L), // 10^30
-            longArrayOf(0x7e37be2022L, -0x3f6eb4d980000000L), // 10^31
-            longArrayOf(0x4ee2d6d415bL, -0x7a53107f00000000L), // 10^32
-            longArrayOf(0x314dc6448d93L, 0x38c15b0a00000000L), // 10^33
-            longArrayOf(0x1ed09bead87c0L, 0x378d8e6400000000L), // 10^34
-            longArrayOf(0x13426172c74d82L, 0x2b878fe800000000L), // 10^35
-            longArrayOf(0xc097ce7bc90715L, -0x4cb460f000000000L), // 10^36
-            longArrayOf(0x785ee10d5da46d9L, 0x00f436a000000000L), // 10^37
-            longArrayOf(0x4b3b4ca85a86c47aL, 0x098a224000000000L)
-        ) // 10^38
+        private val LONGLONG_TEN_POWERS_TABLE =
+            arrayOf(
+                // 10^19
+                longArrayOf(0L, -0x7538dcfb76180000L),
+                // 10^20
+                longArrayOf(0x5L, 0x6bc75e2d63100000L),
+                // 10^21
+                longArrayOf(0x36L, 0x35c9adc5dea00000L),
+                // 10^22
+                longArrayOf(0x21eL, 0x19e0c9bab2400000L),
+                // 10^23
+                longArrayOf(0x152dL, 0x02c7e14af6800000L),
+                // 10^24
+                longArrayOf(0xd3c2L, 0x1bcecceda1000000L),
+                // 10^25
+                longArrayOf(0x84595L, 0x161401484a000000L),
+                // 10^26
+                longArrayOf(0x52b7d2L, -0x2337f32d1c000000L),
+                // 10^27
+                longArrayOf(0x33b2e3cL, -0x602f7fc318000000L),
+                // 10^28
+                longArrayOf(0x204fce5eL, 0x3e25026110000000L),
+                // 10^29
+                longArrayOf(0x1431e0faeL, 0x6d7217caa0000000L),
+                // 10^30
+                longArrayOf(0xc9f2c9cd0L, 0x4674edea40000000L),
+                // 10^31
+                longArrayOf(0x7e37be2022L, -0x3f6eb4d980000000L),
+                // 10^32
+                longArrayOf(0x4ee2d6d415bL, -0x7a53107f00000000L),
+                // 10^33
+                longArrayOf(0x314dc6448d93L, 0x38c15b0a00000000L),
+                // 10^34
+                longArrayOf(0x1ed09bead87c0L, 0x378d8e6400000000L),
+                // 10^35
+                longArrayOf(0x13426172c74d82L, 0x2b878fe800000000L),
+                // 10^36
+                longArrayOf(0xc097ce7bc90715L, -0x4cb460f000000000L),
+                // 10^37
+                longArrayOf(0x785ee10d5da46d9L, 0x00f436a000000000L),
+                // 10^38
+                longArrayOf(0x4b3b4ca85a86c47aL, 0x098a224000000000L),
+            )
 
         /*
          * returns _precision of 128-bit value
          */
-        private fun precision(hi: Long, lo: Long): Int {
+        private fun precision(
+            hi: Long,
+            lo: Long,
+        ): Int {
             if (hi == 0L) {
                 if (lo >= 0) {
                     return longDigitLength(lo)
@@ -4996,11 +5298,12 @@ internal class CommonBigDecimal : BigDecimal {
             }
             val r = ((128 - hi.numberOfLeadingZeros() + 1) * 1233).ushr(12)
             val idx = r - 19
-            return if (idx >= LONGLONG_TEN_POWERS_TABLE.size || longLongCompareMagnitude(
+            return if (idx >= LONGLONG_TEN_POWERS_TABLE.size ||
+                longLongCompareMagnitude(
                     hi,
                     lo,
                     LONGLONG_TEN_POWERS_TABLE[idx][0],
-                    LONGLONG_TEN_POWERS_TABLE[idx][1]
+                    LONGLONG_TEN_POWERS_TABLE[idx][1],
                 )
             ) {
                 r
@@ -5013,7 +5316,12 @@ internal class CommonBigDecimal : BigDecimal {
          * returns true if 128 bit number <hi0,lo0> is less than <hi1,lo1>
          * hi0 & hi1 should be non-negative
          */
-        private fun longLongCompareMagnitude(hi0: Long, lo0: Long, hi1: Long, lo1: Long): Boolean {
+        private fun longLongCompareMagnitude(
+            hi0: Long,
+            lo0: Long,
+            hi1: Long,
+            lo1: Long,
+        ): Boolean {
             return if (hi0 != hi1) {
                 hi0 < hi1
             } else {
@@ -5027,7 +5335,7 @@ internal class CommonBigDecimal : BigDecimal {
             divisor: Long,
             divisorScale: Int,
             scale: Int,
-            roundingMode: Int
+            roundingMode: Int,
         ): CommonBigDecimal {
             if (checkScale(dividend, scale.toLong() + divisorScale) > dividendScale) {
                 val newScale = scale + divisorScale
@@ -5038,14 +5346,15 @@ internal class CommonBigDecimal : BigDecimal {
                     if (xs != INFLATED) {
                         return divideAndRound(xs, divisor, scale, roundingMode, scale)
                     }
-                    val q = multiplyDivideAndRound(
-                        LONG_TEN_POWERS_TABLE[raise],
-                        dividend,
-                        divisor,
-                        scale,
-                        roundingMode,
-                        scale
-                    )
+                    val q =
+                        multiplyDivideAndRound(
+                            LONG_TEN_POWERS_TABLE[raise],
+                            dividend,
+                            divisor,
+                            scale,
+                            roundingMode,
+                            scale,
+                        )
                     if (q != null) {
                         return q
                     }
@@ -5073,7 +5382,7 @@ internal class CommonBigDecimal : BigDecimal {
             divisor: Long,
             divisorScale: Int,
             scale: Int,
-            roundingMode: Int
+            roundingMode: Int,
         ): CommonBigDecimal {
             if (checkScale(dividend, scale.toLong() + divisorScale) > dividendScale) {
                 val newScale = scale + divisorScale
@@ -5101,7 +5410,7 @@ internal class CommonBigDecimal : BigDecimal {
             divisor: CommonBigInteger?,
             divisorScale: Int,
             scale: Int,
-            roundingMode: Int
+            roundingMode: Int,
         ): CommonBigDecimal {
             if (checkScale(dividend, scale.toLong() + divisorScale) > dividendScale) {
                 val newScale = scale + divisorScale
@@ -5122,7 +5431,7 @@ internal class CommonBigDecimal : BigDecimal {
             divisor: CommonBigInteger?,
             divisorScale: Int,
             scale: Int,
-            roundingMode: Int
+            roundingMode: Int,
         ): CommonBigDecimal {
             if (checkScale(dividend, scale.toLong() + divisorScale) > dividendScale) {
                 val newScale = scale + divisorScale

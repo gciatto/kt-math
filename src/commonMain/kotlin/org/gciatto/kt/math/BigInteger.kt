@@ -287,7 +287,10 @@ interface BigInteger : Comparable<BigInteger> {
      * @see .modInverse
      */
     @JsName("modPow")
-    fun modPow(exponent: BigInteger, modulus: BigInteger): BigInteger
+    fun modPow(
+        exponent: BigInteger,
+        modulus: BigInteger,
+    ): BigInteger
 
     /**
      * Returns a BigInteger whose value is `(this`<sup>-1</sup> `rem m)`.
@@ -428,7 +431,10 @@ interface BigInteger : Comparable<BigInteger> {
     operator fun get(n: Int): Boolean
 
     @JsName("set")
-    operator fun set(n: Int, b: Boolean): BigInteger
+    operator fun set(
+        n: Int,
+        b: Boolean,
+    ): BigInteger
 
     /**
      * Returns a BigInteger whose value is equivalent to this BigInteger
@@ -592,7 +598,6 @@ interface BigInteger : Comparable<BigInteger> {
      * @see BigInteger.toIntExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    /*override*/
     @JsName("toInt")
     fun toInt(): Int
 
@@ -612,27 +617,21 @@ interface BigInteger : Comparable<BigInteger> {
      * @see .toLongExact
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    /*override*/
     @JsName("toLong")
     fun toLong(): Long
 
-    /*override*/
     @JsName("toByte")
     fun toByte(): Byte
 
-    /*override*/
     @JsName("toChar")
     fun toChar(): Char
 
-    /*override*/
     @JsName("toShort")
     fun toShort(): Short
 
-    /*override*/
     @JsName("toFloat")
     fun toFloat(): Float
 
-    /*override*/
     @JsName("toDouble")
     fun toDouble(): Double
 
@@ -758,7 +757,10 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JvmStatic
         @JsName("probablePrime")
-        fun probablePrime(bitLength: Int, rnd: Random): BigInteger = bigProbablePrimeInteger(bitLength, rnd)
+        fun probablePrime(
+            bitLength: Int,
+            rnd: Random,
+        ): BigInteger = bigProbablePrimeInteger(bitLength, rnd)
 
         /**
          * Returns a BigInteger whose value is equal to that of the
@@ -785,7 +787,10 @@ interface BigInteger : Comparable<BigInteger> {
 
         @JsName("parseWithRadix")
         @JvmStatic
-        fun of(value: String, radix: Int): BigInteger = bigIntegerOf(value, radix)
+        fun of(
+            value: String,
+            radix: Int,
+        ): BigInteger = bigIntegerOf(value, radix)
 
         /**
          * Returns a BigInteger with the given two's complement representation.
@@ -797,7 +802,11 @@ interface BigInteger : Comparable<BigInteger> {
         fun of(value: IntArray): BigInteger = bigIntegerOf(value)
 
         @JsName("ofSlideIntArray")
-        fun of(signum: Int, magnitude: ByteArray, off: Int, len: Int): BigInteger =
-            bigIntegerOf(signum, magnitude, off, len)
+        fun of(
+            signum: Int,
+            magnitude: ByteArray,
+            off: Int,
+            len: Int,
+        ): BigInteger = bigIntegerOf(signum, magnitude, off, len)
     }
 }

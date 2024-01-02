@@ -3,16 +3,17 @@ package org.gciatto.kt.math
 import java.math.BigInteger as JavaBigInteger
 
 internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
-
     private inline fun adapt(f: () -> JavaBigInteger): JavaBigIntegerAdapter = JavaBigIntegerAdapter(f())
 
     private inline fun adapt(
         other: JavaBigIntegerAdapter,
-        f: (JavaBigInteger) -> JavaBigInteger
+        f: (JavaBigInteger) -> JavaBigInteger,
     ): JavaBigIntegerAdapter = JavaBigIntegerAdapter(f(other.value))
 
-    private inline fun adapt(other: BigInteger, f: (JavaBigInteger) -> JavaBigInteger): JavaBigIntegerAdapter =
-        adapt(other.castTo(), f)
+    private inline fun adapt(
+        other: BigInteger,
+        f: (JavaBigInteger) -> JavaBigInteger,
+    ): JavaBigIntegerAdapter = adapt(other.castTo(), f)
 
     private inline fun adaptAll(f: () -> Array<JavaBigInteger>): Array<out JavaBigIntegerAdapter> {
         val javaInts = f()
@@ -21,7 +22,7 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
 
     private inline fun adaptAll(
         other: BigInteger,
-        f: (JavaBigInteger) -> Array<JavaBigInteger>
+        f: (JavaBigInteger) -> Array<JavaBigInteger>,
     ): Array<out JavaBigIntegerAdapter> {
         val javaInts = f(other.castTo())
         return Array(javaInts.size) { index -> adapt { javaInts[index] } }
@@ -39,9 +40,10 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
     override val bitCount: Int
         get() = value.bitCount()
 
-    override fun nextProbablePrime(): BigInteger = adapt {
-        value.nextProbablePrime()
-    }
+    override fun nextProbablePrime(): BigInteger =
+        adapt {
+            value.nextProbablePrime()
+        }
 
     override fun plus(other: BigInteger): BigInteger = adapt(other) { value.add(it) }
 
@@ -51,9 +53,10 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
 
     override fun div(other: BigInteger): BigInteger = adapt(other) { value.divide(it) }
 
-    override fun divideAndRemainder(other: BigInteger): Array<out BigInteger> = adaptAll(other) {
-        value.divideAndRemainder(it)
-    }
+    override fun divideAndRemainder(other: BigInteger): Array<out BigInteger> =
+        adaptAll(other) {
+            value.divideAndRemainder(it)
+        }
 
     override fun remainder(other: BigInteger): BigInteger = adapt(other) { value.remainder(it) }
 
@@ -71,9 +74,13 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
 
     override fun rem(modulus: BigInteger): BigInteger = adapt(modulus) { value.remainder(it) }
 
-    override fun modPow(exponent: BigInteger, modulus: BigInteger): BigInteger = adapt(exponent) {
-        value.modPow(it, modulus.castTo<BigInteger, JavaBigIntegerAdapter>().value)
-    }
+    override fun modPow(
+        exponent: BigInteger,
+        modulus: BigInteger,
+    ): BigInteger =
+        adapt(exponent) {
+            value.modPow(it, modulus.castTo<BigInteger, JavaBigIntegerAdapter>().value)
+        }
 
     override fun modInverse(modulus: BigInteger): BigInteger = adapt(modulus) { value.modInverse(it) }
 
@@ -95,9 +102,13 @@ internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
 
     override fun get(n: Int): Boolean = testBit(n)
 
-    override fun set(n: Int, b: Boolean): BigInteger = adapt {
-        if (b) value.setBit(n) else value.clearBit(n)
-    }
+    override fun set(
+        n: Int,
+        b: Boolean,
+    ): BigInteger =
+        adapt {
+            if (b) value.setBit(n) else value.clearBit(n)
+        }
 
     override fun setBit(n: Int): BigInteger = adapt { value.setBit(n) }
 

@@ -21,9 +21,7 @@
  * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
  * or visit www.oracle.com if you need additional information or have any
  * questions.
- */
-
-/*
+ *
  * Portions Copyright (c) 1995  Colin Plumb.  All rights reserved.
  */
 
@@ -134,7 +132,6 @@ import kotlin.random.Random
 
 @Suppress("NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 internal class CommonBigInteger : BigInteger {
-
     /**
      * The _signum of this BigInteger: -1 for negative, 0 for zero, or
      * 1 for positive.  Note that the BigInteger zero *must* have
@@ -202,8 +199,6 @@ internal class CommonBigInteger : BigInteger {
      *
      * @return index of the rightmost one bit in this BigInteger.
      */
-    // lowestSetBit not initialized yet
-    // Search for lowest order nonzero int
     private val lowestSetBit: Int
         get() {
             var lsb = _lowestSetBitPlusTwo - 2
@@ -531,7 +526,7 @@ internal class CommonBigInteger : BigInteger {
             destructiveMulAdd(
                 magnitude,
                 intRadix[10],
-                groupVal
+                groupVal,
             )
         }
         _mag = trustedStripLeadingZeroInts(magnitude)
@@ -543,7 +538,11 @@ internal class CommonBigInteger : BigInteger {
     // Create an integer with the digits between the two indexes
     // Assumes start < end. The result may be negative, but it
     // is to be treated as an unsigned value.
-    private fun parseInt(source: CharArray, start: Int, end: Int): Int {
+    private fun parseInt(
+        source: CharArray,
+        start: Int,
+        end: Int,
+    ): Int {
         var result = source[start].toDigit(10)
         if (result == -1) {
             throw NumberFormatException(source.concatToString())
@@ -600,11 +599,12 @@ internal class CommonBigInteger : BigInteger {
         if (bitLength < 2) {
             throw ArithmeticException("bitLength < 2")
         }
-        prime = if (bitLength < SMALL_PRIME_THRESHOLD) {
-            smallPrime(bitLength, certainty, rnd)
-        } else {
-            largePrime(bitLength, certainty, rnd)
-        }
+        prime =
+            if (bitLength < SMALL_PRIME_THRESHOLD) {
+                smallPrime(bitLength, certainty, rnd)
+            } else {
+                largePrime(bitLength, certainty, rnd)
+            }
         _signum = 1
         _mag = prime._mag
     }
@@ -678,11 +678,12 @@ internal class CommonBigInteger : BigInteger {
 
         while (true) {
             val searchSieve = BitSieve(result, searchLen)
-            val candidate = searchSieve.retrieve(
-                result,
-                DEFAULT_PRIME_CERTAINTY,
-                null!!
-            )
+            val candidate =
+                searchSieve.retrieve(
+                    result,
+                    DEFAULT_PRIME_CERTAINTY,
+                    null!!,
+                )
             if (candidate != null) {
                 return candidate
             }
@@ -704,7 +705,10 @@ internal class CommonBigInteger : BigInteger {
      * @return `true` if this BigInteger is probably prime,
      * `false` if it's definitely composite.
      */
-    internal fun primeToCertainty(certainty: Int, random: Random?): Boolean {
+    internal fun primeToCertainty(
+        certainty: Int,
+        random: Random?,
+    ): Boolean {
         var rounds = 0
         val n = (max(certainty, Int.MAX_VALUE - 1) + 1) / 2
 
@@ -766,7 +770,10 @@ internal class CommonBigInteger : BigInteger {
      * This BigInteger is a positive, odd number greater than 2.
      * iterations<=50.
      */
-    private fun passesMillerRabin(iterations: Int, rnd: Random?): Boolean {
+    private fun passesMillerRabin(
+        iterations: Int,
+        rnd: Random?,
+    ): Boolean {
         var rnd = rnd
         // Find a and m such that m is odd and this == 1 + 2**a * m
         val thisMinusOne = this.minus(ONE)
@@ -883,11 +890,12 @@ internal class CommonBigInteger : BigInteger {
         if (cmp == 0) {
             return ZERO
         }
-        var resultMag = if (cmp > 0) {
-            subtract(_mag, other._mag)
-        } else {
-            subtract(other._mag, _mag)
-        }
+        var resultMag =
+            if (cmp > 0) {
+                subtract(_mag, other._mag)
+            } else {
+                subtract(other._mag, _mag)
+            }
         resultMag = trustedStripLeadingZeroInts(resultMag)
 
         return CommonBigInteger(resultMag, if (cmp == _signum) 1 else -1)
@@ -911,14 +919,15 @@ internal class CommonBigInteger : BigInteger {
         if (cmp == 0) {
             return ZERO
         }
-        var resultMag = if (cmp > 0) {
-            subtract(
-                _mag,
-                other.absoluteValue
-            )
-        } else {
-            subtract(other.absoluteValue, _mag)
-        }
+        var resultMag =
+            if (cmp > 0) {
+                subtract(
+                    _mag,
+                    other.absoluteValue,
+                )
+            } else {
+                subtract(other.absoluteValue, _mag)
+            }
         resultMag = trustedStripLeadingZeroInts(resultMag)
         return CommonBigInteger(resultMag, if (cmp == _signum) 1 else -1)
     }
@@ -946,11 +955,12 @@ internal class CommonBigInteger : BigInteger {
         if (cmp == 0) {
             return ZERO
         }
-        var resultMag = if (cmp > 0) {
-            subtract(_mag, other._mag)
-        } else {
-            subtract(other._mag, _mag)
-        }
+        var resultMag =
+            if (cmp > 0) {
+                subtract(_mag, other._mag)
+            } else {
+                subtract(other._mag, _mag)
+            }
         resultMag = trustedStripLeadingZeroInts(resultMag)
         return CommonBigInteger(resultMag, if (cmp == _signum) 1 else -1)
     }
@@ -988,13 +998,14 @@ internal class CommonBigInteger : BigInteger {
             if (_mag.size == 1) {
                 return multiplyByInt(other._mag, _mag[0], resultSign)
             }
-            var result = multiplyToLen(
-                _mag,
-                xlen,
-                other._mag,
-                ylen,
-                null
-            )
+            var result =
+                multiplyToLen(
+                    _mag,
+                    xlen,
+                    other._mag,
+                    ylen,
+                    null,
+                )
             result = trustedStripLeadingZeroInts(result)
             return CommonBigInteger(result, resultSign)
         } else {
@@ -1040,8 +1051,9 @@ internal class CommonBigInteger : BigInteger {
             carry = 0
             rstart = rmag.size - 2
             for (i in xlen - 1 downTo 0) {
-                val product = (value[i].toLong() and LONG_MASK) * dh +
-                    (rmag[rstart].toLong() and LONG_MASK) + carry
+                val product =
+                    (value[i].toLong() and LONG_MASK) * dh +
+                        (rmag[rstart].toLong() and LONG_MASK) + carry
                 rmag[rstart--] = product.toInt()
                 carry = product.ushr(32)
             }
@@ -1066,7 +1078,12 @@ internal class CommonBigInteger : BigInteger {
      * slices to the appropriate position when multiplying different-sized
      * numbers.
      */
-    private fun getToomSlice(lowerSize: Int, upperSize: Int, slice: Int, fullsize: Int): CommonBigInteger {
+    private fun getToomSlice(
+        lowerSize: Int,
+        upperSize: Int,
+        slice: Int,
+        fullsize: Int,
+    ): CommonBigInteger {
         var start: Int
         val end: Int
         val sliceSize: Int
@@ -1364,7 +1381,7 @@ internal class CommonBigInteger : BigInteger {
         val r = a.divideKnuth(b, q)
         return arrayOf(
             q.toBigInteger(if (this._signum == other._signum) 1 else -1),
-            r!!.toBigInteger(this._signum)
+            r!!.toBigInteger(this._signum),
         )
 //        result[0] = q.toBigInteger(if (this._signum == other._signum) 1 else -1)
 //        result[1] = r!!.toBigInteger(this._signum)
@@ -1425,8 +1442,9 @@ internal class CommonBigInteger : BigInteger {
      */
     private fun divideAndRemainderBurnikelZiegler(other: CommonBigInteger): Array<CommonBigInteger> {
         val q = MutableBigInteger()
-        val r = MutableBigInteger(this)
-            .divideAndRemainderBurnikelZiegler(MutableBigInteger(other), q)
+        val r =
+            MutableBigInteger(this)
+                .divideAndRemainderBurnikelZiegler(MutableBigInteger(other), q)
         val qBigInt = if (q.isZero) ZERO else q.toBigInteger(_signum * other._signum)
         val rBigInt = if (r.isZero) ZERO else r.toBigInteger(_signum)
         return arrayOf(qBigInt, rBigInt)
@@ -1695,7 +1713,10 @@ internal class CommonBigInteger : BigInteger {
      * prime* to `m`.
      * @see .modInverse
      */
-    override fun modPow(exponent: BigInteger, modulus: BigInteger): CommonBigInteger {
+    override fun modPow(
+        exponent: BigInteger,
+        modulus: BigInteger,
+    ): CommonBigInteger {
         var exponent: CommonBigInteger = exponent.castTo()
         val modulus: CommonBigInteger = modulus.castTo()
         if (modulus._signum <= 0) {
@@ -1724,11 +1745,12 @@ internal class CommonBigInteger : BigInteger {
             exponent = exponent.unaryMinus()
         }
 
-        val base = if (this._signum < 0 || this >= modulus) {
-            this.rem(modulus)
-        } else {
-            this
-        }
+        val base =
+            if (this._signum < 0 || this >= modulus) {
+                this.rem(modulus)
+            } else {
+                this
+            }
         val result: CommonBigInteger
         if (modulus.testBit(0)) { // odd modulus
             result = base.oddModPow(exponent, modulus)
@@ -1746,18 +1768,20 @@ internal class CommonBigInteger : BigInteger {
             val m2 = ONE.shl(p) // 2**p
 
             // Calculate new base from m1
-            val base2 = if (this._signum < 0 || this.compareTo(m1) >= 0) {
-                this.rem(m1)
-            } else {
-                this
-            }
+            val base2 =
+                if (this._signum < 0 || this.compareTo(m1) >= 0) {
+                    this.rem(m1)
+                } else {
+                    this
+                }
 
             // Caculate (base ** exponent) rem m1.
-            val a1 = if (m1 == ONE) {
-                ZERO
-            } else {
-                base2.oddModPow(exponent, m1)
-            }
+            val a1 =
+                if (m1 == ONE) {
+                    ZERO
+                } else {
+                    base2.oddModPow(exponent, m1)
+                }
 
             // Calculate (this ** exponent) rem m2
             val a2 = base.modPow2(exponent, p)
@@ -1786,7 +1810,10 @@ internal class CommonBigInteger : BigInteger {
      * Returns a BigInteger whose value is x to the power of y rem z.
      * Assumes: z is odd && x < z.
      */
-    private fun oddModPow(y: CommonBigInteger, z: CommonBigInteger): CommonBigInteger {
+    private fun oddModPow(
+        y: CommonBigInteger,
+        z: CommonBigInteger,
+    ): CommonBigInteger {
         /*
          * The algorithm is adapted from Colin Plumb's C library.
          *
@@ -1844,7 +1871,6 @@ internal class CommonBigInteger : BigInteger {
          * as well as reducing the multiplies.  (It actually doesn't
          * hurt in the case k = 1, either.)
          */
-        // Special case for exponent of one
         if (y == ONE) {
             return this
         }
@@ -2027,7 +2053,10 @@ internal class CommonBigInteger : BigInteger {
     /**
      * Returns a BigInteger whose value is (this ** exponent) rem (2**p)
      */
-    private fun modPow2(exponent: CommonBigInteger, p: Int): CommonBigInteger {
+    private fun modPow2(
+        exponent: CommonBigInteger,
+        p: Int,
+    ): CommonBigInteger {
         /*
          * Perform exponentiation using repeated squaring trick, chopping off
          * high order bits as indicated by modulus.
@@ -2347,7 +2376,10 @@ internal class CommonBigInteger : BigInteger {
         return testBit(n)
     }
 
-    override operator fun set(n: Int, b: Boolean): CommonBigInteger {
+    override operator fun set(
+        n: Int,
+        b: Boolean,
+    ): CommonBigInteger {
         return if (b) setBit(n) else clearBit(n)
     }
 
@@ -2909,11 +2941,6 @@ internal class CommonBigInteger : BigInteger {
     }
 
     /**
-     * These routines provide access to the two's complement representation
-     * of BigIntegers.
-     */
-
-    /**
      * Returns the length of the two's complement representation in ints,
      * including space for at least one sign bit.
      */
@@ -2922,13 +2949,13 @@ internal class CommonBigInteger : BigInteger {
             return bitLength.ushr(5) + 1
         }
 
-    /* Returns sign bit */
+    // Returns sign bit
     private val signBit: Int
         get() {
             return if (_signum < 0) 1 else 0
         }
 
-    /* Returns an int of sign bits */
+    // Returns an int of sign bits
     private val signInt: Int
         get() {
             return if (_signum < 0) -1 else 0
@@ -3099,7 +3126,6 @@ internal class CommonBigInteger : BigInteger {
     }
 
     companion object {
-
         /**
          * This mask is used to obtain the value of an int as if it were unsigned.
          */
@@ -3194,48 +3220,53 @@ internal class CommonBigInteger : BigInteger {
 
         // bitsPerDigit in the given radix timesLong 1024
         // Rounded up to avoid underallocation.
-        private val bitsPerDigit = longArrayOf(
-            0,
-            0,
-            1024,
-            1624,
-            2048,
-            2378,
-            2648,
-            2875,
-            3072,
-            3247,
-            3402,
-            3543,
-            3672,
-            3790,
-            3899,
-            4001,
-            4096,
-            4186,
-            4271,
-            4350,
-            4426,
-            4498,
-            4567,
-            4633,
-            4696,
-            4756,
-            4814,
-            4870,
-            4923,
-            4975,
-            5025,
-            5074,
-            5120,
-            5166,
-            5210,
-            5253,
-            5295
-        )
+        private val bitsPerDigit =
+            longArrayOf(
+                0,
+                0,
+                1024,
+                1624,
+                2048,
+                2378,
+                2648,
+                2875,
+                3072,
+                3247,
+                3402,
+                3543,
+                3672,
+                3790,
+                3899,
+                4001,
+                4096,
+                4186,
+                4271,
+                4350,
+                4426,
+                4498,
+                4567,
+                4633,
+                4696,
+                4756,
+                4814,
+                4870,
+                4923,
+                4975,
+                5025,
+                5074,
+                5120,
+                5166,
+                5210,
+                5253,
+                5295,
+            )
 
         // Multiply x array timesLong word y in place, and plus word z
-        private fun destructiveMulAdd(x: IntArray, y: Int, z: Int) {
+        private fun destructiveMulAdd(
+            x: IntArray,
+            y: Int,
+            z: Int,
+        ) {
             // Perform the multiplication word by word
             val ylong = y.toLong() and LONG_MASK
             val zlong = z.toLong() and LONG_MASK
@@ -3260,7 +3291,10 @@ internal class CommonBigInteger : BigInteger {
             }
         }
 
-        private fun randomBits(numBits: Int, rnd: Random): ByteArray {
+        private fun randomBits(
+            numBits: Int,
+            rnd: Random,
+        ): ByteArray {
             if (numBits < 0) {
                 throw IllegalArgumentException("numBits must be non-negative")
             }
@@ -3299,7 +3333,10 @@ internal class CommonBigInteger : BigInteger {
          */
         @JvmStatic
         @JsName("probablePrime")
-        fun probablePrime(bitLength: Int, rnd: Random): CommonBigInteger {
+        fun probablePrime(
+            bitLength: Int,
+            rnd: Random,
+        ): CommonBigInteger {
             if (bitLength < 2) {
                 throw ArithmeticException("bitLength < 2")
             }
@@ -3308,13 +3345,13 @@ internal class CommonBigInteger : BigInteger {
                 smallPrime(
                     bitLength,
                     DEFAULT_PRIME_CERTAINTY,
-                    rnd
+                    rnd,
                 )
             } else {
                 largePrime(
                     bitLength,
                     DEFAULT_PRIME_CERTAINTY,
-                    rnd
+                    rnd,
                 )
             }
         }
@@ -3326,7 +3363,11 @@ internal class CommonBigInteger : BigInteger {
          *
          * This method assumes bitLength > 1.
          */
-        private fun smallPrime(bitLength: Int, certainty: Int, rnd: Random): CommonBigInteger {
+        private fun smallPrime(
+            bitLength: Int,
+            certainty: Int,
+            rnd: Random,
+        ): CommonBigInteger {
             val magLen = (bitLength + 31).ushr(5)
             val temp = IntArray(magLen)
             val highBit = 1 shl (bitLength + 31 and 0x1f) // High bit of high int
@@ -3374,7 +3415,11 @@ internal class CommonBigInteger : BigInteger {
          * a sieve to eliminate most composites before using a more expensive
          * test.
          */
-        private fun largePrime(bitLength: Int, certainty: Int, rnd: Random): CommonBigInteger {
+        private fun largePrime(
+            bitLength: Int,
+            certainty: Int,
+            rnd: Random,
+        ): CommonBigInteger {
             var p: CommonBigInteger
             p = CommonBigInteger(bitLength, rnd).setBit(bitLength - 1)
             p._mag[p._mag.size - 1] = p._mag[p._mag.size - 1] and -0x2
@@ -3407,7 +3452,10 @@ internal class CommonBigInteger : BigInteger {
          * Computes Jacobi(p,n).
          * Assumes n positive, odd, n>=3.
          */
-        private fun jacobiSymbol(p: Int, n: CommonBigInteger): Int {
+        private fun jacobiSymbol(
+            p: Int,
+            n: CommonBigInteger,
+        ): Int {
             var p = p
             if (p == 0) {
                 return 0
@@ -3474,7 +3522,11 @@ internal class CommonBigInteger : BigInteger {
             return 0
         }
 
-        private fun lucasLehmerSequence(z: Int, k: CommonBigInteger, n: CommonBigInteger): CommonBigInteger {
+        private fun lucasLehmerSequence(
+            z: Int,
+            k: CommonBigInteger,
+            n: CommonBigInteger,
+        ): CommonBigInteger {
             val d = of(z.toLong())
             var u = ONE
             var u2: CommonBigInteger
@@ -3561,7 +3613,10 @@ internal class CommonBigInteger : BigInteger {
 
         @JsName("parseWithRadix")
         @JvmStatic
-        fun of(value: String, radix: Int): CommonBigInteger {
+        fun of(
+            value: String,
+            radix: Int,
+        ): CommonBigInteger {
             return CommonBigInteger(value, radix)
         }
 
@@ -3669,7 +3724,10 @@ internal class CommonBigInteger : BigInteger {
          * a reference to that array.  Assumes x.length &gt; 0 and val is
          * non-negative
          */
-        private fun sum(x: IntArray, other: Long): IntArray {
+        private fun sum(
+            x: IntArray,
+            other: Long,
+        ): IntArray {
             var sum: Long = 0
             var xIndex = x.size
             val result: IntArray
@@ -3717,7 +3775,10 @@ internal class CommonBigInteger : BigInteger {
          * a new int array to hold the answer and returns a reference to that
          * array.
          */
-        private fun sum(x: IntArray, y: IntArray): IntArray {
+        private fun sum(
+            x: IntArray,
+            y: IntArray,
+        ): IntArray {
             var x = x
             var y = y
             // If x is shorter, swap the two arrays
@@ -3765,7 +3826,10 @@ internal class CommonBigInteger : BigInteger {
             return result
         }
 
-        private fun subtract(other: Long, little: IntArray): IntArray {
+        private fun subtract(
+            other: Long,
+            little: IntArray,
+        ): IntArray {
             val highWord = other.ushr(32).toInt()
             if (highWord == 0) {
                 val result = IntArray(1)
@@ -3802,7 +3866,10 @@ internal class CommonBigInteger : BigInteger {
          * answer.
          * assumes val &gt;= 0
          */
-        private fun subtract(big: IntArray, other: Long): IntArray {
+        private fun subtract(
+            big: IntArray,
+            other: Long,
+        ): IntArray {
             val highWord = other.ushr(32).toInt()
             var bigIndex = big.size
             val result = IntArray(bigIndex)
@@ -3839,7 +3906,10 @@ internal class CommonBigInteger : BigInteger {
          * than the second.  This method allocates the space necessary to hold the
          * answer.
          */
-        private fun subtract(big: IntArray, little: IntArray): IntArray {
+        private fun subtract(
+            big: IntArray,
+            little: IntArray,
+        ): IntArray {
             var bigIndex = big.size
             val result = IntArray(bigIndex)
             var littleIndex = little.size
@@ -3867,14 +3937,18 @@ internal class CommonBigInteger : BigInteger {
             return result
         }
 
-        private fun multiplyByInt(x: IntArray, y: Int, sign: Int): CommonBigInteger {
+        private fun multiplyByInt(
+            x: IntArray,
+            y: Int,
+            sign: Int,
+        ): CommonBigInteger {
             if (y.bitCount() == 1) {
                 return CommonBigInteger(
                     shl(
                         x,
-                        y.numberOfTrailingZeros()
+                        y.numberOfTrailingZeros(),
                     ),
-                    sign
+                    sign,
                 )
             }
             val xlen = x.size
@@ -3899,13 +3973,25 @@ internal class CommonBigInteger : BigInteger {
          * Multiplies int arrays x and y to the specified lengths and places
          * the result into z. There will be no leading zeros in the resultant array.
          */
-        private fun multiplyToLen(x: IntArray, xlen: Int, y: IntArray, ylen: Int, z: IntArray?): IntArray {
+        private fun multiplyToLen(
+            x: IntArray,
+            xlen: Int,
+            y: IntArray,
+            ylen: Int,
+            z: IntArray?,
+        ): IntArray {
             multiplyToLenCheck(x, xlen)
             multiplyToLenCheck(y, ylen)
             return implMultiplyToLen(x, xlen, y, ylen, z)
         }
 
-        private fun implMultiplyToLen(x: IntArray, xlen: Int, y: IntArray, ylen: Int, z: IntArray?): IntArray {
+        private fun implMultiplyToLen(
+            x: IntArray,
+            xlen: Int,
+            y: IntArray,
+            ylen: Int,
+            z: IntArray?,
+        ): IntArray {
             var z = z
             val xstart = xlen - 1
             val ystart = ylen - 1
@@ -3933,8 +4019,9 @@ internal class CommonBigInteger : BigInteger {
                 var j = ystart
                 var k = ystart + 1 + i
                 while (j >= 0) {
-                    val product = (y[j].toLong() and LONG_MASK) * (x[i].toLong() and LONG_MASK) +
-                        (z[k].toLong() and LONG_MASK) + carry
+                    val product =
+                        (y[j].toLong() and LONG_MASK) * (x[i].toLong() and LONG_MASK) +
+                            (z[k].toLong() and LONG_MASK) + carry
                     z[k] = product.toInt()
                     carry = product.ushr(32)
                     j--
@@ -3945,7 +4032,10 @@ internal class CommonBigInteger : BigInteger {
             return z
         }
 
-        private fun multiplyToLenCheck(array: IntArray, length: Int) {
+        private fun multiplyToLenCheck(
+            array: IntArray,
+            length: Int,
+        ) {
             if (length <= 0) {
                 return // not an error because multiplyToLen won't execute if len <= 0
             }
@@ -3970,7 +4060,10 @@ internal class CommonBigInteger : BigInteger {
          *
          * See:  http://en.wikipedia.org/wiki/Karatsuba_algorithm
          */
-        private fun multiplyKaratsuba(x: CommonBigInteger, y: CommonBigInteger): CommonBigInteger {
+        private fun multiplyKaratsuba(
+            x: CommonBigInteger,
+            y: CommonBigInteger,
+        ): CommonBigInteger {
             val xlen = x._mag.size
             val ylen = y._mag.size
 
@@ -4028,7 +4121,10 @@ internal class CommonBigInteger : BigInteger {
          * LNCS #4547. Springer, Madrid, Spain, June 21-22, 2007.
          *
          */
-        private fun multiplyToomCook3(a: CommonBigInteger, b: CommonBigInteger): CommonBigInteger {
+        private fun multiplyToomCook3(
+            a: CommonBigInteger,
+            b: CommonBigInteger,
+        ): CommonBigInteger {
             val alen = a._mag.size
             val blen = b._mag.size
 
@@ -4073,9 +4169,10 @@ internal class CommonBigInteger : BigInteger {
             da1 = da1.plus(a1)
             db1 = db1.plus(b1)
             v1 = da1.times(db1)
-            v2 = da1.plus(a2).shl(1).minus(a0).times(
-                db1.plus(b2).shl(1).minus(b0)
-            )
+            v2 =
+                da1.plus(a2).shl(1).minus(a0).times(
+                    db1.plus(b2).shl(1).minus(b0),
+                )
             vinf = a2.times(b2)
 
             // The algorithm requires two divisions by 2 and one by 3.
@@ -4108,7 +4205,11 @@ internal class CommonBigInteger : BigInteger {
          * Squares the contents of the int array x. The result is placed into the
          * int array z.  The contents of x are not changed.
          */
-        private fun squareToLen(x: IntArray, len: Int, z: IntArray?): IntArray {
+        private fun squareToLen(
+            x: IntArray,
+            len: Int,
+            z: IntArray?,
+        ): IntArray {
             var z = z
             val zlen = len shl 1
             if (z == null || z.size < zlen) {
@@ -4123,20 +4224,25 @@ internal class CommonBigInteger : BigInteger {
         /**
          * Parameters validation.
          */
-        private fun implSquareToLenChecks(x: IntArray, len: Int, z: IntArray, zlen: Int) {
+        private fun implSquareToLenChecks(
+            x: IntArray,
+            len: Int,
+            z: IntArray,
+            zlen: Int,
+        ) {
             if (len < 1) {
                 throw IllegalArgumentException("invalid input length: $len")
             }
             if (len > x.size) {
                 throw IllegalArgumentException(
                     "input length out of bound: " +
-                        len + " > " + x.size
+                        len + " > " + x.size,
                 )
             }
             if (len * 2 > z.size) {
                 throw IllegalArgumentException(
                     "input length out of bound: " +
-                        len * 2 + " > " + z.size
+                        len * 2 + " > " + z.size,
                 )
             }
             if (zlen < 1) {
@@ -4145,7 +4251,7 @@ internal class CommonBigInteger : BigInteger {
             if (zlen > z.size) {
                 throw IllegalArgumentException(
                     "input length out of bound: " +
-                        len + " > " + z.size
+                        len + " > " + z.size,
                 )
             }
         }
@@ -4153,7 +4259,12 @@ internal class CommonBigInteger : BigInteger {
         /**
          * Java Runtime may use intrinsic for this method.
          */
-        private fun implSquareToLen(x: IntArray, len: Int, z: IntArray, zlen: Int): IntArray {
+        private fun implSquareToLen(
+            x: IntArray,
+            len: Int,
+            z: IntArray,
+            zlen: Int,
+        ): IntArray {
             /*
              * The algorithm used here is adapted from Colin Plumb's C library.
              * Technique: Consider the partial products in the multiplication
@@ -4233,7 +4344,11 @@ internal class CommonBigInteger : BigInteger {
          * Left shift int array a up to len by n bits. Returns the array that
          * results from the shift since space may have to be reallocated.
          */
-        private fun leftShift(a: IntArray, len: Int, n: Int): IntArray {
+        private fun leftShift(
+            a: IntArray,
+            len: Int,
+            n: Int,
+        ): IntArray {
             val nInts = n.ushr(5)
             val nBits = n and 0x1F
             val bitsInHighWord = bitLengthForInt(a[0])
@@ -4258,7 +4373,11 @@ internal class CommonBigInteger : BigInteger {
         }
 
         // shifts a up to len right n bits assumes no leading zeros, 0<n<32
-        private fun primitiveRightShift(a: IntArray, len: Int, n: Int) {
+        private fun primitiveRightShift(
+            a: IntArray,
+            len: Int,
+            n: Int,
+        ) {
             val n2 = 32 - n
             var i = len - 1
             var c = a[i]
@@ -4272,7 +4391,11 @@ internal class CommonBigInteger : BigInteger {
         }
 
         // shifts a up to len left n bits assumes no leading zeros, 0<=n<32
-        private fun primitiveLeftShift(a: IntArray, len: Int, n: Int) {
+        private fun primitiveLeftShift(
+            a: IntArray,
+            len: Int,
+            n: Int,
+        ) {
             if (len == 0 || n == 0) {
                 return
             }
@@ -4294,7 +4417,10 @@ internal class CommonBigInteger : BigInteger {
          * Calculate bitlength of contents of the first len elements an int array,
          * assuming there are no leading zero ints.
          */
-        private fun bitLength(other: IntArray, len: Int): Int {
+        private fun bitLength(
+            other: IntArray,
+            len: Int,
+        ): Int {
             return if (len == 0) 0 else (len - 1 shl 5) + bitLengthForInt(other[0])
         }
 
@@ -4309,7 +4435,7 @@ internal class CommonBigInteger : BigInteger {
             n: IntArray,
             len: Int,
             inv: Long,
-            product: IntArray?
+            product: IntArray?,
         ): IntArray {
             var product = product
             implMontgomeryMultiplyChecks(a, b, n, len, product)
@@ -4324,12 +4450,18 @@ internal class CommonBigInteger : BigInteger {
                     n,
                     len,
                     inv,
-                    materialize(product, len)
+                    materialize(product, len),
                 )
             }
         }
 
-        private fun montgomerySquare(a: IntArray, n: IntArray, len: Int, inv: Long, product: IntArray?): IntArray {
+        private fun montgomerySquare(
+            a: IntArray,
+            n: IntArray,
+            len: Int,
+            inv: Long,
+            product: IntArray?,
+        ): IntArray {
             var product = product
             implMontgomeryMultiplyChecks(a, a, n, len, product)
             if (len > MONTGOMERY_INTRINSIC_THRESHOLD) {
@@ -4342,12 +4474,18 @@ internal class CommonBigInteger : BigInteger {
                     n,
                     len,
                     inv,
-                    materialize(product, len)
+                    materialize(product, len),
                 )
             }
         }
 
-        private fun implMontgomeryMultiplyChecks(a: IntArray, b: IntArray, n: IntArray, len: Int, product: IntArray?) {
+        private fun implMontgomeryMultiplyChecks(
+            a: IntArray,
+            b: IntArray,
+            n: IntArray,
+            len: Int,
+            product: IntArray?,
+        ) {
             if (len % 2 != 0) {
                 throw IllegalArgumentException("input array length must be even: $len")
             }
@@ -4368,7 +4506,10 @@ internal class CommonBigInteger : BigInteger {
         // Make sure that the int array z (which is expected to contain
         // the result of a Montgomery multiplication) is present and
         // sufficiently large.
-        private fun materialize(z: IntArray?, len: Int): IntArray {
+        private fun materialize(
+            z: IntArray?,
+            len: Int,
+        ): IntArray {
             var z = z
             if (z == null || z.size < len) {
                 z = IntArray(len)
@@ -4384,14 +4525,20 @@ internal class CommonBigInteger : BigInteger {
             n: IntArray,
             len: Int,
             inv: Long,
-            product: IntArray
+            product: IntArray,
         ): IntArray {
             var product = product
             product = multiplyToLen(a, len, b, len, product)
             return montReduce(product, n, len, inv.toInt())
         }
 
-        private fun implMontgomerySquare(a: IntArray, n: IntArray, len: Int, inv: Long, product: IntArray): IntArray {
+        private fun implMontgomerySquare(
+            a: IntArray,
+            n: IntArray,
+            len: Int,
+            inv: Long,
+            product: IntArray,
+        ): IntArray {
             var product = product
             product = squareToLen(a, len, product)
             return montReduce(product, n, len, inv.toInt())
@@ -4403,7 +4550,12 @@ internal class CommonBigInteger : BigInteger {
          * Montgomery reduce n, modulo rem.  This reduces modulo rem and divides
          * by 2^(32*mlen). Adapted from Colin Plumb's C library.
          */
-        private fun montReduce(n: IntArray, mod: IntArray, mlen: Int, inv: Int): IntArray {
+        private fun montReduce(
+            n: IntArray,
+            mod: IntArray,
+            mlen: Int,
+            inv: Int,
+        ): IntArray {
             var c = 0
             var len = mlen
             var offset = 0
@@ -4428,7 +4580,11 @@ internal class CommonBigInteger : BigInteger {
          * Returns -1, 0 or +1 as big-endian unsigned int array arg1 is less than,
          * equal to, or greater than arg2 up to length len.
          */
-        private fun intArrayCmpToLen(arg1: IntArray, arg2: IntArray, len: Int): Int {
+        private fun intArrayCmpToLen(
+            arg1: IntArray,
+            arg2: IntArray,
+            len: Int,
+        ): Int {
             for (i in 0 until len) {
                 val b1 = arg1[i].toLong() and LONG_MASK
                 val b2 = arg2[i].toLong() and LONG_MASK
@@ -4445,7 +4601,11 @@ internal class CommonBigInteger : BigInteger {
         /**
          * Subtracts two numbers of same length, returning borrow.
          */
-        private fun subN(a: IntArray, b: IntArray, len: Int): Int {
+        private fun subN(
+            a: IntArray,
+            b: IntArray,
+            len: Int,
+        ): Int {
             var len = len
             var sum: Long = 0
 
@@ -4460,7 +4620,13 @@ internal class CommonBigInteger : BigInteger {
         /**
          * Multiply an array by one word k and plus to result, return the carry
          */
-        private fun mulAdd(out: IntArray, `in`: IntArray, offset: Int, len: Int, k: Int): Int {
+        private fun mulAdd(
+            out: IntArray,
+            `in`: IntArray,
+            offset: Int,
+            len: Int,
+            k: Int,
+        ): Int {
             implMulAddCheck(out, `in`, offset, len, k)
             return implMulAdd(out, `in`, offset, len, k)
         }
@@ -4469,7 +4635,13 @@ internal class CommonBigInteger : BigInteger {
          * Parameters validation.
          */
         @Suppress("UNUSED_PARAMETER")
-        private fun implMulAddCheck(out: IntArray, `in`: IntArray, offset: Int, len: Int, k: Int) {
+        private fun implMulAddCheck(
+            out: IntArray,
+            `in`: IntArray,
+            offset: Int,
+            len: Int,
+            k: Int,
+        ) {
             if (len > `in`.size) {
                 throw IllegalArgumentException("input length is out of bound: " + len + " > " + `in`.size)
             }
@@ -4487,15 +4659,22 @@ internal class CommonBigInteger : BigInteger {
         /**
          * Java Runtime may use intrinsic for this method.
          */
-        private fun implMulAdd(out: IntArray, `in`: IntArray, offset: Int, len: Int, k: Int): Int {
+        private fun implMulAdd(
+            out: IntArray,
+            `in`: IntArray,
+            offset: Int,
+            len: Int,
+            k: Int,
+        ): Int {
             var offset = offset
             val kLong = k.toLong() and LONG_MASK
             var carry: Long = 0
 
             offset = out.size - offset - 1
             for (j in len - 1 downTo 0) {
-                val product = (`in`[j].toLong() and LONG_MASK) * kLong +
-                    (out[offset].toLong() and LONG_MASK) + carry
+                val product =
+                    (`in`[j].toLong() and LONG_MASK) * kLong +
+                        (out[offset].toLong() and LONG_MASK) + carry
                 out[offset--] = product.toInt()
                 carry = product.ushr(32)
             }
@@ -4506,7 +4685,12 @@ internal class CommonBigInteger : BigInteger {
          * Add one word to the number a mlen words into a. Return the resulting
          * carry.
          */
-        private fun addOne(a: IntArray, offset: Int, mlen: Int, carry: Int): Int {
+        private fun addOne(
+            a: IntArray,
+            offset: Int,
+            mlen: Int,
+            carry: Int,
+        ): Int {
             var offset = offset
             var mlen = mlen
             offset = a.size - 1 - mlen - offset
@@ -4538,7 +4722,10 @@ internal class CommonBigInteger : BigInteger {
          * @param n unsigned shift distance, in bits.
          * @return `_mag << n`
          */
-        private fun shl(mag: IntArray, n: Int): IntArray {
+        private fun shl(
+            mag: IntArray,
+            n: Int,
+        ): IntArray {
             val nInts = n.ushr(5)
             val nBits = n and 0x1f
             val magLen = mag.size
@@ -4579,7 +4766,12 @@ internal class CommonBigInteger : BigInteger {
          * @param radix  The base to convert to.
          * @param digits The minimum number of digits to pad to.
          */
-        private fun toString(u: CommonBigInteger, sb: StringBuilder, radix: Int, digits: Int) {
+        private fun toString(
+            u: CommonBigInteger,
+            sb: StringBuilder,
+            radix: Int,
+            digits: Int,
+        ) {
             // If we're smaller than a certain threshold, use the smallToString
             // method, padding with leading zeroes when necessary.
             if (u._mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD) {
@@ -4624,7 +4816,10 @@ internal class CommonBigInteger : BigInteger {
          * This could be changed to a more complicated caching method using
          * `Future`.
          */
-        private fun getRadixConversionCache(radix: Int, exponent: Int): CommonBigInteger {
+        private fun getRadixConversionCache(
+            radix: Int,
+            exponent: Int,
+        ): CommonBigInteger {
             // volatile read
             val cacheLine: Array<CommonBigInteger>? = powerCache[radix]
             if (exponent < cacheLine!!.size) {
@@ -4646,7 +4841,7 @@ internal class CommonBigInteger : BigInteger {
             return cacheLine2[exponent]!!
         }
 
-        /* zero[i] is a string of i consecutive zeros. */
+        // zero[i] is a string of i consecutive zeros.
         private val zeros = arrayOfNulls<String>(64)
 
         init {
@@ -4689,7 +4884,11 @@ internal class CommonBigInteger : BigInteger {
         /**
          * Returns a copy of the input array stripped of any leading zero bytes.
          */
-        private fun stripLeadingZeroBytes(a: ByteArray, off: Int, len: Int): IntArray {
+        private fun stripLeadingZeroBytes(
+            a: ByteArray,
+            off: Int,
+            len: Int,
+        ): IntArray {
             val indexBound = off + len
             var keep: Int
 
@@ -4720,7 +4919,11 @@ internal class CommonBigInteger : BigInteger {
          * Takes an array a representing a negative 2's-complement number and
          * returns the minimal (no leading zero bytes) unsigned whose value is -a.
          */
-        private fun makePositive(a: ByteArray, off: Int, len: Int): IntArray {
+        private fun makePositive(
+            a: ByteArray,
+            off: Int,
+            len: Int,
+        ): IntArray {
             var keep: Int
             var k: Int
             val indexBound = off + len
@@ -4821,167 +5024,171 @@ internal class CommonBigInteger : BigInteger {
          * nonsense values in their 0 and 1 elements, as radixes 0 and 1 are not
          * used.
          */
-        private val digitsPerLong = intArrayOf(
-            0,
-            0,
-            62,
-            39,
-            31,
-            27,
-            24,
-            22,
-            20,
-            19,
-            18,
-            18,
-            17,
-            17,
-            16,
-            16,
-            15,
-            15,
-            15,
-            14,
-            14,
-            14,
-            14,
-            13,
-            13,
-            13,
-            13,
-            13,
-            13,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12
-        )
+        private val digitsPerLong =
+            intArrayOf(
+                0,
+                0,
+                62,
+                39,
+                31,
+                27,
+                24,
+                22,
+                20,
+                19,
+                18,
+                18,
+                17,
+                17,
+                16,
+                16,
+                15,
+                15,
+                15,
+                14,
+                14,
+                14,
+                14,
+                13,
+                13,
+                13,
+                13,
+                13,
+                13,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+            )
 
-        private val longRadix = arrayOf(
-            null,
-            null,
-            of(0x4000000000000000L),
-            of(0x383d9170b85ff80bL),
-            of(0x4000000000000000L),
-            of(0x6765c793fa10079dL),
-            of(0x41c21cb8e1000000L),
-            of(0x3642798750226111L),
-            of(0x1000000000000000L),
-            of(0x12bf307ae81ffd59L),
-            of(0xde0b6b3a7640000L),
-            of(0x4d28cb56c33fa539L),
-            of(0x1eca170c00000000L),
-            of(0x780c7372621bd74dL),
-            of(0x1e39a5057d810000L),
-            of(0x5b27ac993df97701L),
-            of(0x1000000000000000L),
-            of(0x27b95e997e21d9f1L),
-            of(0x5da0e1e53c5c8000L),
-            of(0xb16a458ef403f19L),
-            of(0x16bcc41e90000000L),
-            of(0x2d04b7fdd9c0ef49L),
-            of(0x5658597bcaa24000L),
-            of(0x6feb266931a75b7L),
-            of(0xc29e98000000000L),
-            of(0x14adf4b7320334b9L),
-            of(0x226ed36478bfa000L),
-            of(0x383d9170b85ff80bL),
-            of(0x5a3c23e39c000000L),
-            of(0x4e900abb53e6b71L),
-            of(0x7600ec618141000L),
-            of(0xaee5720ee830681L),
-            of(0x1000000000000000L),
-            of(0x172588ad4f5f0981L),
-            of(0x211e44f7d02c1000L),
-            of(0x2ee56725f06e5c71L),
-            of(0x41c21cb8e1000000L)
-        )
+        private val longRadix =
+            arrayOf(
+                null,
+                null,
+                of(0x4000000000000000L),
+                of(0x383d9170b85ff80bL),
+                of(0x4000000000000000L),
+                of(0x6765c793fa10079dL),
+                of(0x41c21cb8e1000000L),
+                of(0x3642798750226111L),
+                of(0x1000000000000000L),
+                of(0x12bf307ae81ffd59L),
+                of(0xde0b6b3a7640000L),
+                of(0x4d28cb56c33fa539L),
+                of(0x1eca170c00000000L),
+                of(0x780c7372621bd74dL),
+                of(0x1e39a5057d810000L),
+                of(0x5b27ac993df97701L),
+                of(0x1000000000000000L),
+                of(0x27b95e997e21d9f1L),
+                of(0x5da0e1e53c5c8000L),
+                of(0xb16a458ef403f19L),
+                of(0x16bcc41e90000000L),
+                of(0x2d04b7fdd9c0ef49L),
+                of(0x5658597bcaa24000L),
+                of(0x6feb266931a75b7L),
+                of(0xc29e98000000000L),
+                of(0x14adf4b7320334b9L),
+                of(0x226ed36478bfa000L),
+                of(0x383d9170b85ff80bL),
+                of(0x5a3c23e39c000000L),
+                of(0x4e900abb53e6b71L),
+                of(0x7600ec618141000L),
+                of(0xaee5720ee830681L),
+                of(0x1000000000000000L),
+                of(0x172588ad4f5f0981L),
+                of(0x211e44f7d02c1000L),
+                of(0x2ee56725f06e5c71L),
+                of(0x41c21cb8e1000000L),
+            )
 
         /*
          * These two arrays are the integer analogue of above.
          */
-        private val digitsPerInt = intArrayOf(
-            0,
-            0,
-            30,
-            19,
-            15,
-            13,
-            11,
-            11,
-            10,
-            9,
-            9,
-            8,
-            8,
-            8,
-            8,
-            7,
-            7,
-            7,
-            7,
-            7,
-            7,
-            7,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            6,
-            5
-        )
+        private val digitsPerInt =
+            intArrayOf(
+                0,
+                0,
+                30,
+                19,
+                15,
+                13,
+                11,
+                11,
+                10,
+                9,
+                9,
+                8,
+                8,
+                8,
+                8,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                5,
+            )
 
-        private val intRadix = intArrayOf(
-            0,
-            0,
-            0x40000000,
-            0x4546b3db,
-            0x40000000,
-            0x48c27395,
-            0x159fd800,
-            0x75db9c97,
-            0x40000000,
-            0x17179149,
-            0x3b9aca00,
-            0xcc6db61,
-            0x19a10000,
-            0x309f1021,
-            0x57f6c100,
-            0xa2f1b6f,
-            0x10000000,
-            0x18754571,
-            0x247dbc80,
-            0x3547667b,
-            0x4c4b4000,
-            0x6b5a6e1d,
-            0x6c20a40,
-            0x8d2d931,
-            0xb640000,
-            0xe8d4a51,
-            0x1269ae40,
-            0x17179149,
-            0x1cb91000,
-            0x23744899,
-            0x2b73a840,
-            0x34e63b41,
-            0x40000000,
-            0x4cfa3cc1,
-            0x5c13d840,
-            0x6d91b519,
-            0x39aa400
-        )
+        private val intRadix =
+            intArrayOf(
+                0,
+                0,
+                0x40000000,
+                0x4546b3db,
+                0x40000000,
+                0x48c27395,
+                0x159fd800,
+                0x75db9c97,
+                0x40000000,
+                0x17179149,
+                0x3b9aca00,
+                0xcc6db61,
+                0x19a10000,
+                0x309f1021,
+                0x57f6c100,
+                0xa2f1b6f,
+                0x10000000,
+                0x18754571,
+                0x247dbc80,
+                0x3547667b,
+                0x4c4b4000,
+                0x6b5a6e1d,
+                0x6c20a40,
+                0x8d2d931,
+                0xb640000,
+                0xe8d4a51,
+                0x1269ae40,
+                0x17179149,
+                0x1cb91000,
+                0x23744899,
+                0x2b73a840,
+                0x34e63b41,
+                0x40000000,
+                0x4cfa3cc1,
+                0x5c13d840,
+                0x6d91b519,
+                0x39aa400,
+            )
     }
 }

@@ -148,7 +148,10 @@ internal class BitSieve {
      * array that occurs at or after start. It will not search past the
      * specified limit. It returns -1 if there is no such clear bit.
      */
-    private fun sieveSearch(limit: Int, start: Int): Int {
+    private fun sieveSearch(
+        limit: Int,
+        start: Int,
+    ): Int {
         if (start >= limit) {
             return -1
         }
@@ -168,7 +171,11 @@ internal class BitSieve {
      * multiples of the specified step starting at the specified start index,
      * up to the specified limit.
      */
-    private fun sieveSingle(limit: Int, start: Int, step: Int) {
+    private fun sieveSingle(
+        limit: Int,
+        start: Int,
+        step: Int,
+    ) {
         var start = start
         while (start < limit) {
             set(start)
@@ -179,16 +186,21 @@ internal class BitSieve {
     /**
      * Test probable primes in the sieve and return successful candidates.
      */
-    fun retrieve(initValue: CommonBigInteger, certainty: Int, random: Random): CommonBigInteger? {
+    fun retrieve(
+        initValue: CommonBigInteger,
+        certainty: Int,
+        random: Random,
+    ): CommonBigInteger? {
         // Examine the sieve one long at a time to find possible primes
         var offset = 1
         for (i in bits!!.indices) {
             var nextLong = bits!![i].inv()
             for (j in 0..63) {
                 if (nextLong and 1 == 1L) {
-                    val candidate = initValue.plus(
-                        CommonBigInteger.of(offset.toLong())
-                    )
+                    val candidate =
+                        initValue.plus(
+                            CommonBigInteger.of(offset.toLong()),
+                        )
                     if (candidate.primeToCertainty(certainty, random)) {
                         return candidate
                     }
@@ -201,7 +213,6 @@ internal class BitSieve {
     }
 
     companion object {
-
         /**
          * A small sieve used to filter out multiples of small primes in a search
          * sieve.

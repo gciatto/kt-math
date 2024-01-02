@@ -4,35 +4,39 @@ import java.math.BigInteger
 import kotlin.test.assertEquals
 
 object JvmIntAlgos : IntAlgos<BigInteger> {
-
-    private fun bigIntRange(min: Int, maxIncl: BigInteger): Sequence<BigInteger> =
+    private fun bigIntRange(
+        min: Int,
+        maxIncl: BigInteger,
+    ): Sequence<BigInteger> =
         generateSequence(BigInteger.valueOf(min.toLong())) { it + BigInteger.ONE }.takeWhile { it <= maxIncl }
 
-    override fun fibonacci(n: BigInteger): BigInteger = when {
-        n < BigInteger.ZERO -> throw IllegalArgumentException("Cannot compute the fibonacci($n)")
-        n <= BigInteger.ONE -> BigInteger.ONE
-        else -> {
-            var prev = BigInteger.ONE
-            var curr = BigInteger.ONE
-            for (i in bigIntRange(2, n)) {
-                val next = curr + prev
-                prev = curr
-                curr = next
+    override fun fibonacci(n: BigInteger): BigInteger =
+        when {
+            n < BigInteger.ZERO -> throw IllegalArgumentException("Cannot compute the fibonacci($n)")
+            n <= BigInteger.ONE -> BigInteger.ONE
+            else -> {
+                var prev = BigInteger.ONE
+                var curr = BigInteger.ONE
+                for (i in bigIntRange(2, n)) {
+                    val next = curr + prev
+                    prev = curr
+                    curr = next
+                }
+                curr
             }
-            curr
         }
-    }
 
-    override fun factorial(n: BigInteger): BigInteger = when {
-        n < BigInteger.ZERO -> throw IllegalArgumentException("Cannot compute the factorial($n)")
-        else -> {
-            var curr = BigInteger.ONE
-            for (i in bigIntRange(2, n)) {
-                curr *= i
+    override fun factorial(n: BigInteger): BigInteger =
+        when {
+            n < BigInteger.ZERO -> throw IllegalArgumentException("Cannot compute the factorial($n)")
+            else -> {
+                var curr = BigInteger.ONE
+                for (i in bigIntRange(2, n)) {
+                    curr *= i
+                }
+                curr
             }
-            curr
         }
-    }
 
     override fun fibonacciBasedBenchmark(max: BigInteger) {
         val sequence = bigIntRange(0, max).map(this::fibonacci).toList()

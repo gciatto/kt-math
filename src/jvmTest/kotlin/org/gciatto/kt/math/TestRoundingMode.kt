@@ -2,7 +2,6 @@ package org.gciatto.kt.math
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
 import java.math.RoundingMode as JavaRoundingMode
 
 class TestRoundingMode {
@@ -20,12 +19,13 @@ class TestRoundingMode {
     }
 
     private val JavaRoundingMode.value: Int
-        get() = JavaRoundingMode::class.java.getDeclaredField("oldMode").let {
-            if (it.trySetAccessible()) {
-                it.getInt(this)
-            } else {
-                System.err.println("w: cannot get $this.oldValue")
-                this.ordinal
+        get() =
+            JavaRoundingMode::class.java.getDeclaredField("oldMode").let {
+                if (it.trySetAccessible()) {
+                    it.getInt(this)
+                } else {
+                    System.err.println("w: cannot get $this.oldValue")
+                    this.ordinal
+                }
             }
-        }
 }

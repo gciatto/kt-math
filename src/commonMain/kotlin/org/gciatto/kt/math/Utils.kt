@@ -28,19 +28,24 @@ internal fun String.getRadix(): Pair<Int, String> {
     }
 }
 
-internal const val PI_STRING = "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862" +
-    "803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895" +
-    "4930381964428810975665933446128475648233786783165271201909145648"
+internal const val PI_STRING =
+    "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862" +
+        "803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895" +
+        "4930381964428810975665933446128475648233786783165271201909145648"
 
-internal const val E_STRING = "2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571" +
-    "382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195" +
-    "251019011573834187930702154089149934884167509244761460668082264"
+internal const val E_STRING =
+    "2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571" +
+        "382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195" +
+        "251019011573834187930702154089149934884167509244761460668082264"
 
 internal expect fun logImpl(lazyObject: () -> Any)
 
 internal expect inline fun <T, reified U : T> T?.castTo(): U
 
-internal expect fun bigProbablePrimeInteger(bitLength: Int, rnd: Random): BigInteger
+internal expect fun bigProbablePrimeInteger(
+    bitLength: Int,
+    rnd: Random,
+): BigInteger
 
 internal expect fun bigIntegerOf(value: Long): BigInteger
 
@@ -48,33 +53,70 @@ internal expect fun bigIntegerOf(value: Int): BigInteger
 
 internal expect fun bigIntegerOf(value: String): BigInteger
 
-internal expect fun bigIntegerOf(value: String, radix: Int): BigInteger
+internal expect fun bigIntegerOf(
+    value: String,
+    radix: Int,
+): BigInteger
 
 internal expect fun bigIntegerOf(value: IntArray): BigInteger
 
-internal expect fun bigIntegerOf(signum: Int, magnitude: ByteArray, off: Int = 0, len: Int = magnitude.size): BigInteger
+internal expect fun bigIntegerOf(
+    signum: Int,
+    magnitude: ByteArray,
+    off: Int = 0,
+    len: Int = magnitude.size,
+): BigInteger
 
-internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int): BigDecimal
+internal expect fun bigDecimalOf(
+    unscaledVal: Long,
+    scale: Int,
+): BigDecimal
 
-internal expect fun bigDecimalOf(unscaledVal: Long, scale: Int, prec: Int): BigDecimal
+internal expect fun bigDecimalOf(
+    unscaledVal: Long,
+    scale: Int,
+    prec: Int,
+): BigDecimal
 
 internal expect fun bigDecimalOf(`val`: Int): BigDecimal
 
 internal expect fun bigDecimalOf(`val`: Long): BigDecimal
 
-internal expect fun bigDecimalOf(intVal: BigInteger, scale: Int, prec: Int): BigDecimal
+internal expect fun bigDecimalOf(
+    intVal: BigInteger,
+    scale: Int,
+    prec: Int,
+): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Double, ctx: MathContext? = null): BigDecimal
+internal expect fun bigDecimalOf(
+    `val`: Double,
+    ctx: MathContext? = null,
+): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Float, ctx: MathContext? = null): BigDecimal
+internal expect fun bigDecimalOf(
+    `val`: Float,
+    ctx: MathContext? = null,
+): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: String, ctx: MathContext? = null): BigDecimal
+internal expect fun bigDecimalOf(
+    `val`: String,
+    ctx: MathContext? = null,
+): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: BigInteger, ctx: MathContext? = null): BigDecimal
+internal expect fun bigDecimalOf(
+    `val`: BigInteger,
+    ctx: MathContext? = null,
+): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Int, ctx: MathContext): BigDecimal
+internal expect fun bigDecimalOf(
+    `val`: Int,
+    ctx: MathContext,
+): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Long, ctx: MathContext): BigDecimal
+internal expect fun bigDecimalOf(
+    `val`: Long,
+    ctx: MathContext,
+): BigDecimal
 
 internal expect object BigIntegers {
     val zero: BigInteger
@@ -242,13 +284,25 @@ internal fun Char.toDigit(radix: Int): Int {
     return -1
 }
 
-internal fun <T> arrayCopy(src: Array<T>, srcIndex: Int, dest: Array<T>, destIndex: Int, size: Int) {
+internal fun <T> arrayCopy(
+    src: Array<T>,
+    srcIndex: Int,
+    dest: Array<T>,
+    destIndex: Int,
+    size: Int,
+) {
     for (i in 0 until size) {
         dest[destIndex + i] = src[srcIndex + i]
     }
 }
 
-internal fun arrayCopy(src: IntArray, srcIndex: Int, dest: IntArray, destIndex: Int, size: Int) {
+internal fun arrayCopy(
+    src: IntArray,
+    srcIndex: Int,
+    dest: IntArray,
+    destIndex: Int,
+    size: Int,
+) {
     for (i in 0 until size) {
         dest[destIndex + i] = src[srcIndex + i]
     }
@@ -273,11 +327,17 @@ internal fun Int.bitCount(): Int {
     return i and 0x3f
 }
 
-internal fun StringBuilder.insertChar(index: Int, char: Char): StringBuilder {
+internal fun StringBuilder.insertChar(
+    index: Int,
+    char: Char,
+): StringBuilder {
     return this.insertCharSeq(index, char.toString())
 }
 
-internal fun StringBuilder.insertCharSeq(index: Int, string: CharSequence): StringBuilder {
+internal fun StringBuilder.insertCharSeq(
+    index: Int,
+    string: CharSequence,
+): StringBuilder {
     val temp = StringBuilder(this.subSequence(0, index))
     temp.append(string)
     temp.append(this.subSequence(index, this.length))
@@ -292,14 +352,22 @@ internal fun IntArray.fill(x: Int): IntArray {
     return this.fill(0, this.size, x)
 }
 
-internal fun IntArray.fill(from: Int, to: Int, x: Int): IntArray {
+internal fun IntArray.fill(
+    from: Int,
+    to: Int,
+    x: Int,
+): IntArray {
     for (i in from until to) {
         this[i] = x
     }
     return this
 }
 
-internal fun StringBuilder.appendCharArray(char: CharArray, offset: Int, len: Int): StringBuilder {
+internal fun StringBuilder.appendCharArray(
+    char: CharArray,
+    offset: Int,
+    len: Int,
+): StringBuilder {
     for (i in offset until offset + len) {
         append(char[i])
     }

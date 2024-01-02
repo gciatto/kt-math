@@ -91,7 +91,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("plusWithContext")
-    fun plus(augend: BigDecimal?, mc: MathContext): BigDecimal
+    fun plus(
+        augend: BigDecimal?,
+        mc: MathContext,
+    ): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose value is `(this -
@@ -119,7 +122,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("minusWithContext")
-    fun minus(subtrahend: BigDecimal, mc: MathContext): BigDecimal
+    fun minus(
+        subtrahend: BigDecimal,
+        mc: MathContext,
+    ): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose value is `(this
@@ -144,7 +150,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("timesWithContext")
-    fun times(multiplicand: BigDecimal, mc: MathContext): BigDecimal
+    fun times(
+        multiplicand: BigDecimal,
+        mc: MathContext,
+    ): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose value is `(this /
@@ -177,7 +186,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("divWithContext")
-    fun div(divisor: BigDecimal, mc: MathContext): BigDecimal?
+    fun div(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): BigDecimal?
 
     /**
      * Returns a [BigDecimal] whose value is the integer part
@@ -214,7 +226,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @author Joseph D. Darcy
      */
     @JsName("divideToIntegralValueWithContext")
-    fun divideToIntegralValue(divisor: BigDecimal, mc: MathContext): BigDecimal
+    fun divideToIntegralValue(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose value is `(this % divisor)`.
@@ -259,7 +274,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("remWithContext")
-    fun rem(divisor: BigDecimal, mc: MathContext): BigDecimal
+    fun rem(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): BigDecimal
 
     /**
      * Returns a two-element [BigDecimal] array containing the
@@ -313,7 +331,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("divideAndRemainderWithContext")
-    fun divideAndRemainder(divisor: BigDecimal, mc: MathContext): Pair<BigDecimal, BigDecimal>
+    fun divideAndRemainder(
+        divisor: BigDecimal,
+        mc: MathContext,
+    ): Pair<BigDecimal, BigDecimal>
 
     /**
      * Returns an approximation to the square root of `this`
@@ -423,7 +444,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("powWithContext")
-    fun pow(n: Int, mc: MathContext): BigDecimal?
+    fun pow(
+        n: Int,
+        mc: MathContext,
+    ): BigDecimal?
 
     /**
      * Returns a [BigDecimal] whose value is the absolute value
@@ -546,7 +570,10 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @since 1.5
      */
     @JsName("setScaleRounding")
-    fun setScale(newScale: Int, roundingMode: RoundingMode): BigDecimal
+    fun setScale(
+        newScale: Int,
+        roundingMode: RoundingMode,
+    ): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose _scale is the specified
@@ -593,10 +620,13 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @see .ROUND_UNNECESSARY
      */
     @Deprecated(
-        "The method {@link #setScale(int, RoundingMode)} should be used in preference to this legacy method."
+        "The method {@link #setScale(int, RoundingMode)} should be used in preference to this legacy method.",
     )
     @JsName("setScaleInt")
-    fun setScale(newScale: Int, roundingMode: Int): BigDecimal
+    fun setScale(
+        newScale: Int,
+        roundingMode: Int,
+    ): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose _scale is the specified
@@ -870,7 +900,6 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `long`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    /*override*/
     @JsName("toLong")
     fun toLong(): Long
 
@@ -906,19 +935,15 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to an `int`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    /*override*/
     @JsName("toInt")
     fun toInt(): Int
 
-    /*override*/
     @JsName("toByte")
     fun toByte(): Byte
 
-    /*override*/
     @JsName("toChar")
     fun toChar(): Char
 
-    /*override*/
     @JsName("toShort")
     fun toShort(): Short
 
@@ -983,7 +1008,6 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `float`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    /*override*/
     @JsName("toFloat")
     fun toFloat(): Float
 
@@ -1003,7 +1027,6 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return this [BigDecimal] converted to a `double`.
      * @jls 5.1.3 Narrowing Primitive Conversion
      */
-    /*override*/
     @JsName("toDouble")
     fun toDouble(): Double
 
@@ -1093,7 +1116,10 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmStatic
         @JsName("ofScaledLong")
-        fun of(unscaledVal: Long, scale: Int): BigDecimal = bigDecimalOf(unscaledVal, scale)
+        fun of(
+            unscaledVal: Long,
+            scale: Int,
+        ): BigDecimal = bigDecimalOf(unscaledVal, scale)
 
         /**
          * Translates a `long` value into a [BigDecimal]
@@ -1108,7 +1134,11 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmStatic
         @JsName("ofScaledLongWithPrecision")
-        fun of(unscaledVal: Long, scale: Int, prec: Int): BigDecimal = bigDecimalOf(unscaledVal, scale, prec)
+        fun of(
+            unscaledVal: Long,
+            scale: Int,
+            prec: Int,
+        ): BigDecimal = bigDecimalOf(unscaledVal, scale, prec)
 
         @JvmStatic
         @JsName("ofInt")
@@ -1120,7 +1150,11 @@ interface BigDecimal : Comparable<BigDecimal> {
 
         @JvmStatic
         @JsName("ofScaledBigIntegerWithPrecision")
-        fun of(intVal: BigInteger, scale: Int, prec: Int): BigDecimal = bigDecimalOf(intVal, scale, prec)
+        fun of(
+            intVal: BigInteger,
+            scale: Int,
+            prec: Int,
+        ): BigDecimal = bigDecimalOf(intVal, scale, prec)
 
         /**
          * Translates a `double` into a [BigDecimal], using
@@ -1141,29 +1175,47 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JvmStatic
         @JsName("ofDouble")
         @JvmOverloads
-        fun of(`val`: Double, ctx: MathContext? = null): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(
+            `val`: Double,
+            ctx: MathContext? = null,
+        ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         @JvmStatic
         @JsName("ofFloat")
         @JvmOverloads
-        fun of(`val`: Float, ctx: MathContext? = null): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(
+            `val`: Float,
+            ctx: MathContext? = null,
+        ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         @JvmStatic
         @JsName("parse")
         @JvmOverloads
-        fun of(`val`: String, ctx: MathContext? = null): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(
+            `val`: String,
+            ctx: MathContext? = null,
+        ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         @JvmStatic
         @JsName("ofBigInteger")
         @JvmOverloads
-        fun of(`val`: BigInteger, ctx: MathContext? = null): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(
+            `val`: BigInteger,
+            ctx: MathContext? = null,
+        ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         @JvmStatic
         @JsName("ofIntWithContext")
-        fun of(`val`: Int, ctx: MathContext): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(
+            `val`: Int,
+            ctx: MathContext,
+        ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         @JvmStatic
         @JsName("ofWithContext")
-        fun of(`val`: Long, ctx: MathContext): BigDecimal = bigDecimalOf(`val`, ctx)
+        fun of(
+            `val`: Long,
+            ctx: MathContext,
+        ): BigDecimal = bigDecimalOf(`val`, ctx)
     }
 }

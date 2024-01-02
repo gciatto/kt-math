@@ -2,7 +2,11 @@ package org.gciatto.kt.math
 
 import kotlin.test.assertEquals
 
-fun assertBigIntegersAreEquals(x: BigInteger, y: BigInteger, m: String? = "Failed: $x == $y") {
+fun assertBigIntegersAreEquals(
+    x: BigInteger,
+    y: BigInteger,
+    m: String? = "Failed: $x == $y",
+) {
     if (m === null) {
         assertEquals(0, x.compareTo(y))
         assertEquals(0, y.compareTo(x))
@@ -12,7 +16,11 @@ fun assertBigIntegersAreEquals(x: BigInteger, y: BigInteger, m: String? = "Faile
     }
 }
 
-fun assertReprEquals(repr: Any, obj: Any, m: String? = "Failed: $obj.toString() == $repr") {
+fun assertReprEquals(
+    repr: Any,
+    obj: Any,
+    m: String? = "Failed: $obj.toString() == $repr",
+) {
     if (m === null) {
         assertEquals(repr.toString().lowercase(), obj.toString().lowercase())
     } else {
@@ -23,7 +31,7 @@ fun assertReprEquals(repr: Any, obj: Any, m: String? = "Failed: $obj.toString() 
 fun assertBigDecimalsAreEquals(
     x: BigDecimal,
     y: BigDecimal,
-    m: String? = "Failed: ${x.toPlainString()} == ${y.toPlainString()}"
+    m: String? = "Failed: ${x.toPlainString()} == ${y.toPlainString()}",
 ) {
     if (m === null) {
         assertEquals(0, x.compareTo(y))

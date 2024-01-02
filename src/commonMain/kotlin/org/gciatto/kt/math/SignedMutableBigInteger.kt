@@ -46,7 +46,6 @@ package org.gciatto.kt.math
  */
 
 internal class SignedMutableBigInteger : MutableBigInteger {
-
     /**
      * The sign of this MutableBigInteger.
      */
