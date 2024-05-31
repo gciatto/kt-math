@@ -2,7 +2,7 @@
 kotlin = "1.9.24"
 jvm = "1.8"
 node = "16-latest"
-ktMpp = "4.1.3"
+ktMpp = "4.1.4"
 
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
