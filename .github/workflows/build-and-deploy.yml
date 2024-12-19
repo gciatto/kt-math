@@ -74,7 +74,7 @@ jobs:
 #    strategy:
 #      fail-fast: false
 #      matrix:
-#        os: [ windows-2022, macos-12, ubuntu-24.04 ]
+#        os: [ windows-2025, macos-12, ubuntu-24.04 ]
 #    runs-on: ${{ matrix.os }}
     # Comment if cross-compilation is needed
     runs-on: ubuntu-24.04

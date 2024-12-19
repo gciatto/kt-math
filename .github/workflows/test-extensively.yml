@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-2022, macos-12, ubuntu-24.04 ]
+        os: [ windows-2025, macos-12, ubuntu-24.04 ]
         java-version: [11, 17, 21]
         jdk-dist:
           - adopt-hotspot
@@ -34,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-2022, macos-12, ubuntu-24.04 ]
+        os: [ windows-2025, macos-12, ubuntu-24.04 ]
         node-version:
           - 'latest-16'
           - 'latest-18'
