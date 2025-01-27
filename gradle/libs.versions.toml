@@ -8,7 +8,7 @@ ktMpp = "4.1.4"
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 
 [plugins]
-gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:3.1.7"
+gitSemVer = "org.danilopianini.git-sensitive-semantic-versioning:4.0.2"
 ktMpp-bugFinder = { id = "io.github.gciatto.kt-mpp.bug-finder", version.ref = "ktMpp" }
 ktMpp-documentation = { id = "io.github.gciatto.kt-mpp.documentation", version.ref = "ktMpp" }
 ktMpp-linter = { id = "io.github.gciatto.kt-mpp.linter", version.ref = "ktMpp" }
