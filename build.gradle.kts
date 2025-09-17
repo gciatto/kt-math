@@ -1,6 +1,5 @@
 import io.github.gciatto.kt.mpp.utils.log
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.gitSemVer)
     alias(libs.plugins.ktMpp.multiplatform)
@@ -15,8 +14,7 @@ plugins {
 group = "io.github.gciatto"
 
 gitSemVer {
-    excludeLightweightTags()
-    assignGitSemanticVersion()
+    buildMetadataSeparator.set("-")
 }
 
 log("version: $version", LogLevel.LIFECYCLE)

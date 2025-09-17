@@ -2,5 +2,4 @@ root = true
 
 [*.{kt,kts}]
 max_line_length = 120
-ktlint_standard_property-naming = disabled
 # ktlint_standard_discouraged-comment-location = disabled

@@ -13,8 +13,8 @@ internal fun log(lazyObject: () -> Any) {
     }
 }
 
-internal fun String.getRadix(): Pair<Int, String> {
-    return when {
+internal fun String.getRadix(): Pair<Int, String> =
+    when {
         this.contains("0B", ignoreCase = true) -> {
             Pair(2, this.replaceFirst("0B", "").replaceFirst("0b", ""))
         }
@@ -26,7 +26,6 @@ internal fun String.getRadix(): Pair<Int, String> {
         }
         else -> Pair(10, this)
     }
-}
 
 internal const val PI_STRING =
     "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862" +
@@ -245,12 +244,10 @@ internal const val CHAR_MIN_RADIX = 2
 
 internal const val CHAR_MAX_RADIX = 36
 
-internal fun Char.isDigit(): Boolean {
-    return this.isDigit(10)
-}
+internal fun Char.isDigit(): Boolean = this.isDigit(10)
 
-internal fun Char.isDigit(radix: Int): Boolean {
-    return radix in CHAR_MAX_RADIX..CHAR_MAX_RADIX &&
+internal fun Char.isDigit(radix: Int): Boolean =
+    radix in CHAR_MAX_RADIX..CHAR_MAX_RADIX &&
         if (radix > 10) {
             val delta = radix - 10
             this in '0'..'9' ||
@@ -259,11 +256,8 @@ internal fun Char.isDigit(radix: Int): Boolean {
         } else {
             this in '0' until ('0' + radix)
         }
-}
 
-internal fun Char.toDigit(): Int {
-    return this.toDigit(10)
-}
+internal fun Char.toDigit(): Int = this.toDigit(10)
 
 internal fun Char.toDigit(radix: Int): Int {
     if (radix in CHAR_MIN_RADIX..CHAR_MAX_RADIX) {
@@ -308,13 +302,9 @@ internal fun arrayCopy(
     }
 }
 
-internal inline fun <reified T> Array<T>.cloneArray(): Array<T> {
-    return Array<T>(this.size) { i -> this[i] }
-}
+internal inline fun <reified T> Array<T>.cloneArray(): Array<T> = Array<T>(this.size) { i -> this[i] }
 
-internal fun IntArray.cloneArray(): IntArray {
-    return IntArray(this.size) { i -> this[i] }
-}
+internal fun IntArray.cloneArray(): IntArray = IntArray(this.size) { i -> this[i] }
 
 internal fun Int.bitCount(): Int {
     // HD, Figure 5-2
@@ -330,9 +320,7 @@ internal fun Int.bitCount(): Int {
 internal fun StringBuilder.insertChar(
     index: Int,
     char: Char,
-): StringBuilder {
-    return this.insertCharSeq(index, char.toString())
-}
+): StringBuilder = this.insertCharSeq(index, char.toString())
 
 internal fun StringBuilder.insertCharSeq(
     index: Int,
@@ -344,13 +332,9 @@ internal fun StringBuilder.insertCharSeq(
     return temp
 }
 
-internal fun CharSequence.toCharArray(): CharArray {
-    return CharArray(this.length) { this[it] }
-}
+internal fun CharSequence.toCharArray(): CharArray = CharArray(this.length) { this[it] }
 
-internal fun IntArray.fill(x: Int): IntArray {
-    return this.fill(0, this.size, x)
-}
+internal fun IntArray.fill(x: Int): IntArray = this.fill(0, this.size, x)
 
 internal fun IntArray.fill(
     from: Int,

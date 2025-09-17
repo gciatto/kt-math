@@ -40,7 +40,10 @@ object JvmIntAlgos : IntAlgos<BigInteger> {
 
     override fun fibonacciBasedBenchmark(max: BigInteger) {
         val sequence = bigIntRange(0, max).map(this::fibonacci).toList()
-        for (i in sequence.indices.reversed().drop(1).takeWhile { it > 1 }) {
+        for (i in sequence.indices
+            .reversed()
+            .drop(1)
+            .takeWhile { it > 1 }) {
             assertEquals(sequence[i], sequence[i + 1] - sequence[i - 1])
         }
     }

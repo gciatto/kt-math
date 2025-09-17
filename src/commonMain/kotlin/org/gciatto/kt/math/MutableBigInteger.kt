@@ -216,8 +216,8 @@ internal open class MutableBigInteger {
     /**
      * Convert this MutableBigInteger to a BigInteger object.
      */
-    fun toBigInteger(sign: Int): CommonBigInteger {
-        return if (intLen == 0 || sign == 0) {
+    fun toBigInteger(sign: Int): CommonBigInteger =
+        if (intLen == 0 || sign == 0) {
             CommonBigInteger.ZERO
         } else {
             CommonBigInteger(
@@ -225,7 +225,6 @@ internal open class MutableBigInteger {
                 sign,
             )
         }
-    }
 
     /**
      * Converts this number to a nonnegative `BigInteger`.
@@ -434,18 +433,14 @@ internal open class MutableBigInteger {
      * index. This method is not used because it is not inlined on all
      * platforms.
      */
-    private fun getInt(index: Int): Int {
-        return value[offset + index]
-    }
+    private fun getInt(index: Int): Int = value[offset + index]
 
     /**
      * Return a long which is equal to the unsigned value of the int in
      * use in this MutableBigInteger at the specified index. This method is
      * not used because it is not inlined on all platforms.
      */
-    private fun getLong(index: Int): Long {
-        return value[offset + index].toLong() and LONG_MASK
-    }
+    private fun getLong(index: Int): Long = value[offset + index].toLong() and LONG_MASK
 
     /**
      * Ensure that the MutableBigInteger is in normal form, specifically
@@ -491,8 +486,9 @@ internal open class MutableBigInteger {
      */
     fun toIntArray(): IntArray {
         val result = IntArray(intLen)
-        for (i in 0 until intLen)
+        for (i in 0 until intLen) {
             result[i] = value[offset + i]
+        }
         return result
     }
 
@@ -630,19 +626,23 @@ internal open class MutableBigInteger {
         if (value.size < newLen) {
             // The array must grow
             val result = IntArray(newLen)
-            for (i in 0 until intLen)
+            for (i in 0 until intLen) {
                 result[i] = value[offset + i]
+            }
             setValue(result, newLen)
         } else if (value.size - offset >= newLen) {
             // Use space on right
-            for (i in 0 until newLen - intLen)
+            for (i in 0 until newLen - intLen) {
                 value[offset + intLen + i] = 0
+            }
         } else {
             // Must use space on left
-            for (i in 0 until intLen)
+            for (i in 0 until intLen) {
                 value[i] = value[offset + i]
-            for (i in intLen until newLen)
+            }
+            for (i in intLen until newLen) {
                 value[i] = 0
+            }
             offset = 0
         }
         intLen = newLen
@@ -788,8 +788,9 @@ internal open class MutableBigInteger {
         } else {
             // strip zeros
             var len = n
-            while (len > 0 && value[offset + intLen - len] == 0)
+            while (len > 0 && value[offset + intLen - len] == 0) {
                 len--
+            }
             val sign = if (len > 0) 1 else 0
             return CommonBigInteger(value.copyOfRange(offset + intLen - len, offset + intLen), sign)
         }
@@ -971,8 +972,9 @@ internal open class MutableBigInteger {
         arrayCopy(addend.value, addend.offset, result, rstart + 1 - y, len)
 
         // zero the gap
-        for (i in rstart + 1 - y + len until rstart + 1)
+        for (i in rstart + 1 - y + len until rstart + 1) {
             result[i] = 0
+        }
 
         value = result
         intLen = resultLen
@@ -1554,9 +1556,7 @@ internal open class MutableBigInteger {
 
     /** @see CommonBigInteger.getBitLength
      */
-    fun bitLength(): Long {
-        return if (intLen == 0) 0 else intLen * 32L - value[offset].numberOfLeadingZeros()
-    }
+    fun bitLength(): Long = if (intLen == 0) 0 else intLen * 32L - value[offset].numberOfLeadingZeros()
 
     /**
      * Internally used  to calculate the quotient of this div v and places the
@@ -1961,23 +1961,23 @@ internal open class MutableBigInteger {
         offset: Int,
     ): Int {
         var offset = offset
-        val xLong = x.toLong()and LONG_MASK
+        val xLong = x.toLong() and LONG_MASK
         offset += 2
-        var product = (dl.toLong()and LONG_MASK) * xLong
+        var product = (dl.toLong() and LONG_MASK) * xLong
         var difference = q[offset] - product
         q[offset--] = difference.toInt()
         var carry =
             product.ushr(32) +
-                if (difference.toLong()and LONG_MASK > product.inv().toLong()and LONG_MASK) {
+                if (difference.toLong() and LONG_MASK > product.inv().toLong() and LONG_MASK) {
                     1
                 } else {
                     0
                 }
-        product = (dh.toLong()and LONG_MASK) * xLong + carry
+        product = (dh.toLong() and LONG_MASK) * xLong + carry
         difference = q[offset] - product
         q[offset--] = difference.toInt()
         carry = product.ushr(32) +
-            if (difference.toLong()and LONG_MASK > product.inv().toLong()and LONG_MASK) {
+            if (difference.toLong() and LONG_MASK > product.inv().toLong() and LONG_MASK) {
                 1
             } else {
                 0
@@ -1992,9 +1992,7 @@ internal open class MutableBigInteger {
     private fun unsignedLongCompare(
         one: Long,
         two: Long,
-    ): Boolean {
-        return one + Long.MIN_VALUE > two + Long.MIN_VALUE
-    }
+    ): Boolean = one + Long.MIN_VALUE > two + Long.MIN_VALUE
 
     /**
      * Calculate the integer square root `floor(sqrt(this))` where
@@ -2321,8 +2319,9 @@ internal open class MutableBigInteger {
             k += trailingZeros
         }
 
-        while (c.sign < 0)
+        while (c.sign < 0) {
             c.signedAdd(p)
+        }
 
         return fixup(c, p, k)
     }
@@ -2598,8 +2597,9 @@ internal open class MutableBigInteger {
             }
 
             // In theory, c may be greater than p at this point (Very rare!)
-            while (c.compare(p) >= 0)
+            while (c.compare(p) >= 0) {
                 c.subtract(p)
+            }
 
             return c
         }

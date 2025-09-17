@@ -222,15 +222,11 @@ internal class BitSieve {
         /**
          * Given a bit index return unit index containing it.
          */
-        private fun unitIndex(bitIndex: Int): Int {
-            return bitIndex.ushr(6)
-        }
+        private fun unitIndex(bitIndex: Int): Int = bitIndex.ushr(6)
 
         /**
          * Return a unit that masks the specified bit in its unit.
          */
-        private fun bit(bitIndex: Int): Long {
-            return 1L shl (bitIndex and (1 shl 6) - 1)
-        }
+        private fun bit(bitIndex: Int): Long = 1L shl (bitIndex and (1 shl 6) - 1)
     }
 }
