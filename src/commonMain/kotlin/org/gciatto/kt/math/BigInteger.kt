@@ -7,7 +7,7 @@ import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 
 @JsExport
-@Suppress("WRONG_EXPORTED_DECLARATION", "NON_EXPORTABLE_TYPE")
+@Suppress("NON_EXPORTABLE_TYPE")
 interface BigInteger : Comparable<BigInteger> {
     /**
      * Returns a BigInteger whose value is the absolute value of this

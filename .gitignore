@@ -2,6 +2,8 @@ kotlin-js-store/
 .DS_Store
 node_modules/
 
+*.klib
+
 *.hprof
 # Created by https://www.gitignore.io/api/gradle,kotlin,intellij
 # Edit at https://www.gitignore.io/?templates=gradle,kotlin,intellij

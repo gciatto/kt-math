@@ -57,7 +57,10 @@ import kotlin.jvm.JvmField
  * @since 1.5
  */
 @JsExport
-data class MathContext(val precision: Int = 9, val roundingMode: RoundingMode = RoundingMode.HALF_UP) {
+data class MathContext(
+    val precision: Int = 9,
+    val roundingMode: RoundingMode = RoundingMode.HALF_UP,
+) {
     init {
         require(precision >= 0)
     }

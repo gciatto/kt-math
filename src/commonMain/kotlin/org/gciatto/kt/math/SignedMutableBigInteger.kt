@@ -124,7 +124,5 @@ internal class SignedMutableBigInteger : MutableBigInteger {
      * Print out the first intLen ints of this MutableBigInteger's value
      * array starting at offset.
      */
-    override fun toString(): String {
-        return this.toBigInteger(sign).toString()
-    }
+    override fun toString(): String = this.toBigInteger(sign).toString()
 }

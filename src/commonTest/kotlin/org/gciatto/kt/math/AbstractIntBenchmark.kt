@@ -8,7 +8,9 @@ expect val REPETITIONS: Int
 
 expect val N: Int
 
-abstract class AbstractIntBenchmark<T>(private val algos: IntAlgos<T>) {
+abstract class AbstractIntBenchmark<T>(
+    private val algos: IntAlgos<T>,
+) {
     protected abstract fun bigInt(value: Int): T
 
     @ExperimentalTime
