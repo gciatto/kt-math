@@ -1,3 +1,9 @@
+## [0.10.2](https://github.com/gciatto/kt-math/compare/0.10.1...0.10.2) (2025-09-17)
+
+### Bug Fixes
+
+* **ci:** npm parameter ([e6c8a3f](https://github.com/gciatto/kt-math/commit/e6c8a3f0100a5994251b4f5053b083a029aee5de))
+
 ## [0.10.1](https://github.com/gciatto/kt-math/compare/0.10.0...0.10.1) (2025-09-17)
 
 ### Dependency updates
