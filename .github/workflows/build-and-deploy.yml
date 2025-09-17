@@ -20,7 +20,7 @@ jobs:
             --dry-run
           should-deploy: true
           should-run-codecov: false
-          maven-central-username: replace
+          maven-central-username: ${{ secrets.MAVEN_USERNAME }}
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
           signing-key: ${{ secrets.SIGNING_KEY }}
           signing-password: ${{ secrets.SIGNING_PASSWORD }}
@@ -57,7 +57,7 @@ jobs:
           should-run-codecov: false
           should-deploy: true
           npm_token: ${{ secrets.NPM_TOKEN }}
-          maven-central-username: replace
+          maven-central-username: ${{ secrets.MAVEN_USERNAME }}
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
           signing-key: ${{ secrets.SIGNING_KEY }}
           signing-password: ${{ secrets.SIGNING_PASSWORD }}
