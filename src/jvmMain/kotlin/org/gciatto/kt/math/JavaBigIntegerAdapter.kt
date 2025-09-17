@@ -2,7 +2,9 @@ package org.gciatto.kt.math
 
 import java.math.BigInteger as JavaBigInteger
 
-internal class JavaBigIntegerAdapter(val value: JavaBigInteger) : BigInteger {
+internal class JavaBigIntegerAdapter(
+    val value: JavaBigInteger,
+) : BigInteger {
     private inline fun adapt(f: () -> JavaBigInteger): JavaBigIntegerAdapter = JavaBigIntegerAdapter(f())
 
     private inline fun adapt(

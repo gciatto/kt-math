@@ -20,8 +20,8 @@ fun bigInteger(x: dynamic): BigInteger {
 
 @JsName("bigDecimal")
 @JsExport
-fun bigDecimal(x: dynamic): BigDecimal {
-    return when (x) {
+fun bigDecimal(x: dynamic): BigDecimal =
+    when (x) {
         is Array<dynamic> -> {
             require(x.size == 2 && x[1] is MathContext)
             when (x[1]) {
@@ -32,4 +32,3 @@ fun bigDecimal(x: dynamic): BigDecimal {
         is Any -> BigDecimal.of(x.toString())
         else -> throw IllegalArgumentException()
     }
-}
