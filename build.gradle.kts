@@ -32,9 +32,3 @@ kotlin {
         }
     }
 }
-
-ktlint {
-    filter {
-        exclude("standard:backing-property-naming")
-    }
-}
