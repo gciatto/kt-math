@@ -56,7 +56,7 @@ jobs:
             npx semantic-release
           should-run-codecov: false
           should-deploy: true
-          npm_token: ${{ secrets.NPM_TOKEN }}
+          npm-token: ${{ secrets.NPM_TOKEN }}
           github-token: ${{ github.token }}
           maven-central-username: ${{ secrets.MAVEN_USERNAME }}
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
