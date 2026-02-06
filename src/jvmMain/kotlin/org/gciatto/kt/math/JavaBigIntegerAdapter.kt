@@ -23,12 +23,17 @@ internal class JavaBigIntegerAdapter(
     }
 
     private inline fun adaptAll(
-        other: BigInteger,
+        other: JavaBigIntegerAdapter,
         f: (JavaBigInteger) -> Array<JavaBigInteger>,
     ): Array<out JavaBigIntegerAdapter> {
-        val javaInts = f(other.castTo())
+        val javaInts = f(other.value)
         return Array(javaInts.size) { index -> adapt { javaInts[index] } }
     }
+
+    private inline fun adaptAll(
+        other: BigInteger,
+        f: (JavaBigInteger) -> Array<JavaBigInteger>,
+    ): Array<out JavaBigIntegerAdapter> = adaptAll(other.castTo(), f)
 
     override val absoluteValue: BigInteger
         get() = adapt { value.abs() }
@@ -56,8 +61,8 @@ internal class JavaBigIntegerAdapter(
     override fun div(other: BigInteger): BigInteger = adapt(other) { value.divide(it) }
 
     override fun divideAndRemainder(other: BigInteger): Array<out BigInteger> =
-        adaptAll(other) {
-            value.divideAndRemainder(it)
+        adaptAll(other) { otherJava: JavaBigInteger ->
+            value.divideAndRemainder(otherJava)
         }
 
     override fun remainder(other: BigInteger): BigInteger = adapt(other) { value.remainder(it) }
