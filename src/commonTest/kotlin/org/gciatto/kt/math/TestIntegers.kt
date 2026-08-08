@@ -75,6 +75,65 @@ class TestIntegers {
     }
 
     @Test
+    fun testDivideAndRemainder() {
+        fun assertArrayContains(
+            expectedQuotient: BigInteger,
+            expectedRemainder: BigInteger,
+            actualResult: Array<out BigInteger>
+        ) {
+            assertEquals(2, actualResult.size)
+            assertBigIntegersAreEquals(expectedQuotient, actualResult[0])
+            assertBigIntegersAreEquals(expectedRemainder, actualResult[1])
+        }
+
+        fun doTest(
+            dividendInt: Int,
+            divisorInt: Int,
+            expectedQuotientInt: Int,
+            expectedRemainderInt: Int
+        ) {
+            val divisorLong = divisorInt.toLong()
+            val dividend = BigInteger.of(dividendInt)
+            val divisor = BigInteger.of(divisorInt)
+            val expectedQuotient = BigInteger.of(expectedQuotientInt)
+            val expectedRemainder = BigInteger.of(expectedRemainderInt)
+
+            // int overloads
+            assertBigIntegersAreEquals(expectedQuotient, dividend.div(divisorInt))
+            assertBigIntegersAreEquals(expectedRemainder, dividend.rem(divisorInt))
+            assertBigIntegersAreEquals(expectedRemainder, dividend.remainder(divisorInt))
+            assertArrayContains(expectedQuotient, expectedRemainder, dividend.divideAndRemainder(divisorInt))
+
+            // long overloads
+            assertBigIntegersAreEquals(expectedQuotient, dividend.div(divisorLong))
+            assertBigIntegersAreEquals(expectedRemainder, dividend.rem(divisorLong))
+            assertBigIntegersAreEquals(expectedRemainder, dividend.remainder(divisorLong))
+            assertArrayContains(expectedQuotient, expectedRemainder, dividend.divideAndRemainder(divisorLong))
+
+            // BigInteger overloads
+            assertBigIntegersAreEquals(expectedQuotient, dividend.div(divisor))
+            assertBigIntegersAreEquals(expectedRemainder, dividend.rem(divisor))
+            assertBigIntegersAreEquals(expectedRemainder, dividend.remainder(divisor))
+            assertArrayContains(expectedQuotient, expectedRemainder, dividend.divideAndRemainder(divisor))
+        }
+
+        doTest(0, 3, 0, 0)
+        doTest(0, -3, 0, 0)
+        doTest(1, 3, 0, 1)
+        doTest(1, -3, 0, 1)
+        doTest(-1, 3, 0, -1)
+        doTest(-1, -3, 0, -1)
+        doTest(6, 2, 3, 0)
+        doTest(6, -2, -3, 0)
+        doTest(-6, -2, 3, 0)
+        doTest(-6, 2, -3, 0)
+        doTest(7, 2, 3, 1)
+        doTest(7, -2, -3, 1)
+        doTest(-7, -2, 3, -1)
+        doTest(-7, 2, -3, -1)
+    }
+
+    @Test
     fun testDecimalParsing() {
         assertEquals(0, BigInteger.of("0").toInt())
         assertEquals(1, BigInteger.of("1").toInt())
