@@ -244,39 +244,11 @@ internal const val CHAR_MIN_RADIX = 2
 
 internal const val CHAR_MAX_RADIX = 36
 
-internal fun Char.isDigit(): Boolean = this.isDigit(10)
-
-internal fun Char.isDigit(radix: Int): Boolean =
-    radix in CHAR_MAX_RADIX..CHAR_MAX_RADIX &&
-        if (radix > 10) {
-            val delta = radix - 10
-            this in '0'..'9' ||
-                this in 'a' until ('a' + delta) ||
-                this in 'A' until ('A' + delta)
-        } else {
-            this in '0' until ('0' + radix)
-        }
-
 internal fun Char.toDigit(): Int = this.toDigit(10)
 
-internal fun Char.toDigit(radix: Int): Int {
-    if (radix in CHAR_MIN_RADIX..CHAR_MAX_RADIX) {
-        if (radix > 10) {
-            val delta = radix - 10
-            when (this) {
-                in '0'..'9' -> return this - '0'
-                in 'a' until ('a' + delta) -> return this - 'a' + 10
-                in 'A' until ('A' + delta) -> return this - 'A' + 10
-            }
-        } else {
-            if (this in '0' until ('0' + radix)) {
-                return this - '0'
-            }
-        }
-    }
-
-    return -1
-}
+// Like Java's Character.digit: any Unicode decimal digit counts, -1 when not a digit in this radix
+internal fun Char.toDigit(radix: Int): Int =
+    if (radix in CHAR_MIN_RADIX..CHAR_MAX_RADIX) digitToIntOrNull(radix) ?: -1 else -1
 
 internal fun <T> arrayCopy(
     src: Array<T>,
@@ -285,9 +257,8 @@ internal fun <T> arrayCopy(
     destIndex: Int,
     size: Int,
 ) {
-    for (i in 0 until size) {
-        dest[destIndex + i] = src[srcIndex + i]
-    }
+    // Like System.arraycopy, correct when src and dest are the same array with overlapping ranges
+    src.copyInto(dest, destIndex, srcIndex, srcIndex + size)
 }
 
 internal fun arrayCopy(
@@ -297,9 +268,8 @@ internal fun arrayCopy(
     destIndex: Int,
     size: Int,
 ) {
-    for (i in 0 until size) {
-        dest[destIndex + i] = src[srcIndex + i]
-    }
+    // Like System.arraycopy, correct when src and dest are the same array with overlapping ranges
+    src.copyInto(dest, destIndex, srcIndex, srcIndex + size)
 }
 
 internal inline fun <reified T> Array<T>.cloneArray(): Array<T> = Array<T>(this.size) { i -> this[i] }
@@ -320,17 +290,12 @@ internal fun Int.bitCount(): Int {
 internal fun StringBuilder.insertChar(
     index: Int,
     char: Char,
-): StringBuilder = this.insertCharSeq(index, char.toString())
+): StringBuilder = insert(index, char)
 
 internal fun StringBuilder.insertCharSeq(
     index: Int,
     string: CharSequence,
-): StringBuilder {
-    val temp = StringBuilder(this.subSequence(0, index))
-    temp.append(string)
-    temp.append(this.subSequence(index, this.length))
-    return temp
-}
+): StringBuilder = insert(index, string)
 
 internal fun CharSequence.toCharArray(): CharArray = CharArray(this.length) { this[it] }
 
