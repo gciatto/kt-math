@@ -39,12 +39,24 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   `sqrt` algorithm, exponent limits in string parsing), so cases where JDK versions disagree among themselves are skipped
   or compared by value (e.g. `movePointLeft(0)` on negative scales, the scale of exact `sqrt` results; JDK 26+
   computes `sqrt` via `rootn` and parses exponents into a `long` scale). Run `jvmTest` with
-  `-Dorg.gradle.java.home=<newer JDK>` too when touching those operations.- Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
+  `-Dorg.gradle.java.home=<newer JDK>` too when touching those operations.
+- On JS, the same kind of comparison runs from a file: `generateDifferentialCases` (a `JavaExec` of
+  `src/jvmTest/.../GenerateDifferentialCases.kt`) runs the named operations of `src/commonTest/.../DifferentialOps.kt`
+  on the JVM (i.e. on `java.math`) and writes cases and outcomes to `build/differential/cases.tsv`; `jsNodeTest`
+  depends on it, gets the path via `KT_MATH_DIFFERENTIAL_CASES`, and `TestDifferentialCases` replays every case on the
+  common implementation. To cover a new operation on JS, add it to `DifferentialOps` and its inputs to the generator.
+  Outcomes are rendered identically on both platforms: operations return `Double`/`Float`/`Char` as bits/codes.
+- JS pitfalls behind the JS-only failures found so far: `Long` is a BigInt (`-Xes-long-as-bigint`), so `Long` division
+  by zero throws a native `RangeError` (not an `ArithmeticException`; the JDK code sometimes relies on it), and
+  `Int.toLong()` of a non-integer number throws too; `Int` division by zero silently yields 0; on a `dynamic`, `is Int`
+  is true for every JS number. Catch `Throwable`, not `Exception`, to see native errors.
+- Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
   JS coverage is not measured.
 - Bug patterns found in the port, worth grepping for when something diverges from the JDK: Java expressions with
   side effects inside indices (`a[--i] = b[i]` evaluates `--i` first), post- vs pre-increment results, `System.arraycopy`
   replaced by loops (must handle overlapping ranges: use `copyInto`), `!!` on fields the JDK allows to be null,
-  Java `assert`s ported as `require` (always on in Kotlin), and copy-paste typos (`isInfinite() || isInfinite()`).
+  Java `assert`s ported as `require` (always on in Kotlin), algorithm thresholds tested on the wrong operand (results
+  stay right, but zero/edge cases take another path), and copy-paste typos (`isInfinite() || isInfinite()`).
 - `BigInteger.rem`/`%` is the remainder (sign of the dividend) on every platform; Java's `mod` is the internal
   `CommonBigInteger.mod`.
 
