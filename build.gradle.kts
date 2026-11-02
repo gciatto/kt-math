@@ -49,3 +49,30 @@ kotlin {
         }
     }
 }
+
+// Differential tests on JS: the JVM computes the expected outcomes of the DifferentialOps cases with java.math
+// (GenerateDifferentialCases, in jvmTest), the JS tests run the same cases on the common implementation.
+val differentialCases = layout.buildDirectory.file("differential/cases.tsv")
+
+val generateDifferentialCases by tasks.registering(JavaExec::class) {
+    group = "verification"
+    description = "Computes the expected outcomes of the differential cases on the JVM, for the JS tests"
+    val testCompilation = kotlin.jvm().compilations.getByName("test")
+    classpath(testCompilation.output.allOutputs, testCompilation.runtimeDependencyFiles)
+    mainClass.set("org.gciatto.kt.math.GenerateDifferentialCasesKt")
+    outputs.file(differentialCases)
+    argumentProviders += CommandLineArgumentProvider { listOf(differentialCases.get().asFile.absolutePath) }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest>().configureEach {
+    inputs.files(generateDifferentialCases)
+    environment("KT_MATH_DIFFERENTIAL_CASES", differentialCases.get().asFile.absolutePath)
+}
+
+kotlin.js().nodejs {
+    testTask {
+        useMocha {
+            timeout = "600s" // the differential cases run in a single test
+        }
+    }
+}
