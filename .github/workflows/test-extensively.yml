@@ -100,6 +100,56 @@ jobs:
         if: steps.cache-test-result.outputs.cache-hit == 'true'
         run: echo "Inputs unchanged since last successful run, skipping tests."
 
+  test-native:
+    # Each OS runs the native tests it can host (on macOS ARM runners, the x64 simulators can't run)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            tasks: linuxX64Test
+          - os: windows-latest
+            tasks: mingwX64Test
+          - os: macos-latest
+            tasks: macosArm64Test iosSimulatorArm64Test watchosSimulatorArm64Test tvosSimulatorArm64Test
+    runs-on: ${{ matrix.os }}
+    concurrency:
+      group: build-${{ github.workflow }}-${{ matrix.os }}-native-${{ github.event.number || github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.31
+      - name: Restore Gradle test cache
+        id: cache-test-result
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: .github/.cache/test-extensively-native
+          key: ${{ format('test-extensively-native-{0}-{1}', runner.os, hashFiles('**/src/**', '**/*.gradle', '**/*.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts', '**/gradle.properties', 'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', 'buildSrc/**/*.kt', '*.kts')) }}
+      - name: Run tests
+        id: run-tests
+        if: steps.cache-test-result.outputs.cache-hit != 'true'
+        uses: DanySK/build-check-deploy-gradle-action@4.0.50
+        with:
+          retries-on-failure: '2'
+          build-command: 'true'
+          check-command: |
+            ./gradlew ${{ matrix.tasks }} --parallel --continue
+          should-run-codecov: false
+      - name: Mark successful test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        run: |
+          mkdir -p .github/.cache/test-extensively-native
+          echo "ok" > .github/.cache/test-extensively-native/success
+      - name: Save Gradle test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: .github/.cache/test-extensively-native
+          key: ${{ steps.cache-test-result.outputs.cache-primary-key }}
+      - name: Skip tests on cache hit
+        if: steps.cache-test-result.outputs.cache-hit == 'true'
+        run: echo "Inputs unchanged since last successful run, skipping tests."
+
   test-js:
     strategy:
       fail-fast: false

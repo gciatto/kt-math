@@ -3,18 +3,22 @@ package org.gciatto.kt.math
 import kotlin.test.Test
 import kotlin.test.fail
 
+/** The value of the `KT_MATH_DIFFERENTIAL_CASES` environment variable, if set. */
+internal expect fun differentialCasesPath(): String?
+
+internal expect fun readTextFile(path: String): String
+
 /**
- * Runs the [DifferentialOps] cases generated on the JVM (`generateDifferentialCases` Gradle task, which passes the
- * file path via the `KT_MATH_DIFFERENTIAL_CASES` environment variable) on the common implementation, and compares
- * outcomes with the `java.math` ones.
+ * Runs, on JS and native targets, the [DifferentialOps] cases generated on the JVM (`generateDifferentialCases`
+ * Gradle task, which passes the file path via the `KT_MATH_DIFFERENTIAL_CASES` environment variable) on the Kotlin
+ * implementation, and compares outcomes with the `java.math` ones.
  */
 class TestDifferentialCases {
     @Test
     fun commonImplementationMatchesJavaMath() {
         val path: String =
-            js("process.env.KT_MATH_DIFFERENTIAL_CASES") as String?
-                ?: fail("KT_MATH_DIFFERENTIAL_CASES is not set: run the JS tests through Gradle")
-        val text = js("require('fs')").readFileSync(path, "utf8") as String
+            differentialCasesPath() ?: fail("KT_MATH_DIFFERENTIAL_CASES is not set: run the tests through Gradle")
+        val text = readTextFile(path)
         val failures = mutableMapOf<String, MutableList<String>>()
         var count = 0
         for (line in text.lineSequence().filter { it.isNotEmpty() }) {
