@@ -26,6 +26,8 @@ internal actual fun bigIntegerOf(
 
 internal actual fun bigIntegerOf(value: IntArray): BigInteger = JsBigInteger.of(CommonBigInteger.of(value))
 
+internal actual fun bigIntegerOf(value: ByteArray): BigInteger = JsBigInteger.of(CommonBigInteger(value))
+
 internal actual fun bigIntegerOf(
     signum: Int,
     magnitude: ByteArray,

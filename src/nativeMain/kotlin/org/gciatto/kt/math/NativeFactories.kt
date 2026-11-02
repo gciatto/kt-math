@@ -23,6 +23,8 @@ internal actual fun bigIntegerOf(
 
 internal actual fun bigIntegerOf(value: IntArray): BigInteger = CommonBigInteger.of(value)
 
+internal actual fun bigIntegerOf(value: ByteArray): BigInteger = CommonBigInteger(value)
+
 internal actual fun bigIntegerOf(
     signum: Int,
     magnitude: ByteArray,
