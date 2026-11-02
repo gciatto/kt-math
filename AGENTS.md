@@ -16,8 +16,11 @@ comes from the `io.github.gciatto.kt-mpp.*` plugins (see `build.gradle.kts`), co
 - Targets: JVM, JS, and every non-deprecated Kotlin/Native target (listed in `build.gradle.kts`).
 - `BigInteger` implementations: `java.math` on the JVM (`JavaBigIntegerAdapter`), native JS BigInts on JS
   (`JsBigInteger`, `src/jsMain`), `CommonBigInteger` on native targets. `BigDecimal`: `java.math` on the JVM, the
-  Kotlin `CommonBigDecimal` elsewhere, which works with `CommonBigInteger` internally: on JS, the `BigInteger`s it
-  takes and returns are converted at its boundary (`toCommon()`/`exported()` in `Utils.kt`).
+  Kotlin `CommonBigDecimal` elsewhere, which works with *any* `BigInteger` through its interface (created with
+  `BigInteger.of`, so native BigInts on JS): it must not use `CommonBigInteger` internals (the JDK code it's ported
+  from relies on `BigInteger` package-private methods and `MutableBigInteger`; their interface-based equivalents
+  are at the top of `CommonBigDecimal.kt`). On the JVM it's only used by tests and the Java 8 `sqrt` fallback, on top
+  of `java.math`-backed `BigInteger`s: don't mix in `CommonBigInteger`s there.
 - `BigInteger`/`BigDecimal` are `@JsExport`ed interfaces: any change to them is a change of the public JS API too.
 
 ## Gradle tasks: known task names, don't rediscover them

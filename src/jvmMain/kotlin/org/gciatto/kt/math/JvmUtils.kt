@@ -45,10 +45,6 @@ fun JavaBigDecimal.toKotlin(): BigDecimal = fromJava(this)
 
 internal actual inline fun <T, reified U : T> T?.castTo(): U = this as U
 
-internal actual fun CommonBigInteger.exported(): BigInteger = this
-
-internal actual fun BigInteger.toCommon(): CommonBigInteger = castTo()
-
 internal actual fun bigProbablePrimeInteger(
     bitLength: Int,
     rnd: Random,

@@ -5,11 +5,6 @@ package org.gciatto.kt.math
 
 import kotlin.random.Random
 
-// BigDecimal's Kotlin implementation works with CommonBigInteger: these convert at its boundary
-internal actual fun BigInteger.toCommon(): CommonBigInteger = if (this is JsBigInteger) toCommon() else castTo()
-
-internal actual fun CommonBigInteger.exported(): BigInteger = JsBigInteger.of(this)
-
 internal actual fun bigProbablePrimeInteger(
     bitLength: Int,
     rnd: Random,
