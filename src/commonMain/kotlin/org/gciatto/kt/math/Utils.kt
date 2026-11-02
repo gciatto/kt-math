@@ -41,6 +41,15 @@ internal expect fun logImpl(lazyObject: () -> Any)
 
 internal expect inline fun <T, reified U : T> T?.castTo(): U
 
+/**
+ * This [CommonBigInteger] as returned to users by the Kotlin [BigDecimal] implementation: itself, except on JS,
+ * whose [BigInteger]s wrap native BigInts.
+ */
+internal expect fun CommonBigInteger.exported(): BigInteger
+
+/** This [BigInteger] as a [CommonBigInteger], which the Kotlin [BigDecimal] implementation works with. */
+internal expect fun BigInteger.toCommon(): CommonBigInteger
+
 internal expect fun bigProbablePrimeInteger(
     bitLength: Int,
     rnd: Random,
