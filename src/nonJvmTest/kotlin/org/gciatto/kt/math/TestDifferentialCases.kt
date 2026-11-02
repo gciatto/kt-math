@@ -3,11 +3,6 @@ package org.gciatto.kt.math
 import kotlin.test.Test
 import kotlin.test.fail
 
-/** The value of the `KT_MATH_DIFFERENTIAL_CASES` environment variable, if set. */
-internal expect fun differentialCasesPath(): String?
-
-internal expect fun readTextFile(path: String): String
-
 /**
  * Runs, on JS and native targets, the [DifferentialOps] cases generated on the JVM (`generateDifferentialCases`
  * Gradle task, which passes the file path via the `KT_MATH_DIFFERENTIAL_CASES` environment variable) on the Kotlin
