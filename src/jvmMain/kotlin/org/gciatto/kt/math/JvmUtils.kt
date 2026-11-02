@@ -74,6 +74,8 @@ internal actual fun bigIntegerOf(
     radix: Int,
 ): BigInteger = JavaBigIntegerAdapter(JavaBigInteger(value, radix))
 
+internal actual fun bigIntegerOf(value: ByteArray): BigInteger = JavaBigIntegerAdapter(JavaBigInteger(value))
+
 internal actual fun bigIntegerOf(value: IntArray): BigInteger =
     JavaBigIntegerAdapter(CommonBigInteger.of(value).toJava())
 

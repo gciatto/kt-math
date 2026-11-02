@@ -57,6 +57,15 @@ interface BigFactory {
     fun bigIntegerOf(value: IntArray): BigInteger
 
     /**
+     * The [BigInteger] whose two's complement representation, big-endian, is [bytes] (as [BigInteger.toByteArray]
+     * returns it).
+     *
+     * @throws NumberFormatException if [bytes] is empty.
+     */
+    @JsName("bigIntegerOfBytes")
+    fun bigIntegerOf(bytes: ByteArray): BigInteger
+
+    /**
      * The [BigInteger] whose sign is [signum] (-1, 0 or 1) and whose magnitude is the big-endian unsigned number of
      * [length] bytes of [magnitude] from [offset].
      *

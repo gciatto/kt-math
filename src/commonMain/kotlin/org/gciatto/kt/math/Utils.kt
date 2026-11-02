@@ -59,6 +59,8 @@ internal expect fun bigIntegerOf(
 
 internal expect fun bigIntegerOf(value: IntArray): BigInteger
 
+internal expect fun bigIntegerOf(value: ByteArray): BigInteger
+
 internal expect fun bigIntegerOf(
     signum: Int,
     magnitude: ByteArray,

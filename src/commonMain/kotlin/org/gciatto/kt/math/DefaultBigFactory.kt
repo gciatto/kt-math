@@ -15,6 +15,8 @@ internal object DefaultBigFactory : BigFactory {
 
     override fun bigIntegerOf(value: IntArray): BigInteger = BigInteger.of(value)
 
+    override fun bigIntegerOf(bytes: ByteArray): BigInteger = BigInteger.of(bytes)
+
     override fun bigIntegerOf(
         signum: Int,
         magnitude: ByteArray,
