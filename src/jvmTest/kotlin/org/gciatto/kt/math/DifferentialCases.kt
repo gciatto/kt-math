@@ -64,6 +64,8 @@ internal class DifferentialCases {
                 casesOf("int.pow", smallInts, numbers(-1, 0, 1, 2, 3, 17, 100)) +
                 casesOf("int.pow", bigInts, numbers(3)) +
                 casesOf("int.toStringRadix", ints, numbers(2, 3, 10, 16, 36)) +
+                casesOf("int.ofBytes", ints) +
+                casesOf("int.ofSignMagnitude", ints, numbers(-1, 0, 1, 2)) +
                 casesOf("int.modPow", ints.take(20), listOf("0", "1", "65537", "-3") + bigInts.take(1), moduli)
         }
 
