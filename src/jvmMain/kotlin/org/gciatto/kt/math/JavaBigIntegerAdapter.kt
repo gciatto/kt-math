@@ -106,6 +106,26 @@ internal class JavaBigIntegerAdapter(
 
     override fun get(n: Int): Boolean = testBit(n)
 
+    override fun getIntBits(
+        index: Int,
+        count: Int,
+    ): Int {
+        require(count in 0..Int.SIZE_BITS) { "Bit count must be in 0..${Int.SIZE_BITS}: $count" }
+        return getLongBits(index, count).toInt()
+    }
+
+    override fun getLongBits(
+        index: Int,
+        count: Int,
+    ): Long {
+        if (index < 0) {
+            throw ArithmeticException("Negative bit address")
+        }
+        require(count in 0..Long.SIZE_BITS) { "Bit count must be in 0..${Long.SIZE_BITS}: $count" }
+        val bits = value.shiftRight(index).toLong() // the lowest 64 bits, in two's complement
+        return if (count == Long.SIZE_BITS) bits else bits and ((1L shl count) - 1)
+    }
+
     override fun set(
         n: Int,
         b: Boolean,

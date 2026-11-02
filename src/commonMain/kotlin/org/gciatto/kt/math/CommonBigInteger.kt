@@ -2417,6 +2417,33 @@ internal class CommonBigInteger : BigInteger {
 
     override operator fun get(n: Int): Boolean = testBit(n)
 
+    override fun getIntBits(
+        index: Int,
+        count: Int,
+    ): Int {
+        require(count in 0..Int.SIZE_BITS) { "Bit count must be in 0..${Int.SIZE_BITS}: $count" }
+        return getLongBits(index, count).toInt()
+    }
+
+    override fun getLongBits(
+        index: Int,
+        count: Int,
+    ): Long {
+        if (index < 0) {
+            throw ArithmeticException("Negative bit address")
+        }
+        require(count in 0..Long.SIZE_BITS) { "Bit count must be in 0..${Long.SIZE_BITS}: $count" }
+        // The (up to) 64 bits span at most three of the 32-bit words of the two's complement representation
+        val word = index.ushr(5)
+        val shift = index and 31
+        val low = (getInt(word + 1).toLong() shl 32) or (getInt(word).toLong() and LONG_MASK)
+        var bits = low.ushr(shift)
+        if (shift != 0) {
+            bits = bits or (getInt(word + 2).toLong() shl (Long.SIZE_BITS - shift))
+        }
+        return if (count == Long.SIZE_BITS) bits else bits and ((1L shl count) - 1)
+    }
+
     override operator fun set(
         n: Int,
         b: Boolean,
