@@ -54,6 +54,52 @@ jobs:
         if: steps.cache-test-result.outputs.cache-hit == 'true'
         run: echo "Inputs unchanged since last successful run, skipping tests."
 
+  test-jvm-8:
+    # Gradle needs JDK 17+, so it runs on 17 and launches the tests on Java 8 (Azul Zulu, via the foojay resolver)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    concurrency:
+      group: build-${{ github.workflow }}-${{ matrix.os }}-java-8-${{ github.event.number || github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.31
+      - name: Restore Gradle test cache
+        id: cache-test-result
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: .github/.cache/test-extensively-jvm-8
+          key: ${{ format('test-extensively-jvm-{0}-java-8-{1}', runner.os, hashFiles('**/src/**', '**/*.gradle', '**/*.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts', '**/gradle.properties', 'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', 'buildSrc/**/*.kt', '*.kts')) }}
+      - name: Run tests
+        id: run-tests
+        if: steps.cache-test-result.outputs.cache-hit != 'true'
+        uses: DanySK/build-check-deploy-gradle-action@4.0.50
+        with:
+          retries-on-failure: '2'
+          java-version: 17
+          build-command: |
+            ./gradlew jvmMainClasses jvmTestClasses --parallel --continue
+          check-command: |
+            ./gradlew jvmTest -PtestJvmVersion=8 --parallel --continue
+          should-run-codecov: false
+      - name: Mark successful test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        run: |
+          mkdir -p .github/.cache/test-extensively-jvm-8
+          echo "ok" > .github/.cache/test-extensively-jvm-8/success
+      - name: Save Gradle test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: .github/.cache/test-extensively-jvm-8
+          key: ${{ steps.cache-test-result.outputs.cache-primary-key }}
+      - name: Skip tests on cache hit
+        if: steps.cache-test-result.outputs.cache-hit == 'true'
+        run: echo "Inputs unchanged since last successful run, skipping tests."
+
   test-js:
     strategy:
       fail-fast: false
