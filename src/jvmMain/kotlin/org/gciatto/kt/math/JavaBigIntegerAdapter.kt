@@ -26,7 +26,7 @@ internal class JavaBigIntegerAdapter(
         other: BigInteger,
         f: (JavaBigInteger) -> Array<JavaBigInteger>,
     ): Array<out JavaBigIntegerAdapter> {
-        val javaInts = f(other.castTo())
+        val javaInts = f((other as JavaBigIntegerAdapter).value)
         return Array(javaInts.size) { index -> adapt { javaInts[index] } }
     }
 

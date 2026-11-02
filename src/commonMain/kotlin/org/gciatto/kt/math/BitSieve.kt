@@ -189,7 +189,7 @@ internal class BitSieve {
     fun retrieve(
         initValue: CommonBigInteger,
         certainty: Int,
-        random: Random,
+        random: Random?,
     ): CommonBigInteger? {
         // Examine the sieve one long at a time to find possible primes
         var offset = 1

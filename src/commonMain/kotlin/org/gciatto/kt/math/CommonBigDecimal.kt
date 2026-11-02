@@ -750,7 +750,7 @@ internal class CommonBigDecimal : BigDecimal {
      * @since 1.5
      */
     constructor(`val`: Double, mc: MathContext = MathContext.UNLIMITED) {
-        if (`val`.isInfinite() || `val`.isInfinite()) {
+        if (`val`.isInfinite() || `val`.isNaN()) {
             throw NumberFormatException("Infinite or NaN")
         }
         // Translate the double into sign, exponent and significand, according
@@ -1603,7 +1603,7 @@ internal class CommonBigDecimal : BigDecimal {
         val temp = this.divideToIntegralValue(divisor)
         return Pair(
             temp,
-            temp.times(divisor),
+            this.minus(temp.times(divisor)),
         )
     }
 
@@ -1828,7 +1828,7 @@ internal class CommonBigDecimal : BigDecimal {
             var ulp = result.ulp()
             val neighborUp = result.plus(ulp)
             // Make neighbor down accurate even for powers of ten
-            if (this.isPowerOfTen) {
+            if (result.isPowerOfTen) {
                 ulp = ulp.div(TEN)
             }
             val neighborDown = result.minus(ulp)
@@ -2075,14 +2075,14 @@ internal class CommonBigDecimal : BigDecimal {
     override fun movePointLeft(n: Int): CommonBigDecimal {
         // Cannot use movePointRight(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() + n)
-        val num = CommonBigDecimal(_intVal!!, _intCompact, newScale, 0)
+        val num = CommonBigDecimal(_intVal, _intCompact, newScale, 0)
         return if (num._scale < 0) num.setScale(0, RoundingMode.UNNECESSARY.value) else num
     }
 
     override fun movePointRight(n: Int): CommonBigDecimal {
         // Cannot use movePointLeft(-n) in case of n==Int.MIN_VALUE
         val newScale = checkScale(_scale.toLong() - n)
-        val num = CommonBigDecimal(_intVal!!, _intCompact, newScale, 0)
+        val num = CommonBigDecimal(_intVal, _intCompact, newScale, 0)
         return if (num._scale < 0) num.setScale(0, RoundingMode.UNNECESSARY.value) else num
     }
 

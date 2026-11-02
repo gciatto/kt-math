@@ -700,7 +700,7 @@ internal class CommonBigInteger : BigInteger {
                 searchSieve.retrieve(
                     result,
                     DEFAULT_PRIME_CERTAINTY,
-                    null!!,
+                    null,
                 )
             if (candidate != null) {
                 return candidate
@@ -2292,7 +2292,7 @@ internal class CommonBigInteger : BigInteger {
         var lastSum = 0
         var i = result.size - 1
         while (i >= 0 && lastSum == 0) {
-            lastSum = (result[i]++)
+            lastSum = ++result[i]
             i--
         }
         if (lastSum == 0) {
@@ -2963,9 +2963,11 @@ internal class CommonBigInteger : BigInteger {
 
     override fun toShort(): Short = toInt().toShort()
 
-    override fun toFloat(): Float = toInt().toFloat()
+    // shortcut: values beyond 63 bits go through their decimal string (O(n^2)), port the JDK's floatValue if it matters
+    override fun toFloat(): Float = if (bitLength < Long.SIZE_BITS) toLong().toFloat() else toString().toFloat()
 
-    override fun toDouble(): Double = toLong().toDouble()
+    // shortcut: values beyond 63 bits go through their decimal string (O(n^2)), port the JDK's doubleValue if it matters
+    override fun toDouble(): Double = if (bitLength < Long.SIZE_BITS) toLong().toDouble() else toString().toDouble()
 
     /**
      * Returns the length of the two's complement representation in ints,
@@ -3784,8 +3786,9 @@ internal class CommonBigInteger : BigInteger {
             // Copy remainder of longer number while carry propagation is required
             var carry = sum.ushr(32) != 0L
             while (xIndex > 0 && carry) {
-                result[xIndex - 1] = x[xIndex] + 1
-                carry = result[--xIndex] == 0
+                xIndex--
+                result[xIndex] = x[xIndex] + 1
+                carry = result[xIndex] == 0
             }
             // Copy remainder of longer number
             while (xIndex > 0) {
