@@ -259,6 +259,23 @@ internal class JsBigInteger(
 
     override fun testBit(n: Int): Boolean = bigCompare(bigAnd(bigShr(value, bitAddress(n)), BIG_ONE), BIG_ZERO) != 0
 
+    override fun getIntBits(
+        index: Int,
+        count: Int,
+    ): Int {
+        require(count in 0..Int.SIZE_BITS) { "Bit count must be in 0..${Int.SIZE_BITS}: $count" }
+        return getLongBits(index, count).toInt()
+    }
+
+    override fun getLongBits(
+        index: Int,
+        count: Int,
+    ): Long {
+        val shifted = bigShr(value, bitAddress(index))
+        require(count in 0..Long.SIZE_BITS) { "Bit count must be in 0..${Long.SIZE_BITS}: $count" }
+        return bigAsIntN(Long.SIZE_BITS, bigAsUintN(count, shifted))
+    }
+
     override fun get(n: Int): Boolean = testBit(n)
 
     override fun set(
