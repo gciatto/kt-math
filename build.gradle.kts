@@ -16,6 +16,7 @@ buildscript {
 
 plugins {
     alias(libs.plugins.gitSemVer)
+    alias(libs.plugins.kover)
     alias(libs.plugins.ktMpp.multiplatform)
     alias(libs.plugins.ktMpp.versions)
     alias(libs.plugins.ktMpp.linter)
