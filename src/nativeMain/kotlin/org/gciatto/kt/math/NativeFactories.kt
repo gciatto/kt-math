@@ -5,10 +5,6 @@ package org.gciatto.kt.math
 
 import kotlin.random.Random
 
-internal actual fun BigInteger.toCommon(): CommonBigInteger = castTo()
-
-internal actual fun CommonBigInteger.exported(): BigInteger = this
-
 internal actual fun bigProbablePrimeInteger(
     bitLength: Int,
     rnd: Random,

@@ -22,7 +22,7 @@ internal actual fun bigDecimalOf(
     intVal: BigInteger,
     scale: Int,
     prec: Int,
-): BigDecimal = CommonBigDecimal.of(intVal.toCommon(), scale, prec)
+): BigDecimal = CommonBigDecimal.of(intVal, scale, prec)
 
 private val exceptionalDoubles = setOf(Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
 
@@ -54,14 +54,12 @@ internal actual fun bigDecimalOf(
 internal actual fun bigDecimalOf(
     value: BigInteger,
     ctx: MathContext?,
-): BigDecimal {
-    val value: CommonBigInteger = value.toCommon()
-    return if (ctx == null) {
+): BigDecimal =
+    if (ctx == null) {
         CommonBigDecimal(value)
     } else {
         CommonBigDecimal.of(value, ctx)
     }
-}
 
 internal actual fun bigDecimalOf(
     value: Int,
