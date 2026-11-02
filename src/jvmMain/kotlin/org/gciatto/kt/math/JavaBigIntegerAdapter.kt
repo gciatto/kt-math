@@ -64,9 +64,11 @@ internal class JavaBigIntegerAdapter(
 
     override fun pow(exponent: Int): BigInteger = adapt { value.pow(exponent) }
 
-    override fun sqrt(): BigInteger = adapt { value.sqrt() }
+    // java.math.BigInteger.sqrt is JDK 9+, while kt-math supports Java 8: use the Kotlin implementation
+    override fun sqrt(): BigInteger = adapt { CommonBigInteger(value.toByteArray()).sqrt().toJava() }
 
-    override fun sqrtAndRemainder(): Array<out BigInteger> = adaptAll { value.sqrtAndRemainder() }
+    override fun sqrtAndRemainder(): Array<out BigInteger> =
+        adaptAll { CommonBigInteger(value.toByteArray()).sqrtAndRemainder().map { it.toJava() }.toTypedArray() }
 
     override fun gcd(other: BigInteger): BigInteger = adapt(other) { value.gcd(it) }
 

@@ -138,9 +138,10 @@ class JavaBigDecimalAdapter(
         mc: MathContext,
     ): Pair<BigDecimal, BigDecimal> = value.divideAndRemainder(divisor.toJava(), mc.toJava()).toKotlinPair()
 
+    // java.math.BigDecimal.sqrt is JDK 9+, while kt-math supports Java 8: use the Kotlin implementation
     override fun sqrt(mc: MathContext): BigDecimal =
         adapt {
-            value.sqrt(mc.toJava())
+            CommonBigDecimal(CommonBigInteger(value.unscaledValue().toByteArray()), value.scale()).sqrt(mc).toJava()
         }
 
     override fun pow(n: Int): BigDecimal =
