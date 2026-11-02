@@ -74,6 +74,15 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   don't add `google()` to the project repositories: it answers 403 for non-Android artifacts, which stops
   Gradle from trying the next repository.
 
+## Java 8 compatibility
+
+The JVM target is Java 8 (`jvm = "1.8"` in the version catalog, `-Xjdk-release=1.8` in `ktCompilerArgsJvm`), so the
+compiler rejects JDK 9+ APIs in main *and* test code. Where `java.math` only has a JDK 9+ method (`sqrt`,
+`sqrtAndRemainder`, `BigInteger(signum, bytes, off, len)`), the JVM adapters use the Kotlin implementation, and
+tests reach the JDK method by reflection (`jdk9(...)` in `TestAgainstJavaMath`). Run the JVM tests on Java 8 with
+`./gradlew jvmTest -PtestJvmVersion=8` (Gradle itself still needs JDK 17+; the JDK 8 comes from the foojay resolver,
+as Azul Zulu, which exists for every OS/architecture); CI does it in `test-extensively`.
+
 ## Compiler warnings are errors
 
 `allWarningsAsErrors=true`: every Kotlin warning breaks the build, so Kotlin upgrades often surface new ones.
