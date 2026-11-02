@@ -467,6 +467,10 @@ class TestDecimalsAgainstJavaMath : TestAgainstJavaMath() {
             for (n in listOf(-2, 0, 1, 3, 10, -1_000_000_000)) decUnary("pow $n $mc") { it.pow(n, mc) }
         }
         for (n in listOf(-1, 0, 1, 2, 7, 1_000_000_000)) decUnary("pow $n") { it pow n }
+        for (rm in RoundingMode.entries) {
+            decBinary("div $rm") { a, b -> a.div(b, rm) }
+            for (scale in listOf(-3, 0, 2, 25)) decBinary("div $scale $rm") { a, b -> a.div(b, scale, rm) }
+        }
         decUnary("unaryMinus") { -it }
         decUnary("unaryPlus") { +it }
         decUnary("absoluteValue") { it.absoluteValue }
