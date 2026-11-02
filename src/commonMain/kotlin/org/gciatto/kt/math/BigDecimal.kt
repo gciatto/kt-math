@@ -196,6 +196,46 @@ interface BigDecimal : Comparable<BigDecimal> {
     ): BigDecimal?
 
     /**
+     * Returns a [BigDecimal] whose value is `(this /
+     * divisor)`, and whose scale is as specified.  If rounding must
+     * be performed to generate a result with the specified scale, the
+     * specified rounding mode is applied.
+     *
+     * @param divisor value by which this [BigDecimal] is to be divided.
+     * @param scale scale of the [BigDecimal] quotient to be returned.
+     * @param roundingMode rounding mode to apply.
+     * @return `this / divisor`
+     * @throws ArithmeticException if `divisor` is zero, or
+     * `roundingMode == RoundingMode.UNNECESSARY` and the specified scale
+     * is insufficient to represent the result of the division exactly.
+     */
+    @JsName("divWithScale")
+    fun div(
+        divisor: BigDecimal,
+        scale: Int,
+        roundingMode: RoundingMode,
+    ): BigDecimal
+
+    /**
+     * Returns a [BigDecimal] whose value is `(this /
+     * divisor)`, and whose scale is `this.scale`.  If rounding must
+     * be performed to generate a result with the given scale, the
+     * specified rounding mode is applied.
+     *
+     * @param divisor value by which this [BigDecimal] is to be divided.
+     * @param roundingMode rounding mode to apply.
+     * @return `this / divisor`
+     * @throws ArithmeticException if `divisor == 0`, or
+     * `roundingMode == RoundingMode.UNNECESSARY` and `this.scale`
+     * is insufficient to represent the result of the division exactly.
+     */
+    @JsName("divWithRounding")
+    fun div(
+        divisor: BigDecimal,
+        roundingMode: RoundingMode,
+    ): BigDecimal
+
+    /**
      * Returns a [BigDecimal] whose value is the integer part
      * of the quotient `(this / divisor)` rounded down.  The
      * preferred _scale of the result is `(this._scale() -
