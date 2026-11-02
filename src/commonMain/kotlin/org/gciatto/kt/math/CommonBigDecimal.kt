@@ -1293,12 +1293,6 @@ internal class CommonBigDecimal : BigDecimal {
      *
      * @see .ROUND_UNNECESSARY
      */
-    @Deprecated(
-        "The method {@link #div(CommonBigDecimal, int, RoundingMode)}\n" +
-            "      should be used in preference to this legacy method.\n" +
-            "     \n" +
-            "      ",
-    )
     private fun div(
         divisor: CommonBigDecimal,
         scale: Int,
@@ -1353,16 +1347,21 @@ internal class CommonBigDecimal : BigDecimal {
      *
      * @see .ROUND_UNNECESSARY
      */
-    @Deprecated(
-        "The method {@link #div(CommonBigDecimal, RoundingMode)}\n" +
-            "      should be used in preference to this legacy method.\n" +
-            "     \n" +
-            "      ",
-    )
     private fun div(
         divisor: CommonBigDecimal,
         roundingMode: Int,
     ): CommonBigDecimal = this.div(divisor, _scale, roundingMode)
+
+    override fun div(
+        divisor: BigDecimal,
+        scale: Int,
+        roundingMode: RoundingMode,
+    ): CommonBigDecimal = div(divisor.castTo<BigDecimal, CommonBigDecimal>(), scale, roundingMode.value)
+
+    override fun div(
+        divisor: BigDecimal,
+        roundingMode: RoundingMode,
+    ): CommonBigDecimal = div(divisor.castTo<BigDecimal, CommonBigDecimal>(), roundingMode.value)
 
     override operator fun div(divisor: BigDecimal): CommonBigDecimal {
         val divisor: CommonBigDecimal = divisor.castTo()
