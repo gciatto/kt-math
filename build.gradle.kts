@@ -41,6 +41,38 @@ repositories {
 }
 
 kotlin {
+    // Every Kotlin/Native target but the deprecated ones (macosX64, watchosX64, tvosX64, see
+    // https://kotl.in/native-targets-tiers): they share with JS the actuals using the Kotlin implementation (nonJvmMain)
+    macosArm64()
+    iosArm64()
+    iosX64()
+    iosSimulatorArm64()
+    watchosArm32()
+    watchosArm64()
+    watchosDeviceArm64()
+    watchosSimulatorArm64()
+    tvosArm64()
+    tvosSimulatorArm64()
+    linuxX64()
+    linuxArm64()
+    mingwX64()
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+    androidNativeX64()
+
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("nonJvm") {
+                withJs()
+                group("native") {
+                    withNative()
+                }
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -50,21 +82,27 @@ kotlin {
     }
 }
 
-// Differential tests on JS: the JVM computes the expected outcomes of the DifferentialOps cases with java.math
-// (GenerateDifferentialCases, in jvmTest), the JS tests run the same cases on the common implementation.
+// Differential tests on JS and native: the JVM computes the expected outcomes of the DifferentialOps cases with
+// java.math (GenerateDifferentialCases, in jvmTest), the JS and native tests replay them on the Kotlin implementation.
 val differentialCases = layout.buildDirectory.file("differential/cases.tsv")
 
-val generateDifferentialCases by tasks.registering(JavaExec::class) {
-    group = "verification"
-    description = "Computes the expected outcomes of the differential cases on the JVM, for the JS tests"
-    val testCompilation = kotlin.jvm().compilations.getByName("test")
-    classpath(testCompilation.output.allOutputs, testCompilation.runtimeDependencyFiles)
-    mainClass.set("org.gciatto.kt.math.GenerateDifferentialCasesKt")
-    outputs.file(differentialCases)
-    argumentProviders += CommandLineArgumentProvider { listOf(differentialCases.get().asFile.absolutePath) }
-}
+val generateDifferentialCases =
+    tasks.register<JavaExec>("generateDifferentialCases") {
+        group = "verification"
+        description = "Computes the expected outcomes of the differential cases on the JVM, for the JS tests"
+        val testCompilation = kotlin.jvm().compilations.getByName("test")
+        classpath(testCompilation.output.allOutputs, testCompilation.runtimeDependencyFiles)
+        mainClass.set("org.gciatto.kt.math.GenerateDifferentialCasesKt")
+        outputs.file(differentialCases)
+        argumentProviders += CommandLineArgumentProvider { listOf(differentialCases.get().asFile.absolutePath) }
+    }
 
 tasks.withType<org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest>().configureEach {
+    inputs.files(generateDifferentialCases)
+    environment("KT_MATH_DIFFERENTIAL_CASES", differentialCases.get().asFile.absolutePath)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest>().configureEach {
     inputs.files(generateDifferentialCases)
     environment("KT_MATH_DIFFERENTIAL_CASES", differentialCases.get().asFile.absolutePath)
 }
@@ -88,4 +126,10 @@ providers.gradleProperty("testJvmVersion").orNull?.let { version ->
             },
         )
     }
+}
+
+// kt-mpp's detektAll only covers the JVM and JS source sets: also analyse the native ones (commonMain, nonJvmMain and
+// nativeMain, through one native target)
+tasks.named("detektAll") {
+    dependsOn("detektLinuxX64Main", "detektLinuxX64Test")
 }
