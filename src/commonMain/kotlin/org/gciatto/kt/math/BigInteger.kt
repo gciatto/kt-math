@@ -255,14 +255,13 @@ interface BigInteger : Comparable<BigInteger> {
     operator fun unaryPlus(): BigInteger
 
     /**
-     * Returns a BigInteger whose value is `(this rem m`).  This method
-     * differs from `remainder` in that it always returns a
-     * *non-negative* BigInteger.
+     * Returns a BigInteger whose value is `(this % modulus)`: the same as [remainder], so the result has the sign of
+     * `this`, consistently with Kotlin's `%` on [Int] and [Long].
      *
-     * @param modulus the modulus.
-     * @return `this rem m`
-     * @throws ArithmeticException `m`  0
-     * @see .remainder
+     * @param modulus the divisor.
+     * @return `this % modulus`
+     * @throws ArithmeticException if `modulus` is zero
+     * @see remainder
      */
     @JsName("rem")
     operator fun rem(modulus: BigInteger): BigInteger
