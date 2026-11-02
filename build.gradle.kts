@@ -76,3 +76,16 @@ kotlin.js().nodejs {
         }
     }
 }
+
+// Run the JVM tests on another JDK (e.g. -PtestJvmVersion=8, as CI does), provisioned via the foojay resolver.
+// Azul Zulu, since it ships every Java version for every OS and architecture (e.g. Java 8 for macOS on ARM).
+providers.gradleProperty("testJvmVersion").orNull?.let { version ->
+    tasks.named<Test>("jvmTest") {
+        javaLauncher.set(
+            javaToolchains.launcherFor {
+                languageVersion.set(JavaLanguageVersion.of(version))
+                vendor.set(JvmVendorSpec.AZUL)
+            },
+        )
+    }
+}
