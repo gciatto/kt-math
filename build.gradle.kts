@@ -105,6 +105,8 @@ tasks.withType<org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest>().co
 tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest>().configureEach {
     inputs.files(generateDifferentialCases)
     environment("KT_MATH_DIFFERENTIAL_CASES", differentialCases.get().asFile.absolutePath)
+    // Apple simulators: `xcrun simctl` only passes on the variables prefixed with SIMCTL_CHILD_ (prefix stripped)
+    environment("SIMCTL_CHILD_KT_MATH_DIFFERENTIAL_CASES", differentialCases.get().asFile.absolutePath)
 }
 
 kotlin.js().nodejs {
