@@ -6,8 +6,12 @@ package org.gciatto.kt.math
 fun bigInteger(x: dynamic): BigInteger {
     return when (x) {
         is Long -> CommonBigInteger.of(x as Long)
-        is Int -> CommonBigInteger.of(x as Int)
-        is Number -> CommonBigInteger.of((x as Number).toLong())
+        // no `is Int` branch: on JS it holds for every number, and Int.toLong() fails on non-integers
+        is Number -> {
+            val d = (x as Number).toDouble()
+            require(d.isFinite()) { "Cannot convert $x into a BigInteger" }
+            CommonBigInteger.of(d.toLong()) // truncates towards zero
+        }
         is String -> CommonBigInteger.of(x.toString())
         is Array<dynamic> -> {
             val y = x as Array<dynamic>
