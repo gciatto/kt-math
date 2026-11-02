@@ -202,6 +202,15 @@ class TestIntegersAgainstJavaMath : TestAgainstJavaMath() {
         for (a in allInts) {
             val bytes = JavaBigInteger(a).toByteArray()
             same("of(bytes of $a)", { CommonBigInteger(bytes) }, { JavaBigIntegerAdapter(JavaBigInteger(bytes)) })
+            same("BigInteger.of(bytes of $a)", { CommonBigInteger(bytes) }, { BigInteger.of(bytes) })
+            val magnitude = JavaBigInteger(a).abs().toByteArray()
+            for (signum in listOf(-1, 0, 1, 2)) {
+                same(
+                    "BigInteger.of($signum, magnitude of $a)",
+                    { CommonBigInteger(signum, magnitude) },
+                    { BigInteger.of(signum, magnitude) },
+                )
+            }
             for ((off, len) in listOf(0 to bytes.size, 1 to bytes.size - 1, 0 to 0, -1 to 1, 0 to bytes.size + 1)) {
                 for (signum in listOf(-1, 0, 1, 2)) {
                     same(
@@ -236,6 +245,8 @@ class TestIntegersAgainstJavaMath : TestAgainstJavaMath() {
                 same("BigInteger.of($i: Int)", { CommonBigInteger.of(i) }, { BigInteger.of(i) })
             }
         }
+        same("BigInteger.of(empty bytes)", { CommonBigInteger(ByteArray(0)) }, { BigInteger.of(ByteArray(0)) })
+        same("BigInteger.of(1, empty bytes)", { CommonBigInteger(1, ByteArray(0)) }, { BigInteger.of(1, ByteArray(0)) })
         for (s in listOf("0x1F", "-0X1f", "0b101", "0B11", "0o17", "-0O7", "0x", "0xZ")) {
             same("BigInteger.of(\"$s\")", { CommonBigInteger.of(s) }, { BigInteger.of(s) })
         }
