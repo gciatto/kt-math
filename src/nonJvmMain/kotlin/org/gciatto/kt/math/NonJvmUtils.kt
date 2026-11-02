@@ -3,26 +3,6 @@
 
 package org.gciatto.kt.math
 
-import kotlin.random.Random
-
-internal actual fun bigProbablePrimeInteger(
-    bitLength: Int,
-    rnd: Random,
-): BigInteger = CommonBigInteger.probablePrime(bitLength, rnd)
-
-internal actual fun bigIntegerOf(value: Long): BigInteger = CommonBigInteger.of(value)
-
-internal actual fun bigIntegerOf(value: String): BigInteger = CommonBigInteger.of(value)
-
-internal actual fun bigIntegerOf(value: Int): BigInteger = CommonBigInteger.of(value)
-
-internal actual fun bigIntegerOf(
-    value: String,
-    radix: Int,
-): BigInteger = CommonBigInteger.of(value, radix)
-
-internal actual fun bigIntegerOf(value: IntArray): BigInteger = CommonBigInteger.of(value)
-
 internal actual fun bigDecimalOf(
     unscaledVal: Long,
     scale: Int,
@@ -42,7 +22,7 @@ internal actual fun bigDecimalOf(
     intVal: BigInteger,
     scale: Int,
     prec: Int,
-): BigDecimal = CommonBigDecimal.of(intVal.castTo<BigInteger, CommonBigInteger>(), scale, prec)
+): BigDecimal = CommonBigDecimal.of(intVal.toCommon(), scale, prec)
 
 private val exceptionalDoubles = setOf(Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
 
@@ -75,7 +55,7 @@ internal actual fun bigDecimalOf(
     value: BigInteger,
     ctx: MathContext?,
 ): BigDecimal {
-    val value: CommonBigInteger = value.castTo()
+    val value: CommonBigInteger = value.toCommon()
     return if (ctx == null) {
         CommonBigDecimal(value)
     } else {
@@ -110,22 +90,3 @@ internal actual object BigDecimals {
 
     actual val e: BigDecimal = CommonBigDecimal.E
 }
-
-internal actual object BigIntegers {
-    actual val zero: BigInteger = CommonBigInteger.ZERO
-
-    actual val one: BigInteger = CommonBigInteger.ONE
-
-    actual val two: BigInteger = CommonBigInteger.TWO
-
-    actual val ten: BigInteger = CommonBigInteger.TEN
-
-    actual val negativeOne: BigInteger = CommonBigInteger.NEGATIVE_ONE
-}
-
-internal actual fun bigIntegerOf(
-    signum: Int,
-    magnitude: ByteArray,
-    off: Int,
-    len: Int,
-): BigInteger = CommonBigInteger(signum, magnitude, off, len)
