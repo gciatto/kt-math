@@ -293,7 +293,7 @@ internal class CommonBigDecimal : BigDecimal {
     private val _intCompact: Long
 
     private val isPowerOfTen: Boolean
-        get() = CommonBigInteger.ONE == this.unscaledValue
+        get() = CommonBigInteger.ONE == this.inflated()
 
     // Constructors
 
@@ -1962,10 +1962,8 @@ internal class CommonBigDecimal : BigDecimal {
             return result
         }
 
-    override val unscaledValue: CommonBigInteger
-        get() {
-            return this.inflated()
-        }
+    override val unscaledValue: BigInteger
+        get() = this.inflated().exported()
 
     override fun round(mc: MathContext): CommonBigDecimal? = unaryPlus(mc)
 
@@ -2278,14 +2276,14 @@ internal class CommonBigDecimal : BigDecimal {
         return buf.toString()
     }
 
-    override fun toBigInteger(): CommonBigInteger {
+    override fun toBigInteger(): BigInteger {
         // force to an integer, quietly
-        return this.setScale(0, RoundingMode.DOWN.value).inflated()
+        return this.setScale(0, RoundingMode.DOWN.value).inflated().exported()
     }
 
-    override fun toBigIntegerExact(): CommonBigInteger {
+    override fun toBigIntegerExact(): BigInteger {
         // round to an integer, with Exception if decimal part non-0
-        return this.setScale(0, RoundingMode.UNNECESSARY.value).inflated()
+        return this.setScale(0, RoundingMode.UNNECESSARY.value).inflated().exported()
     }
 
     override fun toLong(): Long =

@@ -5,18 +5,19 @@ package org.gciatto.kt.math
 @JsExport
 fun bigInteger(x: dynamic): BigInteger {
     return when (x) {
-        is Long -> CommonBigInteger.of(x as Long)
+        // `is Long` holds for any JS bigint (Longs are BigInts): taken as is, whatever its size
+        is Long -> JsBigInteger(x)
         // no `is Int` branch: on JS it holds for every number, and Int.toLong() fails on non-integers
         is Number -> {
             val d = (x as Number).toDouble()
             require(d.isFinite()) { "Cannot convert $x into a BigInteger" }
-            CommonBigInteger.of(d.toLong()) // truncates towards zero
+            JsBigInteger(js("BigInt(Math.trunc(d))")) // truncates towards zero, exact for any integer-valued double
         }
-        is String -> CommonBigInteger.of(x.toString())
+        is String -> BigInteger.of(x as String)
         is Array<dynamic> -> {
             val y = x as Array<dynamic>
             require(y.size == 2 && y[0] is String && y[1] is Number)
-            return CommonBigInteger.of(y[0] as String, y[1] as Int)
+            return BigInteger.of(y[0] as String, y[1] as Int)
         }
         else -> throw IllegalArgumentException("Cannot convert $x into a BigInteger")
     }
