@@ -173,6 +173,10 @@ class TestIntegersAgainstJavaMath : TestAgainstJavaMath() {
             intUnary("clearBit $n") { it.clearBit(n) }
             intUnary("flipBit $n") { it.flipBit(n) }
             intUnary("get $n") { it[n] }
+            for (count in listOf(-1, 0, 1, 8, 16, 31, 32, 33, 63, 64, 65)) {
+                intUnary("getIntBits $n $count") { it.getIntBits(n, count) }
+                intUnary("getLongBits $n $count") { it.getLongBits(n, count) }
+            }
             intUnary("set $n") { it.set(n, true) to it.set(n, false) }
         }
         assertNoFailures()
