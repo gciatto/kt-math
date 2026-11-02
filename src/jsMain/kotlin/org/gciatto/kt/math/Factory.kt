@@ -14,7 +14,7 @@ fun bigInteger(x: dynamic): BigInteger {
             require(y.size == 2 && y[0] is String && y[1] is Number)
             return CommonBigInteger.of(y[0] as String, y[1] as Int)
         }
-        else -> throw IllegalArgumentException()
+        else -> throw IllegalArgumentException("Cannot convert $x into a BigInteger")
     }
 }
 
@@ -26,9 +26,9 @@ fun bigDecimal(x: dynamic): BigDecimal =
             require(x.size == 2 && x[1] is MathContext)
             when (x[1]) {
                 is MathContext -> BigDecimal.of(x[0].toString(), x[1] as MathContext)
-                else -> throw IllegalArgumentException()
+                else -> throw IllegalArgumentException("Expected a MathContext as second element, got ${x[1]}")
             }
         }
         is Any -> BigDecimal.of(x.toString())
-        else -> throw IllegalArgumentException()
+        else -> throw IllegalArgumentException("Cannot convert $x into a BigDecimal")
     }

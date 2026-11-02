@@ -39,7 +39,8 @@ jobs:
         with:
           retries-on-failure: '2'
           build-command: 'true'
-          check-command: ./gradlew ktlintCheck detekt --parallel --continue
+          # detektAll, not detekt: in a multiplatform project the plain `detekt` task has no sources (NO-SOURCE)
+          check-command: ./gradlew ktlintCheck detektAll --parallel --continue
           should-deploy: false
           should-run-codecov: false
       - name: Commit formatting fixes, if any
