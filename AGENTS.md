@@ -75,7 +75,8 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   `docker run --rm -e KT_MATH_DIFFERENTIAL_CASES=/c.tsv -v $PWD/build/differential/cases.tsv:/c.tsv -v
   $PWD/build/bin/linuxArm64/debugTest:/t ubuntu /t/test.kexe` (with colima, mount paths under the home directory).
 - Apple klibs are cross-compiled on Linux (Kotlin's default), so releases keep running on Ubuntu; CI's build job
-  publishes to the project-local repository for real to prove every klib builds.
+  runs `assemble`, which builds every klib and shared-metadata jar as publishing does (without signing). Run it
+  locally too when touching source sets: the metadata compilations aren't part of `check`.
 - kt-mpp's `detektAll` only covers JVM and JS: `build.gradle.kts` adds `detektLinuxX64Main`/`Test`, which cover
   `commonMain`, `nonJvmMain` and `nativeMain`.
 
