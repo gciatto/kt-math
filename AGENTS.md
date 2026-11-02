@@ -27,6 +27,22 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   zipMavenCentralPortalPublication releaseMavenCentralPortalPublication --dry-run`.
 - Default to `--parallel --continue` (as CI does): one invocation collects all failures.
 
+## Testing
+
+- On the JVM, `BigInteger.of`/`BigDecimal.of` delegate to `java.math` (`JavaBigIntegerAdapter`/`JavaBigDecimalAdapter`),
+  so the common implementation only runs in JS tests and in `src/jvmTest/.../TestAgainstJavaMath.kt`. That test runs
+  every operation through the shared interfaces on both `Common*` and the adapters, and compares results and
+  exception types; failures are reported as one example per operation. Extend it (inputs or operations) rather than
+  writing hand-picked expectations.
+- Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
+  JS coverage is not measured.
+- Bug patterns found in the port, worth grepping for when something diverges from the JDK: Java expressions with
+  side effects inside indices (`a[--i] = b[i]` evaluates `--i` first), post- vs pre-increment results, `System.arraycopy`
+  replaced by loops (must handle overlapping ranges: use `copyInto`), `!!` on fields the JDK allows to be null,
+  Java `assert`s ported as `require` (always on in Kotlin), and copy-paste typos (`isInfinite() || isInfinite()`).
+- `BigInteger.rem`/`%` is the remainder (sign of the dividend) on every platform; Java's `mod` is the internal
+  `CommonBigInteger.mod`.
+
 ## Keeping Gradle output out of your context
 
 - Use `--console=plain` when capturing output non-interactively, redirect to a file and grep for the outcome:
