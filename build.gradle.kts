@@ -64,11 +64,11 @@ kotlin {
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
         common {
+            // Flat on purpose: nesting the "native" group in here makes the native metadata compilation see the
+            // stdlib twice (a KLIB loader warning, hence an error with allWarningsAsErrors)
             group("nonJvm") {
                 withJs()
-                group("native") {
-                    withNative()
-                }
+                withNative()
             }
         }
     }
