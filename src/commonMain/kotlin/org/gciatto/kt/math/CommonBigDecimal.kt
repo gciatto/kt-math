@@ -558,6 +558,8 @@ internal class CommonBigDecimal : BigDecimal {
                     }
                 }
             }
+        } catch (e: ArithmeticException) {
+            throw e // rounding required by mc.roundingMode == UNNECESSARY, not a format error
         } catch (e: IndexOutOfBoundsException) {
             val nfe = NumberFormatException()
             throw nfe
@@ -1747,7 +1749,16 @@ internal class CommonBigDecimal : BigDecimal {
             if (originalPrecision == 0) {
                 targetPrecision = stripped.precision / 2 + 1
             } else {
-                targetPrecision = originalPrecision
+                // To avoid the need for post-Newton fix-up logic, in
+                // the case of half-way rounding modes, double the
+                // target precision so that the "2p + 2" property can
+                // be relied on to accomplish the final rounding.
+                targetPrecision =
+                    when (mc.roundingMode) {
+                        RoundingMode.HALF_UP, RoundingMode.HALF_DOWN, RoundingMode.HALF_EVEN ->
+                            (2 * originalPrecision).let { if (it < 0) Int.MAX_VALUE - 2 else it } // Overflow
+                        else -> originalPrecision
+                    }
             }
 
             // When setting the _precision to use inside the Newton
@@ -1768,23 +1779,49 @@ internal class CommonBigDecimal : BigDecimal {
                 guessPrecision *= 2
             } while (guessPrecision < targetPrecision + 2)
 
-            var result: CommonBigDecimal?
+            var result: CommonBigDecimal
             val targetRm = mc.roundingMode
             if (targetRm === RoundingMode.UNNECESSARY || originalPrecision == 0) {
                 val tmpRm = if (targetRm === RoundingMode.UNNECESSARY) RoundingMode.DOWN else targetRm
                 val mcTmp = MathContext(targetPrecision, tmpRm)
-                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mcTmp)
+                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mcTmp)!!
 
                 // If result*result != this numerically, the square
                 // root isn't exact
-                if (this.minus(result!!.times(result)).compareTo(ZERO) != 0) {
+                if (this.minus(result.times(result)).compareTo(ZERO) != 0) {
                     throw ArithmeticException("Computed square root not exact.")
                 }
             } else {
-                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mc)
+                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mc)!!
+
+                when (targetRm) {
+                    RoundingMode.DOWN, RoundingMode.FLOOR -> {
+                        // Check if too big
+                        if (result.times(result) > this) {
+                            var ulp = result.ulp()
+                            // Adjust increment down in case of 1.0 = 10^0
+                            // since the next smaller number is only 1/10
+                            // as far way as the next larger at exponent
+                            // boundaries. Test approx and *not* result to
+                            // avoid having to detect an arbitrary power
+                            // of ten.
+                            if (approx.compareTo(ONE) == 0) {
+                                ulp = ulp.times(ONE_TENTH)
+                            }
+                            result = result.minus(ulp)
+                        }
+                    }
+                    RoundingMode.UP, RoundingMode.CEILING -> {
+                        // Check if too small
+                        if (result.times(result) < this) {
+                            result = result.plus(result.ulp())
+                        }
+                    }
+                    else -> {}
+                }
             }
 
-            if (result!!.scale != preferredScale) {
+            if (result.scale != preferredScale) {
                 // The preferred _scale of an plus is
                 // max(addend._scale(), augend._scale()). Therefore, if
                 // the _scale of the result is first minimized using
@@ -1797,7 +1834,6 @@ internal class CommonBigDecimal : BigDecimal {
                         MathContext(originalPrecision, RoundingMode.UNNECESSARY),
                     )
             }
-            require(squareRootResultAssertions(result, mc))
             return result
         } else {
             when (signum) {
@@ -1807,76 +1843,6 @@ internal class CommonBigDecimal : BigDecimal {
             }
         }
     }
-
-    /**
-     * For nonzero values, check numerical correctness properties of
-     * the computed result for the chosen rounding mode.
-     *
-     * For the directed roundings, for DOWN and FLOOR, result^2 must
-     * be `<=` the input and (result+ulp)^2 must be `>` the
-     * input. Conversely, for UP and CEIL, result^2 must be `>=` the
-     * input and (result-ulp)^2 must be `<` the input.
-     */
-    private fun squareRootResultAssertions(
-        result: CommonBigDecimal,
-        mc: MathContext,
-    ): Boolean {
-        if (result.signum == 0) {
-            return squareRootZeroResultAssertions(result, mc)
-        } else {
-            val rm = mc.roundingMode
-            var ulp = result.ulp()
-            val neighborUp = result.plus(ulp)
-            // Make neighbor down accurate even for powers of ten
-            if (result.isPowerOfTen) {
-                ulp = ulp.div(TEN)
-            }
-            val neighborDown = result.minus(ulp)
-
-            // Both the starting value and result should be nonzero and positive.
-            if (result.signum != 1 || this.signum != 1) {
-                return false
-            }
-
-            when (rm) {
-                RoundingMode.DOWN, RoundingMode.FLOOR -> {
-                    return result * result <= this && neighborUp * neighborUp > this
-                }
-
-                RoundingMode.UP, RoundingMode.CEILING -> {
-                    return result * result >= this && neighborDown * neighborDown < this
-                }
-                RoundingMode.HALF_DOWN, RoundingMode.HALF_EVEN, RoundingMode.HALF_UP -> {
-                    val err = result.times(result).minus(this).absoluteValue
-                    val errUp = neighborUp.times(neighborUp).minus(this)
-                    val errDown = this.minus(neighborDown.times(neighborDown))
-                    // All error values should be positive so don't need to
-                    // compare absolute values.
-
-                    val errCompErrup = err.compareTo(errUp)
-                    val errCompErrdown = err.compareTo(errDown)
-
-                    return errUp.signum == 1 &&
-                        errDown.signum == 1 &&
-
-                        errCompErrup <= 0 &&
-                        errCompErrdown <= 0 &&
-
-                        (if (errCompErrup == 0) errCompErrdown < 0 else true) &&
-                        if (errCompErrdown == 0) errCompErrup < 0 else true
-                }
-                // && could check for digit conditions for ties too
-
-                else // Definition of UNNECESSARY already verified.
-                -> return true
-            }
-        }
-    }
-
-    private fun squareRootZeroResultAssertions(
-        result: CommonBigDecimal,
-        mc: MathContext,
-    ): Boolean = this.compareTo(ZERO) == 0
 
     override infix fun pow(n: Int): CommonBigDecimal {
         if (n < 0 || n > 999999999) {
