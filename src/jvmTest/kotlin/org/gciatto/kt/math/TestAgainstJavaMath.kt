@@ -633,7 +633,7 @@ class TestDecimalsAgainstJavaMath : TestAgainstJavaMath() {
                 )
                 sameDec(
                     "of(BigInteger $l, scale=$scale, prec=$prec)",
-                    { CommonBigDecimal.of(CommonBigInteger.of(l), scale, prec) },
+                    { CommonBigDecimal.of(BigInteger.of(l), scale, prec) },
                     { JavaBigDecimal(JavaBigInteger.valueOf(l), scale, mc) },
                     { BigDecimal.of(BigInteger.of(l), scale, prec) },
                 )
@@ -699,27 +699,27 @@ class TestDecimalsAgainstJavaMath : TestAgainstJavaMath() {
             for (scale in listOf(-2, 0, 3)) {
                 same(
                     "of($a, scale=$scale)",
-                    { CommonBigDecimal(CommonBigInteger.of(a), scale) },
+                    { CommonBigDecimal(BigInteger.of(a), scale) },
                     { JavaBigDecimalAdapter(JavaBigDecimal(JavaBigInteger(a), scale)) },
                 )
                 for (mc in contexts) {
                     same(
                         "of($a, scale=$scale, $mc)",
-                        { CommonBigDecimal(CommonBigInteger.of(a), scale, mc) },
+                        { CommonBigDecimal(BigInteger.of(a), scale, mc) },
                         { JavaBigDecimalAdapter(JavaBigDecimal(JavaBigInteger(a), scale, mc.toJava())) },
                     )
                 }
             }
             sameDec(
                 "of($a: BigInteger)",
-                { CommonBigDecimal.of(CommonBigInteger.of(a)) },
+                { CommonBigDecimal.of(BigInteger.of(a)) },
                 { JavaBigDecimal(JavaBigInteger(a)) },
                 { BigDecimal.of(BigInteger.of(a)) },
             )
             for (mc in contexts) {
                 sameDec(
                     "of($a: BigInteger, $mc)",
-                    { CommonBigDecimal.of(CommonBigInteger.of(a), mc) },
+                    { CommonBigDecimal.of(BigInteger.of(a), mc) },
                     { JavaBigDecimal(JavaBigInteger(a), mc.toJava()) },
                     { BigDecimal.of(BigInteger.of(a), mc) },
                 )
