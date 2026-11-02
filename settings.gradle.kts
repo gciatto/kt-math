@@ -55,3 +55,5 @@ gitHooks {
 }
 
 rootProject.name = "kt-math"
+
+include(":big-math")
