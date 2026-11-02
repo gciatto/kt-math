@@ -9,8 +9,11 @@ comes from the `io.github.gciatto.kt-mpp.*` plugins (see `build.gradle.kts`), co
   ported almost line-by-line from the JDK. Keep that structure (and JDK-style names, e.g. `` `val` ``
   parameters) when touching ported code: it is what makes diffing against the JDK sources possible.
 - `src/jvmMain`: adapters delegating to `java.math` (`JavaBigIntegerAdapter`, `JavaBigDecimalAdapter`) and the
-  `actual` factories (`JvmUtils.kt`); `src/jsMain`: the JS `actual` factories (`JsUtils.kt`) and the
-  `@JsExport`ed entry points (`Factory.kt`).
+  `actual` factories (`JvmUtils.kt`); `src/nonJvmMain` (shared by JS and every native target, a custom group of
+  the default hierarchy template in `build.gradle.kts`): the `actual` factories using the Kotlin implementation
+  (`NonJvmUtils.kt`); `src/jsMain` and `src/nativeMain`: the few platform specifics (logging, casts, `lock`), plus
+  the `@JsExport`ed JS entry points (`Factory.kt`).
+- Targets: JVM, JS, and every non-deprecated Kotlin/Native target (listed in `build.gradle.kts`).
 - `BigInteger`/`BigDecimal` are `@JsExport`ed interfaces: any change to them is a change of the public JS API too.
 
 ## Gradle tasks: known task names, don't rediscover them
@@ -40,12 +43,13 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   or compared by value (e.g. `movePointLeft(0)` on negative scales, the scale of exact `sqrt` results; JDK 26+
   computes `sqrt` via `rootn` and parses exponents into a `long` scale). Run `jvmTest` with
   `-Dorg.gradle.java.home=<newer JDK>` too when touching those operations.
-- On JS, the same kind of comparison runs from a file: `generateDifferentialCases` (a `JavaExec` of
+- On JS and native targets, the same kind of comparison runs from a file: `generateDifferentialCases` (a `JavaExec` of
   `src/jvmTest/.../GenerateDifferentialCases.kt`) runs the named operations of `src/commonTest/.../DifferentialOps.kt`
   on the JVM (i.e. on `java.math`) and writes cases and outcomes to `build/differential/cases.tsv`; `jsNodeTest`
-  depends on it, gets the path via `KT_MATH_DIFFERENTIAL_CASES`, and `TestDifferentialCases` replays every case on the
-  common implementation. To cover a new operation on JS, add it to `DifferentialOps` and its inputs to the generator.
-  Outcomes are rendered identically on both platforms: operations return `Double`/`Float`/`Char` as bits/codes.
+  and the native test tasks depend on it and get the path via `KT_MATH_DIFFERENTIAL_CASES`, and `TestDifferentialCases`
+  (`src/nonJvmTest`) replays every case on the Kotlin implementation. To cover a new operation there, add it to
+  `DifferentialOps` and its inputs to the generator. Outcomes are rendered identically on every platform: operations
+  return `Double`/`Float`/`Char` as bits/codes.
 - JS pitfalls behind the JS-only failures found so far: `Long` is a BigInt (`-Xes-long-as-bigint`), so `Long` division
   by zero throws a native `RangeError` (not an `ArithmeticException`; the JDK code sometimes relies on it), and
   `Int.toLong()` of a non-integer number throws too; `Int` division by zero silently yields 0; on a `dynamic`, `is Int`
@@ -59,6 +63,21 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   stay right, but zero/edge cases take another path), and copy-paste typos (`isInfinite() || isInfinite()`).
 - `BigInteger.rem`/`%` is the remainder (sign of the dividend) on every platform; Java's `mod` is the internal
   `CommonBigInteger.mod`.
+
+## Native targets
+
+- Native tests run only on matching hosts: `linuxX64Test` on Linux x64, `mingwX64Test` on Windows, `macosArm64Test` and
+  the `*SimulatorArm64Test` tasks on macOS, where linking needs a full Xcode (not just the command line tools). CI's
+  `test-extensively` runs them all; locally, without Xcode, exclude the Apple test and `linkDebugTest*` tasks from
+  `check` with `-x`.
+- Kotlin/Native doesn't run on Linux ARM64 hosts at all. On a Mac without Xcode, a Linux test binary can still be
+  cross-linked (`./gradlew linkDebugTestLinuxArm64`) and run in a container, passing the differential cases:
+  `docker run --rm -e KT_MATH_DIFFERENTIAL_CASES=/c.tsv -v $PWD/build/differential/cases.tsv:/c.tsv -v
+  $PWD/build/bin/linuxArm64/debugTest:/t ubuntu /t/test.kexe` (with colima, mount paths under the home directory).
+- Apple klibs are cross-compiled on Linux (Kotlin's default), so releases keep running on Ubuntu; CI's build job
+  publishes to the project-local repository for real to prove every klib builds.
+- kt-mpp's `detektAll` only covers JVM and JS: `build.gradle.kts` adds `detektLinuxX64Main`/`Test`, which cover
+  `commonMain`, `nonJvmMain` and `nativeMain`.
 
 ## Keeping Gradle output out of your context
 
