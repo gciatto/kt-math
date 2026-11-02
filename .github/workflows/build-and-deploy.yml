@@ -72,9 +72,9 @@ jobs:
             zipMavenCentralPortalPublication
             releaseMavenCentralPortalPublication
             --dry-run
-          # Publishing to the project-local repository (for real) builds the klibs of every native target, Apple ones
-          # included (cross-compiled): the release job runs on this same OS.
-          check-command: ./gradlew check publishAllPublicationsToProjectLocalRepository --parallel --continue
+          # assemble builds the klibs of every native target, Apple ones included (cross-compiled), and the metadata
+          # of every shared source set, as publishing does: the release job runs on this same OS.
+          check-command: ./gradlew check assemble --parallel --continue
           should-deploy: true
           should-run-codecov: false
           maven-central-username: ${{ secrets.MAVEN_USERNAME }}
