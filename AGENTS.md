@@ -33,8 +33,13 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   so the common implementation only runs in JS tests and in `src/jvmTest/.../TestAgainstJavaMath.kt`. That test runs
   every operation through the shared interfaces on both `Common*` and the adapters, and compares results and
   exception types; failures are reported as one example per operation. Extend it (inputs or operations) rather than
-  writing hand-picked expectations.
-- Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
+  writing hand-picked expectations. The file holds a `sealed` base class (helpers, shared inputs) and one subclass per
+  type, to stay under detekt's `LargeClass`/`LongMethod` limits.
+- Expectations come from the JDK running the tests, and CI runs 17, 21 and 25: the port follows JDK 17 (the
+  `sqrt` algorithm, exponent limits in string parsing), so cases where JDK versions disagree among themselves are skipped
+  or compared by value (e.g. `movePointLeft(0)` on negative scales, the scale of exact `sqrt` results; JDK 26+
+  computes `sqrt` via `rootn` and parses exponents into a `long` scale). Run `jvmTest` with
+  `-Dorg.gradle.java.home=<newer JDK>` too when touching those operations.- Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
   JS coverage is not measured.
 - Bug patterns found in the port, worth grepping for when something diverges from the JDK: Java expressions with
   side effects inside indices (`a[--i] = b[i]` evaluates `--i` first), post- vs pre-increment results, `System.arraycopy`
