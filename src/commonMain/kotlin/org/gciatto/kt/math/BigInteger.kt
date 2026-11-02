@@ -426,6 +426,37 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("testBit")
     fun testBit(n: Int): Boolean
 
+    /**
+     * Returns the [count] bits starting at bit [index] of the two's complement representation of this BigInteger
+     * (the same bits [testBit] reads), as the lowest [count] bits of an `Int`: bit `index + i` is bit `i` of the
+     * result. Computes `(this >> index) & (2^count - 1)`; with `count == 32`, the result may be negative.
+     *
+     * @param index index of the lowest bit to read.
+     * @param count number of bits to read, in `0..32`.
+     * @throws ArithmeticException if [index] is negative.
+     * @throws IllegalArgumentException if [count] is not in `0..32`.
+     */
+    @JsName("getIntBits")
+    fun getIntBits(
+        index: Int,
+        count: Int,
+    ): Int
+
+    /**
+     * Returns the [count] bits starting at bit [index] of the two's complement representation of this BigInteger, as
+     * the lowest [count] bits of a `Long`: see [getIntBits]. With `count == 64`, the result may be negative.
+     *
+     * @param index index of the lowest bit to read.
+     * @param count number of bits to read, in `0..64`.
+     * @throws ArithmeticException if [index] is negative.
+     * @throws IllegalArgumentException if [count] is not in `0..64`.
+     */
+    @JsName("getLongBits")
+    fun getLongBits(
+        index: Int,
+        count: Int,
+    ): Long
+
     @JsName("get")
     operator fun get(n: Int): Boolean
 
