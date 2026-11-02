@@ -1301,6 +1301,10 @@ internal class CommonBigDecimal : BigDecimal {
         if (roundingMode < RoundingMode.UP.value || roundingMode > RoundingMode.UNNECESSARY.value) {
             throw IllegalArgumentException("Invalid rounding mode")
         }
+        // The JDK relies on long division throwing here, which JS (BigInt-backed Long) does with a RangeError
+        if (divisor.signum == 0) {
+            throw ArithmeticException("/ by zero")
+        }
         return if (this._intCompact != INFLATED) {
             if (divisor._intCompact != INFLATED) {
                 divide(this._intCompact, this._scale, divisor._intCompact, divisor._scale, scale, roundingMode)
