@@ -6,6 +6,8 @@ ktMpp = "6.1.1"
 
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+# the original Java library ported by the big-math module: the oracle of its differential tests
+big-math = "ch.obermuhlner:big-math:2.3.2"
 
 [plugins]
 kover = "org.jetbrains.kotlinx.kover:0.9.11"

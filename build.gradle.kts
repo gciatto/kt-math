@@ -40,39 +40,53 @@ repositories {
     mavenCentral()
 }
 
-kotlin {
-    // Every Kotlin/Native target but the deprecated ones (macosX64, watchosX64, tvosX64, see
-    // https://kotl.in/native-targets-tiers): they share with JS the actuals using the Kotlin implementation (nonJvmMain)
-    macosArm64()
-    iosArm64()
-    iosX64()
-    iosSimulatorArm64()
-    watchosArm32()
-    watchosArm64()
-    watchosDeviceArm64()
-    watchosSimulatorArm64()
-    tvosArm64()
-    tvosSimulatorArm64()
-    linuxX64()
-    linuxArm64()
-    mingwX64()
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX86()
-    androidNativeX64()
+// Shared by every multiplatform project of the build: kt-math and its modules (e.g. big-math)
+allprojects {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
+            // Every Kotlin/Native target but the deprecated ones (macosX64, watchosX64, tvosX64, see
+            // https://kotl.in/native-targets-tiers): they share with JS the actuals using the Kotlin implementation
+            // (nonJvmMain)
+            macosArm64()
+            iosArm64()
+            iosX64()
+            iosSimulatorArm64()
+            watchosArm32()
+            watchosArm64()
+            watchosDeviceArm64()
+            watchosSimulatorArm64()
+            tvosArm64()
+            tvosSimulatorArm64()
+            linuxX64()
+            linuxArm64()
+            mingwX64()
+            androidNativeArm32()
+            androidNativeArm64()
+            androidNativeX86()
+            androidNativeX64()
 
-    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
-    applyDefaultHierarchyTemplate {
-        common {
-            // Flat on purpose: nesting the "native" group in here makes the native metadata compilation see the
-            // stdlib twice (a KLIB loader warning, hence an error with allWarningsAsErrors)
-            group("nonJvm") {
-                withJs()
-                withNative()
+            @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+            applyDefaultHierarchyTemplate {
+                common {
+                    // Flat on purpose: nesting the "native" group in here makes the native metadata compilation see
+                    // the stdlib twice (a KLIB loader warning, hence an error with allWarningsAsErrors)
+                    group("nonJvm") {
+                        withJs()
+                        withNative()
+                    }
+                }
             }
         }
     }
 
+    // kt-mpp's detektAll only covers the JVM and JS source sets: also analyse the native ones (commonMain, nonJvmMain
+    // and nativeMain, through one native target)
+    tasks.matching { it.name == "detektAll" }.configureEach {
+        dependsOn("detektLinuxX64Main", "detektLinuxX64Test")
+    }
+}
+
+kotlin {
     sourceSets {
         commonMain {
             dependencies {
@@ -128,10 +142,4 @@ providers.gradleProperty("testJvmVersion").orNull?.let { version ->
             },
         )
     }
-}
-
-// kt-mpp's detektAll only covers the JVM and JS source sets: also analyse the native ones (commonMain, nonJvmMain and
-// nativeMain, through one native target)
-tasks.named("detektAll") {
-    dependsOn("detektLinuxX64Main", "detektLinuxX64Test")
 }
