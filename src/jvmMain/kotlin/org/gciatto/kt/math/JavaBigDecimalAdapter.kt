@@ -84,6 +84,23 @@ class JavaBigDecimalAdapter(
             value.divide(it, mc.toJava())
         }
 
+    override fun div(
+        divisor: BigDecimal,
+        scale: Int,
+        roundingMode: RoundingMode,
+    ): BigDecimal =
+        adapt(divisor) {
+            value.divide(it, scale, roundingMode.toJava())
+        }
+
+    override fun div(
+        divisor: BigDecimal,
+        roundingMode: RoundingMode,
+    ): BigDecimal =
+        adapt(divisor) {
+            value.divide(it, roundingMode.toJava())
+        }
+
     override fun divideToIntegralValue(divisor: BigDecimal): BigDecimal =
         adapt(divisor) {
             value.divideToIntegralValue(it)
