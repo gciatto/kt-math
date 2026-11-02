@@ -1,5 +1,6 @@
 package org.gciatto.kt.math
 
+import java.lang.reflect.InvocationTargetException
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 import kotlin.test.Test
@@ -43,6 +44,25 @@ sealed class TestAgainstJavaMath {
         if (expected != actual) failures += what.substringBefore('(') to "$what: expected <$expected>, got <$actual>"
     }
 
+    /**
+     * Calls the JDK 9+ method [name] on [receiver] by reflection (kt-math compiles against the Java 8 API, and its
+     * JVM adapters use the Kotlin implementation for these methods), or returns `null` on Java 8.
+     */
+    protected fun jdk9(
+        receiver: Any,
+        name: String,
+        vararg args: Any,
+    ): Any? {
+        val method = receiver.javaClass.methods.firstOrNull { it.name == name && it.parameterCount == args.size }
+        return try {
+            method?.invoke(receiver, *args)
+        } catch (e: InvocationTargetException) {
+            throw e.cause ?: e
+        }
+    }
+
+    protected val isJdk9OrLater = JavaBigInteger::class.java.methods.any { it.name == "sqrt" }
+
     protected fun assertNoFailures() {
         if (failures.isEmpty()) return
         // One example per operation, so a single run shows every broken operation.
@@ -73,7 +93,7 @@ sealed class TestAgainstJavaMath {
     // squaring, Burnikel-Ziegler division, Schoenhage toString), so every code path of the port gets exercised.
     protected val bigInts =
         listOf(64, 65, 100, 640, 1_000, 2_600, 4_000, 7_000, 8_000, 10_000).map { randomInt(it) } +
-            listOf("1" + "0".repeat(100), "-" + "9".repeat(300), JavaBigInteger.TWO.pow(4_096).toString())
+            listOf("1" + "0".repeat(100), "-" + "9".repeat(300), JavaBigInteger.valueOf(2).pow(4_096).toString())
 
     protected val allInts = smallInts + bigInts
 
@@ -123,6 +143,22 @@ class TestIntegersAgainstJavaMath : TestAgainstJavaMath() {
         intUnary("signum") { it.signum }
         intUnary("sqrt") { it.sqrt() }
         intUnary("sqrtAndRemainder") { it.sqrtAndRemainder() }
+        if (isJdk9OrLater) {
+            for (a in allInts) {
+                same("sqrt (JDK)($a)", { commonInt(a).sqrt() }) {
+                    JavaBigIntegerAdapter(jdk9(JavaBigInteger(a), "sqrt") as JavaBigInteger)
+                }
+                same("sqrtAndRemainder (JDK)($a)", { commonInt(a).sqrtAndRemainder() }) {
+                    (
+                        jdk9(
+                            JavaBigInteger(a),
+                            "sqrtAndRemainder",
+                        ) as Array<*>
+                    ).map { JavaBigIntegerAdapter(it as JavaBigInteger) }
+                        .toTypedArray()
+                }
+            }
+        }
         for (n in listOf(-1, 0, 1, 2, 3, 5, 17, 40, 100, 1_000)) intUnary("pow $n", smallInts) { it pow n }
         intUnary("pow 3", bigInts) { it pow 3 }
         intUnary("hashCode") { it.hashCode() }
@@ -191,8 +227,9 @@ class TestIntegersAgainstJavaMath : TestAgainstJavaMath() {
     fun integerModularArithmetic() {
         val moduli =
             listOf("1", "2", "7", "97", "-5", "0", "4294967296", "1000000007", "65537") +
-                listOf(40, 64, 65, 100, 300).map { JavaBigInteger.TWO.pow(it).toString() } +
-                JavaBigInteger.TWO
+                listOf(40, 64, 65, 100, 300).map { JavaBigInteger.valueOf(2).pow(it).toString() } +
+                JavaBigInteger
+                    .valueOf(2)
                     .pow(70)
                     .multiply(JavaBigInteger.valueOf(3))
                     .toString() +
@@ -268,7 +305,12 @@ class TestIntegersAgainstJavaMath : TestAgainstJavaMath() {
                     same(
                         "of($signum, bytes of $a, $off, $len)",
                         { BigInteger.of(signum, bytes, off, len) },
-                        { JavaBigIntegerAdapter(JavaBigInteger(signum, bytes, off, len)) },
+                        {
+                            // java.math.BigInteger(signum, bytes, off, len) is JDK 9+: same checks, on a copy
+                            if (signum !in -1..1) throw NumberFormatException("Invalid signum value")
+                            if (off < 0 || len < 0 || off + len > bytes.size) throw IndexOutOfBoundsException()
+                            JavaBigIntegerAdapter(JavaBigInteger(signum, bytes.copyOfRange(off, off + len)))
+                        },
                     )
                 }
             }
@@ -464,6 +506,14 @@ class TestDecimalsAgainstJavaMath : TestAgainstJavaMath() {
             decUnary("unaryPlus $mc") { it.unaryPlus(mc) }
             // JDKs disagree on the scale of exact roots (JDK 26+ computes sqrt via rootn): compare values only.
             decUnary("sqrt $mc") { it.sqrt(mc).stripTrailingZeros() }
+            if (isJdk9OrLater) {
+                for (a in decimals) {
+                    same("sqrt (JDK) $mc($a)", { commonDec(a).sqrt(mc).stripTrailingZeros() }) {
+                        JavaBigDecimalAdapter(jdk9(JavaBigDecimal(a), "sqrt", mc.toJava()) as JavaBigDecimal)
+                            .stripTrailingZeros()
+                    }
+                }
+            }
             for (n in listOf(-2, 0, 1, 3, 10, -1_000_000_000)) decUnary("pow $n $mc") { it.pow(n, mc) }
         }
         for (n in listOf(-1, 0, 1, 2, 7, 1_000_000_000)) decUnary("pow $n") { it pow n }
