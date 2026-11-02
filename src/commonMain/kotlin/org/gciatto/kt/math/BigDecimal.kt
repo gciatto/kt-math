@@ -7,7 +7,11 @@ import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 @JsExport
-@Suppress("NON_EXPORTABLE_TYPE", "ktlint:standard:backing-property-naming")
+@Suppress(
+    "NON_EXPORTABLE_TYPE",
+    "EXPOSED_NOT_EXPORTED_SUPER_INTERFACE_WARNING",
+    "ktlint:standard:backing-property-naming",
+)
 interface BigDecimal : Comparable<BigDecimal> {
     /**
      * Returns a [BigDecimal] whose value is the absolute value

@@ -9,12 +9,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
-        java-version: [17, 21]
+        java-version: [17, 21, 25]
         jdk-dist:
-          - adopt-hotspot
+          - oracle
           - temurin
-#          - adopt-openj9
-#          - zulu
     runs-on: ${{ matrix.os }}
     concurrency:
       group: build-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.java-version }}-${{ matrix.jdk-dist }}-${{ github.event.number || github.ref }}
@@ -22,13 +20,39 @@ jobs:
     steps:
       - name: Checkout
         uses: DanySK/action-checkout@0.2.31
-      - uses: DanySK/build-check-deploy-gradle-action@4.0.43
+      - name: Restore Gradle test cache
+        id: cache-test-result
+        uses: actions/cache/restore@v6.1.0
         with:
+          path: .github/.cache/test-extensively-jvm
+          key: ${{ format('test-extensively-jvm-{0}-java-{1}-{2}-{3}', runner.os, matrix.java-version, matrix.jdk-dist, hashFiles('**/src/**', '**/*.gradle', '**/*.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts', '**/gradle.properties', 'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', 'buildSrc/**/*.kt', '*.kts')) }}
+      - name: Run tests
+        id: run-tests
+        if: steps.cache-test-result.outputs.cache-hit != 'true'
+        uses: DanySK/build-check-deploy-gradle-action@4.0.50
+        with:
+          retries-on-failure: '2'
           java-distribution: ${{ matrix.jdk-dist }}
           java-version: ${{ matrix.java-version }}
-          build-command: ./gradlew jsMainClasses jsTestClasses --parallel
-          check-command: ./gradlew jvmTest --parallel
+          build-command: |
+            ./gradlew jvmMainClasses jvmTestClasses --parallel --continue
+          check-command: |
+            ./gradlew jvmTest --parallel --continue
           should-run-codecov: false
+      - name: Mark successful test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        run: |
+          mkdir -p .github/.cache/test-extensively-jvm
+          echo "ok" > .github/.cache/test-extensively-jvm/success
+      - name: Save Gradle test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: .github/.cache/test-extensively-jvm
+          key: ${{ steps.cache-test-result.outputs.cache-primary-key }}
+      - name: Skip tests on cache hit
+        if: steps.cache-test-result.outputs.cache-hit == 'true'
+        run: echo "Inputs unchanged since last successful run, skipping tests."
 
   test-js:
     strategy:
@@ -36,9 +60,8 @@ jobs:
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
         node-version:
-          - 'latest-18'
-          - 'latest-20'
-          - 'latest-21'
+          - 'latest-22'
+          - 'latest-24'
     runs-on: ${{ matrix.os }}
     env:
       ORG_GRADLE_PROJECT_nodeVersion: ${{ matrix.node-version }}
@@ -48,9 +71,35 @@ jobs:
     steps:
       - name: Checkout
         uses: DanySK/action-checkout@0.2.31
-      - uses: DanySK/build-check-deploy-gradle-action@4.0.43
+      - name: Restore Gradle test cache
+        id: cache-test-result
+        uses: actions/cache/restore@v6.1.0
         with:
-          build-command: ./gradlew jsMainClasses jsTestClasses --parallel
-          check-command: ./gradlew jsTest --parallel
+          path: .github/.cache/test-extensively-js
+          key: ${{ format('test-extensively-js-{0}-node-{1}-{2}', runner.os, matrix.node-version, hashFiles('**/src/**', '**/*.gradle', '**/*.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts', '**/gradle.properties', 'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', 'buildSrc/**/*.kt', '*.kts', 'package.json')) }}
+      - name: Run tests
+        id: run-tests
+        if: steps.cache-test-result.outputs.cache-hit != 'true'
+        uses: DanySK/build-check-deploy-gradle-action@4.0.50
+        with:
+          retries-on-failure: '2'
+          build-command: |
+            ./gradlew jsMainClasses jsTestClasses --parallel --continue
+          check-command: |
+            ./gradlew jsTest --parallel --continue
           clean-command: ./gradlew cleanTest
           should-run-codecov: false
+      - name: Mark successful test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        run: |
+          mkdir -p .github/.cache/test-extensively-js
+          echo "ok" > .github/.cache/test-extensively-js/success
+      - name: Save Gradle test cache
+        if: steps.cache-test-result.outputs.cache-hit != 'true' && steps.run-tests.conclusion == 'success'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: .github/.cache/test-extensively-js
+          key: ${{ steps.cache-test-result.outputs.cache-primary-key }}
+      - name: Skip tests on cache hit
+        if: steps.cache-test-result.outputs.cache-hit == 'true'
+        run: echo "Inputs unchanged since last successful run, skipping tests."

@@ -834,7 +834,7 @@ internal open class MutableBigInteger {
         // Add remainder of the longer number
         while (x > 0) {
             x--
-            if (carry == 0L && result == value && rstart == x + offset) {
+            if (carry == 0L && result === value && rstart == x + offset) {
                 return
             }
             sum = (value[x + offset].toLong() and LONG_MASK) + carry
@@ -903,7 +903,7 @@ internal open class MutableBigInteger {
         // Add remainder of the longer number
         while (x > 0) {
             x--
-            if (carry == 0L && result == value && rstart == x + offset) {
+            if (carry == 0L && result === value && rstart == x + offset) {
                 return
             }
             sum = (value[x + offset].toLong() and LONG_MASK) + carry
@@ -1684,13 +1684,13 @@ internal open class MutableBigInteger {
                 qrem = nh + nm
                 skipCorrection = qrem + -0x80000000 < nh2
             } else {
-                val nChunk = nh.toLong() shl 32 or (nm.toLong().toLong() and LONG_MASK)
+                val nChunk = nh.toLong() shl 32 or (nm.toLong() and LONG_MASK)
                 if (nChunk >= 0) {
                     qhat = (nChunk / dhLong).toInt()
                     qrem = (nChunk - qhat * dhLong).toInt()
                 } else {
                     val tmp = divWord(nChunk, dh)
-                    qhat = (tmp.toLong() and LONG_MASK).toInt()
+                    qhat = (tmp and LONG_MASK).toInt()
                     qrem = tmp.ushr(32).toInt()
                 }
             }
@@ -1849,7 +1849,7 @@ internal open class MutableBigInteger {
 
         val dh = ldivisor.ushr(32).toInt()
         val dhLong = dh.toLong() and LONG_MASK
-        val dl = (ldivisor.toLong() and LONG_MASK).toInt()
+        val dl = (ldivisor and LONG_MASK).toInt()
 
         // D2 Initialize j
         for (j in 0 until limit) {
@@ -1873,7 +1873,7 @@ internal open class MutableBigInteger {
                     qrem = (nChunk - qhat * dhLong).toInt()
                 } else {
                     val tmp = divWord(nChunk, dh)
-                    qhat = (tmp.toLong() and LONG_MASK).toInt()
+                    qhat = (tmp and LONG_MASK).toInt()
                     qrem = tmp.ushr(32).toInt()
                 }
             }
@@ -1968,7 +1968,7 @@ internal open class MutableBigInteger {
         q[offset--] = difference.toInt()
         var carry =
             product.ushr(32) +
-                if (difference.toLong() and LONG_MASK > product.inv().toLong() and LONG_MASK) {
+                if (difference and LONG_MASK > product.inv() and LONG_MASK) {
                     1
                 } else {
                     0
@@ -1977,7 +1977,7 @@ internal open class MutableBigInteger {
         difference = q[offset] - product
         q[offset--] = difference.toInt()
         carry = product.ushr(32) +
-            if (difference.toLong() and LONG_MASK > product.inv().toLong() and LONG_MASK) {
+            if (difference and LONG_MASK > product.inv() and LONG_MASK) {
                 1
             } else {
                 0
@@ -2030,7 +2030,7 @@ internal open class MutableBigInteger {
                     return MutableBigInteger(
                         intArrayOf(
                             xk.ushr(32).toInt(),
-                            (xk.toLong() and LONG_MASK).toInt(),
+                            (xk and LONG_MASK).toInt(),
                         ),
                     )
                 }
