@@ -14,6 +14,10 @@ comes from the `io.github.gciatto.kt-mpp.*` plugins (see `build.gradle.kts`), co
   (`NonJvmUtils.kt`); `src/jsMain` and `src/nativeMain`: the few platform specifics (logging, casts, `lock`), plus
   the `@JsExport`ed JS entry points (`Factory.kt`).
 - Targets: JVM, JS, and every non-deprecated Kotlin/Native target (listed in `build.gradle.kts`).
+- `BigInteger` implementations: `java.math` on the JVM (`JavaBigIntegerAdapter`), native JS BigInts on JS
+  (`JsBigInteger`, `src/jsMain`), `CommonBigInteger` on native targets. `BigDecimal`: `java.math` on the JVM, the
+  Kotlin `CommonBigDecimal` elsewhere, which works with `CommonBigInteger` internally: on JS, the `BigInteger`s it
+  takes and returns are converted at its boundary (`toCommon()`/`exported()` in `Utils.kt`).
 - `BigInteger`/`BigDecimal` are `@JsExport`ed interfaces: any change to them is a change of the public JS API too.
 
 ## Gradle tasks: known task names, don't rediscover them
@@ -53,7 +57,9 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
 - JS pitfalls behind the JS-only failures found so far: `Long` is a BigInt (`-Xes-long-as-bigint`), so `Long` division
   by zero throws a native `RangeError` (not an `ArithmeticException`; the JDK code sometimes relies on it), and
   `Int.toLong()` of a non-integer number throws too; `Int` division by zero silently yields 0; on a `dynamic`, `is Int`
-  is true for every JS number. Catch `Throwable`, not `Exception`, to see native errors.
+  is true for every JS number. Catch `Throwable`, not `Exception`, to see native errors. Kotlin has no BigInt type:
+  `JsBigInteger` stores a `dynamic`, whose arithmetic operators compile to JS ones, and uses `js()` for the rest; `js()`
+  supports neither BigInt literals (`0n`: use `BigInt(0)`) nor `**`.
 - Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
   JS coverage is not measured.
 - Bug patterns found in the port, worth grepping for when something diverges from the JDK: Java expressions with
