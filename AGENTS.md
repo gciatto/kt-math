@@ -65,6 +65,11 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   then `ktlintCheck detektAll`, and commits formatting fixes: mirror that order locally.
 - **Compile without running tests**: `jvmMainClasses`/`jvmTestClasses`, `jsMainClasses`/`jsTestClasses`.
 - **Test**: `jvmTest`, `jsTest`; `check` runs style + tests + everything else wired into it.
+- **Benchmarks**: `benchmark` (runs `jvmBenchmarkRun`, `jsBenchmarkRun` and the host's native
+  `runBenchmarkReleaseExecutable<Target>`), each printing a Markdown table: `src/commonBenchmark/.../Benchmarks.kt`,
+  compiled by a `benchmark` compilation of every target, on top of `main`. Manual only (README numbers,
+  reproducibility), not part of `check`. Without Xcode, cross-link `linkBenchmarkReleaseExecutableLinuxArm64` and run
+  it in a container as the native tests below.
 - **Docs**: `dokkaGenerateHtml` (per module); the website is `:documentation:assembleSite` (MkDocs Material pages
   from `documentation/docs/` plus the aggregated Dokka API under `/api/`; needs `pip install mkdocs-material`), built
   by `.github/workflows/docs.yml` on every run and published on GitHub Pages from `master`. Its code examples are
