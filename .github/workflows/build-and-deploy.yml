@@ -57,7 +57,9 @@ jobs:
         with:
           commit_message: "chore(style): automatically apply ktlintFormat repo-wise"
   build:
-    runs-on: ubuntu-26.04
+    # macOS: the C kernels of the native targets go through cinterop, which needs Xcode (the Apple SDKs) for the
+    # Apple targets, so their klibs can't be cross-compiled on Linux. The other native targets build on macOS too.
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: DanySK/action-checkout@0.2.31
@@ -72,8 +74,8 @@ jobs:
             zipMavenCentralPortalPublication
             releaseMavenCentralPortalPublication
             --dry-run
-          # assemble builds the klibs of every native target, Apple ones included (cross-compiled), and the metadata
-          # of every shared source set, as publishing does: the release job runs on this same OS.
+          # assemble builds the klibs of every native target and the metadata of every shared source set, as
+          # publishing does: the release job runs on this same OS.
           check-command: ./gradlew check assemble --parallel --continue
           should-deploy: true
           should-run-codecov: false
@@ -96,7 +98,7 @@ jobs:
       - lint
       - build
       - test-extensively
-    runs-on: ubuntu-26.04
+    runs-on: macos-latest # as the build job: publishing needs the klibs of the Apple targets
     steps:
       - name: Checkout
         uses: DanySK/action-checkout@0.2.31
