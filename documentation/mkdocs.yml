@@ -55,6 +55,7 @@ nav:
       - tutorials/getting-started-kotlin.md
       - tutorials/getting-started-java.md
       - tutorials/getting-started-js.md
+      - tutorials/getting-started-c.md
   - How-to guides:
       - how-to/index.md
       - how-to/add-kt-math-as-a-dependency.md

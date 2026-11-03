@@ -220,8 +220,23 @@ Config: `.detekt.yml` (deltas over the defaults).
   interfaces); the `actual` factory files suppress it file-wide, since their size is dictated by `Utils.kt`'s
   `expect` declarations.
 
+## CI summary
+
+- As in tuProlog/2p-kt: every job ends with `.github/actions/ci-summary`, which digests its outcome
+  (`.github/scripts/ci-summary.py collect`: test XMLs, Kover, ktlint/detekt reports, docs log, release checks) and
+  re-renders the "CI summary" check run created by `dispatcher.yml`; the final `summary` job writes it to the run
+  page. Matrix jobs are recognised by name (`test-jvm (os, version, dist)`, `test-jvm-8 (os)`, `test-native (os,
+  tasks)`, `test-js (os, node)`): renaming a job or its matrix in `test-extensively.yml` means updating `MATRIX_JOB`.
+  Try changes locally by running `collect` on a build directory and `report` on the digests.
+
 ## Publishing
 
+- Releases (`release.config.js`) attach `releaseAssets` to the GitHub release: the JVM jars, the npm tarball
+  (`packJsPackage`) and, per desktop native target (`linuxX64`, `linuxArm64`, `macosArm64`, `mingwX64`), a zip of the
+  release C shared library and header (`zipKtmathReleaseShared<Target>`; on mingw the prefix is `ktmath_`, not
+  `libktmath_`). The npm package is also published on GitHub Packages as `@gciatto/kt-math` (a renamed copy of
+  `build/packages/js`: that registry only takes packages scoped by the owner). In `release.config.js`, never write
+  `${...}` for shell variables: `@semantic-release/exec` takes them for template variables.
 - `org.danilopianini:publish-on-central` is force-pinned to 9.2.4 in `build.gradle.kts` (and frozen in
   `renovate.json`): newer versions crash the Maven Central release (DanySK/publish-on-central#1804). Same pin as
   tuProlog/2p-kt; lift both together.

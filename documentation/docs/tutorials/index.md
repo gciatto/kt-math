@@ -6,3 +6,4 @@ them: the examples are quoted from Kt-Math's own usage tests, so they are compil
 - [Getting started in Kotlin](getting-started-kotlin.md): any Kotlin target (JVM, JS, Native), with operators.
 - [Getting started in Java](getting-started-java.md): Kt-Math from Java 8+.
 - [Getting started in JavaScript](getting-started-js.md): the `kt-math` npm package, from plain JavaScript.
+- [Getting started in C](getting-started-c.md): the prebuilt shared library of the GitHub releases.

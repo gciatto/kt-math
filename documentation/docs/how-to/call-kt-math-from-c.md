@@ -3,6 +3,10 @@
 Kotlin/Native can compile a Kotlin library into a C shared library, with a header declaring its whole API: this is
 how Kt-Math can be used from C (or any language with a C foreign-function interface).
 
+For Linux, macOS and Windows, the [GitHub releases](https://github.com/gciatto/kt-math/releases) ship the library
+prebuilt, exporting Kt-Math's whole API: see [Getting started in C](../tutorials/getting-started-c.md). Build it
+yourself for other Kotlin/Native targets, or to export your own Kotlin code along with Kt-Math.
+
 ## Build the shared library
 
 In a Kotlin Multiplatform project depending on Kt-Math, declare a shared library for your native target, exporting

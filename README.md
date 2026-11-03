@@ -48,11 +48,12 @@ API to common Kotlin code, so the same code computes with big numbers everywhere
 | Gradle (Kotlin Multiplatform or JVM) | `implementation("io.github.gciatto:kt-math:VERSION")` |
 | Maven | `io.github.gciatto:kt-math-jvm:VERSION` |
 | npm | `npm install kt-math` |
+| C | the shared library and header of each [GitHub release](https://github.com/gciatto/kt-math/releases) (Linux, macOS, Windows) |
 
 Then follow a tutorial for [Kotlin](https://gciatto.github.io/kt-math/tutorials/getting-started-kotlin/),
-[Java](https://gciatto.github.io/kt-math/tutorials/getting-started-java/) or
-[JavaScript](https://gciatto.github.io/kt-math/tutorials/getting-started-js/), or see how to
-[call Kt-Math from C](https://gciatto.github.io/kt-math/how-to/call-kt-math-from-c/). The
+[Java](https://gciatto.github.io/kt-math/tutorials/getting-started-java/),
+[JavaScript](https://gciatto.github.io/kt-math/tutorials/getting-started-js/) or
+[C](https://gciatto.github.io/kt-math/tutorials/getting-started-c/). The
 [API reference](https://gciatto.github.io/kt-math/api/) documents every class and function.
 
 ## Platforms

@@ -32,4 +32,4 @@ Every Kotlin/Native target is supported, except the ones Kotlin deprecated (`mac
 | Kotlin | any target, `org.gciatto.kt.math` package |
 | Java | the JVM artifact; factories are static methods, Kotlin extensions are in the `Conversions` class |
 | JavaScript | the `kt-math` npm package; overloads have distinct names (see the `@JsName` annotations in the API reference) |
-| C | a Kotlin/Native shared library and header, see [Call Kt-Math from C](../how-to/call-kt-math-from-c.md) |
+| C | a Kotlin/Native shared library and header, prebuilt for Linux, macOS and Windows in the GitHub releases: see [Getting started in C](../tutorials/getting-started-c.md) and [Call Kt-Math from C](../how-to/call-kt-math-from-c.md) |

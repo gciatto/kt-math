@@ -22,7 +22,8 @@ platform: the same operation gives the same result (and throws the same exceptio
 ## Where to go next
 
 - New to Kt-Math? Start from a tutorial: [Kotlin](tutorials/getting-started-kotlin.md),
-  [Java](tutorials/getting-started-java.md) or [JavaScript](tutorials/getting-started-js.md).
+  [Java](tutorials/getting-started-java.md), [JavaScript](tutorials/getting-started-js.md) or
+  [C](tutorials/getting-started-c.md).
 - Looking for a specific task? See the [how-to guides](how-to/index.md), e.g.
   [adding Kt-Math to a project](how-to/add-kt-math-as-a-dependency.md).
 - Looking for a class or function? See the [API reference](https://gciatto.github.io/kt-math/api/).
