@@ -62,4 +62,4 @@ approximation is computed only on request:
 
 - [Parse and convert numbers](../how-to/parse-and-convert-numbers.md)
 - [Control precision and rounding](../how-to/control-precision-and-rounding.md)
-- [Compute logarithms, roots, trigonometric functions](../how-to/use-big-math.md) with the big-math module
+- [Compute logarithms, roots, trigonometric functions](../how-to/use-big-math.md) with `BigDecimalMath`

@@ -1,29 +1,23 @@
 # kt-math — agent notes
 
-Kotlin Multiplatform (JVM, JS, native) library: a port of Java's `BigInteger`/`BigDecimal` (the root project), plus
-the `big-math` module (a port of big-math's `BigDecimalMath`, see below). Build logic comes from the
+Kotlin Multiplatform (JVM, JS, native) library, in a single Gradle project (plus `documentation/`, the website): a
+port of Java's `BigInteger`/`BigDecimal`, plus a port of big-math's `BigDecimalMath` (see below). Build logic comes from the
 `io.github.gciatto.kt-mpp.*` plugins (see `build.gradle.kts`), configured via `gradle.properties`.
 
-## The big-math module
+## The big-math port
 
-- `big-math/` (artifact and npm package `kt-math-big-math`, package `org.gciatto.kt.math.big`): `BigDecimalMath` and
-  the series calculators of big-math 2.3.2 (MIT, Eric Obermühlner; the license header stays in every ported file), on
-  kt-math's multiplatform API. Ported line by line, with the original names: keep it diffable. big-math's
-  `BigRational` lives in the core module (`org.gciatto.kt.math.BigRational`, ported the same way), so that
-  `BigFactory` and the conversions can build it; `TestAgainstBigMath` still compares it with big-math's.
-- Mapping notes: `BigDecimal.valueOf(Double)` (core) is `java.math.BigDecimal.valueOf(double)` (Java's
-  `Double.toString` scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded`; big-math's
-  `synchronized` caches use `CacheLock` (`synchronized` on the JVM, a non-reentrant spin lock elsewhere: never fill a
-  cache while holding its own lock, never take the locks in a cycle).
-- Tests: `TestAgainstBigMath` (jvmTest) compares every function with big-math itself (`libs.big.math`), results and
-  exception types; both libraries keep caches, filled in the same order since each case runs on big-math first. Avoid
-  inputs that make both compute huge powers (e.g. `root(x, 1E-10)`): they run for minutes. `TestKnownValues`
-  (commonTest) runs on every platform.
-- Build: the root `build.gradle.kts` configures the native targets, the `nonJvm` source-set group and the `detektAll`
-  extension for every multiplatform project (`allprojects`); `big-math/build.gradle.kts` applies the kt-mpp plugins
-  without versions (already on the classpath), copies group/version from the root (kt-mpp's `versions` plugin can't
-  be applied to subprojects), and prefixes its Maven artifact ids with `kt-math-`. Root task names (`check`,
-  `detektAll`, `publishAllPublicationsToProjectLocalRepository`, ...) run in both projects.
+- `org.gciatto.kt.math.big` (`src/*/kotlin/org/gciatto/kt/math/big/`, in the same artifact as the rest): `BigDecimalMath`
+  and the series calculators of big-math 2.3.2 (MIT, Eric Obermühlner; the license header stays in every ported file),
+  on kt-math's multiplatform API, one class per file as in big-math. Ported line by line, with the original names:
+  keep it diffable. big-math's `BigRational` is `org.gciatto.kt.math.BigRational`, ported the same way.
+- Mapping notes: `BigDecimal.valueOf(Double)` is `java.math.BigDecimal.valueOf(double)` (Java's `Double.toString`
+  scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded` (`big/Utils.kt`);
+  big-math's `synchronized` caches use `CacheLock` (`synchronized` on the JVM, a non-reentrant spin lock elsewhere:
+  never fill a cache while holding its own lock, never take the locks in a cycle).
+- Tests: `TestAgainstBigMath` (jvmTest) compares every function and `BigRational` with big-math itself
+  (`libs.big.math`), results and exception types; both libraries keep caches, filled in the same order since each
+  case runs on big-math first. Avoid inputs that make both compute huge powers (e.g. `root(x, 1E-10)`): they run for
+  minutes. `TestKnownValues` (commonTest) runs on every platform.
 
 ## Code layout
 

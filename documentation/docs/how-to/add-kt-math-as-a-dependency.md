@@ -3,10 +3,12 @@
 Kt-Math is published on Maven Central (group `io.github.gciatto`) and on npm. Replace `VERSION` with the
 [latest release](https://central.sonatype.com/artifact/io.github.gciatto/kt-math).
 
-| Module | Maven Central | npm |
-|---|---|---|
-| Numbers: `BigInteger`, `BigDecimal`, `BigRational`, `BigFactory` | `io.github.gciatto:kt-math` | `kt-math` |
-| [big-math](use-big-math.md): `BigDecimalMath` | `io.github.gciatto:kt-math-big-math` | `kt-math-big-math` |
+| Maven Central | npm |
+|---|---|
+| `io.github.gciatto:kt-math` | `kt-math` |
+
+A single artifact holds everything: `BigInteger`, `BigDecimal`, `BigRational`, `BigFactory`, and
+[`BigDecimalMath`](use-big-math.md).
 
 ## Kotlin Multiplatform (Gradle)
 
@@ -18,7 +20,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation("io.github.gciatto:kt-math:VERSION")
-                implementation("io.github.gciatto:kt-math-big-math:VERSION") // optional
             }
         }
     }
@@ -51,5 +52,4 @@ The JVM artifact requires Java 8 or later.
 
 ```bash
 npm install kt-math
-npm install kt-math-big-math # optional
 ```

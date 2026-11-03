@@ -35,7 +35,7 @@ API to common Kotlin code, so the same code computes with big numbers everywhere
 - **The same results on every platform.** The Kotlin port is tested *differentially*: thousands of operations run on
   `java.math` on the JVM, and every platform must reproduce their results, and their exceptions, exactly.
 - **More than `java.math`.** Exact `BigRational`s; `BigFactory`, with parsing functions returning `null` on invalid
-  input; conversions among all number types; and, in the `kt-math-big-math` module, logarithms, powers, roots,
+  input; conversions among all number types; and, in `org.gciatto.kt.math.big`, logarithms, powers, roots,
   trigonometric and hyperbolic functions, gamma, π and *e* at any precision (a port of
   [big-math](https://github.com/eobermuhlner/big-math)).
 - **Four languages.** An idiomatic Kotlin API, Java-friendly static factories (Java 8+), an npm package with JS names
@@ -48,7 +48,6 @@ API to common Kotlin code, so the same code computes with big numbers everywhere
 | Gradle (Kotlin Multiplatform or JVM) | `implementation("io.github.gciatto:kt-math:VERSION")` |
 | Maven | `io.github.gciatto:kt-math-jvm:VERSION` |
 | npm | `npm install kt-math` |
-| big-math functions | `io.github.gciatto:kt-math-big-math:VERSION`, `npm install kt-math-big-math` |
 
 Then follow a tutorial for [Kotlin](https://gciatto.github.io/kt-math/tutorials/getting-started-kotlin/),
 [Java](https://gciatto.github.io/kt-math/tutorials/getting-started-java/) or
