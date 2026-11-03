@@ -129,9 +129,33 @@ class TestBigDecimalMathAgainstBigMath : TestAgainstBigMath() {
         assertNoFailures()
     }
 
+    // isIntValue and isLongValue limits
+    private val limits =
+        listOf(
+            "2147483647",
+            "2147483648",
+            "-2147483648",
+            "-2147483649",
+            "2147483647.000",
+            "2147483647.5",
+            "9223372036854775807",
+            "9223372036854775808",
+            "-9223372036854775808",
+            "-9223372036854775809",
+            "-9223372036854775808.0",
+            "1E+9",
+            "1E+18",
+            "1E+19",
+            "0E+5",
+            "0E-5",
+            "1.5E+3",
+            "1E-5",
+            "1E+1000000",
+        )
+
     @Test
     fun helpers() {
-        for (x in values) {
+        for (x in values + limits) {
             same("isIntValue($x)", { JavaBigDecimalMath.isIntValue(jdec(x)) }) { dec(x).isIntValue() }
             same("isLongValue($x)", { JavaBigDecimalMath.isLongValue(jdec(x)) }) { dec(x).isLongValue() }
             same(

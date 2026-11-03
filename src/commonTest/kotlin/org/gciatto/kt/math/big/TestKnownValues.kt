@@ -90,7 +90,26 @@ class TestKnownValues {
         assertEquals("(-7.00 + 24.00 i)", z.pow(2, mc).toString())
         assertEquals("(0 + 3.14159265358979323846264338328 i)", BigComplex.valueOf(-1.0).log(mc).toString())
         assertEquals("(0E-33 + 1.17520119364380145688238185060 i)", i.sin(mc).toString())
+        // the cube roots of 8: 2 (the principal one), -1 + 1.732... i, -1 - 1.732... i
+        assertEquals(BigComplex.valueOf(2.0), BigComplex.valueOf(8.0).root(3, 0, mc))
+        assertEquals(
+            "(-1.00000000000000000000000000000 + 1.73205080756887729352744634151 i)",
+            BigComplex.valueOf(8.0).root(3, 1, mc).toString(),
+        )
         // --8<-- [end:complexes]
+    }
+
+    @Test
+    fun complexSquareRootsOfNonPositiveReals() {
+        // they throw ArithmeticException in big-math, and so do asin and acos of many reals
+        val mc = MathContext(20)
+        assertEquals(BigComplex.valueOf(0.0, 2.0), BigComplex.valueOf(-4.0).sqrt(mc))
+        assertEquals(BigComplex.ZERO, BigComplex.ZERO.sqrt(mc))
+        assertEquals(
+            "(1.0471975511965977462 + 1.4787638050566930559E-25 i)",
+            BigComplex.valueOf(0.5).acos(mc).toString(),
+        )
+        assertEquals("(1.5707963267948966192 - 1.3169578969248167086 i)", BigComplex.valueOf(2.0).asin(mc).toString())
     }
 
     @Test

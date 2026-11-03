@@ -59,16 +59,29 @@ class TestBigComplexAgainstBigMath : TestAgainstBigMath() {
 
     private val slow = setOf("factorial", "gamma")
 
+    private val sqrtBased = setOf("sqrt", "asin", "acos")
+
     @Test
     fun functions() {
         for ((name, functions) in unary) {
-            val (java, kotlin) = functions
             val mcs = if (name in slow) contexts.take(2) else contexts
             for (x in complexes) {
-                mcs.forEach { mc -> same("$name(${show(x)}, $mc)", { java(jc(x), mc.toJava()) }) { kotlin(c(x), mc) } }
+                mcs.forEach { mc -> function(name, functions, x, mc) }
             }
         }
         assertNoFailures()
+    }
+
+    private fun function(
+        name: String,
+        functions: Pair<(JavaBigComplex, JavaMathContext) -> Any?, (BigComplex, MathContext) -> Any?>,
+        x: Pair<String, String>,
+        mc: MathContext,
+    ) {
+        val (java, kotlin) = functions
+        // big-math's sqrt divides 0 by 0 for 0 and negative reals, fixed here (see TestKnownValues)
+        if (name in sqrtBased && outcome { java(jc(x), mc.toJava()) }.startsWith("throws")) return
+        same("$name(${show(x)}, $mc)", { java(jc(x), mc.toJava()) }) { kotlin(c(x), mc) }
     }
 
     @Test
@@ -194,5 +207,26 @@ class TestBigComplexAgainstBigMath : TestAgainstBigMath() {
         val b = BigComplex.valueOf(BigDecimal.of("1.00"), BigDecimal.of("2.000"))
         kotlin.test.assertEquals(a, b)
         kotlin.test.assertEquals(a.hashCode(), b.hashCode())
+    }
+
+    @Test
+    fun kthRoots() {
+        val mc = MathContext(20)
+        val tolerance = BigDecimal.of("1E-15")
+        for (x in complexes.map { c(it) }) {
+            for (n in 1..5) {
+                for (k in -1..n) {
+                    val root = x.root(n, k, mc)
+                    val error = root.pow(n.toLong(), mc).minus(x, mc).abs(mc)
+                    kotlin.test.assertTrue(
+                        error <= tolerance * (x.abs(mc) + BigDecimal.ONE),
+                        "root($x, $n, $k)^$n = $x",
+                    )
+                }
+                if (x == BigComplex.ZERO) continue // big-math's root throws: the angle of 0 is undefined
+                val principal = x.root(BigDecimal.of(n), mc)
+                kotlin.test.assertTrue(x.root(n, 0, mc).minus(principal, mc).abs(mc) <= tolerance, "root($x, $n, 0)")
+            }
+        }
     }
 }
