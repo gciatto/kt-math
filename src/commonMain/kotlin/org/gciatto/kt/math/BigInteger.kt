@@ -6,284 +6,274 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 
+/**
+ * An immutable arbitrary-precision integer, with the operations of Java's `java.math.BigInteger`.
+ *
+ * Instances are created through the factory methods of the companion object ([of], [probablePrime]) or the
+ * constants ([ZERO], [ONE], [TWO], [TEN], [NEGATIVE_ONE]). On the JVM they are backed by `java.math.BigInteger`,
+ * on JS by native BigInts, elsewhere by a Kotlin port of the JDK implementation.
+ *
+ * Arithmetic and comparisons are available as Kotlin operators (`+`, `-`, `*`, `/`, `%`, unary `-` and `+`, `!`,
+ * `<`, `..`, `[]`), most binary operations also accept [Int] and [Long] operands, and bitwise operations
+ * use two's complement semantics, as if the value were sign-extended indefinitely.
+ */
 @JsExport
 @Suppress("NON_EXPORTABLE_TYPE", "EXPOSED_NOT_EXPORTED_SUPER_INTERFACE_WARNING")
 interface BigInteger : Comparable<BigInteger> {
     /**
-     * Returns a BigInteger whose value is the absolute value of this
-     * BigInteger.
-     *
-     * @return `absoluteValue(this)`
+     * The absolute value of this [BigInteger].
      */
     @JsName("absoluteValue")
     val absoluteValue: BigInteger
 
     /**
-     * Returns the _signum function of this BigInteger.
-     *
-     * @return -1, 0 or 1 as the value of this BigInteger is negative, zero or
-     * positive.
+     * The signum function of this [BigInteger]: -1, 0 or 1 as this value is negative, zero or positive.
      */
     @JsName("signum")
     val signum: Int
 
     /**
-     * Returns the number of bits in the minimal two's-complement
-     * representation of this BigInteger, *excluding* a sign bit.
-     * For positive BigIntegers, this is equivalent to the number of bits in
-     * the ordinary binary representation.  (Computes
-     * `(ceil(log2(this < 0 ? -this : this+1)))`.)
-     *
-     * @return number of bits in the minimal two's-complement
-     * representation of this BigInteger, *excluding* a sign bit.
+     * The number of bits in the minimal two's complement representation of this [BigInteger], *excluding* a sign
+     * bit. For positive values, this is the number of bits in the ordinary binary representation; in general it is
+     * `ceil(log2(if (this < 0) -this else this + 1))`. It is 0 for [ZERO] and [NEGATIVE_ONE].
      */
     @JsName("bitLength")
     val bitLength: Int
 
     /**
-     * Returns the number of bits in the two's complement representation
-     * of this BigInteger that differ from its sign bit.  This method is
-     * useful when implementing bit-vector style sets atop BigIntegers.
-     *
-     * @return number of bits in the two's complement representation
-     * of this BigInteger that differ from its sign bit.
+     * The number of bits in the two's complement representation of this [BigInteger] that differ from its sign bit
+     * (i.e. the number of ones for non-negative values, the number of zeros for negative ones). Useful when
+     * implementing bit-vector style sets atop [BigInteger]s.
      */
     @JsName("bitCount")
     val bitCount: Int
 
+    /**
+     * The range of [BigInteger]s from this value to [endInclusive], both included: the `..` operator.
+     * It is empty if [endInclusive] is less than this value.
+     */
     @JsName("rangeTo")
     operator fun rangeTo(endInclusive: BigInteger): BigIntegerRange = BigIntegerRange(this, endInclusive)
 
+    /** As [rangeTo], with an [Int] upper bound. */
     @JsName("rangeToInt")
     operator fun rangeTo(endInclusive: Int): BigIntegerRange = BigIntegerRange(this, of(endInclusive))
 
+    /** As [rangeTo], with a [Long] upper bound. */
     @JsName("rangeToLong")
     operator fun rangeTo(endInclusive: Long): BigIntegerRange = BigIntegerRange(this, of(endInclusive))
 
     /**
-     * Returns the first integer greater than this `BigInteger` that
-     * is probably prime.  The probability that the number returned by this
-     * method is composite does not exceed 2<sup>-100</sup>. This method will
-     * never skip over a prime when searching: if it returns `p`, there
-     * is no prime `q` such that `this < q < p`.
+     * Returns the first integer greater than this [BigInteger] that is probably prime. The probability that the
+     * returned number is composite does not exceed `2^-100`. This method never skips over a prime when searching:
+     * if it returns `p`, there is no prime `q` such that `this < q < p`.
      *
-     * @return the first integer greater than this `BigInteger` that
-     * is probably prime.
-     * @throws ArithmeticException `this < 0` or `this` is too large.
-     * @since 1.5
+     * @return the first integer greater than this value that is probably prime.
+     * @throws ArithmeticException if this value is negative or too large.
      */
     @JsName("nextProbablePrime")
     fun nextProbablePrime(): BigInteger
 
     /**
-     * Returns a BigInteger whose value is `(this + val)`.
+     * Returns `this + other`: the `+` operator.
      *
-     * @param other value to be added to this BigInteger.
-     * @return `this + val`
+     * @param other the value to be added to this [BigInteger].
+     * @return `this + other`
      */
     @JsName("plus")
     operator fun plus(other: BigInteger): BigInteger
 
+    /** As [plus], with an [Int] operand. */
     @JsName("plusInt")
     operator fun plus(other: Int): BigInteger = plus(of(other))
 
+    /** As [plus], with a [Long] operand. */
     @JsName("plusLong")
     operator fun plus(other: Long): BigInteger = plus(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(this - val)`.
+     * Returns `this - other`: the binary `-` operator.
      *
-     * @param other value to be subtracted from this BigInteger.
-     * @return `this - val`
+     * @param other the value to be subtracted from this [BigInteger].
+     * @return `this - other`
      */
     @JsName("minus")
     operator fun minus(other: BigInteger): BigInteger
 
+    /** As [minus], with an [Int] operand. */
     @JsName("minusInt")
     operator fun minus(other: Int): BigInteger = minus(of(other))
 
+    /** As [minus], with a [Long] operand. */
     @JsName("minusLong")
     operator fun minus(other: Long): BigInteger = minus(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(this * val)`.
+     * Returns `this * other`: the `*` operator.
+     * Implementations may be faster when `other` is this very value (squaring).
      *
-     * @implNote An implementation may offer better algorithmic
-     * performance when `val == this`.
-     *
-     * @param other value to be multiplied by this BigInteger.
-     * @return `this * val`
+     * @param other the value to be multiplied by this [BigInteger].
+     * @return `this * other`
      */
     @JsName("times")
     operator fun times(other: BigInteger): BigInteger
 
+    /** As [times], with an [Int] operand. */
     @JsName("timesInt")
     operator fun times(other: Int): BigInteger = times(of(other))
 
+    /** As [times], with a [Long] operand. */
     @JsName("timesLong")
     operator fun times(other: Long): BigInteger = times(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(this / val)`.
+     * Returns `this / other`, truncated toward zero (as for [Int] and [Long]): the `/` operator.
      *
-     * @param other value by which this BigInteger is to be divided.
-     * @return `this / val`
-     * @throws ArithmeticException if other is zero.
+     * @param other the value by which this [BigInteger] is to be divided.
+     * @return `this / other`
+     * @throws ArithmeticException if [other] is zero.
      */
     @JsName("div")
     operator fun div(other: BigInteger): BigInteger
 
+    /** As [div], with an [Int] operand. */
     @JsName("divInt")
     operator fun div(other: Int): BigInteger = div(of(other))
 
+    /** As [div], with a [Long] operand. */
     @JsName("divLong")
     operator fun div(other: Long): BigInteger = div(of(other))
 
     /**
-     * Returns an array of two BigIntegers containing `(this / val)`
-     * followed by `(this % val)`.
+     * Returns an array of two [BigInteger]s: the quotient `this / other` (as [div]) followed by the remainder
+     * `this % other` (as [rem]).
      *
-     * @param other value by which this BigInteger is to be divided, and the
-     * remainder computed.
-     * @return an array of two BigIntegers: the quotient `(this / val)`
-     * is the initial element, and the remainder `(this % val)`
-     * is the final element.
-     * @throws ArithmeticException if other is zero.
+     * @param other the value by which this [BigInteger] is to be divided, and the remainder computed.
+     * @return an array holding the quotient at index 0 and the remainder at index 1.
+     * @throws ArithmeticException if [other] is zero.
      */
     @JsName("divideAndRemainder")
     fun divideAndRemainder(other: BigInteger): Array<out BigInteger>
 
+    /** As [divideAndRemainder], with an [Int] operand. */
     @JsName("divideAndRemainderInt")
     fun divideAndRemainder(other: Int): Array<out BigInteger> = divideAndRemainder(of(other))
 
+    /** As [divideAndRemainder], with a [Long] operand. */
     @JsName("divideAndRemainderLong")
     fun divideAndRemainder(other: Long): Array<out BigInteger> = divideAndRemainder(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(this % val)`.
+     * Returns `this % other`, whose sign is the one of this value (as [rem]).
+     * Exported to JS as `reminder`.
      *
-     * @param other value by which this BigInteger is to be divided, and the
-     * remainder computed.
-     * @return `this % val`
-     * @throws ArithmeticException if other is zero.
+     * @param other the value by which this [BigInteger] is to be divided, and the remainder computed.
+     * @return `this % other`
+     * @throws ArithmeticException if [other] is zero.
      */
     @JsName("reminder")
     fun remainder(other: BigInteger): BigInteger
 
+    /** As [remainder], with an [Int] operand. */
     @JsName("reminderInt")
     fun remainder(other: Int): BigInteger = remainder(of(other))
 
+    /** As [remainder], with a [Long] operand. */
     @JsName("reminderLong")
     fun remainder(other: Long): BigInteger = remainder(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(this<sup>exponent</sup>)`.
-     * Note that `exponent` is an integer rather than a BigInteger.
+     * Returns this [BigInteger] raised to the power of [exponent], i.e. `this^exponent`.
+     * Note that [exponent] is an [Int] rather than a [BigInteger].
      *
-     * @param exponent exponent to which this BigInteger is to be raised.
-     * @return `this<sup>exponent</sup>`
-     * @throws ArithmeticException `exponent` is negative.  (This would
-     * cause the operation to yield a non-integer value.)
+     * @param exponent the exponent to which this [BigInteger] is to be raised.
+     * @return `this^exponent`
+     * @throws ArithmeticException if [exponent] is negative (the result would not be an integer).
      */
     @JsName("pow")
     infix fun pow(exponent: Int): BigInteger
 
     /**
-     * Returns the integer square root of this BigInteger.  The integer square
-     * root of the corresponding mathematical integer `n` is the largest
-     * mathematical integer `s` such that `s*s <= n`.  It is equal
-     * to the value of `floor(sqrt(n))`, where `sqrt(n)` denotes the
-     * real square root of `n` treated as a real.  Note that the integer
-     * square root will be less than the real square root if the latter is not
-     * representable as an integral value.
+     * Returns the integer square root of this [BigInteger]: the largest integer `s` such that `s * s <= this`,
+     * i.e. `floor(sqrt(this))`. It is less than the real square root whenever the latter is not an integer.
      *
-     * @return the integer square root of `this`
-     * @throws ArithmeticException if `this` is negative.  (The square
-     * root of a negative integer other is
-     * `(i * sqrt(-val))` where *i* is the
-     * *imaginary unit* and is equal to
-     * `sqrt(-1)`.)
-     * @since 9
+     * @return the integer square root of this value.
+     * @throws ArithmeticException if this value is negative.
      */
     @JsName("sqrt")
     fun sqrt(): BigInteger
 
     /**
-     * Returns an array of two BigIntegers containing the integer square root
-     * `s` of `this` and its remainder `this - s*s`,
-     * respectively.
+     * Returns an array of two [BigInteger]s: the integer square root `s` of this value (as [sqrt]) and the
+     * remainder `this - s * s`.
      *
-     * @return an array of two BigIntegers with the integer square root at
-     * offset 0 and the remainder at offset 1
-     * @throws ArithmeticException if `this` is negative.  (The square
-     * root of a negative integer other is
-     * `(i * sqrt(-val))` where *i* is the
-     * *imaginary unit* and is equal to
-     * `sqrt(-1)`.)
-     * @see .sqrt
-     * @since 9
+     * @return an array holding the integer square root at index 0 and the remainder at index 1.
+     * @throws ArithmeticException if this value is negative.
+     * @see sqrt
      */
     @JsName("sqrtAndRemainder")
     fun sqrtAndRemainder(): Array<out BigInteger>
 
     /**
-     * Returns a BigInteger whose value is the greatest common divisor of
-     * `absoluteValue(this)` and `absoluteValue(val)`.  Returns 0 if
-     * `this == 0 && val == 0`.
+     * Returns the greatest common divisor of the absolute values of this [BigInteger] and [other].
+     * It is 0 if both values are 0.
      *
-     * @param other value with which the GCD is to be computed.
-     * @return `GCD(absoluteValue(this), absoluteValue(val))`
+     * @param other the value with which the GCD is to be computed.
+     * @return `gcd(|this|, |other|)`
      */
     @JsName("gcd")
     fun gcd(other: BigInteger): BigInteger
 
+    /** As [gcd], with an [Int] operand. */
     @JsName("gcdInt")
     fun gcd(other: Int): BigInteger = gcd(of(other))
 
+    /** As [gcd], with a [Long] operand. */
     @JsName("gcdLong")
     fun gcd(other: Long): BigInteger = gcd(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(-this)`.
-     *
-     * @return `-this`
+     * Returns `-this`: the unary `-` operator.
      */
     @JsName("unaryMinus")
     operator fun unaryMinus(): BigInteger
 
+    /**
+     * Returns this value unchanged: the unary `+` operator.
+     */
     @JsName("unaryPlus")
     operator fun unaryPlus(): BigInteger
 
     /**
-     * Returns a BigInteger whose value is `(this % modulus)`: the same as [remainder], so the result has the sign of
+     * Returns `this % modulus`, the `%` operator: the same as [remainder], so the result has the sign of
      * `this`, consistently with Kotlin's `%` on [Int] and [Long].
      *
      * @param modulus the divisor.
      * @return `this % modulus`
-     * @throws ArithmeticException if `modulus` is zero
+     * @throws ArithmeticException if [modulus] is zero.
      * @see remainder
      */
     @JsName("rem")
     operator fun rem(modulus: BigInteger): BigInteger
 
+    /** As [rem], with an [Int] operand. */
     @JsName("remInt")
     operator fun rem(modulus: Int): BigInteger = rem(of(modulus))
 
+    /** As [rem], with a [Long] operand. */
     @JsName("remLong")
     operator fun rem(modulus: Long): BigInteger = rem(of(modulus))
 
     /**
-     * Returns a BigInteger whose value is
-     * `(this<sup>exponent</sup> rem m)`.  (Unlike `pow`, this
-     * method permits negative exponents.)
+     * Returns `this^exponent mod modulus`, always non-negative. Unlike [pow], this method permits negative
+     * exponents, in which case the result is a power of the [modInverse].
      *
      * @param exponent the exponent.
      * @param modulus the modulus.
-     * @return `this<sup>exponent</sup> rem m`
-     * @throws ArithmeticException `m`  0 or the exponent is
-     * negative and this BigInteger is not *relatively
-     * prime* to `m`.
-     * @see .modInverse
+     * @return `this^exponent mod modulus`, between 0 (included) and [modulus] (excluded).
+     * @throws ArithmeticException if [modulus] is not positive, or [exponent] is negative and this [BigInteger]
+     * is not relatively prime to [modulus].
+     * @see modInverse
      */
     @JsName("modPow")
     fun modPow(
@@ -292,143 +282,160 @@ interface BigInteger : Comparable<BigInteger> {
     ): BigInteger
 
     /**
-     * Returns a BigInteger whose value is `(this`<sup>-1</sup> `rem m)`.
+     * Returns `this^-1 mod modulus`: the multiplicative inverse of this value modulo [modulus], between 0
+     * (included) and [modulus] (excluded).
      *
      * @param modulus the modulus.
-     * @return `this`<sup>-1</sup> `rem m`.
-     * @throws ArithmeticException `m`  0, or this BigInteger
-     * has no multiplicative inverse rem m (that is, this BigInteger
-     * is not *relatively prime* to m).
+     * @return `this^-1 mod modulus`
+     * @throws ArithmeticException if [modulus] is not positive, or this [BigInteger] has no multiplicative inverse
+     * modulo [modulus] (that is, it is not relatively prime to [modulus]).
      */
     @JsName("modInverse")
     fun modInverse(modulus: BigInteger): BigInteger
 
+    /** As [modInverse], with an [Int] modulus. */
     @JsName("modInverseInt")
     fun modInverse(modulus: Int): BigInteger = modInverse(of(modulus))
 
+    /** As [modInverse], with a [Long] modulus. */
     @JsName("modInverseLong")
     fun modInverse(modulus: Long): BigInteger = modInverse(of(modulus))
 
     /**
-     * Returns a BigInteger whose value is `(this << n)`.
-     * The shift distance, `n`, may be negative, in which case
-     * this method performs a right shift.
-     * (Computes `floor(this * 2<sup>n</sup>)`.)
+     * Returns `this << n`, i.e. `floor(this * 2^n)`. The shift distance [n] may be negative, in which case this
+     * method performs a right shift (as [shr]).
      *
-     * @param n shift distance, in bits.
+     * @param n the shift distance, in bits.
      * @return `this << n`
-     * @see .shr
+     * @see shr
      */
     @JsName("shl")
     infix fun shl(n: Int): BigInteger
 
     /**
-     * Returns a BigInteger whose value is `(this >> n)`.  Sign
-     * extension is performed.  The shift distance, `n`, may be
-     * negative, in which case this method performs a left shift.
-     * (Computes `floor(this / 2<sup>n</sup>)`.)
+     * Returns `this >> n`, with sign extension, i.e. `floor(this / 2^n)`. The shift distance [n] may be negative,
+     * in which case this method performs a left shift (as [shl]).
      *
-     * @param n shift distance, in bits.
+     * @param n the shift distance, in bits.
      * @return `this >> n`
-     * @see .shl
+     * @see shl
      */
     @JsName("shr")
     infix fun shr(n: Int): BigInteger
 
     /**
-     * Returns a BigInteger whose value is `(this & val)`.  (This
-     * method returns a negative BigInteger if and only if this and val are
-     * both negative.)
+     * Returns the bitwise AND of this [BigInteger] and [other]. The result is negative if and only if both
+     * operands are negative.
      *
-     * @param other value to be AND'ed with this BigInteger.
-     * @return `this & val`
+     * @param other the value to be AND'ed with this [BigInteger].
+     * @return `this and other`
      */
     @JsName("and")
     fun and(other: BigInteger): BigInteger
 
+    /** As [and], with an [Int] operand. */
     @JsName("andInt")
     fun and(other: Int): BigInteger = and(of(other))
 
+    /** As [and], with a [Long] operand. */
     @JsName("andLong")
     fun and(other: Long): BigInteger = and(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(this | val)`.  (This method
-     * returns a negative BigInteger if and only if either this or val is
-     * negative.)
+     * Returns the bitwise OR of this [BigInteger] and [other]. The result is negative if and only if either
+     * operand is negative.
      *
-     * @param other value to be OR'ed with this BigInteger.
-     * @return `this | val`
+     * @param other the value to be OR'ed with this [BigInteger].
+     * @return `this or other`
      */
     @JsName("or")
     fun or(other: BigInteger): BigInteger
 
+    /** As [or], with an [Int] operand. */
     @JsName("orInt")
     fun or(other: Int): BigInteger = or(of(other))
 
+    /** As [or], with a [Long] operand. */
     @JsName("orLong")
     fun or(other: Long): BigInteger = or(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(this ^ val)`.  (This method
-     * returns a negative BigInteger if and only if exactly one of this and
-     * val are negative.)
+     * Returns the bitwise XOR of this [BigInteger] and [other]. The result is negative if and only if exactly one
+     * of the operands is negative.
      *
-     * @param other value to be XOR'ed with this BigInteger.
-     * @return `this ^ val`
+     * @param other the value to be XOR'ed with this [BigInteger].
+     * @return `this xor other`
      */
     @JsName("xor")
     fun xor(other: BigInteger): BigInteger
 
+    /** As [xor], with an [Int] operand. */
     @JsName("xorInt")
     fun xor(other: Int): BigInteger = xor(of(other))
 
+    /** As [xor], with a [Long] operand. */
     @JsName("xorLong")
     fun xor(other: Long): BigInteger = xor(of(other))
 
     /**
-     * Returns a BigInteger whose value is `(~this)`.  (This method
-     * returns a negative value if and only if this BigInteger is
-     * non-negative.)
+     * Returns the bitwise complement of this [BigInteger], i.e. `-this - 1`: the `!` operator (`inv()` on [Int] and
+     * [Long]). The result is negative if and only if this value is non-negative.
      *
-     * @return `~this`
+     * @return the bitwise complement of this value.
      */
     @JsName("not")
     operator fun not(): BigInteger
 
     /**
-     * Returns a BigInteger whose value is `(this & ~val)`.  This
-     * method, which is equivalent to `and(val.not())`, is provided as
-     * a convenience for masking operations.  (This method returns a negative
-     * BigInteger if and only if `this` is negative and other is
-     * positive.)
+     * Returns `this and other.not()`, a convenience for masking operations. The result is negative if and only if
+     * this value is negative and [other] is non-negative.
      *
-     * @param other value to be complemented and AND'ed with this BigInteger.
-     * @return `this & ~val`
+     * @param other the value to be complemented and AND'ed with this [BigInteger].
+     * @return `this and !other`
      */
     @JsName("andNot")
     fun andNot(other: BigInteger): BigInteger
 
+    /** As [andNot], with an [Int] operand. */
     @JsName("andNotInt")
     fun andNot(other: Int): BigInteger = andNot(of(other))
 
+    /** As [andNot], with a [Long] operand. */
     @JsName("andNotLong")
     fun andNot(other: Long): BigInteger = andNot(of(other))
 
     /**
-     * Returns `true` if and only if the designated bit is set.
-     * (Computes `((this & (1<<n)) != 0)`.)
+     * Returns `true` if and only if the bit at index [n] (0 being the least significant one) is set in the two's
+     * complement representation of this value, i.e. `this and (1 shl n) != 0`.
      *
-     * @param n index of bit to test.
+     * @param n the index of the bit to test.
      * @return `true` if and only if the designated bit is set.
-     * @throws ArithmeticException `n` is negative.
+     * @throws ArithmeticException if [n] is negative.
+     * @see get
      */
     @JsName("testBit")
     fun testBit(n: Int): Boolean
 
+    /**
+     * The same as [testBit]: the indexing operator, `x[n]`.
+     *
+     * @param n the index of the bit to test.
+     * @return `true` if and only if the designated bit is set.
+     * @throws ArithmeticException if [n] is negative.
+     */
     @JsName("get")
     operator fun get(n: Int): Boolean
 
+    /**
+     * Returns a copy of this value whose bit at index [n] is set if [b] is `true` ([setBit]), or cleared otherwise
+     * ([clearBit]). This value is left unchanged, since [BigInteger]s are immutable: as an operator, `x[n] = b`
+     * compiles to `x.set(n, b)` and discards the result, so call this method explicitly.
+     *
+     * @param n the index of the bit to set or clear.
+     * @param b whether the bit is to be set.
+     * @return this value with the designated bit set to [b].
+     * @throws ArithmeticException if [n] is negative.
+     */
     @JsName("set")
     operator fun set(
         n: Int,
@@ -436,68 +443,54 @@ interface BigInteger : Comparable<BigInteger> {
     ): BigInteger
 
     /**
-     * Returns a BigInteger whose value is equivalent to this BigInteger
-     * with the designated bit set.  (Computes `(this | (1<<n))`.)
+     * Returns this value with the bit at index [n] set, i.e. `this or (1 shl n)`.
      *
-     * @param n index of bit to set.
-     * @return `this | (1<<n)`
-     * @throws ArithmeticException `n` is negative.
+     * @param n the index of the bit to set.
+     * @return `this or (1 shl n)`
+     * @throws ArithmeticException if [n] is negative.
      */
     @JsName("setBit")
     fun setBit(n: Int): BigInteger
 
     /**
-     * Returns a BigInteger whose value is equivalent to this BigInteger
-     * with the designated bit cleared.
-     * (Computes `(this & ~(1<<n))`.)
+     * Returns this value with the bit at index [n] cleared, i.e. `this andNot (1 shl n)`.
      *
-     * @param n index of bit to clear.
-     * @return `this & ~(1<<n)`
-     * @throws ArithmeticException `n` is negative.
+     * @param n the index of the bit to clear.
+     * @return `this andNot (1 shl n)`
+     * @throws ArithmeticException if [n] is negative.
      */
     @JsName("clearBit")
     fun clearBit(n: Int): BigInteger
 
     /**
-     * Returns a BigInteger whose value is equivalent to this BigInteger
-     * with the designated bit flipped.
-     * (Computes `(this ^ (1<<n))`.)
+     * Returns this value with the bit at index [n] flipped, i.e. `this xor (1 shl n)`.
      *
-     * @param n index of bit to flip.
-     * @return `this ^ (1<<n)`
-     * @throws ArithmeticException `n` is negative.
+     * @param n the index of the bit to flip.
+     * @return `this xor (1 shl n)`
+     * @throws ArithmeticException if [n] is negative.
      */
     @JsName("flipBit")
     fun flipBit(n: Int): BigInteger
 
     /**
-     * Returns `true` if this BigInteger is probably prime,
-     * `false` if it's definitely composite.  If
-     * `certainty` is  0, `true` is
-     * returned.
+     * Returns `true` if this [BigInteger] is probably prime, `false` if it is definitely composite.
+     * If [certainty] is not positive, `true` is returned.
      *
-     * @param certainty a measure of the uncertainty that the caller is
-     * willing to tolerate: if the call returns `true`
-     * the probability that this BigInteger is prime exceeds
-     * (1 - 1/2<sup>`certainty`</sup>).  The execution time of
-     * this method is proportional to the value of this parameter.
-     * @return `true` if this BigInteger is probably prime,
-     * `false` if it's definitely composite.
+     * @param certainty a measure of the uncertainty that the caller is willing to tolerate: if the call returns
+     * `true`, the probability that this value is prime exceeds `1 - 1/2^certainty`. The execution time of this
+     * method is proportional to the value of this parameter.
+     * @return `true` if this value is probably prime, `false` if it is definitely composite.
      */
     @JsName("isProbablePrime")
     fun isProbablePrime(certainty: Int): Boolean
 
     /**
-     * Compares this BigInteger with the specified BigInteger.  This
-     * method is provided in preference to individual methods for each
-     * of the six boolean comparison operators (&lt;, ==,
-     * &gt;, &gt;=, !=, &lt;=).  The suggested
-     * idiom for performing these comparisons is: `(x.compareTo(y)` &lt;*op*&gt; `0)`, where
-     * &lt;*op*&gt; is one of the six comparison operators.
+     * Compares this [BigInteger] with [other] numerically: the comparison operators (`<`, `<=`, `>`, `>=`) call it.
+     * From JS, use [compare] instead.
      *
-     * @param other BigInteger to which this BigInteger is to be compared.
-     * @return -1, 0 or 1 as this BigInteger is numerically less than, equal
-     * to, or greater than other.
+     * @param other the value to which this [BigInteger] is to be compared.
+     * @return a negative number, zero or a positive number as this value is less than, equal to, or greater than
+     * [other].
      */
     override operator fun compareTo(other: BigInteger): Int
 
@@ -509,81 +502,62 @@ interface BigInteger : Comparable<BigInteger> {
     fun compare(other: BigInteger): Int = compareTo(other)
 
     /**
-     * Compares this BigInteger with the specified Object for equality.
+     * Returns `true` if and only if [other] is a [BigInteger] numerically equal to this one.
      *
-     * @param other Object to which this BigInteger is to be compared.
-     * @return `true` if and only if the specified Object is a
-     * BigInteger whose value is numerically equal to this BigInteger.
+     * @param other the object to which this [BigInteger] is to be compared.
+     * @return `true` if and only if [other] is a [BigInteger] whose value is equal to this one.
      */
     override fun equals(other: Any?): Boolean
 
     /**
-     * Returns the minimum of this BigInteger and other.
+     * Returns the lesser of this [BigInteger] and [other]. If they are equal, either may be returned.
      *
-     * @param other value with which the minimum is to be computed.
-     * @return the BigInteger whose value is the lesser of this BigInteger and
-     * other.  If they are equal, either may be returned.
+     * @param other the value with which the minimum is to be computed.
+     * @return the lesser of this value and [other].
      */
     @JsName("min")
     fun min(other: BigInteger): BigInteger
 
     /**
-     * Returns the maximum of this BigInteger and other.
+     * Returns the greater of this [BigInteger] and [other]. If they are equal, either may be returned.
      *
-     * @param other value with which the maximum is to be computed.
-     * @return the BigInteger whose value is the greater of this and
-     * other.  If they are equal, either may be returned.
+     * @param other the value with which the maximum is to be computed.
+     * @return the greater of this value and [other].
      */
     @JsName("max")
     fun max(other: BigInteger): BigInteger
 
     /**
-     * Returns the hash code for this BigInteger.
-     *
-     * @return hash code for this BigInteger.
+     * Returns the hash code of this [BigInteger], consistent with [equals]: the same as `java.math.BigInteger`'s
+     * for the same value.
      */
     override fun hashCode(): Int
 
     /**
-     * Returns the String representation of this BigInteger in the
-     * given radix.  If the radix is outside the range from [CHAR_MIN_RADIX] to [CHAR_MAX_RADIX] inclusive,
-     * it will default to 10 (as is the case for
-     * `Int.toString`).  The digit-to-character mapping
-     * provided by `Character.forDigit` is used, and a subtract
-     * sign is prepended if appropriate.  (This representation is
-     * compatible with the String constructor.)
+     * Returns the representation of this [BigInteger] in [radix]: digits from `0` to `9` and from `a` to `z`
+     * (lower case), preceded by `-` if this value is negative, with no radix prefix. If [radix] is outside the
+     * range from 2 to 36 (both included), it defaults to 10. The result can be parsed back with
+     * `of(string, radix)`. Exported to JS as `toStringWithRadix`.
      *
-     * @param radix  radix of the String representation.
-     * @return String representation of this BigInteger in the given radix.
+     * @param radix the radix of the representation.
+     * @return the representation of this value in [radix].
      * @see Int.toString
      */
     @JsName("toStringWithRadix")
     fun toString(radix: Int): String
 
     /**
-     * Returns the decimal String representation of this BigInteger.
-     * The digit-to-character mapping provided by
-     * `Character.forDigit` is used, and a subtract sign is
-     * prepended if appropriate.  (This representation is compatible
-     * with the string constructor, and
-     * allows for String concatenation with Java's + operator.)
-     *
-     * @return decimal String representation of this BigInteger.
+     * Returns the decimal representation of this [BigInteger], preceded by `-` if it is negative: the same as
+     * `toString(10)`. The result can be parsed back with [of].
      */
     override fun toString(): String
 
     /**
-     * Returns a byte array containing the two's-complement
-     * representation of this BigInteger.  The byte array will be in
-     * *big-endian* byte-order: the most significant byte is in
-     * the zeroth element.  The array will contain the minimum number
-     * of bytes required to represent this BigInteger, including at
-     * least one sign bit, which is `(ceil((this.bitLength() +
-     * 1)/8))`.  (This representation is compatible with the
-     * byte array constructor.)
+     * Returns the two's complement representation of this [BigInteger], in big-endian byte order (the most
+     * significant byte at index 0). The array has the minimum number of bytes needed to represent this value,
+     * including at least one sign bit: `bitLength / 8 + 1` (see [bitLength]).
      *
-     * @return a byte array containing the two's-complement representation of
-     * this BigInteger.
+     * @return the two's complement representation of this value.
      */
     @JsName("toByteArray")
     fun toByteArray(): ByteArray
@@ -603,177 +577,138 @@ interface BigInteger : Comparable<BigInteger> {
     fun toBigRational(): BigRational = BigRational.valueOf(this)
 
     /**
-     * Converts this BigInteger to an `int`.  This
-     * conversion is analogous to a
-     * *narrowing primitive conversion* from `long` to
-     * `int` as defined in
-     * <cite>The Java Language Specification</cite>:
-     * if this BigInteger is too big to fit in an
-     * `int`, only the low-order 32 bits are returned.
-     * Note that this conversion can lose information about the
-     * overall magnitude of the BigInteger value as well as return a
-     * result with the opposite sign.
+     * Converts this [BigInteger] to an [Int], keeping only its low-order 32 bits, as [Long.toInt] does. This may
+     * lose information about the magnitude of the value, and even return a result with the opposite sign.
      *
-     * @return this BigInteger converted to an `int`.
-     * @see BigInteger.toIntExact
-     * @jls 5.1.3 Narrowing Primitive Conversion
+     * @return the low-order 32 bits of this value, as an [Int].
+     * @see toIntExact
      */
     @JsName("toInt")
     fun toInt(): Int
 
     /**
-     * Converts this BigInteger to a `long`.  This
-     * conversion is analogous to a
-     * *narrowing primitive conversion* from `long` to
-     * `int` as defined in
-     * <cite>The Java Language Specification</cite>:
-     * if this BigInteger is too big to fit in a
-     * `long`, only the low-order 64 bits are returned.
-     * Note that this conversion can lose information about the
-     * overall magnitude of the BigInteger value as well as return a
-     * result with the opposite sign.
+     * Converts this [BigInteger] to a [Long], keeping only its low-order 64 bits. This may lose information about
+     * the magnitude of the value, and even return a result with the opposite sign.
      *
-     * @return this BigInteger converted to a `long`.
-     * @see .toLongExact
-     * @jls 5.1.3 Narrowing Primitive Conversion
+     * @return the low-order 64 bits of this value, as a [Long].
+     * @see toLongExact
      */
     @JsName("toLong")
     fun toLong(): Long
 
+    /**
+     * Converts this [BigInteger] to a [Byte], keeping only its low-order 8 bits (possibly changing magnitude and
+     * sign).
+     *
+     * @see toByteExact
+     */
     @JsName("toByte")
     fun toByte(): Byte
 
+    /**
+     * Converts this [BigInteger] to a [Char] whose code is given by its low-order 16 bits: `toInt().toChar()`.
+     */
     @JsName("toChar")
     fun toChar(): Char
 
+    /**
+     * Converts this [BigInteger] to a [Short], keeping only its low-order 16 bits (possibly changing magnitude and
+     * sign).
+     *
+     * @see toShortExact
+     */
     @JsName("toShort")
     fun toShort(): Short
 
+    /**
+     * Converts this [BigInteger] to the nearest [Float]. Values too large in magnitude become
+     * [Float.POSITIVE_INFINITY] or [Float.NEGATIVE_INFINITY]; precision may be lost even when the result is finite.
+     */
     @JsName("toFloat")
     fun toFloat(): Float
 
+    /**
+     * Converts this [BigInteger] to the nearest [Double]. Values too large in magnitude become
+     * [Double.POSITIVE_INFINITY] or [Double.NEGATIVE_INFINITY]; precision may be lost even when the result is
+     * finite.
+     */
     @JsName("toDouble")
     fun toDouble(): Double
 
     /**
-     * Converts this `BigInteger` to a `long`, checking
-     * for lost information.  If the value of this `BigInteger`
-     * is out of the range of the `long` type, then an
-     * `ArithmeticException` is thrown.
+     * Converts this [BigInteger] to a [Long], checking for lost information.
      *
-     * @return this `BigInteger` converted to a `long`.
-     * @throws ArithmeticException if the value of `this` will
-     * not exactly fit in a `long`.
-     * @see BigInteger.toLong
-     *
-     * @since 1.8
+     * @return this value as a [Long].
+     * @throws ArithmeticException if this value is outside the range of [Long].
+     * @see toLong
      */
     fun toLongExact(): Long
 
     /**
-     * Converts this `BigInteger` to an `int`, checking
-     * for lost information.  If the value of this `BigInteger`
-     * is out of the range of the `int` type, then an
-     * `ArithmeticException` is thrown.
+     * Converts this [BigInteger] to an [Int], checking for lost information.
      *
-     * @return this `BigInteger` converted to an `int`.
-     * @throws ArithmeticException if the value of `this` will
-     * not exactly fit in an `int`.
-     * @see BigInteger.toInt
-     *
-     * @since 1.8
+     * @return this value as an [Int].
+     * @throws ArithmeticException if this value is outside the range of [Int].
+     * @see toInt
      */
     @JsName("toIntExact")
     fun toIntExact(): Int
 
     /**
-     * Converts this `BigInteger` to a `short`, checking
-     * for lost information.  If the value of this `BigInteger`
-     * is out of the range of the `short` type, then an
-     * `ArithmeticException` is thrown.
+     * Converts this [BigInteger] to a [Short], checking for lost information.
      *
-     * @return this `BigInteger` converted to a `short`.
-     * @throws ArithmeticException if the value of `this` will
-     * not exactly fit in a `short`.
-     * @see BigInteger.toShort
-     *
-     * @since 1.8
+     * @return this value as a [Short].
+     * @throws ArithmeticException if this value is outside the range of [Short].
+     * @see toShort
      */
     @JsName("toShortExact")
     fun toShortExact(): Short
 
     /**
-     * Converts this `BigInteger` to a `byte`, checking
-     * for lost information.  If the value of this `BigInteger`
-     * is out of the range of the `byte` type, then an
-     * `ArithmeticException` is thrown.
+     * Converts this [BigInteger] to a [Byte], checking for lost information.
      *
-     * @return this `BigInteger` converted to a `byte`.
-     * @throws ArithmeticException if the value of `this` will
-     * not exactly fit in a `byte`.
-     * @see BigInteger.toByte
-     *
-     * @since 1.8
+     * @return this value as a [Byte].
+     * @throws ArithmeticException if this value is outside the range of [Byte].
+     * @see toByte
      */
     @JsName("toByteExact")
     fun toByteExact(): Byte
 
+    /** Constants and factory methods for [BigInteger]s. */
     companion object {
-        /**
-         * The BigInteger constant zero.
-         *
-         * @since 1.2
-         */
+        /** The [BigInteger] constant 0. */
         @JvmField
         @JsName("ZERO")
         val ZERO: BigInteger = BigIntegers.zero
 
-        /**
-         * The BigInteger constant one.
-         *
-         * @since 1.2
-         */
+        /** The [BigInteger] constant 1. */
         @JvmField
         @JsName("ONE")
         val ONE: BigInteger = BigIntegers.one
 
-        /**
-         * The BigInteger constant two.
-         *
-         * @since 9
-         */
+        /** The [BigInteger] constant 2. */
         @JvmField
         @JsName("TWO")
         val TWO: BigInteger = BigIntegers.two
 
-        /**
-         * The BigInteger constant -1.  (Not exported.)
-         */
+        /** The [BigInteger] constant -1. */
         @JvmField
         @JsName("NEGATIVE_ONE")
         val NEGATIVE_ONE: BigInteger = BigIntegers.negativeOne
 
-        /**
-         * The BigInteger constant ten.
-         *
-         * @since 1.5
-         */
+        /** The [BigInteger] constant 10. */
         @JvmField
         @JsName("TEN")
         val TEN: BigInteger = BigIntegers.ten
 
         /**
-         * Returns a positive BigInteger that is probably prime, with the
-         * specified bitLength. The probability that a BigInteger returned
-         * by this method is composite does not exceed 2<sup>-100</sup>.
+         * Returns a positive [BigInteger] that is probably prime, with the given [bitLength] (see
+         * [BigInteger.bitLength]). The probability that the returned value is composite does not exceed `2^-100`.
          *
-         * @param bitLength bitLength of the returned BigInteger.
-         * @param rnd source of random bits used to select candidates to be
-         * tested for primality.
-         * @return a BigInteger of `bitLength` bits that is probably prime
-         * @throws ArithmeticException `bitLength < 2` or `bitLength` is too large.
-         * @see BigInteger.bitLength
-         * @since 1.4
+         * @param bitLength the bit length of the returned [BigInteger].
+         * @param rnd the source of random bits used to select candidates to be tested for primality.
+         * @return a [BigInteger] of [bitLength] bits that is probably prime.
+         * @throws ArithmeticException if [bitLength] is less than 2 or too large.
          */
         @JvmStatic
         @JsName("probablePrime")
@@ -783,28 +718,47 @@ interface BigInteger : Comparable<BigInteger> {
         ): BigInteger = bigProbablePrimeInteger(bitLength, rnd)
 
         /**
-         * Returns a BigInteger whose value is equal to that of the
-         * specified `long`.
+         * Returns the [BigInteger] whose value is [value]. Exported to JS as `ofLong`.
          *
-         * @apiNote This static factory method is provided in preference
-         * to a (`long`) constructor because it allows for reuse of
-         * frequently used BigIntegers.
-         *
-         * @param value value of the BigInteger to return.
-         * @return a BigInteger with the specified value.
+         * @param value the value of the [BigInteger] to return.
+         * @return a [BigInteger] with the given value.
          */
         @JsName("ofLong")
         @JvmStatic
         fun of(value: Long): BigInteger = bigIntegerOf(value)
 
+        /**
+         * Returns the [BigInteger] whose value is [value].
+         *
+         * @param value the value of the [BigInteger] to return.
+         * @return a [BigInteger] with the given value.
+         */
         @JsName("of")
         @JvmStatic
         fun of(value: Int): BigInteger = bigIntegerOf(value)
 
+        /**
+         * Parses a [BigInteger] from [value]: an optional sign (`-` or `+`) followed by digits, decimal unless a
+         * `0x`, `0o` or `0b` prefix (in any case) selects radix 16, 8 or 2. Exported to JS as `parse`.
+         *
+         * @param value the representation to parse.
+         * @return the parsed [BigInteger].
+         * @throws NumberFormatException if [value] is not a valid representation.
+         */
         @JsName("parse")
         @JvmStatic
         fun of(value: String): BigInteger = bigIntegerOf(value)
 
+        /**
+         * Parses a [BigInteger] from its representation in [radix]: an optional sign (`-` or `+`) followed by one
+         * or more digits in [radix] (no prefix). Exported to JS as `parseWithRadix`.
+         *
+         * @param value the representation to parse.
+         * @param radix the radix of the representation, from 2 to 36 (both included).
+         * @return the parsed [BigInteger].
+         * @throws NumberFormatException if [value] is not a valid representation in [radix], or [radix] is out of
+         * range.
+         */
         @JsName("parseWithRadix")
         @JvmStatic
         fun of(
@@ -813,14 +767,28 @@ interface BigInteger : Comparable<BigInteger> {
         ): BigInteger = bigIntegerOf(value, radix)
 
         /**
-         * Returns a BigInteger with the given two's complement representation.
-         * Assumes that the input array will not be modified (the returned
-         * BigInteger will reference the input array if feasible).
+         * Returns the [BigInteger] whose two's complement representation is [value]: 32-bit words in big-endian
+         * order (the most significant one at index 0). Exported to JS as `ofIntArray`.
+         *
+         * @param value the two's complement representation, which must not be empty.
+         * @return the [BigInteger] represented by [value].
          */
         @JsName("ofIntArray")
         @JvmStatic
         fun of(value: IntArray): BigInteger = bigIntegerOf(value)
 
+        /**
+         * Returns the [BigInteger] whose sign is [signum] and whose magnitude is the unsigned big-endian number
+         * held by the [len] bytes of [magnitude] starting at index [off]. Exported to JS as `ofSlideIntArray`.
+         *
+         * @param signum the sign of the result: -1, 0 or 1.
+         * @param magnitude the bytes holding the magnitude, most significant first.
+         * @param off the index of the first byte of the magnitude.
+         * @param len the number of bytes of the magnitude.
+         * @return the [BigInteger] with the given sign and magnitude.
+         * @throws NumberFormatException if [signum] is not -1, 0 or 1, or it is 0 and the magnitude is not zero.
+         * @throws IndexOutOfBoundsException if [off] and [len] do not designate a range within [magnitude].
+         */
         @JsName("ofSlideIntArray")
         fun of(
             signum: Int,

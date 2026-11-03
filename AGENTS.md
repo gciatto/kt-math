@@ -60,7 +60,12 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   then `ktlintCheck detektAll`, and commits formatting fixes: mirror that order locally.
 - **Compile without running tests**: `jvmMainClasses`/`jvmTestClasses`, `jsMainClasses`/`jsTestClasses`.
 - **Test**: `jvmTest`, `jsTest`; `check` runs style + tests + everything else wired into it.
-- **Docs**: `dokkaGenerateHtml`. **Publishing dry-run**: `publishAllPublicationsToProjectLocalRepository
+- **Docs**: `dokkaGenerateHtml` (per module); the website is `:documentation:assembleSite` (MkDocs Material pages
+  from `documentation/docs/` plus the aggregated Dokka API under `/api/`; needs `pip install mkdocs-material`), built
+  by `.github/workflows/docs.yml` on every run and published on GitHub Pages from `master`. Its code examples are
+  quoted from the usage tests (`--8<-- [start:x]` markers in `TestKotlinUsage`, `TestJavaUsage`, `usage.test.cjs`,
+  `usage.c`, big-math's `TestKnownValues`): keep the markers when editing those tests. `mkdocs build --strict` fails on
+  broken links and missing snippets. **Publishing dry-run**: `publishAllPublicationsToProjectLocalRepository
   zipMavenCentralPortalPublication releaseMavenCentralPortalPublication --dry-run`.
 - Default to `--parallel --continue` (as CI does): one invocation collects all failures.
 

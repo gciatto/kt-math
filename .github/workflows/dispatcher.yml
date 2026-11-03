@@ -28,3 +28,14 @@ jobs:
       - dispatcher
     uses: ./.github/workflows/build-and-deploy.yml
     secrets: inherit
+  docs:
+    # The documentation website: built on every run, published on GitHub Pages from master only (see docs.yml)
+    needs:
+      - dispatcher
+      - ci-cd
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/docs.yml
+    secrets: inherit
