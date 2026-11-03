@@ -39,10 +39,19 @@ The header exposes a `libktmath_symbols()` function, returning a structure that 
 - a Kotlin exception aborts the process: prefer the `parse*OrNull` functions of `BigFactory`, which return a null
   handle on invalid input.
 
-This program is Kt-Math's own C usage test, compiled and run by CI against Kt-Math's shared library:
+This program is the beginning of Kt-Math's own C usage test, compiled and run by CI against Kt-Math's shared library
+(the rest of `src/nativeUsageTest/c/usage.c` calls every other function of the C API):
 
 ```c
---8<-- "src/nativeUsageTest/c/usage.c"
+--8<-- "src/nativeUsageTest/c/usage.c:example"
+
+int main(void) {
+--8<-- "src/nativeUsageTest/c/usage.c:main"
+    return failures == 0 ? 0 : 1;
+}
 ```
+
+Functions taking a Kotlin `IntArray`, `Array`, `Random` or range can't be called from C, which can't create those;
+Kotlin arrays and sequences returned to C can only be passed on and disposed of.
 
 Compile it against the library: `cc usage.c -I<dir> -L<dir> -lktmath -Wl,-rpath,<dir>`.
