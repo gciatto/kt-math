@@ -33,29 +33,24 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 
 /**
- * Immutable objects which encapsulate the context settings which
- * describe certain rules for numerical operators, such as those
- * implemented by the [BigDecimal] class.
+ * Immutable context settings describing certain rules for numerical operators, such as those of [BigDecimal], as
+ * Java's `java.math.MathContext`.
  *
+ * The settings are:
+ * 1. [precision]: the number of digits to be used for an operation; results are rounded to this precision;
+ * 2. [roundingMode]: the [RoundingMode] specifying the algorithm to be used for rounding.
  *
- * The base-independent settings are:
- *
- *  1. `precision`:
- * the number of digits to be used for an operation; results are
- * rounded to this precision
- *
- *  1. `roundingMode`:
- * a [RoundingMode] object which specifies the algorithm to be
- * used for rounding.
- *
- *
+ * @property precision the number of digits to be used for an operation (non-negative): results are rounded to this
+ * precision. `0` means unlimited precision: operations then compute exact results, or throw an [ArithmeticException]
+ * if they can't (e.g. a non-terminating decimal expansion).
+ * @property roundingMode the rounding mode to use when rounding results to [precision].
+ * @constructor Creates a [MathContext] with the given [precision] and [roundingMode], by default 9 digits and
+ * [RoundingMode.HALF_UP].
+ * @throws IllegalArgumentException if [precision] is negative.
  * @see BigDecimal
- *
  * @see RoundingMode
- *
  * @author Mike Cowlishaw
  * @author Joseph D. Darcy
- * @since 1.5
  */
 @JsExport
 data class MathContext
@@ -70,42 +65,38 @@ data class MathContext
 
         companion object {
             /**
-             * A `MathContext` object whose settings have the values
-             * required for unlimited precision arithmetic.
-             * The values of the settings are:
-             * `
-             * precision=0 roundingMode=HALF_UP
-             ` *
+             * A [MathContext] whose settings have the values required for unlimited precision arithmetic:
+             * `precision = 0` and `roundingMode = HALF_UP`.
              */
             @JvmField
             @JsName("UNLIMITED")
             val UNLIMITED = MathContext(0, RoundingMode.HALF_UP)
 
             /**
-             * A `MathContext` object with a precision setting
-             * matching the IEEE 754R Decimal32 format, 7 digits, and a
+             * A [MathContext] with a precision setting
+             * matching the IEEE 754-2008 Decimal32 format, 7 digits, and a
              * rounding mode of [HALF_EVEN][RoundingMode.HALF_EVEN], the
-             * IEEE 754R default.
+             * IEEE 754-2008 default.
              */
             @JvmField
             @JsName("DECIMAL32")
             val DECIMAL32 = MathContext(7, RoundingMode.HALF_EVEN)
 
             /**
-             * A `MathContext` object with a precision setting
-             * matching the IEEE 754R Decimal64 format, 16 digits, and a
+             * A [MathContext] with a precision setting
+             * matching the IEEE 754-2008 Decimal64 format, 16 digits, and a
              * rounding mode of [HALF_EVEN][RoundingMode.HALF_EVEN], the
-             * IEEE 754R default.
+             * IEEE 754-2008 default.
              */
             @JvmField
             @JsName("DECIMAL64")
             val DECIMAL64 = MathContext(16, RoundingMode.HALF_EVEN)
 
             /**
-             * A `MathContext` object with a precision setting
-             * matching the IEEE 754R Decimal128 format, 34 digits, and a
+             * A [MathContext] with a precision setting
+             * matching the IEEE 754-2008 Decimal128 format, 34 digits, and a
              * rounding mode of [HALF_EVEN][RoundingMode.HALF_EVEN], the
-             * IEEE 754R default.
+             * IEEE 754-2008 default.
              */
             @JvmField
             @JsName("DECIMAL128")

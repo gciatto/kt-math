@@ -1,0 +1,73 @@
+site_name: Kt-Math
+site_description: Arbitrary-precision integers, decimals and rationals for Kotlin Multiplatform, Java, JavaScript and C
+site_url: https://gciatto.github.io/kt-math/
+repo_url: https://github.com/gciatto/kt-math
+repo_name: gciatto/kt-math
+edit_uri: edit/master/documentation/docs/
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.action.edit
+    - content.tabs.link
+
+markdown_extensions:
+  - admonition
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      # the repository root: the tutorials quote the usage tests, so that every example is compiled and run by CI
+      base_path:
+        - ".."
+      check_paths: true
+  - toc:
+      permalink: true
+
+# Divio's documentation system: tutorials (learning), how-to guides (tasks), reference (facts), explanation
+# (understanding). The API reference is Dokka's, mounted at /api/ by `:documentation:assembleSite`.
+nav:
+  - Home: index.md
+  - Tutorials:
+      - tutorials/index.md
+      - tutorials/getting-started-kotlin.md
+      - tutorials/getting-started-java.md
+      - tutorials/getting-started-js.md
+  - How-to guides:
+      - how-to/index.md
+      - how-to/add-kt-math-as-a-dependency.md
+      - how-to/parse-and-convert-numbers.md
+      - how-to/control-precision-and-rounding.md
+      - how-to/use-big-math.md
+      - how-to/call-kt-math-from-c.md
+      - how-to/contribute.md
+  - Reference:
+      - reference/index.md
+      - reference/platforms.md
+      - API reference: https://gciatto.github.io/kt-math/api/
+  - Explanation:
+      - explanation/index.md
+      - explanation/architecture.md
+      - explanation/testing.md
