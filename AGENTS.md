@@ -9,7 +9,11 @@ port of Java's `BigInteger`/`BigDecimal`, plus a port of big-math's `BigDecimalM
 - `org.gciatto.kt.math.big` (`src/*/kotlin/org/gciatto/kt/math/big/`, in the same artifact as the rest): `BigDecimalMath`
   and the series calculators of big-math 2.3.2 (MIT, Eric Obermühlner; the license header stays in every ported file),
   on kt-math's multiplatform API, one class per file as in big-math. Ported line by line, with the original names:
-  keep it diffable. big-math's `BigRational` is `org.gciatto.kt.math.BigRational`, ported the same way.
+  keep it diffable. Made idiomatic only at the surface: `BigDecimalMath`'s static methods are top-level functions in
+  `BigDecimalMath.kt` (`@file:JvmName("BigDecimalMath")`, so Java still sees the static methods), extensions on their
+  first `BigDecimal` argument (the body starts with `val x = this`, to keep it diffable); `sqrt` and `round` are
+  internal, since `BigDecimal`'s members cover them (an extension would be shadowed). The file is `@JsExport`ed:
+  overloads need distinct `@JsName`s, internal ones included. big-math's `BigRational` is `org.gciatto.kt.math.BigRational`, ported the same way.
 - Mapping notes: `BigDecimal.valueOf(Double)` is `java.math.BigDecimal.valueOf(double)` (Java's `Double.toString`
   scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded` (`big/Utils.kt`);
   big-math's `synchronized` caches use `CacheLock` (`synchronized` on the JVM, a non-reentrant spin lock elsewhere:

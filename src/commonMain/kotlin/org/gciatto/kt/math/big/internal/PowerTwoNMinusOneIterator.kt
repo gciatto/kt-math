@@ -29,7 +29,7 @@ package org.gciatto.kt.math.big.internal
 
 import org.gciatto.kt.math.BigDecimal
 import org.gciatto.kt.math.MathContext
-import org.gciatto.kt.math.big.BigDecimalMath
+import org.gciatto.kt.math.big.reciprocal
 
 /** [PowerIterator] to calculate x^(2*n-1). */
 internal class PowerTwoNMinusOneIterator(
@@ -38,7 +38,7 @@ internal class PowerTwoNMinusOneIterator(
 ) : PowerIterator {
     private val xPowerTwo: BigDecimal = x.times(x, mathContext)
 
-    private var powerOfX: BigDecimal = BigDecimalMath.reciprocal(x, mathContext)
+    private var powerOfX: BigDecimal = x.reciprocal(mathContext)
 
     override fun getCurrentPower(): BigDecimal = powerOfX
 
