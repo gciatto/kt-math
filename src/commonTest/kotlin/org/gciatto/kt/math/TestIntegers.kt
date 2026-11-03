@@ -2,6 +2,7 @@ package org.gciatto.kt.math
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class TestIntegers {
     @Test
@@ -141,5 +142,29 @@ class TestIntegers {
         assertEquals(0, BigInteger.of("0", 2).toInt())
         assertEquals(1, BigInteger.of("1", 2).toInt())
         assertEquals(-1, BigInteger.of("-1", 2).toInt())
+    }
+
+    @Test
+    fun testRadixPrefixes() {
+        assertEquals("31", BigInteger.of("0x1f").toString())
+        assertEquals("-31", BigInteger.of("-0X1F").toString())
+        assertEquals("11", BigInteger.of("0x0b").toString()) // hex digits containing "0b"
+        assertEquals("43788", BigInteger.of("0xab0c").toString())
+        assertEquals("-5", BigInteger.of("-0b101").toString())
+        assertEquals("8", BigInteger.of("+0o10").toString())
+        assertEquals("100", BigInteger.of("100").toString())
+        assertFailsWith<NumberFormatException> { BigInteger.of("10x1") } // not a prefix
+    }
+
+    @Test
+    fun testEmptyIntArray() {
+        assertFailsWith<NumberFormatException> { BigInteger.of(intArrayOf()) }
+    }
+
+    @Test
+    fun testRoundingModeOfInvalidCode() {
+        assertEquals(RoundingMode.UNNECESSARY, RoundingMode.valueOf(7))
+        assertFailsWith<IllegalArgumentException> { RoundingMode.valueOf(8) }
+        assertFailsWith<IllegalArgumentException> { RoundingMode.valueOf(-1) }
     }
 }
