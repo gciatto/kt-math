@@ -212,6 +212,8 @@ kotlin.targets
             tasks.register<Zip>("zipKtmathReleaseShared${targetName.replaceFirstChar { it.uppercase() }}") {
                 group = "distribution"
                 description = "Zips the C shared library and header of $targetName"
+                // destinationDirectory carries no task dependency: without dependsOn, nothing gets linked (NO-SOURCE)
+                dependsOn(library.linkTaskProvider)
                 from(library.linkTaskProvider.flatMap { it.destinationDirectory })
                 archiveClassifier.set(targetName)
             }
