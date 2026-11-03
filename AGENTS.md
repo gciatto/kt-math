@@ -98,7 +98,8 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
 - Usage tests: the API as other languages see it, part of `check`: `src/jvmTest/java` (JUnit 4, compiled with the
   Kotlin JVM tests: needs `@JvmStatic`/`@JvmField`/`@JvmOverloads` where Java would otherwise see `Companion` or miss
   default arguments), `src/jsUsageTest` (`jsUsageTest`: Node's test runner on the npm package from
-  `assembleJsPackage`; `Comparable` isn't exported to JS, hence the `compare` members, `compareTo` in JS), and
+  `assembleJsPackage`; `Comparable` isn't exported to JS, hence the `compare` members, `compareTo` in JS; it first
+  runs `tsUsageTest`, which type-checks `usage.ts` against the package's `kt-math.d.ts` with Kotlin's own `tsc`), and
   `src/nativeUsageTest/c` (`nativeUsageTest`: the host's `cc` against the Kotlin/Native shared library and header of
   linuxX64 or macosArm64; overloads get trailing underscores in C, so adding an overload may rename others there).
   Without Xcode, cross-link `linkKtmathDebugSharedLinuxX64` and build the C file in a container (e.g. `gcc` image).
