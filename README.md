@@ -36,8 +36,8 @@ API to common Kotlin code, so the same code computes with big numbers everywhere
   `java.math` on the JVM, and every platform must reproduce their results, and their exceptions, exactly.
 - **More than `java.math`.** Exact `BigRational`s; `BigFactory`, with parsing functions returning `null` on invalid
   input; conversions among all number types; and, in `org.gciatto.kt.math.big`, logarithms, powers, roots,
-  trigonometric and hyperbolic functions, gamma, π and *e* at any precision (a port of
-  [big-math](https://github.com/eobermuhlner/big-math)).
+  trigonometric and hyperbolic functions, gamma, π and *e* at any precision, complex numbers and decimal ranges (a
+  port of [big-math](https://github.com/eobermuhlner/big-math)).
 - **Four languages.** An idiomatic Kotlin API, Java-friendly static factories (Java 8+), an npm package with JS names
   for every overload, and a C API through Kotlin/Native shared libraries.
 
@@ -63,7 +63,7 @@ Then follow a tutorial for [Kotlin](https://gciatto.github.io/kt-math/tutorials/
 | JavaScript | Node.js, browsers | native `BigInt` | Kotlin port, on `BigInt`s |
 | Kotlin/Native | macOS, iOS, watchOS, tvOS, Linux, Windows, Android NDK: every non-deprecated target | Kotlin port, with C kernels | Kotlin port |
 
-`BigRational` and `BigDecimalMath` are written in Kotlin on top of the platform's numbers. See the
+`BigRational`, `BigComplex` and `BigDecimalMath` are written in Kotlin on top of the platform's numbers. See the
 [platforms reference](https://gciatto.github.io/kt-math/reference/platforms/) for the full list of targets.
 
 ## Performance
@@ -98,5 +98,5 @@ are automatic, from [conventional commits](https://www.conventionalcommits.org/)
 
 Kt-Math is a port of OpenJDK's `java.math`, hence distributed under the same license: the
 [GNU General Public License, version 2, with the Classpath Exception](LICENSE), which allows linking it into software
-under any license. The `kt-math-big-math` module and `BigRational` port [big-math](https://github.com/eobermuhlner/big-math),
+under any license. The `org.gciatto.kt.math.big` package and `BigRational` port [big-math](https://github.com/eobermuhlner/big-math),
 under the MIT license.
