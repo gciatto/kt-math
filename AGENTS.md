@@ -13,12 +13,15 @@ port of Java's `BigInteger`/`BigDecimal`, plus a port of big-math's `BigDecimalM
   `BigDecimalMath.kt` (`@file:JvmName("BigDecimalMath")`, so Java still sees the static methods), extensions on their
   first `BigDecimal` argument (the body starts with `val x = this`, to keep it diffable); `sqrt` and `round` are
   internal, since `BigDecimal`'s members cover them (an extension would be shadowed). The file is `@JsExport`ed:
-  overloads need distinct `@JsName`s, internal ones included. big-math's `BigRational` is `org.gciatto.kt.math.BigRational`, ported the same way.
+  overloads need distinct `@JsName`s, internal ones included. big-math's `BigRational` is `org.gciatto.kt.math.BigRational`,
+  ported the same way. `BigComplex` (Kotlin operator names, as kt-math's numbers) holds big-math's `BigComplex` and,
+  as members, `BigComplexMath` (extensions would clash with `BigDecimalMath`'s on JS); `BigDecimalStream.kt` returns
+  Kotlin `Sequence`s (not exported to JS). `BigFloat` and `DefaultBigDecimalMath` are deliberately not ported.
 - Mapping notes: `BigDecimal.valueOf(Double)` is `java.math.BigDecimal.valueOf(double)` (Java's `Double.toString`
   scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded` (`big/Utils.kt`);
   big-math's `synchronized` caches use `CacheLock` (`synchronized` on the JVM, a non-reentrant spin lock elsewhere:
   never fill a cache while holding its own lock, never take the locks in a cycle).
-- Tests: `TestAgainstBigMath` (jvmTest) compares every function and `BigRational` with big-math itself
+- Tests: the subclasses of `TestAgainstBigMath` (jvmTest, one per big-math class) compare every function with big-math itself
   (`libs.big.math`), results and exception types; both libraries keep caches, filled in the same order since each
   case runs on big-math first. Avoid inputs that make both compute huge powers (e.g. `root(x, 1E-10)`): they run for
   minutes. `TestKnownValues` (commonTest) runs on every platform.
