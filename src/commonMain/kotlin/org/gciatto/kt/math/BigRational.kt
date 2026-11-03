@@ -29,6 +29,7 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.math.absoluteValue
 import kotlin.math.ln
@@ -348,6 +349,13 @@ class BigRational private constructor(
     @JsName("toBigDecimalWithContext")
     fun toBigDecimal(mc: MathContext): BigDecimal = numerator.div(denominator, mc)!!
 
+    /**
+     * The same as [compareTo] (negative, zero or positive as this is less than, equal to or greater than [other]),
+     * callable from JS as `compareTo`: [Comparable] isn't exported to JS (KT-83009), so [compareTo] isn't either.
+     */
+    @JsName("compareTo")
+    fun compare(other: BigRational): Int = compareTo(other)
+
     override fun compareTo(other: BigRational): Int {
         if (this === other) {
             return 0
@@ -438,15 +446,19 @@ class BigRational private constructor(
 
     companion object {
         /** The value 0 as [BigRational]. */
+        @JvmField
         val ZERO = BigRational(0)
 
         /** The value 1 as [BigRational]. */
+        @JvmField
         val ONE = BigRational(1)
 
         /** The value 2 as [BigRational]. */
+        @JvmField
         val TWO = BigRational(2)
 
         /** The value 10 as [BigRational]. */
+        @JvmField
         @Suppress("MagicNumber")
         val TEN = BigRational(10)
 

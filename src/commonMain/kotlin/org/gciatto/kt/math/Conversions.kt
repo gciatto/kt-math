@@ -4,6 +4,7 @@
 package org.gciatto.kt.math
 
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmOverloads
 
 // Conversions of Kotlin numbers and strings into kt-math's, through BigFactory.default. On the JVM, Kotlin's own
 // toBigInteger()/toBigDecimal() (on java.math) are only picked when imported explicitly, or without these.
@@ -15,17 +16,21 @@ fun Int.toBigInteger(): BigInteger = BigFactory.default.bigIntegerOf(this)
 fun Long.toBigInteger(): BigInteger = BigFactory.default.bigIntegerOf(this)
 
 /** Parses this string as a [BigInteger] in [radix], see [BigFactory.parseBigInteger]. */
+@JvmOverloads
 fun String.toBigInteger(radix: Int = BigFactory.DEFAULT_RADIX): BigInteger =
     BigFactory.default.parseBigInteger(this, radix)
 
 /** Parses this string as a [BigInteger] in [radix], or returns `null`, see [BigFactory.parseBigIntegerOrNull]. */
+@JvmOverloads
 fun String.toBigIntegerOrNull(radix: Int = BigFactory.DEFAULT_RADIX): BigInteger? =
     BigFactory.default.parseBigIntegerOrNull(this, radix)
 
 /** This number as a [BigDecimal], rounded according to [context] if any. */
+@JvmOverloads
 fun Int.toBigDecimal(context: MathContext? = null): BigDecimal = BigFactory.default.bigDecimalOf(this, context)
 
 /** This number as a [BigDecimal], rounded according to [context] if any. */
+@JvmOverloads
 fun Long.toBigDecimal(context: MathContext? = null): BigDecimal = BigFactory.default.bigDecimalOf(this, context)
 
 /**
@@ -35,9 +40,11 @@ fun Long.toBigDecimal(context: MathContext? = null): BigDecimal = BigFactory.def
 fun Double.toBigDecimal(): BigDecimal = BigFactory.default.bigDecimalValueOf(this)
 
 /** Parses this string as a [BigDecimal], see [BigFactory.parseBigDecimal]. */
+@JvmOverloads
 fun String.toBigDecimal(context: MathContext? = null): BigDecimal = BigFactory.default.parseBigDecimal(this, context)
 
 /** Parses this string as a [BigDecimal], or returns `null`, see [BigFactory.parseBigDecimalOrNull]. */
+@JvmOverloads
 fun String.toBigDecimalOrNull(context: MathContext? = null): BigDecimal? =
     BigFactory.default.parseBigDecimalOrNull(this, context)
 
