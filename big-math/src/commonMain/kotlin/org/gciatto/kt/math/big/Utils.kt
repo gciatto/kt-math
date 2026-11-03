@@ -13,8 +13,3 @@ internal fun BigDecimal.divide(
 
 /** `java.math.BigDecimal.round(mc)`: kt-math's `round(mc)` is nullable, but never returns null. */
 internal fun BigDecimal.rounded(mc: MathContext): BigDecimal = round(mc)!!
-
-/** A lock guarding one of big-math's caches (Java `synchronized` blocks). Not reentrant on every platform. */
-internal expect class CacheLock() {
-    fun <R> withLock(action: () -> R): R
-}

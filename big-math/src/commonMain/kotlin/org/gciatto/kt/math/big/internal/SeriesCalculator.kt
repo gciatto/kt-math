@@ -1,5 +1,6 @@
 /*
- * Ported from big-math 2.3.2 (https://github.com/eobermuhlner/big-math), ch.obermuhlner.math.big.internal.
+ * Ported from big-math 2.3.2 (https://github.com/eobermuhlner/big-math),
+ * ch.obermuhlner.math.big.internal.SeriesCalculator.
  *
  * MIT License
  *
@@ -28,7 +29,6 @@ package org.gciatto.kt.math.big.internal
 import org.gciatto.kt.math.BigDecimal
 import org.gciatto.kt.math.BigRational
 import org.gciatto.kt.math.MathContext
-import org.gciatto.kt.math.big.BigDecimalMath
 import org.gciatto.kt.math.big.CacheLock
 import org.gciatto.kt.math.big.divide
 import org.gciatto.kt.math.big.rounded
@@ -107,75 +107,4 @@ internal abstract class SeriesCalculator protected constructor(
 
     /** Calculates the factor of the next term. */
     protected abstract fun calculateNextFactor()
-}
-
-/** Iterator over the powers of a value x. */
-internal interface PowerIterator {
-    /** Returns the current power. */
-    fun getCurrentPower(): BigDecimal
-
-    /** Calculates the next power. */
-    fun calculateNextPower()
-}
-
-/** [PowerIterator] to calculate x^n. */
-internal class PowerNIterator(
-    private val x: BigDecimal,
-    private val mathContext: MathContext,
-) : PowerIterator {
-    private var powerOfX: BigDecimal = BigDecimal.ONE
-
-    override fun getCurrentPower(): BigDecimal = powerOfX
-
-    override fun calculateNextPower() {
-        powerOfX = powerOfX.times(x, mathContext)
-    }
-}
-
-/** [PowerIterator] to calculate x^(2*n). */
-internal class PowerTwoNIterator(
-    x: BigDecimal,
-    private val mathContext: MathContext,
-) : PowerIterator {
-    private val xPowerTwo: BigDecimal = x.times(x, mathContext)
-
-    private var powerOfX: BigDecimal = BigDecimal.ONE
-
-    override fun getCurrentPower(): BigDecimal = powerOfX
-
-    override fun calculateNextPower() {
-        powerOfX = powerOfX.times(xPowerTwo, mathContext)
-    }
-}
-
-/** [PowerIterator] to calculate x^(2*n+1). */
-internal class PowerTwoNPlusOneIterator(
-    x: BigDecimal,
-    private val mathContext: MathContext,
-) : PowerIterator {
-    private val xPowerTwo: BigDecimal = x.times(x, mathContext)
-
-    private var powerOfX: BigDecimal = x
-
-    override fun getCurrentPower(): BigDecimal = powerOfX
-
-    override fun calculateNextPower() {
-        powerOfX = powerOfX.times(xPowerTwo, mathContext)
-    }
-}
-
-/** [PowerIterator] to calculate x^(2*n-1). */
-internal class PowerTwoNMinusOneIterator(
-    x: BigDecimal,
-    private val mathContext: MathContext,
-) : PowerIterator {
-    private val xPowerTwo: BigDecimal = x.times(x, mathContext)
-
-    private var powerOfX: BigDecimal = BigDecimalMath.reciprocal(x, mathContext)
-
-    override fun getCurrentPower(): BigDecimal = powerOfX
-
-    override fun calculateNextPower() {
-        powerOfX = powerOfX.times(xPowerTwo, mathContext)
-    }
 }
