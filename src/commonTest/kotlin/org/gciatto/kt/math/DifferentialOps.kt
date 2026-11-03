@@ -139,6 +139,8 @@ object DifferentialOps {
             put("int.getIntBits") { a -> int(a[0]).getIntBits(a[1].toInt(), a[2].toInt()) }
             put("int.getLongBits") { a -> int(a[0]).getLongBits(a[1].toInt(), a[2].toInt()) }
             put("int.parse") { a -> BigInteger.of(a[0], a[1].toInt()) }
+            put("int.ofBytes") { a -> BigInteger.of(int(a[0]).toByteArray()) }
+            put("int.ofSignMagnitude") { a -> BigInteger.of(a[1].toInt(), int(a[0]).absoluteValue.toByteArray()) }
             decimalBinary.forEach { (k, f) -> put("dec.$k", { a -> f(dec(a[0]), dec(a[1])) }) }
             decimalBinaryWithContext.forEach { (k, f) -> put("dec.$k/mc", { a -> f(dec(a[0]), dec(a[1]), mc(a[2])) }) }
             decimalUnary.forEach { (k, f) -> put("dec.$k", { a -> f(dec(a[0])) }) }

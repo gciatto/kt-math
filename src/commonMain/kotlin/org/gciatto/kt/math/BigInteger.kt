@@ -831,6 +831,29 @@ interface BigInteger : Comparable<BigInteger> {
         @JvmStatic
         fun of(value: IntArray): BigInteger = bigIntegerOf(value)
 
+        /**
+         * Returns a BigInteger with the given big-endian two's complement representation, as the one returned by
+         * [toByteArray].
+         *
+         * @throws NumberFormatException if [bytes] is empty.
+         */
+        @JsName("ofBytes")
+        @JvmStatic
+        fun of(bytes: ByteArray): BigInteger = bigIntegerOf(bytes)
+
+        /**
+         * Returns a BigInteger with the given sign-magnitude representation: [signum] is -1, 0 or 1, and [magnitude]
+         * is the big-endian binary representation of the absolute value.
+         *
+         * @throws NumberFormatException if [signum] is not -1, 0 or 1, or if it's 0 and [magnitude] is not zero.
+         */
+        @JsName("ofSignMagnitude")
+        @JvmStatic
+        fun of(
+            signum: Int,
+            magnitude: ByteArray,
+        ): BigInteger = bigIntegerOf(signum, magnitude, 0, magnitude.size)
+
         @JsName("ofSlideIntArray")
         fun of(
             signum: Int,
