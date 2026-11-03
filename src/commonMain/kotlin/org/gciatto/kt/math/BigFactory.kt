@@ -250,8 +250,7 @@ interface BigFactory {
         const val DEFAULT_RADIX: Int = 10
 
         /** The most efficient implementation of the platform: the one of [BigInteger.of], [BigDecimal.of]. */
-        @JvmStatic
-        @JsName("getDefault")
+        @JvmStatic // BigFactory.getDefault() in Java, BigFactory.Companion.default in JS
         val default: BigFactory get() = DefaultBigFactory
     }
 }
