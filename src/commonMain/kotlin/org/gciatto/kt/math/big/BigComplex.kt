@@ -396,6 +396,10 @@ class BigComplex private constructor(
         val magnitude = x.abs(mc)
 
         val a = x.plus(magnitude, mc)
+        if (a.re.signum == 0 && a.im.signum == 0) {
+            // x is 0 or a negative real: big-math divides 0 by 0 here
+            return valueOf(BigDecimal.ZERO, sqrt(magnitude, mc)).round(mathContext)
+        }
         return a.div(a.abs(mc), mc).times(sqrt(magnitude, mc), mc).round(mathContext)
     }
 
