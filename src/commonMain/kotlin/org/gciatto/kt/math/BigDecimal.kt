@@ -374,7 +374,7 @@ interface BigDecimal : Comparable<BigDecimal> {
     fun pow(
         n: Int,
         mc: MathContext,
-    ): BigDecimal?
+    ): BigDecimal
 
     /**
      * As [absoluteValue], rounding according to [mc].
@@ -384,7 +384,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @throws ArithmeticException if the result is inexact but the rounding mode is [RoundingMode.UNNECESSARY].
      */
     @JsName("absoluteValueWithContext")
-    fun absoluteValue(mc: MathContext): BigDecimal?
+    fun absoluteValue(mc: MathContext): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose value is `-this` and whose scale is `this.scale`. This is the unary `-` operator.
@@ -402,7 +402,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @throws ArithmeticException if the result is inexact but the rounding mode is [RoundingMode.UNNECESSARY].
      */
     @JsName("unaryMinusWithContext")
-    fun unaryMinus(mc: MathContext): BigDecimal?
+    fun unaryMinus(mc: MathContext): BigDecimal
 
     /**
      * Returns this [BigDecimal] (`+this`), included for symmetry with [unaryMinus]. This is the unary `+` operator.
@@ -422,7 +422,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @see round
      */
     @JsName("unaryPlusWithContext")
-    fun unaryPlus(mc: MathContext): BigDecimal?
+    fun unaryPlus(mc: MathContext): BigDecimal
 
     /**
      * Returns this [BigDecimal] rounded according to [mc]. If the precision setting is 0, no rounding takes place.
