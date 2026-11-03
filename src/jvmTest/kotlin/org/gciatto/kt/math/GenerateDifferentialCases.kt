@@ -83,6 +83,7 @@ private class DifferentialCases {
                 casesOf("int.toStringRadix", ints, numbers(2, 3, 10, 16, 36)) +
                 casesOf("int.ofBytes", ints) +
                 casesOf("int.ofSignMagnitude", ints, numbers(-1, 0, 1, 2)) +
+                cases(setOf("int.getIntBits", "int.getLongBits"), ints, bitIndices, numbers(0, 1, 8, 16, 32, 33, 64)) +
                 casesOf("int.modPow", ints.take(20), listOf("0", "1", "65537", "-3") + bigInts.take(1), moduli)
         }
 
