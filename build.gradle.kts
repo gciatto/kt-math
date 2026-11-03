@@ -158,11 +158,22 @@ kotlin.targets
                     )
                 }
             }
+        // usage.c must call every function of the header that C code can call: api_coverage.py checks it
+        val coverage =
+            tasks.register<Exec>("nativeUsageCoverage") {
+                dependsOn(library.linkTaskProvider)
+                val script = layout.projectDirectory.file("src/nativeUsageTest/api_coverage.py")
+                inputs.files(script, source)
+                doFirst {
+                    val header = library.outputDirectory.resolve("libktmath_api.h")
+                    commandLine("python3", script.asFile.absolutePath, header.absolutePath, source.asFile.absolutePath)
+                }
+            }
         val run =
             tasks.register<Exec>("nativeUsageTest") {
                 group = "verification"
                 description = "Runs the C usage test against the shared library of the host's native target"
-                dependsOn(compile)
+                dependsOn(compile, coverage)
                 commandLine(executable.get().asFile.absolutePath)
             }
         tasks.named("check") { dependsOn(run) }
