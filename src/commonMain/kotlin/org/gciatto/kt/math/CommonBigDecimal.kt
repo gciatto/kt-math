@@ -3355,8 +3355,8 @@ internal class CommonBigDecimal : BigDecimal {
          * in the meantime, the BIG_TEN_POWERS_TABLE array gets
          * expanded to the size greater than n.
          */
-        private fun expandBigIntegerTenPowers(n: Int): BigInteger {
-            lock(this) {
+        private fun expandBigIntegerTenPowers(n: Int): BigInteger =
+            bigTenPowersLock.withLock {
                 var pows: Array<BigInteger?> = BIG_TEN_POWERS_TABLE
                 val curLen = pows.size
                 // The following comparison and the above synchronized statement is
@@ -3377,9 +3377,8 @@ internal class CommonBigDecimal : BigDecimal {
                     // the newly created array elements can be safely published.
                     BIG_TEN_POWERS_TABLE = pows
                 }
-                return pows[n]!!
+                pows[n]!!
             }
-        }
 
         private val LONG_TEN_POWERS_TABLE =
             longArrayOf(
@@ -3403,6 +3402,8 @@ internal class CommonBigDecimal : BigDecimal {
                 100000000000000000L,
                 1000000000000000000L,
             )
+
+        private val bigTenPowersLock = CacheLock()
 
         private var BIG_TEN_POWERS_TABLE =
             arrayOf<BigInteger?>(
