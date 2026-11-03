@@ -1,4 +1,7 @@
 import io.github.gciatto.kt.mpp.utils.log
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.konan.target.HostManager
 
 buildscript {
     configurations.classpath {
@@ -122,6 +125,68 @@ tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
     // Apple simulators: `xcrun simctl` only passes on the variables prefixed with SIMCTL_CHILD_ (prefix stripped)
     environment("SIMCTL_CHILD_KT_MATH_DIFFERENTIAL_CASES", differentialCases.get().asFile.absolutePath)
 }
+
+// The C API (the shared library and header Kotlin/Native generates) as C code sees it: src/nativeUsageTest/c, compiled
+// with the host's `cc` against the library of the host's target, then run
+val usageLibraryTargets = setOf("linuxX64", "macosArm64")
+kotlin.targets
+    .withType<KotlinNativeTarget>()
+    .matching { it.name in usageLibraryTargets }
+    .configureEach { binaries.sharedLib("ktmath", listOf(NativeBuildType.DEBUG)) }
+kotlin.targets
+    .withType<KotlinNativeTarget>()
+    .firstOrNull { it.name in usageLibraryTargets && it.konanTarget == HostManager.host }
+    ?.let { target ->
+        val library = target.binaries.getSharedLib("ktmath", NativeBuildType.DEBUG)
+        val source = layout.projectDirectory.file("src/nativeUsageTest/c/usage.c")
+        val executable = layout.buildDirectory.file("nativeUsageTest/usage")
+        val compile =
+            tasks.register<Exec>("compileNativeUsageTest") {
+                dependsOn(library.linkTaskProvider)
+                inputs.file(source)
+                outputs.file(executable)
+                doFirst {
+                    val dir = library.outputDirectory.absolutePath
+                    executable
+                        .get()
+                        .asFile.parentFile
+                        .mkdirs()
+                    commandLine(
+                        listOf("cc", "-Wall", "-Werror", "-I", dir, "-o", executable.get().asFile.absolutePath) +
+                            listOf(source.asFile.absolutePath, "-L", dir, "-lktmath", "-Wl,-rpath,$dir"),
+                    )
+                }
+            }
+        val run =
+            tasks.register<Exec>("nativeUsageTest") {
+                group = "verification"
+                description = "Runs the C usage test against the shared library of the host's native target"
+                dependsOn(compile)
+                commandLine(executable.get().asFile.absolutePath)
+            }
+        tasks.named("check") { dependsOn(run) }
+    }
+
+// The JS API as plain JavaScript sees it: src/jsUsageTest runs on Node's test runner against the npm package as
+// published (assembleJsPackage)
+val jsUsageTest =
+    tasks.register<Exec>("jsUsageTest") {
+        group = "verification"
+        description = "Runs the plain-JavaScript usage tests against the npm package"
+        dependsOn("assembleJsPackage", "kotlinNodeJsSetup")
+        val tests = layout.projectDirectory.dir("src/jsUsageTest")
+        val jsPackage = layout.buildDirectory.file("packages/js/${project.name}.js")
+        inputs.dir(tests)
+        val node = project.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec>().executable
+        doFirst {
+            environment("KT_MATH_JS_PACKAGE", jsPackage.get().asFile.absolutePath)
+            commandLine(
+                listOf(node.get(), "--test") +
+                    tests.asFileTree.matching { include("**/*.test.cjs") }.map { it.absolutePath },
+            )
+        }
+    }
+tasks.named("check") { dependsOn(jsUsageTest) }
 
 kotlin.js().nodejs {
     testTask {

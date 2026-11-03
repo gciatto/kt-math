@@ -107,11 +107,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            tasks: linuxX64Test
+            tasks: linuxX64Test nativeUsageTest
           - os: windows-latest
             tasks: mingwX64Test
           - os: macos-latest
-            tasks: macosArm64Test iosSimulatorArm64Test watchosSimulatorArm64Test tvosSimulatorArm64Test
+            tasks: macosArm64Test nativeUsageTest iosSimulatorArm64Test watchosSimulatorArm64Test tvosSimulatorArm64Test
     runs-on: ${{ matrix.os }}
     concurrency:
       group: build-${{ github.workflow }}-${{ matrix.os }}-native-${{ github.event.number || github.ref }}
@@ -182,7 +182,7 @@ jobs:
           build-command: |
             ./gradlew jsMainClasses jsTestClasses --parallel --continue
           check-command: |
-            ./gradlew jsTest --parallel --continue
+            ./gradlew jsTest jsUsageTest --parallel --continue
           clean-command: ./gradlew cleanTest
           should-run-codecov: false
       - name: Mark successful test cache

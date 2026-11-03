@@ -197,4 +197,11 @@ class TestBigFactory {
         assertEquals("1/3", "1/3".toBigRationalOrNull()?.toRationalString())
         assertNull("two".toBigRationalOrNull())
     }
+
+    @Test
+    fun compareIsCompareTo() {
+        assertEquals(0, BigDecimal.of("1.0").compare(BigDecimal.of("1.00")))
+        assertTrue(BigInteger.ONE.compare(BigInteger.TEN) < 0)
+        assertTrue(BigRational.valueOf(1, 2).compare(BigRational.valueOf(1, 3)) > 0)
+    }
 }

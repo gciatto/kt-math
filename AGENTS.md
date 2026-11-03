@@ -90,6 +90,13 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   is true for every JS number. Catch `Throwable`, not `Exception`, to see native errors. Kotlin has no BigInt type:
   `JsBigInteger` stores a `dynamic`, whose arithmetic operators compile to JS ones, and uses `js()` for the rest; `js()`
   supports neither BigInt literals (`0n`: use `BigInt(0)`) nor `**`.
+- Usage tests: the API as other languages see it, part of `check`: `src/jvmTest/java` (JUnit 4, compiled with the
+  Kotlin JVM tests: needs `@JvmStatic`/`@JvmField`/`@JvmOverloads` where Java would otherwise see `Companion` or miss
+  default arguments), `src/jsUsageTest` (`jsUsageTest`: Node's test runner on the npm package from
+  `assembleJsPackage`; `Comparable` isn't exported to JS, hence the `compare` members, `compareTo` in JS), and
+  `src/nativeUsageTest/c` (`nativeUsageTest`: the host's `cc` against the Kotlin/Native shared library and header of
+  linuxX64 or macosArm64; overloads get trailing underscores in C, so adding an overload may rename others there).
+  Without Xcode, cross-link `linkKtmathDebugSharedLinuxX64` and build the C file in a container (e.g. `gcc` image).
 - Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
   JS coverage is not measured.
 - Bug patterns found in the port, worth grepping for when something diverges from the JDK: Java expressions with
