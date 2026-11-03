@@ -12,10 +12,9 @@ const comparison: number = x.compareTo(product);
 const bounds: BigIntegerRange = BigInteger.ONE.rangeToInt(3);
 const values: BigInteger[] = bounds.toArray();
 
-// div with a MathContext is declared nullable in Kotlin, though it never returns null
-const quotient: BigDecimal | null | undefined = bigDecimal("1.10").divWithContext(BigDecimal.of(3), new MathContext(10, RoundingMode.HALF_EVEN));
+const quotient: BigDecimal = bigDecimal("1.10").divWithContext(BigDecimal.of(3), new MathContext(10, RoundingMode.HALF_EVEN));
 const half: string = bigRational("1/3").plus(BigRational.ofFraction(1, 6)).reduce().toRationalString();
-const parsed: BigRational | null | undefined = BigFactory.DEFAULT.parseBigRationalOrNull("1/0");
+const parsed: BigRational | null | undefined = BigFactory.DEFAULT.parseBigRationalOrNull("1/0"); // null on invalid input
 const z: BigComplex = BigComplex.valueOfDoubles(3, 4).pow(BigComplex.I, MathContext.DECIMAL64);
 const logarithm: BigDecimal = log(pi(MathContext.DECIMAL32), MathContext.DECIMAL32);
 const steps: BigDecimal[] = range(BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.ONE_TENTH, MathContext.DECIMAL32);
