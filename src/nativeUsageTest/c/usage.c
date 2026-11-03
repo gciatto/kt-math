@@ -154,6 +154,7 @@ static void api_BigInteger(void) {
     expect("flipBit", BI_S(KT_MATH.BigInteger.flipBit(b, 3)), "4");
     expect("setBit", BI_S(KT_MATH.BigInteger.setBit(b, 1)), "14");
     expect("set", BI_S(KT_MATH.BigInteger.set(b, 0, 1)), "13");
+    CHECK("getIntBits, getLongBits", KT_MATH.BigInteger.getIntBits(b, 2, 2) == 3 && KT_MATH.BigInteger.getLongBits(b, 1, 64) == 6);
     CHECK("get, testBit", KT_MATH.BigInteger.get(b, 3) && KT_MATH.BigInteger.testBit(b, 2) && !KT_MATH.BigInteger.get(b, 0));
     expect("not", BI_S(KT_MATH.BigInteger.not_(b)), "-13");
     BI three = KT_MATH.BigInteger.Companion.of_(c, 3);

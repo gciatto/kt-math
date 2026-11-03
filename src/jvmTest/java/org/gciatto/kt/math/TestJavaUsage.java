@@ -102,6 +102,7 @@ public class TestJavaUsage {
         assertEquals(strings("6", "6", "6"), strings(b.xor(BigInteger.of(10)), b.xor(10), b.xor(10L)));
         assertEquals(strings("8", "8", "8"), strings(b.andNot(BigInteger.of(4)), b.andNot(4), b.andNot(4L)));
         assertTrue(b.testBit(2) && b.get(3) && !b.get(0));
+        assertEquals(strings(3, -1, 6L), strings(b.getIntBits(2, 2), BigInteger.NEGATIVE_ONE.getIntBits(0, 32), b.getLongBits(1, 64)));
         assertEquals(strings("13", "14", "8", "4"), strings(b.set(0, true), b.setBit(1), b.clearBit(2), b.flipBit(3)));
 
         // comparisons and conversions
