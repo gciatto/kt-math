@@ -1054,8 +1054,8 @@ internal class CommonBigDecimal : BigDecimal {
         this._precision = prec
     }
 
-    override operator fun plus(augend: BigDecimal?): CommonBigDecimal {
-        val augend: CommonBigDecimal = augend!!.castTo()
+    override operator fun plus(augend: BigDecimal): CommonBigDecimal {
+        val augend: CommonBigDecimal = augend.castTo()
         return if (this._intCompact != INFLATED) {
             if (augend._intCompact != INFLATED) {
                 sum(this._intCompact, this._scale, augend._intCompact, augend._scale)
@@ -1072,10 +1072,10 @@ internal class CommonBigDecimal : BigDecimal {
     }
 
     override fun plus(
-        augend: BigDecimal?,
+        augend: BigDecimal,
         mc: MathContext,
     ): CommonBigDecimal {
-        var augend: CommonBigDecimal = augend!!.castTo()
+        var augend: CommonBigDecimal = augend.castTo()
         if (mc.precision == 0) {
             return plus(augend)
         }
@@ -1228,8 +1228,8 @@ internal class CommonBigDecimal : BigDecimal {
         // share the special rounding code in plus()
     }
 
-    override operator fun times(multiplicand: BigDecimal?): CommonBigDecimal {
-        val multiplicand: CommonBigDecimal = multiplicand!!.castTo()
+    override operator fun times(multiplicand: BigDecimal): CommonBigDecimal {
+        val multiplicand: CommonBigDecimal = multiplicand.castTo()
         val productScale = checkScale(_scale.toLong() + multiplicand._scale)
         return if (this._intCompact != INFLATED) {
             if (multiplicand._intCompact != INFLATED) {
@@ -3253,9 +3253,9 @@ internal class CommonBigDecimal : BigDecimal {
         @JvmOverloads
         fun of(
             `val`: String,
-            ctx: MathContext? = null,
+            ctx: MathContext = MathContext.UNLIMITED,
         ): CommonBigDecimal =
-            if (ctx === null) {
+            if (ctx.precision == 0) {
                 CommonBigDecimal(`val`)
             } else {
                 CommonBigDecimal(`val`, ctx)
@@ -3266,9 +3266,9 @@ internal class CommonBigDecimal : BigDecimal {
         @JvmOverloads
         fun of(
             `val`: BigInteger,
-            ctx: MathContext? = null,
+            ctx: MathContext = MathContext.UNLIMITED,
         ): CommonBigDecimal =
-            if (ctx === null) {
+            if (ctx.precision == 0) {
                 CommonBigDecimal(`val`)
             } else {
                 CommonBigDecimal(`val`, ctx)

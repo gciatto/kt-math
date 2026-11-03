@@ -13,6 +13,8 @@ import kotlin.random.Random
  * [BigDecimal] (`of`, `valueOf`) and [BigRational] (`valueOf`), plus parsing variants returning `null` instead of
  * throwing. Code creating numbers through a [BigFactory] can be handed another one, e.g. in tests.
  *
+ * The `context` arguments default to [MathContext.UNLIMITED], which doesn't round.
+ *
  * [BigFactory.default] creates the most efficient implementation for the platform at hand: `java.math` on the JVM,
  * native `BigInt`s on JS, the Kotlin implementation (with C kernels) on Kotlin/Native.
  */
@@ -95,30 +97,30 @@ interface BigFactory {
 
     // BigDecimal
 
-    /** The [BigDecimal] whose value is [value], rounded according to [context] if any. */
+    /** The [BigDecimal] whose value is [value], rounded according to [context]. */
     @JsName("bigDecimalOfInt")
     fun bigDecimalOf(
         value: Int,
-        context: MathContext? = null,
+        context: MathContext = MathContext.UNLIMITED,
     ): BigDecimal
 
-    /** The [BigDecimal] whose value is [value], rounded according to [context] if any. */
+    /** The [BigDecimal] whose value is [value], rounded according to [context]. */
     @JsName("bigDecimalOfLong")
     fun bigDecimalOf(
         value: Long,
-        context: MathContext? = null,
+        context: MathContext = MathContext.UNLIMITED,
     ): BigDecimal
 
     /**
      * The [BigDecimal] whose value is exactly the binary [value] (e.g. `0.1000000000000000055511151231257827...` for
-     * `0.1`), rounded according to [context] if any: see [bigDecimalValueOf] for the shortest decimal representation.
+     * `0.1`), rounded according to [context]: see [bigDecimalValueOf] for the shortest decimal representation.
      *
      * @throws NumberFormatException if [value] is infinite or NaN.
      */
     @JsName("bigDecimalOfDouble")
     fun bigDecimalOf(
         value: Double,
-        context: MathContext? = null,
+        context: MathContext = MathContext.UNLIMITED,
     ): BigDecimal
 
     /**
@@ -130,19 +132,19 @@ interface BigFactory {
     @JsName("bigDecimalValueOf")
     fun bigDecimalValueOf(value: Double): BigDecimal
 
-    /** The [BigDecimal] whose value is [value], rounded according to [context] if any. */
+    /** The [BigDecimal] whose value is [value], rounded according to [context]. */
     @JsName("bigDecimalOfBigInteger")
     fun bigDecimalOf(
         value: BigInteger,
-        context: MathContext? = null,
+        context: MathContext = MathContext.UNLIMITED,
     ): BigDecimal
 
-    /** The [BigDecimal] whose value is `unscaledValue × 10^-scale`, rounded according to [context] if any. */
+    /** The [BigDecimal] whose value is `unscaledValue × 10^-scale`, rounded according to [context]. */
     @JsName("bigDecimalOfScaled")
     fun bigDecimalOf(
         unscaledValue: BigInteger,
         scale: Int,
-        context: MathContext? = null,
+        context: MathContext = MathContext.UNLIMITED,
     ): BigDecimal
 
     /** The [BigDecimal] whose value is `unscaledValue × 10^-scale`. */
@@ -153,21 +155,21 @@ interface BigFactory {
     ): BigDecimal
 
     /**
-     * Parses a [BigDecimal] (e.g. `"-1.23E+4"`, see [BigDecimal.of]), rounded according to [context] if any.
+     * Parses a [BigDecimal] (e.g. `"-1.23E+4"`, see [BigDecimal.of]), rounded according to [context].
      *
      * @throws NumberFormatException if [value] isn't a valid representation.
      */
     @JsName("parseBigDecimal")
     fun parseBigDecimal(
         value: String,
-        context: MathContext? = null,
+        context: MathContext = MathContext.UNLIMITED,
     ): BigDecimal
 
     /** As [parseBigDecimal], but returns `null` if [value] isn't a valid representation. */
     @JsName("parseBigDecimalOrNull")
     fun parseBigDecimalOrNull(
         value: String,
-        context: MathContext? = null,
+        context: MathContext = MathContext.UNLIMITED,
     ): BigDecimal? =
         try {
             parseBigDecimal(value, context)

@@ -28,24 +28,24 @@ private val exceptionalDoubles = setOf(Double.NaN, Double.NEGATIVE_INFINITY, Dou
 
 internal actual fun bigDecimalOf(
     value: Double,
-    ctx: MathContext?,
+    ctx: MathContext,
 ): BigDecimal =
     when {
         value in exceptionalDoubles -> throw NumberFormatException("Infinite or NaN")
-        ctx == null -> CommonBigDecimal(value)
+        ctx.precision == 0 -> CommonBigDecimal(value)
         else -> CommonBigDecimal.of(value, ctx)
     }
 
 internal actual fun bigDecimalOf(
     value: Float,
-    ctx: MathContext?,
+    ctx: MathContext,
 ): BigDecimal = bigDecimalOf(value.toDouble(), ctx)
 
 internal actual fun bigDecimalOf(
     value: String,
-    ctx: MathContext?,
+    ctx: MathContext,
 ): BigDecimal =
-    if (ctx == null) {
+    if (ctx.precision == 0) {
         CommonBigDecimal(value)
     } else {
         CommonBigDecimal.of(value, ctx)
@@ -53,9 +53,9 @@ internal actual fun bigDecimalOf(
 
 internal actual fun bigDecimalOf(
     value: BigInteger,
-    ctx: MathContext?,
+    ctx: MathContext,
 ): BigDecimal =
-    if (ctx == null) {
+    if (ctx.precision == 0) {
         CommonBigDecimal(value)
     } else {
         CommonBigDecimal.of(value, ctx)

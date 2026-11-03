@@ -963,19 +963,7 @@ private fun logUsingTwoThree(
  */
 fun pi(mathContext: MathContext): BigDecimal {
     checkMathContext(mathContext)
-    // as in Java: a freshly computed value is returned as is, a cached one is rounded
-    var cached: BigDecimal? = null
-    val computed =
-        piCacheLock.withLock {
-            val current = piCache
-            if (current != null && mathContext.precision <= current.precision) {
-                cached = current
-                null
-            } else {
-                piChudnovski(mathContext).also { piCache = it }
-            }
-        }
-    return computed ?: round(cached!!, mathContext)
+    return cachedConstant(piCacheLock, { piCache }, { piCache = it }, mathContext) { piChudnovski(mathContext) }
 }
 
 private fun piChudnovski(mathContext: MathContext): BigDecimal {
@@ -1031,68 +1019,23 @@ private fun piChudnovski(mathContext: MathContext): BigDecimal {
  */
 fun e(mathContext: MathContext): BigDecimal {
     checkMathContext(mathContext)
-    // as in Java: a freshly computed value is returned as is, a cached one is rounded
-    var cached: BigDecimal? = null
-    val computed =
-        eCacheLock.withLock {
-            val current = eCache
-            if (current != null && mathContext.precision <= current.precision) {
-                cached = current
-                null
-            } else {
-                ONE.exp(mathContext).also { eCache = it }
-            }
-        }
-    return computed ?: round(cached!!, mathContext)
+    return cachedConstant(eCacheLock, { eCache }, { eCache = it }, mathContext) { ONE.exp(mathContext) }
 }
 
-private fun logTen(mathContext: MathContext): BigDecimal {
-    // as in Java: a freshly computed value is returned as is, a cached one is rounded
-    var cached: BigDecimal? = null
-    val computed =
-        log10CacheLock.withLock {
-            val current = log10Cache
-            if (current != null && mathContext.precision <= current.precision) {
-                cached = current
-                null
-            } else {
-                logUsingNewton(TEN, mathContext).also { log10Cache = it }
-            }
-        }
-    return computed ?: round(cached!!, mathContext)
-}
+private fun logTen(mathContext: MathContext): BigDecimal =
+    cachedConstant(log10CacheLock, {
+        log10Cache
+    }, { log10Cache = it }, mathContext) { logUsingNewton(TEN, mathContext) }
 
-private fun logTwo(mathContext: MathContext): BigDecimal {
-    // as in Java: a freshly computed value is returned as is, a cached one is rounded
-    var cached: BigDecimal? = null
-    val computed =
-        log2CacheLock.withLock {
-            val current = log2Cache
-            if (current != null && mathContext.precision <= current.precision) {
-                cached = current
-                null
-            } else {
-                logUsingNewton(TWO, mathContext).also { log2Cache = it }
-            }
-        }
-    return computed ?: round(cached!!, mathContext)
-}
+private fun logTwo(mathContext: MathContext): BigDecimal =
+    cachedConstant(log2CacheLock, {
+        log2Cache
+    }, { log2Cache = it }, mathContext) { logUsingNewton(TWO, mathContext) }
 
-private fun logThree(mathContext: MathContext): BigDecimal {
-    // as in Java: a freshly computed value is returned as is, a cached one is rounded
-    var cached: BigDecimal? = null
-    val computed =
-        log3CacheLock.withLock {
-            val current = log3Cache
-            if (current != null && mathContext.precision <= current.precision) {
-                cached = current
-                null
-            } else {
-                logUsingNewton(THREE, mathContext).also { log3Cache = it }
-            }
-        }
-    return computed ?: round(cached!!, mathContext)
-}
+private fun logThree(mathContext: MathContext): BigDecimal =
+    cachedConstant(log3CacheLock, {
+        log3Cache
+    }, { log3Cache = it }, mathContext) { logUsingNewton(THREE, mathContext) }
 
 /**
  * Calculates the natural exponent of this [BigDecimal] x: e<sup>x</sup>
@@ -1501,6 +1444,26 @@ fun BigDecimal.toRadians(mathContext: MathContext): BigDecimal {
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
     val result = x.times(pi(mc).div(ONE_HUNDRED_EIGHTY, mc), mc)
     return round(result, mathContext)
+}
+
+// As in Java: a freshly computed value is returned as is, a cached one (precise enough) is rounded
+private fun cachedConstant(
+    lock: CacheLock,
+    get: () -> BigDecimal?,
+    set: (BigDecimal) -> Unit,
+    mathContext: MathContext,
+    compute: () -> BigDecimal,
+): BigDecimal {
+    val (value, isCached) =
+        lock.withLock {
+            val current = get()
+            if (current != null && mathContext.precision <= current.precision) {
+                current to true
+            } else {
+                compute().also(set) to false
+            }
+        }
+    return if (isCached) round(value, mathContext) else value
 }
 
 private fun checkMathContext(mathContext: MathContext) {

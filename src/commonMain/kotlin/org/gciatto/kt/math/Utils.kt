@@ -117,22 +117,22 @@ internal expect fun bigDecimalOf(
 
 internal expect fun bigDecimalOf(
     value: Double,
-    ctx: MathContext? = null,
+    ctx: MathContext = MathContext.UNLIMITED,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
     value: Float,
-    ctx: MathContext? = null,
+    ctx: MathContext = MathContext.UNLIMITED,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
     value: String,
-    ctx: MathContext? = null,
+    ctx: MathContext = MathContext.UNLIMITED,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
     value: BigInteger,
-    ctx: MathContext? = null,
+    ctx: MathContext = MathContext.UNLIMITED,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
