@@ -349,7 +349,7 @@ class BigRational private constructor(
 
     /** Returns this rational number as a [BigDecimal] with the precision specified by the [MathContext]. */
     @JsName("toBigDecimalWithContext")
-    fun toBigDecimal(mc: MathContext): BigDecimal = numerator.div(denominator, mc)!!
+    fun toBigDecimal(mc: MathContext): BigDecimal = numerator.div(denominator, mc)
 
     /**
      * The same as [compareTo] (negative, zero or positive as this is less than, equal to or greater than [other]),

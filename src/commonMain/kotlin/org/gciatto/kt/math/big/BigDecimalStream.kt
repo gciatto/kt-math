@@ -115,7 +115,7 @@ private fun estimatedCount(
     step: BigDecimal,
     mathContext: MathContext,
 ): Long {
-    val count = end.minus(startInclusive).divide(step, mathContext)
+    val count = end.minus(startInclusive).div(step, mathContext)
     var result = count.toLong()
     if (count.fractionalPart().signum != 0) {
         result++

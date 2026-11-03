@@ -194,8 +194,8 @@ class BigComplex private constructor(
         mathContext: MathContext,
     ): BigComplex =
         valueOf(
-            re.divide(value, mathContext),
-            im.divide(value, mathContext),
+            re.div(value, mathContext),
+            im.div(value, mathContext),
         )
 
     /** Returns this divided by the real [value] (as by [BigDecimal.valueOf]), rounded with [mathContext]. */
@@ -209,8 +209,8 @@ class BigComplex private constructor(
     fun reciprocal(mathContext: MathContext): BigComplex {
         val scale = absSquare(mathContext)
         return valueOf(
-            re.divide(scale, mathContext),
-            (-im).divide(scale, mathContext),
+            re.div(scale, mathContext),
+            (-im).div(scale, mathContext),
         )
     }
 
@@ -242,7 +242,7 @@ class BigComplex private constructor(
     fun im(): BigComplex = valueOf(BigDecimal.ZERO, im)
 
     /** Returns this with both parts rounded with [mathContext]. */
-    fun round(mathContext: MathContext): BigComplex = valueOf(re.rounded(mathContext), im.rounded(mathContext))
+    fun round(mathContext: MathContext): BigComplex = valueOf(re.round(mathContext), im.round(mathContext))
 
     /**
      * Calculates the factorial of this, with Spouge's approximation for non-integer values (see
@@ -253,7 +253,7 @@ class BigComplex private constructor(
     fun factorial(mathContext: MathContext): BigComplex {
         val x = this
         if (x.isReal() && x.re.isIntValue()) {
-            return valueOf(factorial(x.re.toIntExact()).rounded(mathContext))
+            return valueOf(factorial(x.re.toIntExact()).round(mathContext))
         }
 
         // https://en.wikipedia.org/wiki/Spouge%27s_approximation
@@ -289,7 +289,7 @@ class BigComplex private constructor(
 
         val expRe = x.re.exp(mc)
         return valueOf(
-            expRe.times(x.im.cos(mc), mc).rounded(mathContext),
+            expRe.times(x.im.cos(mc), mc).round(mathContext),
             expRe.times(x.im.sin(mc), mc),
         ).round(mathContext)
     }
@@ -303,11 +303,11 @@ class BigComplex private constructor(
             x.re
                 .sin(mc)
                 .times(x.im.cosh(mc), mc)
-                .rounded(mathContext),
+                .round(mathContext),
             x.re
                 .cos(mc)
                 .times(x.im.sinh(mc), mc)
-                .rounded(mathContext),
+                .round(mathContext),
         )
     }
 
@@ -320,8 +320,8 @@ class BigComplex private constructor(
             x.re
                 .cos(mc)
                 .times(x.im.cosh(mc), mc)
-                .rounded(mathContext),
-            (-x.re.sin(mc).times(x.im.sinh(mc), mc)).rounded(mathContext),
+                .round(mathContext),
+            (-x.re.sin(mc).times(x.im.sinh(mc), mc)).round(mathContext),
         )
     }
 
@@ -412,7 +412,7 @@ class BigComplex private constructor(
         val mc2 = MathContext(mathContext.precision + 5, mathContext.roundingMode)
 
         return valueOf(
-            x.abs(mc1).log(mc1).rounded(mathContext),
+            x.abs(mc1).log(mc1).round(mathContext),
             x.angle(mc2),
         ).round(mathContext)
     }
@@ -487,7 +487,7 @@ class BigComplex private constructor(
         val x = this
         val mc = MathContext(mathContext.precision + 4, mathContext.roundingMode)
 
-        return x.pow(BigDecimal.ONE.divide(n, mc), mc).round(mathContext)
+        return x.pow(BigDecimal.ONE.div(n, mc), mc).round(mathContext)
     }
 
     /** Calculates the [n]'th root of this. */
@@ -526,7 +526,7 @@ class BigComplex private constructor(
         val bigN = BigDecimal.of(n)
         val branch = BigDecimal.of(k.mod(n)).times(pi(mc), mc).times(TWO, mc)
         val radius = abs(mc).root(bigN, mc)
-        val angle = angle(mc).plus(branch, mc).divide(bigN, mc)
+        val angle = angle(mc).plus(branch, mc).div(bigN, mc)
         return valueOfPolar(radius, angle, mc).round(mathContext)
     }
 
