@@ -9,7 +9,7 @@ internal val globalLock = AtomicBoolean(false)
 
 // ponytail: one global spin lock, only guarding the rare expansion of a cache; per-object locks if contention shows up
 @OptIn(ExperimentalAtomicApi::class)
-actual inline fun <R> lock(
+internal actual inline fun <R> lock(
     any: Any,
     action: () -> R,
 ): R {
