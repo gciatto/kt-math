@@ -2,7 +2,7 @@ package org.gciatto.kt.math
 
 import java.math.BigDecimal as JavaBigDecimal
 
-class JavaBigDecimalAdapter(
+internal class JavaBigDecimalAdapter(
     val value: JavaBigDecimal,
 ) : BigDecimal {
     private inline fun adapt(f: () -> JavaBigDecimal): JavaBigDecimalAdapter = JavaBigDecimalAdapter(f())
