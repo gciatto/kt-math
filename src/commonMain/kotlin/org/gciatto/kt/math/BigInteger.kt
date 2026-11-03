@@ -642,6 +642,7 @@ interface BigInteger : Comparable<BigInteger> {
      * @throws ArithmeticException if this value is outside the range of [Long].
      * @see toLong
      */
+    @JsName("toLongExact")
     fun toLongExact(): Long
 
     /**
@@ -790,6 +791,7 @@ interface BigInteger : Comparable<BigInteger> {
          * @throws IndexOutOfBoundsException if [off] and [len] do not designate a range within [magnitude].
          */
         @JsName("ofSlideIntArray")
+        @JvmStatic
         fun of(
             signum: Int,
             magnitude: ByteArray,
