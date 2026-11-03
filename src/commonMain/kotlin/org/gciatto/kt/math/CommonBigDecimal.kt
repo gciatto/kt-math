@@ -72,7 +72,7 @@ private fun BigInteger.compareMagnitude(other: BigInteger): Int = absoluteValue.
  * and rounding mode by supplying an appropriate [MathContext]
  * object to the operation.  In either case, eight *rounding
  * modes* are provided for the control of rounding.  Using the
- * integer fields in this class (such as [CommonBigDecimal.ROUND_HALF_UP]) to
+ * integer fields in this class (such as `ROUND_HALF_UP`, [RoundingMode.HALF_UP] here) to
  * represent rounding mode is deprecated; the enumeration values
  * of the [RoundingMode] `enum`, (such as [RoundingMode.HALF_UP]) should be used instead.
  *
@@ -683,7 +683,7 @@ internal class CommonBigDecimal : BigDecimal {
      * `Int.MAX_VALUE`, inclusive.
      *
      *
-     * The character-to-digit mapping is provided by [ ][java.lang.Character.digit] set to convert to radix 10.  The
+     * The character-to-digit mapping is provided by `Character.digit`, set to convert to radix 10.  The
      * String may not contain any extraneous characters (whitespace,
      * for example).
      *
@@ -1982,7 +1982,7 @@ internal class CommonBigDecimal : BigDecimal {
     ): CommonBigDecimal = setScale(newScale, roundingMode.value)
 
     @Deprecated(
-        "The method {@link #setScale(int, RoundingMode)} should " +
+        "The method setScale(Int, RoundingMode) should " +
             "be used in preference to this legacy method.",
     )
     override fun setScale(

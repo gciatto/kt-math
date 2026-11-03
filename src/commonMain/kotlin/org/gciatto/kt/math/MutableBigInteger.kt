@@ -1554,7 +1554,7 @@ internal open class MutableBigInteger {
         return MutableBigInteger(newVal)
     }
 
-    /** @see CommonBigInteger.getBitLength
+    /** @see CommonBigInteger.bitLength
      */
     fun bitLength(): Long = if (intLen == 0) 0 else intLen * 32L - value[offset].numberOfLeadingZeros()
 
