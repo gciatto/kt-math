@@ -40,6 +40,14 @@ private class DifferentialCases {
 
     private val ints = smallInts + bigInts
 
+    // Odd moduli of 1 to 94 words, even and odd counts: odd ones use Montgomery multiplication (oddModPow)
+    private val oddModuli =
+        listOf(65, 1_000, 2_047, 3_000).map { bits ->
+            JavaBigInteger(bits, rnd.asJavaRandom()).setBit(bits - 1).setBit(0).toString()
+        }
+
+    private val hugeInt = JavaBigInteger(150_000, rnd.asJavaRandom()).toString()
+
     private val decimals =
         listOf("0", "0.00", "1", "-1", "2", "10", "0.1", "-0.5", "2.5", "-2.5", "123.456", "1E+10", "-1.5E-7") +
             listOf("1.000", "0.333", "9.999", "9223372036854775807", "-9223372036854775808", "18446744073709551616") +
@@ -81,7 +89,10 @@ private class DifferentialCases {
                 casesOf("int.pow", smallInts, numbers(-1, 0, 1, 2, 3, 17, 100)) +
                 casesOf("int.pow", bigInts, numbers(3)) +
                 casesOf("int.toStringRadix", ints, numbers(2, 3, 10, 16, 36)) +
-                casesOf("int.modPow", ints.take(20), listOf("0", "1", "65537", "-3") + bigInts.take(1), moduli)
+                casesOf("int.modPow", ints.take(20), listOf("0", "1", "65537", "-3") + bigInts.take(1), moduli) +
+                casesOf("int.modPow", bigInts.take(4), listOf("65537", bigInts[2]), oddModuli) +
+                // Products with a short operand use the schoolbook algorithm (or its native kernel) at any length
+                casesOf("int.times", bigInts.take(2), listOf(hugeInt))
         }
 
     fun decimalCases(): List<List<String>> =
