@@ -117,25 +117,6 @@ internal expect fun bigDecimalOf(
     ctx: MathContext,
 ): BigDecimal
 
-internal expect object BigIntegers {
-    val zero: BigInteger
-    val one: BigInteger
-    val two: BigInteger
-    val ten: BigInteger
-    val negativeOne: BigInteger
-}
-
-internal expect object BigDecimals {
-    val zero: BigDecimal
-    val one: BigDecimal
-    val two: BigDecimal
-    val ten: BigDecimal
-    val oneTenth: BigDecimal
-    val oneHalf: BigDecimal
-    val pi: BigDecimal
-    val e: BigDecimal
-}
-
 internal fun Long.numberOfLeadingZeros(): Int {
     // HD, Figure 5-6
     if (this == 0L) {
