@@ -177,7 +177,7 @@ interface BigDecimal : Comparable<BigDecimal> {
     fun div(
         divisor: BigDecimal,
         mc: MathContext,
-    ): BigDecimal?
+    ): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose value is `this / divisor` and whose scale is [scale]. If rounding must be
@@ -435,7 +435,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @see unaryPlus
      */
     @JsName("round")
-    fun round(mc: MathContext): BigDecimal?
+    fun round(mc: MathContext): BigDecimal
 
     /**
      * Returns a [BigDecimal] whose scale is [newScale], and whose unscaled value is determined by multiplying or

@@ -55,7 +55,7 @@ internal object DefaultBigFactory : BigFactory {
         unscaledValue: BigInteger,
         scale: Int,
         context: MathContext?,
-    ): BigDecimal = BigDecimal.of(unscaledValue, scale, 0).let { if (context == null) it else it.round(context)!! }
+    ): BigDecimal = BigDecimal.of(unscaledValue, scale, 0).let { if (context == null) it else it.round(context) }
 
     override fun bigDecimalOf(
         unscaledValue: Long,

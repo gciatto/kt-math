@@ -1421,7 +1421,7 @@ internal class CommonBigDecimal : BigDecimal {
                 )
             }
 
-            val quotientScale = quotient!!.scale
+            val quotientScale = quotient.scale
 
             // div(CommonBigDecimal, mc) tries to adjust the quotient to
             // the desired one by removing trailing zeros; since the
@@ -1441,7 +1441,7 @@ internal class CommonBigDecimal : BigDecimal {
     override fun div(
         divisor: BigDecimal,
         mc: MathContext,
-    ): CommonBigDecimal? {
+    ): CommonBigDecimal {
         val divisor: CommonBigDecimal = divisor.castTo()
         val mcp = mc.precision
         if (mcp == 0) {
@@ -1521,7 +1521,7 @@ internal class CommonBigDecimal : BigDecimal {
                     RoundingMode.DOWN,
                 ),
             )
-        if (quotient!!._scale > 0) {
+        if (quotient._scale > 0) {
             quotient = quotient.setScale(0, RoundingMode.DOWN)
             quotient = stripZerosToMatchScale(quotient._intVal, quotient._intCompact, quotient._scale, preferredScale)
         }
@@ -1559,7 +1559,7 @@ internal class CommonBigDecimal : BigDecimal {
          */
         var result = this.div(divisor, MathContext(mc.precision, RoundingMode.DOWN))
 
-        if (result!!.scale < 0) {
+        if (result.scale < 0) {
             /*
              * Result is an integer. See if quotient represents the
              * full integer portion of the exact quotient; if it does,
@@ -1796,7 +1796,7 @@ internal class CommonBigDecimal : BigDecimal {
             if (targetRm === RoundingMode.UNNECESSARY || originalPrecision == 0) {
                 val tmpRm = if (targetRm === RoundingMode.UNNECESSARY) RoundingMode.DOWN else targetRm
                 val mcTmp = MathContext(targetPrecision, tmpRm)
-                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mcTmp)!!
+                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mcTmp)
 
                 // If result*result != this numerically, the square
                 // root isn't exact
@@ -1804,7 +1804,7 @@ internal class CommonBigDecimal : BigDecimal {
                     throw ArithmeticException("Computed square root not exact.")
                 }
             } else {
-                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mc)!!
+                result = approx.scaleByPowerOfTen(-scaleAdjust / 2).round(mc)
 
                 when (targetRm) {
                     RoundingMode.DOWN, RoundingMode.FLOOR -> {
@@ -1916,7 +1916,7 @@ internal class CommonBigDecimal : BigDecimal {
         // if negative n, calculate the reciprocal using working _precision
         if (n < 0) {
             // [hence mc._precision>0]
-            acc = ONE.div(acc, workmc)!!
+            acc = ONE.div(acc, workmc)
         }
         // round to final _precision and strip zeros
         return doRound(acc, mc)
@@ -1940,7 +1940,7 @@ internal class CommonBigDecimal : BigDecimal {
 
     override operator fun unaryPlus(): CommonBigDecimal = this
 
-    override fun unaryPlus(mc: MathContext): CommonBigDecimal? = if (mc.precision == 0) this else doRound(this, mc)
+    override fun unaryPlus(mc: MathContext): CommonBigDecimal = if (mc.precision == 0) this else doRound(this, mc)
 
     override val signum: Int
         get() {
@@ -1974,7 +1974,7 @@ internal class CommonBigDecimal : BigDecimal {
     override val unscaledValue: BigInteger
         get() = this.inflated()
 
-    override fun round(mc: MathContext): CommonBigDecimal? = unaryPlus(mc)
+    override fun round(mc: MathContext): CommonBigDecimal = unaryPlus(mc)
 
     override fun setScale(
         newScale: Int,
@@ -3660,13 +3660,13 @@ internal class CommonBigDecimal : BigDecimal {
          * result is inexact.
          */
         private fun doRound(
-            `val`: CommonBigDecimal?,
+            `val`: CommonBigDecimal,
             mc: MathContext,
-        ): CommonBigDecimal? {
+        ): CommonBigDecimal {
             val mcp = mc.precision
             var wasDivided = false
             if (mcp > 0) {
-                var intVal = `val`!!._intVal
+                var intVal = `val`._intVal
                 var compactVal = `val`._intCompact
                 var scale = `val`._scale
                 var prec = `val`.precision
@@ -4223,7 +4223,7 @@ internal class CommonBigDecimal : BigDecimal {
             yscale: Int,
             preferredScale: Long,
             mc: MathContext,
-        ): CommonBigDecimal? {
+        ): CommonBigDecimal {
             var yscale = yscale
             val mcp = mc.precision
             val roundingMode = mc.roundingMode.value
@@ -4358,7 +4358,7 @@ internal class CommonBigDecimal : BigDecimal {
             yscale: Int,
             preferredScale: Long,
             mc: MathContext,
-        ): CommonBigDecimal? {
+        ): CommonBigDecimal {
             var yscale = yscale
             val mcp = mc.precision
             if (xscale <= yscale && yscale < 18 && mcp < 18) {
@@ -4420,7 +4420,7 @@ internal class CommonBigDecimal : BigDecimal {
             yscale: Int,
             preferredScale: Long,
             mc: MathContext,
-        ): CommonBigDecimal? {
+        ): CommonBigDecimal {
             var yscale = yscale
             // Normalize dividend & divisor so that both fall into [0.1, 0.999...]
             if (-compareMagnitudeNormalized(ys, yscale, xs, xscale) > 0) { // satisfy constraint (b)
@@ -4469,7 +4469,7 @@ internal class CommonBigDecimal : BigDecimal {
             yscale: Int,
             preferredScale: Long,
             mc: MathContext,
-        ): CommonBigDecimal? {
+        ): CommonBigDecimal {
             var yscale = yscale
             // Normalize dividend & divisor so that both fall into [0.1, 0.999...]
             if (compareMagnitudeNormalized(xs, xscale, ys, yscale) > 0) { // satisfy constraint (b)
@@ -4509,7 +4509,7 @@ internal class CommonBigDecimal : BigDecimal {
             yscale: Int,
             preferredScale: Long,
             mc: MathContext,
-        ): CommonBigDecimal? {
+        ): CommonBigDecimal {
             var yscale = yscale
             // Normalize dividend & divisor so that both fall into [0.1, 0.999...]
             if (compareMagnitudeNormalized(xs, xscale, ys, yscale) > 0) { // satisfy constraint (b)
@@ -4956,7 +4956,7 @@ internal class CommonBigDecimal : BigDecimal {
                 return res
             }
             res = CommonBigDecimal(BigInteger.of(x).timesLong(y * rsign), INFLATED, scale, 0)
-            return doRound(res, mc)!!
+            return doRound(res, mc)
         }
 
         private fun multiplyAndRound(

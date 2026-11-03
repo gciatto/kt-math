@@ -225,7 +225,7 @@ internal fun toBigDecimal(
     }
 
     if (mathContext.precision != 0) {
-        result = result.rounded(mathContext)
+        result = result.round(mathContext)
     }
 
     return result
@@ -327,7 +327,7 @@ fun BigDecimal.fractionalPart(): BigDecimal = minus(integralPart())
 internal fun round(
     value: BigDecimal,
     mathContext: MathContext,
-): BigDecimal = value.rounded(mathContext)
+): BigDecimal = value.round(mathContext)
 
 /**
  * Rounds this [BigDecimal] to the precision of [mathContext], including trailing zeroes:
@@ -354,12 +354,12 @@ fun BigDecimal.roundWithTrailingZeroes(mathContext: MathContext): BigDecimal {
             }
         return stripped.plus(zero, mathContext)
     } catch (_: ArithmeticException) {
-        return value.rounded(mathContext)
+        return value.round(mathContext)
     }
 }
 
 /** Calculates the reciprocal of this [BigDecimal]: 1/x. */
-fun BigDecimal.reciprocal(mathContext: MathContext): BigDecimal = ONE.divide(this, mathContext)
+fun BigDecimal.reciprocal(mathContext: MathContext): BigDecimal = ONE.div(this, mathContext)
 
 /**
  * Calculates the factorial of the specified integer argument: *n!* = 1*2*3*...*n.
@@ -437,7 +437,7 @@ fun BigDecimal.factorial(mathContext: MathContext): BigDecimal {
     var factor = constants[0]
     for (k in 1 until a) {
         val bigK = BigDecimal.of(k)
-        factor = factor.plus(constants[k].divide(x.plus(bigK), mc))
+        factor = factor.plus(constants[k].div(x.plus(bigK), mc))
         negative = !negative
     }
 
@@ -463,7 +463,7 @@ internal fun getSpougeFactorialConstants(a: Int): List<BigDecimal> =
                 val deltaAK = a.toLong() - k
                 var ck = BigDecimal.of(deltaAK).pow(bigK.minus(ONE_HALF), mc)
                 ck = ck.times(BigDecimal.of(deltaAK).exp(mc), mc)
-                ck = ck.divide(factorial(k - 1), mc)
+                ck = ck.div(factorial(k - 1), mc)
                 if (negative) {
                     ck = -ck
                 }
@@ -595,20 +595,20 @@ private fun powInteger(
     }
 
     if (integerY.signum < 0) {
-        return ONE.divide(powInteger(x, -integerY, mathContext), mathContext)
+        return ONE.div(powInteger(x, -integerY, mathContext), mathContext)
     }
 
     val mc = MathContext(max(mathContext.precision, -integerY.scale) + 30, mathContext.roundingMode)
 
     var result = ONE
     while (integerY.signum > 0) {
-        var halfY = integerY.divide(TWO, mc)
+        var halfY = integerY.div(TWO, mc)
 
         if (halfY.fractionalPart().signum != 0) {
             // odd exponent -> multiply result with x
             result = result.times(x, mc)
             integerY = integerY.minus(ONE)
-            halfY = integerY.divide(TWO, mc)
+            halfY = integerY.div(TWO, mc)
         }
 
         if (halfY.signum > 0) {
@@ -666,7 +666,7 @@ internal fun sqrt(
                 adaptivePrecision = maxPrecision
             }
             val mc = MathContext(adaptivePrecision, mathContext.roundingMode)
-            result = x.divide(result, mc).plus(last).times(ONE_HALF, mc)
+            result = x.div(result, mc).plus(last).times(ONE_HALF, mc)
         } while (adaptivePrecision < maxPrecision || result.minus(last).absoluteValue > acceptableError)
     }
 
@@ -703,7 +703,7 @@ fun BigDecimal.root(
     }
 
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
-    return x.pow(ONE.divide(n, mc), mathContext)
+    return x.pow(ONE.div(n, mc), mathContext)
 }
 
 private fun rootUsingNewtonRaphson(
@@ -714,7 +714,7 @@ private fun rootUsingNewtonRaphson(
 ): BigDecimal {
     if (n <= ONE) {
         val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
-        return x.pow(ONE.divide(n, mc), mathContext)
+        return x.pow(ONE.div(n, mc), mathContext)
     }
 
     val maxPrecision = mathContext.precision * 2
@@ -734,7 +734,7 @@ private fun rootUsingNewtonRaphson(
             }
             val mc = MathContext(adaptivePrecision, mathContext.roundingMode)
 
-            step = x.divide(result.pow(nMinus1, mc), mc).minus(result).divide(n, mc)
+            step = x.div(result.pow(nMinus1, mc), mc).minus(result).div(n, mc)
             result = result.plus(step)
         } while (adaptivePrecision < maxPrecision || step.absoluteValue > acceptableError)
     }
@@ -780,7 +780,7 @@ fun BigDecimal.log2(mathContext: MathContext): BigDecimal {
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 4, mathContext.roundingMode)
 
-    val result = x.log(mc).divide(logTwo(mc), mc)
+    val result = x.log(mc).div(logTwo(mc), mc)
     return round(result, mathContext)
 }
 
@@ -795,7 +795,7 @@ fun BigDecimal.log10(mathContext: MathContext): BigDecimal {
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 2, mathContext.roundingMode)
 
-    val result = x.log(mc).divide(logTen(mc), mc)
+    val result = x.log(mc).div(logTen(mc), mc)
     return round(result, mathContext)
 }
 
@@ -816,7 +816,7 @@ private fun logUsingNewton(
         result = BigDecimal.valueOf(ln(doubleX))
         adaptivePrecision = EXPECTED_INITIAL_PRECISION
     } else {
-        result = x.divide(TWO, mathContext)
+        result = x.div(TWO, mathContext)
         adaptivePrecision = 1
     }
 
@@ -830,7 +830,7 @@ private fun logUsingNewton(
         val mc = MathContext(adaptivePrecision, mathContext.roundingMode)
 
         val expY = result.exp(mc)
-        step = TWO.times(x.minus(expY)).divide(x.plus(expY), mc)
+        step = TWO.times(x.minus(expY)).div(x.plus(expY), mc)
         result = result.plus(step)
     } while (adaptivePrecision < maxPrecision || step.absoluteValue > acceptableError)
 
@@ -930,7 +930,7 @@ private fun logUsingTwoThree(
     var result = ZERO
 
     if (factorOfTwo > 0) {
-        correctedX = correctedX.divide(BigDecimal.of(powerOfTwo), mc)
+        correctedX = correctedX.div(BigDecimal.of(powerOfTwo), mc)
         result = result.plus(logTwo(mcDouble).times(BigDecimal.of(factorOfTwo), mc))
     } else if (factorOfTwo < 0) {
         correctedX = correctedX.times(BigDecimal.of(powerOfTwo), mc)
@@ -938,7 +938,7 @@ private fun logUsingTwoThree(
     }
 
     if (factorOfThree > 0) {
-        correctedX = correctedX.divide(BigDecimal.of(powerOfThree), mc)
+        correctedX = correctedX.div(BigDecimal.of(powerOfThree), mc)
         result = result.plus(logThree(mcDouble).times(BigDecimal.of(factorOfThree), mc))
     } else if (factorOfThree < 0) {
         correctedX = correctedX.times(BigDecimal.of(powerOfThree), mc)
@@ -985,7 +985,7 @@ private fun piChudnovski(mathContext: MathContext): BigDecimal {
     val value640320 = BigDecimal.of(640320)
     val value13591409 = BigDecimal.of(13591409)
     val value545140134 = BigDecimal.of(545140134)
-    val valueDivisor = value640320.pow(3).divide(value24, mc)
+    val valueDivisor = value640320.pow(3).div(value24, mc)
 
     var sumA = ONE
     var sumB = ZERO
@@ -1009,7 +1009,7 @@ private fun piChudnovski(mathContext: MathContext): BigDecimal {
                 .times(BigDecimal.of(dividendTerm3))
         kPower3 = valueK.pow(3)
         val divisor = kPower3.times(valueDivisor, mc)
-        a = a.times(dividend).divide(divisor, mc)
+        a = a.times(dividend).div(divisor, mc)
         val b = valueK.times(a, mc)
 
         sumA = sumA.plus(a)
@@ -1019,7 +1019,7 @@ private fun piChudnovski(mathContext: MathContext): BigDecimal {
     val value426880 = BigDecimal.of(426880)
     val value10005 = BigDecimal.of(10005)
     val factor = value426880.times(sqrt(value10005, mc))
-    val pi = factor.divide(value13591409.times(sumA, mc).plus(value545140134.times(sumB, mc)), mc)
+    val pi = factor.div(value13591409.times(sumA, mc).plus(value545140134.times(sumB, mc)), mc)
 
     return round(pi, mathContext)
 }
@@ -1124,7 +1124,7 @@ private fun expIntegralFractional(
 
     val mc = MathContext(mathContext.precision + 10, mathContext.roundingMode)
 
-    val z = ONE.plus(fractionalPart.divide(integralPart, mc))
+    val z = ONE.plus(fractionalPart.div(integralPart, mc))
     val t = expTaylor(z, mc)
 
     val result = t.pow(integralPart.toIntExact().toLong(), mc)
@@ -1139,7 +1139,7 @@ private fun expTaylor(
     var x = x
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
 
-    x = x.divide(BigDecimal.of(256), mc)
+    x = x.div(BigDecimal.of(256), mc)
 
     var result = ExpCalculator.calculate(x, mc)
     result = result.pow(256L, mc)
@@ -1239,7 +1239,7 @@ fun BigDecimal.acos(mathContext: MathContext): BigDecimal {
 
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
 
-    val result = pi(mc).divide(TWO, mc).minus(x.asin(mc))
+    val result = pi(mc).div(TWO, mc).minus(x.asin(mc))
     return round(result, mathContext)
 }
 
@@ -1257,7 +1257,7 @@ fun BigDecimal.tan(mathContext: MathContext): BigDecimal {
     }
 
     val mc = MathContext(mathContext.precision + 4, mathContext.roundingMode)
-    val result = x.sin(mc).divide(x.cos(mc), mc)
+    val result = x.sin(mc).div(x.cos(mc), mc)
     return round(result, mathContext)
 }
 
@@ -1272,7 +1272,7 @@ fun BigDecimal.atan(mathContext: MathContext): BigDecimal {
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
 
-    x = x.divide(sqrt(ONE.plus(x.times(x, mc)), mc), mc)
+    x = x.div(sqrt(ONE.plus(x.times(x, mc)), mc), mc)
 
     val result = x.asin(mc)
     return round(result, mathContext)
@@ -1294,20 +1294,20 @@ fun atan2(
     val mc = MathContext(mathContext.precision + 3, mathContext.roundingMode)
 
     return if (x.signum > 0) { // x > 0
-        y.divide(x, mc).atan(mathContext)
+        y.div(x, mc).atan(mathContext)
     } else if (x.signum < 0) {
         if (y.signum > 0) { // x < 0 && y > 0
-            y.divide(x, mc).atan(mc).plus(pi(mc), mathContext)
+            y.div(x, mc).atan(mc).plus(pi(mc), mathContext)
         } else if (y.signum < 0) { // x < 0 && y < 0
-            y.divide(x, mc).atan(mc).minus(pi(mc), mathContext)
+            y.div(x, mc).atan(mc).minus(pi(mc), mathContext)
         } else { // x < 0 && y = 0
             pi(mathContext)
         }
     } else {
         if (y.signum > 0) { // x == 0 && y > 0
-            pi(mc).divide(TWO, mathContext)
+            pi(mc).div(TWO, mathContext)
         } else if (y.signum < 0) { // x == 0 && y < 0
-            -pi(mc).divide(TWO, mathContext)
+            -pi(mc).div(TWO, mathContext)
         } else {
             throw ArithmeticException("Illegal atan2(y, x) for x = 0; y = 0")
         }
@@ -1329,7 +1329,7 @@ fun BigDecimal.cot(mathContext: MathContext): BigDecimal {
     }
 
     val mc = MathContext(mathContext.precision + 4, mathContext.roundingMode)
-    val result = x.cos(mc).divide(x.sin(mc), mc)
+    val result = x.cos(mc).div(x.sin(mc), mc)
     return round(result, mathContext)
 }
 
@@ -1343,7 +1343,7 @@ fun BigDecimal.acot(mathContext: MathContext): BigDecimal {
     val x = this
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 4, mathContext.roundingMode)
-    val result = pi(mc).divide(TWO, mc).minus(x.atan(mc))
+    val result = pi(mc).div(TWO, mc).minus(x.atan(mc))
     return round(result, mathContext)
 }
 
@@ -1385,7 +1385,7 @@ fun BigDecimal.tanh(mathContext: MathContext): BigDecimal {
     val x = this
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
-    val result = x.sinh(mc).divide(x.cosh(mc), mc)
+    val result = x.sinh(mc).div(x.cosh(mc), mc)
     return round(result, mathContext)
 }
 
@@ -1399,7 +1399,7 @@ fun BigDecimal.coth(mathContext: MathContext): BigDecimal {
     val x = this
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
-    val result = x.cosh(mc).divide(x.sinh(mc), mc)
+    val result = x.cosh(mc).div(x.sinh(mc), mc)
     return round(result, mathContext)
 }
 
@@ -1452,7 +1452,7 @@ fun BigDecimal.atanh(mathContext: MathContext): BigDecimal {
     val result =
         ONE
             .plus(x)
-            .divide(ONE.minus(x), mc)
+            .div(ONE.minus(x), mc)
             .log(mc)
             .times(ONE_HALF)
     return round(result, mathContext)
@@ -1471,7 +1471,7 @@ fun BigDecimal.acoth(mathContext: MathContext): BigDecimal {
     val result =
         x
             .plus(ONE)
-            .divide(x.minus(ONE), mc)
+            .div(x.minus(ONE), mc)
             .log(mc)
             .times(ONE_HALF)
     return round(result, mathContext)
@@ -1486,7 +1486,7 @@ fun BigDecimal.toDegrees(mathContext: MathContext): BigDecimal {
     val x = this
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
-    val result = x.times(ONE_HUNDRED_EIGHTY.divide(pi(mc), mc), mc)
+    val result = x.times(ONE_HUNDRED_EIGHTY.div(pi(mc), mc), mc)
     return round(result, mathContext)
 }
 
@@ -1499,7 +1499,7 @@ fun BigDecimal.toRadians(mathContext: MathContext): BigDecimal {
     val x = this
     checkMathContext(mathContext)
     val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
-    val result = x.times(pi(mc).divide(ONE_HUNDRED_EIGHTY, mc), mc)
+    val result = x.times(pi(mc).div(ONE_HUNDRED_EIGHTY, mc), mc)
     return round(result, mathContext)
 }
 

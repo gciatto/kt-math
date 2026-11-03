@@ -30,8 +30,6 @@ import org.gciatto.kt.math.BigDecimal
 import org.gciatto.kt.math.BigRational
 import org.gciatto.kt.math.CacheLock
 import org.gciatto.kt.math.MathContext
-import org.gciatto.kt.math.big.divide
-import org.gciatto.kt.math.big.rounded
 
 /**
  * Utility class to calculate taylor series efficiently until the maximum error (as defined by the precision in the
@@ -67,14 +65,14 @@ internal abstract class SeriesCalculator protected constructor(
             factor = getFactor(i)
             xToThePower = powerIterator.getCurrentPower()
             powerIterator.calculateNextPower()
-            step = factor.numerator.times(xToThePower).divide(factor.denominator, mathContext)
+            step = factor.numerator.times(xToThePower).div(factor.denominator, mathContext)
             i++
 
             if (calculateInPairs) {
                 factor = getFactor(i)
                 xToThePower = powerIterator.getCurrentPower()
                 powerIterator.calculateNextPower()
-                val step2 = factor.numerator.times(xToThePower).divide(factor.denominator, mathContext)
+                val step2 = factor.numerator.times(xToThePower).div(factor.denominator, mathContext)
                 step = step.plus(step2)
                 i++
             }
@@ -82,7 +80,7 @@ internal abstract class SeriesCalculator protected constructor(
             sum = sum.plus(step)
         } while (step.absoluteValue > acceptableError)
 
-        return sum.rounded(mathContext)
+        return sum.round(mathContext)
     }
 
     /** Creates the [PowerIterator] used for this series. */

@@ -18,7 +18,7 @@ port of Java's `BigInteger`/`BigDecimal`, plus a port of big-math's `BigDecimalM
   as members, `BigComplexMath` (extensions would clash with `BigDecimalMath`'s on JS); `BigDecimalStream.kt` returns
   Kotlin `Sequence`s (not exported to JS). `BigFloat` and `DefaultBigDecimalMath` are deliberately not ported.
 - Mapping notes: `BigDecimal.valueOf(Double)` is `java.math.BigDecimal.valueOf(double)` (Java's `Double.toString`
-  scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded` (`big/Utils.kt`);
+  scale) on every platform; Java's `divide`/`round` with a `MathContext` are kt-math's `div`/`round`;
   big-math's `synchronized` caches use `CacheLock` (root package, guarding every cache of the library: `synchronized`
   on the JVM, a non-reentrant spin lock elsewhere: never fill a cache while holding its own lock, never take the locks
   in a cycle).
