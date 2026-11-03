@@ -34,6 +34,7 @@ import org.gciatto.kt.math.BigDecimal.Companion.ONE
 import org.gciatto.kt.math.BigDecimal.Companion.TEN
 import org.gciatto.kt.math.BigDecimal.Companion.ZERO
 import org.gciatto.kt.math.BigRational
+import org.gciatto.kt.math.CacheLock
 import org.gciatto.kt.math.MathContext
 import org.gciatto.kt.math.RoundingMode
 import org.gciatto.kt.math.big.internal.AsinCalculator

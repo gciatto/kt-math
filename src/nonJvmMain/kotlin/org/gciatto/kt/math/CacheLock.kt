@@ -1,4 +1,4 @@
-package org.gciatto.kt.math.big
+package org.gciatto.kt.math
 
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
