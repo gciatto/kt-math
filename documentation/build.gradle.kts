@@ -1,4 +1,4 @@
-// The documentation website: MkDocs Material pages (docs/) plus the Dokka API reference of every module, mounted at
+// The documentation website: MkDocs Material pages (docs/) plus the Dokka API reference, mounted at
 // /api/. `./gradlew :documentation:assembleSite` writes it to build/assembledSite; CI publishes it on GitHub Pages.
 plugins {
     id("org.jetbrains.dokka")
@@ -12,7 +12,6 @@ repositories {
 
 dependencies {
     dokka(project(":"))
-    dokka(project(":big-math"))
 }
 
 dokka {

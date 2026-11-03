@@ -24,7 +24,7 @@ and fixed. The port follows JDK 17's algorithms; on the JVM, the results are the
 ## Rationals and big-math
 
 `BigRational` (ported from big-math) is a class built on the `BigDecimal` and `BigInteger` interfaces, so it uses the
-platform's implementation too. The `kt-math-big-math` module ports big-math's `BigDecimalMath` in the same way.
+platform's implementation too. `BigDecimalMath` (package `org.gciatto.kt.math.big`) ports big-math's `BigDecimalMath` in the same way.
 
 ## Why interfaces
 
