@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/gciatto/kt-math/compare/2.1.0...2.1.1) (2026-11-03)
+
+### Bug Fixes
+
+* **release:** no line break before the || true of the GitHub Packages publish, which broke the publish script ([879a63d](https://github.com/gciatto/kt-math/commit/879a63d1138162913623c35d5bd4185aa7fa24b1))
+
 ## [2.1.0](https://github.com/gciatto/kt-math/compare/2.0.0...2.1.0) (2026-11-03)
 
 ### Features
