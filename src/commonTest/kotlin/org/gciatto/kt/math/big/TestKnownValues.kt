@@ -77,4 +77,30 @@ class TestKnownValues {
         assertEquals("0.33333", third.toBigDecimal(MathContext(5)).toString())
         assertEquals(BigRational.valueOf("2/3"), BigRational.valueOf("4/6").reduce())
     }
+
+    @Test
+    fun complexes() {
+        // --8<-- [start:complexes]
+        val mc = MathContext(30)
+        val i = BigComplex.I
+        val z = BigComplex.valueOf(3.0, 4.0)
+        assertEquals(BigComplex.valueOf(-1.0), i * i)
+        assertDigits("5.0", z.abs(mc))
+        assertEquals("(2.20 - 0.40 i)", z.div(BigComplex.valueOf(1.0, 2.0), mc).toString())
+        assertEquals("(-7.00 + 24.00 i)", z.pow(2, mc).toString())
+        assertEquals("(0 + 3.14159265358979323846264338328 i)", BigComplex.valueOf(-1.0).log(mc).toString())
+        assertEquals("(0E-33 + 1.17520119364380145688238185060 i)", i.sin(mc).toString())
+        // --8<-- [end:complexes]
+    }
+
+    @Test
+    fun ranges() {
+        // --8<-- [start:ranges]
+        val quarter = dec("0.25")
+        assertEquals("0, 0.25, 0.50, 0.75, 1.00", (dec("0")..dec("1") step quarter).joinToString())
+        assertEquals("0, 0.25, 0.50, 0.75", (dec("0")..<dec("1") step quarter).joinToString())
+        assertEquals("1, 0.75, 0.50", (dec("1")..<dec("0.25") step -quarter).toList().joinToString())
+        assertEquals("1, 1.3333", rangeClosed(dec("1"), dec("1.5"), dec("0.3333"), mc).joinToString())
+        // --8<-- [end:ranges]
+    }
 }
