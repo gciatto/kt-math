@@ -53,9 +53,10 @@ static void big_integers(libktmath_kref_org_gciatto_kt_math_BigFactory factory) 
 }
 
 static void big_decimals(libktmath_kref_org_gciatto_kt_math_BigFactory factory) {
-    libktmath_kref_org_gciatto_kt_math_MathContext null_context = {NULL};
-    libktmath_kref_org_gciatto_kt_math_BigDecimal a = KT_MATH.BigFactory.parseBigDecimal(factory, "1.10", null_context);
-    libktmath_kref_org_gciatto_kt_math_BigDecimal b = KT_MATH.BigFactory.bigDecimalOf(factory, 3, null_context);
+    libktmath_kref_org_gciatto_kt_math_MathContext_Companion contexts = KT_MATH.MathContext.Companion._instance();
+    libktmath_kref_org_gciatto_kt_math_MathContext unlimited = KT_MATH.MathContext.Companion.get_UNLIMITED(contexts);
+    libktmath_kref_org_gciatto_kt_math_BigDecimal a = KT_MATH.BigFactory.parseBigDecimal(factory, "1.10", unlimited);
+    libktmath_kref_org_gciatto_kt_math_BigDecimal b = KT_MATH.BigFactory.bigDecimalOf(factory, 3, unlimited);
     libktmath_kref_org_gciatto_kt_math_RoundingMode half_even = KT_MATH.RoundingMode.HALF_EVEN.get();
     libktmath_kref_org_gciatto_kt_math_MathContext ten_digits = KT_MATH.MathContext.MathContext(10, half_even);
     libktmath_kref_org_gciatto_kt_math_BigDecimal quotient = KT_MATH.BigDecimal.div_(a, b, ten_digits);
@@ -71,6 +72,8 @@ static void big_decimals(libktmath_kref_org_gciatto_kt_math_BigFactory factory) 
     DISPOSE(half_even);
     DISPOSE(b);
     DISPOSE(a);
+    DISPOSE(unlimited);
+    DISPOSE(contexts);
 }
 
 static void big_rationals(libktmath_kref_org_gciatto_kt_math_BigFactory factory) {
@@ -116,7 +119,7 @@ static void check(const char *what, int condition) {
 
 static MC mc;   // 10 digits, HALF_UP
 static MC mc3;  // 3 digits, HALF_UP
-static MC none; // a null MathContext
+static MC none; // MathContext.UNLIMITED: no rounding
 
 static void api_BigInteger(void) {
     libktmath_kref_org_gciatto_kt_math_BigInteger_Companion c = KT_MATH.BigInteger.Companion._instance();
@@ -601,7 +604,7 @@ int main(void) {
     // --8<-- [end:main]
     mc = KT_MATH.MathContext.MathContext(10, KT_MATH.RoundingMode.HALF_UP.get());
     mc3 = KT_MATH.MathContext.MathContext(3, KT_MATH.RoundingMode.HALF_UP.get());
-    none.pinned = NULL;
+    none = KT_MATH.MathContext.Companion.get_UNLIMITED(KT_MATH.MathContext.Companion._instance());
     api_BigInteger();
     api_BigIntegerRange();
     api_BigDecimal();

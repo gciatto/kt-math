@@ -263,7 +263,7 @@ public class TestJavaUsage {
         assertEquals("-255", factory.parseBigInteger("-ff", 16).toString());
         assertNull(factory.parseBigIntegerOrNull("ff", 10));
         assertEquals("1.2E+3", factory.parseBigDecimal("1234", new MathContext(2)).toString());
-        assertNull(factory.parseBigDecimalOrNull("1..2", null));
+        assertNull(factory.parseBigDecimalOrNull("1..2", MathContext.UNLIMITED));
         assertEquals("1/3", factory.bigRationalOf(1, 3).toRationalString());
         assertEquals(64, factory.probablePrime(64).getBitLength());
         // --8<-- [end:factory]
@@ -271,9 +271,9 @@ public class TestJavaUsage {
         assertEquals(64, factory.probablePrime(64, Random.Default).getBitLength());
         assertEquals(strings("1", "2", "4", "-256"), strings(factory.bigIntegerOf(1), factory.bigIntegerOf(2L), factory.bigIntegerOf(new int[] {4}), factory.bigIntegerOf(-1, new byte[] {1, 0}, 0, 2)));
         assertEquals("-1", factory.bigIntegerOf(new byte[] {-1}).toString());
-        assertEquals(strings("1", "2", "0.5", "0.1", "10", "12.34", "1.234"), strings(factory.bigDecimalOf(1, null), factory.bigDecimalOf(2L, MC), factory.bigDecimalOf(0.5, null), factory.bigDecimalValueOf(0.1), factory.bigDecimalOf(BigInteger.TEN, null), factory.bigDecimalOf(BigInteger.of(1234), 2, null), factory.bigDecimalOf(1234L, 3)));
+        assertEquals(strings("1", "2", "0.5", "0.1", "10", "12.34", "1.234"), strings(factory.bigDecimalOf(1, MathContext.UNLIMITED), factory.bigDecimalOf(2L, MC), factory.bigDecimalOf(0.5, MathContext.UNLIMITED), factory.bigDecimalValueOf(0.1), factory.bigDecimalOf(BigInteger.TEN, MathContext.UNLIMITED), factory.bigDecimalOf(BigInteger.of(1234), 2, MathContext.UNLIMITED), factory.bigDecimalOf(1234L, 3)));
         assertEquals(strings("1", "2", "10", "5/10", "15/10", "1/2", "1/4"), strings(factory.bigRationalOf(1), factory.bigRationalOf(2L), factory.bigRationalOf(BigInteger.TEN), factory.bigRationalOf(0.5).toRationalString(), factory.bigRationalOf(BigDecimal.of("1.5")).toRationalString(), factory.bigRationalOf(BigInteger.ONE, BigInteger.TWO).toRationalString(), factory.bigRationalOf(BigDecimal.ONE, BigDecimal.of(4)).reduce().toRationalString()));
-        assertEquals(strings("2/3", "2/3", "1.5"), strings(factory.parseBigRational("2/3").toRationalString(), factory.parseBigRationalOrNull("2/3").toRationalString(), factory.parseBigDecimalOrNull("1.5", null)));
+        assertEquals(strings("2/3", "2/3", "1.5"), strings(factory.parseBigRational("2/3").toRationalString(), factory.parseBigRationalOrNull("2/3").toRationalString(), factory.parseBigDecimalOrNull("1.5", MathContext.UNLIMITED)));
     }
 
     @Test
@@ -308,8 +308,8 @@ public class TestJavaUsage {
         assertEquals("0.1", Conversions.toBigDecimal(0.1).toString());
         assertEquals("1/4", Conversions.toBigRational("2/8").reduce().toRationalString());
         // --8<-- [end:conversions]
-        assertEquals(strings("1", "2", "3", "1.0", "2", "1.5"), strings(Conversions.toBigInteger(1), Conversions.toBigInteger(2L), Conversions.toBigIntegerOrNull("3", 10), Conversions.toBigDecimal("1.0", null), Conversions.toBigDecimal(2, null), Conversions.toBigDecimalOrNull("1.5", null)));
-        assertEquals(strings("3", "4", "1/2", "1/2"), strings(Conversions.toBigDecimal(3L, null), Conversions.toBigRational(4), Conversions.toBigRational(0.5).reduce().toRationalString(), Conversions.toBigRational(2L).reciprocal().toRationalString()));
+        assertEquals(strings("1", "2", "3", "1.0", "2", "1.5"), strings(Conversions.toBigInteger(1), Conversions.toBigInteger(2L), Conversions.toBigIntegerOrNull("3", 10), Conversions.toBigDecimal("1.0", MathContext.UNLIMITED), Conversions.toBigDecimal(2, MathContext.UNLIMITED), Conversions.toBigDecimalOrNull("1.5", MathContext.UNLIMITED)));
+        assertEquals(strings("3", "4", "1/2", "1/2"), strings(Conversions.toBigDecimal(3L, MathContext.UNLIMITED), Conversions.toBigRational(4), Conversions.toBigRational(0.5).reduce().toRationalString(), Conversions.toBigRational(2L).reciprocal().toRationalString()));
         assertNull(Conversions.toBigRationalOrNull("1/0"));
     }
 
