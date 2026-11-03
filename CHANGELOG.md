@@ -1,3 +1,65 @@
+## [2.0.0](https://github.com/gciatto/kt-math/compare/1.0.0...2.0.0) (2026-11-03)
+
+### ⚠ BREAKING CHANGES
+
+* no unnecessary nulls in the API: MathContext arguments default to UNLIMITED, plus and times take non-null operands
+* pow, absoluteValue, unaryMinus and unaryPlus with a MathContext are non-null too
+* BigDecimal.div with a MathContext and round are non-null
+* **js:** an ES module exporting every declaration by name, with static companion members
+* lock, DEBUG and JavaBigDecimalAdapter are internal
+* **big:** BigDecimalMath functions are top-level and extension functions, exported to JS
+
+### Features
+
+* **big:** BigComplex (with BigComplexMath as members) and BigDecimalStream (as sequences) ([589ae14](https://github.com/gciatto/kt-math/commit/589ae14c4fe7d5aa18cb2115096a5517af70c72b))
+* BigInteger.getIntBits and getLongBits ([fa68a0a](https://github.com/gciatto/kt-math/commit/fa68a0af19ae207b7eda760ba1551ba700d901a6))
+* BigInteger.of(bytes) and BigInteger.of(signum, magnitude) factories ([7d43bf4](https://github.com/gciatto/kt-math/commit/7d43bf4060dbe58d468b71cf629776bcd60e007c))
+* **big:** k-th complex roots, BigComplex.root(n, k, mc) ([0719072](https://github.com/gciatto/kt-math/commit/0719072a2d028c3cc86365133779c1c3270489a1))
+* **js:** an ES module exporting every declaration by name, with static companion members ([929b23f](https://github.com/gciatto/kt-math/commit/929b23fe4b2c2d1c0b2e8cc07242561df5253c21))
+
+### Bug Fixes
+
+* **big:** complex sqrt of 0 and of negative reals, hence asin and acos of many reals ([6386755](https://github.com/gciatto/kt-math/commit/6386755d79d3db2627b0f1848cd8d516674a1f1b))
+* BigDecimal.div with a MathContext and round are non-null ([15a5e1e](https://github.com/gciatto/kt-math/commit/15a5e1e14ee7003cbbebc119a7b5b7807359a550))
+* **deps:** kotlin-reflect is no longer an API dependency ([8619284](https://github.com/gciatto/kt-math/commit/86192846c34557a337ba84b19060e62f9c9a9c92))
+* lock, DEBUG and JavaBigDecimalAdapter are internal ([7979f76](https://github.com/gciatto/kt-math/commit/7979f76e8cdd35bf960389e74d9714cac43a135b))
+* no unnecessary nulls in the API: MathContext arguments default to UNLIMITED, plus and times take non-null operands ([1864ba6](https://github.com/gciatto/kt-math/commit/1864ba6f19bfe27f0753d03854737ad7590a8c7c))
+* pow, absoluteValue, unaryMinus and unaryPlus with a MathContext are non-null too ([88e7b98](https://github.com/gciatto/kt-math/commit/88e7b98cdc15ccf0ee0cb003c809925851586761))
+
+### Documentation
+
+* agent notes on BigComplex, BigDecimalStream and the big-math test classes ([a2a6d23](https://github.com/gciatto/kt-math/commit/a2a6d234749e289d755c400fa4890d68fa709056))
+* KDoc for every public declaration, enforced by detekt; extension functions documented as such ([65c005d](https://github.com/gciatto/kt-math/commit/65c005da5533e638f9701b7912b446128927c0fc))
+
+### Performance improvements
+
+* **native:** C kernels on 64-bit limbs for the BigInteger routines HotSpot intrinsifies ([cc73153](https://github.com/gciatto/kt-math/commit/cc73153d8a1a8d499594e799e19187f20788bfca))
+
+### Tests
+
+* **big:** BigComplex and decimal ranges against big-math, one test class per big-math class ([23d6e72](https://github.com/gciatto/kt-math/commit/23d6e72a34898e6356cc91196a5700982c985e47))
+* **big:** complex roots of non-positive reals, k-th roots, isIntValue and isLongValue limits ([57c3913](https://github.com/gciatto/kt-math/commit/57c391319eeda17938a92bb718fe78fa8e1468aa))
+* differential cases for Montgomery multiplication and long schoolbook products ([f0717da](https://github.com/gciatto/kt-math/commit/f0717da1f44adfde67fa78a5f05092bb1111ba3d))
+* differential tests of BigInteger.getIntBits and getLongBits ([8e47175](https://github.com/gciatto/kt-math/commit/8e47175e86325a9eda74a94c391e8b38846dd629))
+* differential tests of the byte-array BigInteger factories ([41ddca2](https://github.com/gciatto/kt-math/commit/41ddca242eeaa0aebb8491a9b4396cbdf165913e))
+* div with a MathContext is non-null in the TypeScript usage test ([0e256b0](https://github.com/gciatto/kt-math/commit/0e256b00a5c668e11510c189583306c0553113bc))
+* getIntBits and getLongBits in the Java, JS and C usage tests ([c4e8086](https://github.com/gciatto/kt-math/commit/c4e8086d13849969926c2180828e06ebeb93d664))
+* Java and C usage tests covering the whole API, checked by reflection and on the C header ([58ccb35](https://github.com/gciatto/kt-math/commit/58ccb35973dd4af9dd4ba94aa4a0e4ecb6c4adee))
+* MathContext.UNLIMITED instead of null in the Java and C usage tests ([4f6cc75](https://github.com/gciatto/kt-math/commit/4f6cc758f31886ede70f01f0f4c1275bdb257871))
+* one base class for the differential tests against java.math and big-math ([d0d8942](https://github.com/gciatto/kt-math/commit/d0d8942e358f901efdb3e1eabe289ace5993ea17))
+* the byte-array factories in the Java, JS and C usage tests and in TestBigFactory ([87d8061](https://github.com/gciatto/kt-math/commit/87d8061df948d8efca599425109a8360773c53aa))
+
+### Build and continuous integration
+
+* benchmarks in a dedicated source set, run by the benchmark task ([c24b602](https://github.com/gciatto/kt-math/commit/c24b6028edc2005677093dc345d3711c1147b636))
+* build and release on macOS, where cinterop can build the Apple klibs ([c7ed35c](https://github.com/gciatto/kt-math/commit/c7ed35c06419d7882f445a168e1fd81ce7411ae3))
+
+### Refactoring
+
+* **big:** BigDecimalMath functions are top-level and extension functions, exported to JS ([e441289](https://github.com/gciatto/kt-math/commit/e44128979f109a0656e49ef1ba619dc2a6c0b264))
+* **big:** isIntValue and isLongValue without exceptions; answer big-math's TODOs on pow and toDouble ([4ba3a5d](https://github.com/gciatto/kt-math/commit/4ba3a5d4d4b29692d5310ff7e2b88c188b3ad4e7))
+* one lock for every cache, CacheLock (lock is gone) ([ea9eace](https://github.com/gciatto/kt-math/commit/ea9eace4a77f3366fd21a7e6b262bfeef96df91b))
+
 ## [1.0.0](https://github.com/gciatto/kt-math/compare/0.10.2...1.0.0) (2026-11-03)
 
 ### ⚠ BREAKING CHANGES
