@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
-/** The `@JsExport`ed [bigInteger]/[bigDecimal] entry points, which accept any JS value. */
+/** The `@JsExport`ed [bigInteger]/[bigDecimal]/[bigRational] entry points, which accept any JS value. */
 class TestFactory {
     @Test
     fun bigIntegersAreNativeBigInts() {
@@ -47,5 +47,23 @@ class TestFactory {
         assertFailsWith<IllegalArgumentException> { bigDecimal(arrayOf<Any>("1.5", 2)) }
         assertFailsWith<NumberFormatException> { bigDecimal("abc") }
         assertFailsWith<IllegalArgumentException> { bigDecimal(null) }
+    }
+
+    @Test
+    fun bigRationalFromJsValues() {
+        assertEquals("1/3", bigRational("1/3").toRationalString())
+        assertEquals("1/10", bigRational(js("0.1")).reduce().toRationalString())
+        assertEquals("-2/3", bigRational(arrayOf<Any>(2, -3)).toRationalString())
+        assertEquals("5/7", bigRational(arrayOf<Any>("5", js("BigInt(7)"))).toRationalString())
+        assertFailsWith<IllegalArgumentException> { bigRational(arrayOf<Any>(1)) }
+        assertFailsWith<NumberFormatException> { bigRational("abc") }
+        assertFailsWith<IllegalArgumentException> { bigRational(null) }
+    }
+
+    @Test
+    fun defaultFactoryCreatesNativeBigInts() {
+        assertIs<JsBigInteger>(BigFactory.default.bigIntegerOf(1))
+        assertIs<JsBigInteger>(BigFactory.default.parseBigInteger("ff", 16))
+        assertIs<JsBigInteger>(BigFactory.default.bigRationalOf(1, 3).numeratorBigInteger)
     }
 }
