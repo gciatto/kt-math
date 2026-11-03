@@ -1,6 +1,8 @@
-package org.gciatto.kt.math.big
+package org.gciatto.kt.math
 
-/** A lock guarding one of big-math's caches (Java `synchronized` blocks). Not reentrant on every platform. */
+/**
+ * A lock guarding a cache (Java `synchronized` blocks): `synchronized` on the JVM, a spin lock elsewhere, not reentrant.
+ */
 internal expect class CacheLock() {
     fun <R> withLock(action: () -> R): R
 }

@@ -469,6 +469,7 @@ class BigRational private constructor(
         val TEN = BigRational(10)
 
         private val bernoulliCache = mutableListOf<BigRational>()
+        private val bernoulliCacheLock = CacheLock()
 
         private fun countDigits(number: BigInteger): Int {
             val factor = ln(2.0) / ln(10.0)
@@ -741,7 +742,7 @@ class BigRational private constructor(
                 return ZERO
             }
 
-            return lock(bernoulliCache) {
+            return bernoulliCacheLock.withLock {
                 val index = n / 2
 
                 if (bernoulliCache.size <= index) {
