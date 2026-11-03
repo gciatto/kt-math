@@ -4066,6 +4066,9 @@ internal class CommonBigInteger : BigInteger {
             if (z == null || z.size < xlen + ylen) {
                 z = IntArray(xlen + ylen)
             }
+            if (multiplyToLenKernel(x, xlen, y, ylen, z)) {
+                return z
+            }
 
             var carry: Long = 0
             run {
@@ -4346,6 +4349,9 @@ internal class CommonBigInteger : BigInteger {
             z: IntArray,
             zlen: Int,
         ): IntArray {
+            if (squareToLenKernel(x, len, z)) {
+                return z
+            }
             /*
              * The algorithm used here is adapted from Colin Plumb's C library.
              * Technique: Consider the partial products in the multiplication
@@ -4605,6 +4611,9 @@ internal class CommonBigInteger : BigInteger {
             inv: Long,
             product: IntArray,
         ): IntArray {
+            if (montgomeryMultiplyKernel(a, b, n, len, inv, product)) {
+                return product
+            }
             var product = product
             product = multiplyToLen(a, len, b, len, product)
             return montReduce(product, n, len, inv.toInt())
@@ -4617,6 +4626,9 @@ internal class CommonBigInteger : BigInteger {
             inv: Long,
             product: IntArray,
         ): IntArray {
+            if (montgomeryMultiplyKernel(a, a, n, len, inv, product)) {
+                return product
+            }
             var product = product
             product = squareToLen(a, len, product)
             return montReduce(product, n, len, inv.toInt())
