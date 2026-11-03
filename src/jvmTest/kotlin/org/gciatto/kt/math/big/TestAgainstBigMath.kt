@@ -111,36 +111,36 @@ class TestAgainstBigMath {
 
     private val unary: Map<String, Pair<(JavaBigDecimal, JavaMathContext) -> Any?, (BigDecimal, MathContext) -> Any?>> =
         mapOf(
-            "sqrt" to fn(JavaBigDecimalMath::sqrt, BigDecimalMath::sqrt),
-            "log" to fn(JavaBigDecimalMath::log, BigDecimalMath::log),
-            "log2" to fn(JavaBigDecimalMath::log2, BigDecimalMath::log2),
-            "log10" to fn(JavaBigDecimalMath::log10, BigDecimalMath::log10),
-            "exp" to fn(JavaBigDecimalMath::exp, BigDecimalMath::exp),
-            "sin" to fn(JavaBigDecimalMath::sin, BigDecimalMath::sin),
-            "cos" to fn(JavaBigDecimalMath::cos, BigDecimalMath::cos),
-            "tan" to fn(JavaBigDecimalMath::tan, BigDecimalMath::tan),
-            "asin" to fn(JavaBigDecimalMath::asin, BigDecimalMath::asin),
-            "acos" to fn(JavaBigDecimalMath::acos, BigDecimalMath::acos),
-            "atan" to fn(JavaBigDecimalMath::atan, BigDecimalMath::atan),
-            "cot" to fn(JavaBigDecimalMath::cot, BigDecimalMath::cot),
-            "acot" to fn(JavaBigDecimalMath::acot, BigDecimalMath::acot),
-            "sinh" to fn(JavaBigDecimalMath::sinh, BigDecimalMath::sinh),
-            "cosh" to fn(JavaBigDecimalMath::cosh, BigDecimalMath::cosh),
-            "tanh" to fn(JavaBigDecimalMath::tanh, BigDecimalMath::tanh),
-            "coth" to fn(JavaBigDecimalMath::coth, BigDecimalMath::coth),
-            "asinh" to fn(JavaBigDecimalMath::asinh, BigDecimalMath::asinh),
-            "acosh" to fn(JavaBigDecimalMath::acosh, BigDecimalMath::acosh),
-            "atanh" to fn(JavaBigDecimalMath::atanh, BigDecimalMath::atanh),
-            "acoth" to fn(JavaBigDecimalMath::acoth, BigDecimalMath::acoth),
-            "toDegrees" to fn(JavaBigDecimalMath::toDegrees, BigDecimalMath::toDegrees),
-            "toRadians" to fn(JavaBigDecimalMath::toRadians, BigDecimalMath::toRadians),
-            "reciprocal" to fn(JavaBigDecimalMath::reciprocal, BigDecimalMath::reciprocal),
-            "round" to fn(JavaBigDecimalMath::round, BigDecimalMath::round),
+            "sqrt" to fn(JavaBigDecimalMath::sqrt, ::sqrt),
+            "log" to fn(JavaBigDecimalMath::log, BigDecimal::log),
+            "log2" to fn(JavaBigDecimalMath::log2, BigDecimal::log2),
+            "log10" to fn(JavaBigDecimalMath::log10, BigDecimal::log10),
+            "exp" to fn(JavaBigDecimalMath::exp, BigDecimal::exp),
+            "sin" to fn(JavaBigDecimalMath::sin, BigDecimal::sin),
+            "cos" to fn(JavaBigDecimalMath::cos, BigDecimal::cos),
+            "tan" to fn(JavaBigDecimalMath::tan, BigDecimal::tan),
+            "asin" to fn(JavaBigDecimalMath::asin, BigDecimal::asin),
+            "acos" to fn(JavaBigDecimalMath::acos, BigDecimal::acos),
+            "atan" to fn(JavaBigDecimalMath::atan, BigDecimal::atan),
+            "cot" to fn(JavaBigDecimalMath::cot, BigDecimal::cot),
+            "acot" to fn(JavaBigDecimalMath::acot, BigDecimal::acot),
+            "sinh" to fn(JavaBigDecimalMath::sinh, BigDecimal::sinh),
+            "cosh" to fn(JavaBigDecimalMath::cosh, BigDecimal::cosh),
+            "tanh" to fn(JavaBigDecimalMath::tanh, BigDecimal::tanh),
+            "coth" to fn(JavaBigDecimalMath::coth, BigDecimal::coth),
+            "asinh" to fn(JavaBigDecimalMath::asinh, BigDecimal::asinh),
+            "acosh" to fn(JavaBigDecimalMath::acosh, BigDecimal::acosh),
+            "atanh" to fn(JavaBigDecimalMath::atanh, BigDecimal::atanh),
+            "acoth" to fn(JavaBigDecimalMath::acoth, BigDecimal::acoth),
+            "toDegrees" to fn(JavaBigDecimalMath::toDegrees, BigDecimal::toDegrees),
+            "toRadians" to fn(JavaBigDecimalMath::toRadians, BigDecimal::toRadians),
+            "reciprocal" to fn(JavaBigDecimalMath::reciprocal, BigDecimal::reciprocal),
+            "round" to fn(JavaBigDecimalMath::round, ::round),
             "roundWithTrailingZeroes" to
-                fn(JavaBigDecimalMath::roundWithTrailingZeroes, BigDecimalMath::roundWithTrailingZeroes),
+                fn(JavaBigDecimalMath::roundWithTrailingZeroes, BigDecimal::roundWithTrailingZeroes),
             "factorial" to
-                fn({ x, mc -> JavaBigDecimalMath.factorial(x, mc) }, { x, mc -> BigDecimalMath.factorial(x, mc) }),
-            "gamma" to fn(JavaBigDecimalMath::gamma, BigDecimalMath::gamma),
+                fn({ x, mc -> JavaBigDecimalMath.factorial(x, mc) }, { x, mc -> x.factorial(mc) }),
+            "gamma" to fn(JavaBigDecimalMath::gamma, BigDecimal::gamma),
         )
 
     // Huge arguments make these functions run (correctly, but) for too long: keep them to moderate values
@@ -161,7 +161,7 @@ class TestAgainstBigMath {
         }
         for (x in values) {
             same("unlimited exp($x)", { JavaBigDecimalMath.exp(jdec(x), JavaMathContext.UNLIMITED) }) {
-                BigDecimalMath.exp(dec(x), MathContext.UNLIMITED)
+                dec(x).exp(MathContext.UNLIMITED)
             }
         }
         assertNoFailures()
@@ -176,20 +176,20 @@ class TestAgainstBigMath {
             for (y in exponents) {
                 for (mc in contexts.take(3)) {
                     same("pow($x, $y, $mc)", { JavaBigDecimalMath.pow(jdec(x), jdec(y), mc.toJava()) }) {
-                        BigDecimalMath.pow(dec(x), dec(y), mc)
+                        dec(x).pow(dec(y), mc)
                     }
                     same("root($x, $y, $mc)", { JavaBigDecimalMath.root(jdec(x), jdec(y), mc.toJava()) }) {
-                        BigDecimalMath.root(dec(x), dec(y), mc)
+                        dec(x).root(dec(y), mc)
                     }
                     same("atan2($x, $y, $mc)", { JavaBigDecimalMath.atan2(jdec(x), jdec(y), mc.toJava()) }) {
-                        BigDecimalMath.atan2(dec(x), dec(y), mc)
+                        atan2(dec(x), dec(y), mc)
                     }
                 }
             }
             for (n in listOf(-3L, -1L, 0L, 1L, 2L, 7L, 100L, 12_345L)) {
                 for (mc in (contexts + MathContext.UNLIMITED).filter { it.precision > 0 || n <= 100 }) {
                     same("pow($x, $n: Long, $mc)", { JavaBigDecimalMath.pow(jdec(x), n, mc.toJava()) }) {
-                        BigDecimalMath.pow(dec(x), n, mc)
+                        dec(x).pow(n, mc)
                     }
                 }
             }
@@ -201,22 +201,22 @@ class TestAgainstBigMath {
     fun constantsAndIntegerFunctions() {
         for (precision in listOf(5, 30, 10, 100, 60, 300)) {
             val mc = MathContext(precision)
-            same("pi($precision)", { JavaBigDecimalMath.pi(mc.toJava()) }) { BigDecimalMath.pi(mc) }
-            same("e($precision)", { JavaBigDecimalMath.e(mc.toJava()) }) { BigDecimalMath.e(mc) }
+            same("pi($precision)", { JavaBigDecimalMath.pi(mc.toJava()) }) { pi(mc) }
+            same("e($precision)", { JavaBigDecimalMath.e(mc.toJava()) }) { e(mc) }
         }
         same(
             "pi(unlimited)",
             { JavaBigDecimalMath.pi(JavaMathContext.UNLIMITED) },
-        ) { BigDecimalMath.pi(MathContext.UNLIMITED) }
+        ) { pi(MathContext.UNLIMITED) }
         for (n in listOf(-1, 0, 1, 2, 5, 20, 99, 100, 101, 250, 1_000)) {
-            same("factorial($n: Int)", { JavaBigDecimalMath.factorial(n) }) { BigDecimalMath.factorial(n) }
+            same("factorial($n: Int)", { JavaBigDecimalMath.factorial(n) }) { factorial(n) }
         }
         for (n in listOf(-1, 0, 1, 2, 3, 4, 10, 20, 31, 40)) {
             for (mc in contexts) {
                 same(
                     "bernoulli($n, $mc)",
                     { JavaBigDecimalMath.bernoulli(n, mc.toJava()) },
-                ) { BigDecimalMath.bernoulli(n, mc) }
+                ) { bernoulli(n, mc) }
             }
         }
         assertNoFailures()
@@ -225,23 +225,23 @@ class TestAgainstBigMath {
     @Test
     fun helpers() {
         for (x in values) {
-            same("isIntValue($x)", { JavaBigDecimalMath.isIntValue(jdec(x)) }) { BigDecimalMath.isIntValue(dec(x)) }
-            same("isLongValue($x)", { JavaBigDecimalMath.isLongValue(jdec(x)) }) { BigDecimalMath.isLongValue(dec(x)) }
+            same("isIntValue($x)", { JavaBigDecimalMath.isIntValue(jdec(x)) }) { dec(x).isIntValue() }
+            same("isLongValue($x)", { JavaBigDecimalMath.isLongValue(jdec(x)) }) { dec(x).isLongValue() }
             same(
                 "isDoubleValue($x)",
                 { JavaBigDecimalMath.isDoubleValue(jdec(x)) },
-            ) { BigDecimalMath.isDoubleValue(dec(x)) }
-            same("mantissa($x)", { JavaBigDecimalMath.mantissa(jdec(x)) }) { BigDecimalMath.mantissa(dec(x)) }
-            same("exponent($x)", { JavaBigDecimalMath.exponent(jdec(x)) }) { BigDecimalMath.exponent(dec(x)) }
+            ) { dec(x).isDoubleValue() }
+            same("mantissa($x)", { JavaBigDecimalMath.mantissa(jdec(x)) }) { dec(x).mantissa() }
+            same("exponent($x)", { JavaBigDecimalMath.exponent(jdec(x)) }) { dec(x).exponent() }
             same("significantDigits($x)", { JavaBigDecimalMath.significantDigits(jdec(x)) }) {
-                BigDecimalMath.significantDigits(dec(x))
+                dec(x).significantDigits()
             }
             same(
                 "integralPart($x)",
                 { JavaBigDecimalMath.integralPart(jdec(x)) },
-            ) { BigDecimalMath.integralPart(dec(x)) }
+            ) { dec(x).integralPart() }
             same("fractionalPart($x)", { JavaBigDecimalMath.fractionalPart(jdec(x)) }) {
-                BigDecimalMath.fractionalPart(dec(x))
+                dec(x).fractionalPart()
             }
         }
         val digits = (1..3_000).joinToString("") { ((it * 7) % 10).toString() }
@@ -260,10 +260,10 @@ class TestAgainstBigMath {
             same(
                 "toBigDecimal(${s.take(40)})",
                 { JavaBigDecimalMath.toBigDecimal(s) },
-            ) { BigDecimalMath.toBigDecimal(s) }
+            ) { toBigDecimal(s) }
             for (mc in contexts) {
                 same("toBigDecimal(${s.take(40)}, $mc)", { JavaBigDecimalMath.toBigDecimal(s, mc.toJava()) }) {
-                    BigDecimalMath.toBigDecimal(s, mc)
+                    toBigDecimal(s, mc)
                 }
             }
         }
