@@ -1869,7 +1869,7 @@ internal class CommonBigDecimal : BigDecimal {
     override fun pow(
         n: Int,
         mc: MathContext,
-    ): CommonBigDecimal? {
+    ): CommonBigDecimal {
         if (mc.precision == 0) {
             return pow(n)
         }
@@ -1927,7 +1927,7 @@ internal class CommonBigDecimal : BigDecimal {
             return if (signum < 0) unaryMinus() else this
         }
 
-    override fun absoluteValue(mc: MathContext): CommonBigDecimal? = if (signum < 0) unaryMinus(mc) else unaryPlus(mc)
+    override fun absoluteValue(mc: MathContext): CommonBigDecimal = if (signum < 0) unaryMinus(mc) else unaryPlus(mc)
 
     override operator fun unaryMinus(): CommonBigDecimal =
         if (_intCompact == INFLATED) {
@@ -1936,7 +1936,7 @@ internal class CommonBigDecimal : BigDecimal {
             of(-_intCompact, _scale, _precision)
         }
 
-    override fun unaryMinus(mc: MathContext): CommonBigDecimal? = unaryMinus().unaryPlus(mc)
+    override fun unaryMinus(mc: MathContext): CommonBigDecimal = unaryMinus().unaryPlus(mc)
 
     override operator fun unaryPlus(): CommonBigDecimal = this
 
