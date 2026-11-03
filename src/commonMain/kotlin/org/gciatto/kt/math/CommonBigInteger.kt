@@ -3664,7 +3664,7 @@ internal class CommonBigInteger : BigInteger {
         @JsName("ofIntArray")
         @JvmStatic
         fun of(other: IntArray): CommonBigInteger =
-            if (other[0] > 0) CommonBigInteger(other, 1) else CommonBigInteger(other)
+            if (other.isNotEmpty() && other[0] > 0) CommonBigInteger(other, 1) else CommonBigInteger(other)
 
         // Constants
 

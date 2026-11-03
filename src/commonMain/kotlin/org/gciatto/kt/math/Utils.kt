@@ -13,19 +13,19 @@ internal fun log(lazyObject: () -> Any) {
     }
 }
 
-internal fun String.getRadix(): Pair<Int, String> =
-    when {
-        this.contains("0B", ignoreCase = true) -> {
-            Pair(2, this.replaceFirst("0B", "").replaceFirst("0b", ""))
+/** The radix of a number with an optional `0b`/`0o`/`0x` prefix (after the sign, any case), and its digits. */
+internal fun String.getRadix(): Pair<Int, String> {
+    val sign = if (startsWith('-') || startsWith('+')) take(1) else ""
+    val body = substring(sign.length)
+    val radix =
+        when (body.take(2).lowercase()) {
+            "0b" -> 2
+            "0o" -> 8
+            "0x" -> 16
+            else -> return Pair(10, this)
         }
-        this.contains("0O", ignoreCase = true) -> {
-            Pair(8, this.replaceFirst("0O", "").replaceFirst("0o", ""))
-        }
-        this.contains("0X", ignoreCase = true) -> {
-            Pair(16, this.replaceFirst("0X", "").replaceFirst("0x", ""))
-        }
-        else -> Pair(10, this)
-    }
+    return Pair(radix, sign + body.substring(2))
+}
 
 internal const val PI_STRING =
     "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862" +

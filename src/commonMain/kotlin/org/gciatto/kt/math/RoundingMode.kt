@@ -167,11 +167,11 @@ enum class RoundingMode(
          *
          * @param rm legacy integer rounding mode code to convert, from `0` ([UP]) to `7` ([UNNECESSARY]).
          * @return the [RoundingMode] corresponding to [rm].
-         * @throws IndexOutOfBoundsException if [rm] is out of range (on the JVM and native targets: on JS, the range is
-         * not checked).
+         * @throws IllegalArgumentException if [rm] is out of range, as Java's `RoundingMode.valueOf(int)`.
          */
         @JvmStatic
         @JsName("valueOfInt")
-        fun valueOf(rm: Int): RoundingMode = values()[rm]
+        fun valueOf(rm: Int): RoundingMode =
+            entries.getOrNull(rm) ?: throw IllegalArgumentException("argument out of range: $rm")
     }
 }
