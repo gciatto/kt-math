@@ -36,6 +36,9 @@ the `big-math` module (a port of big-math's `BigDecimalMath`, see below). Build 
   (`NonJvmUtils.kt`); `src/jsMain` and `src/nativeMain`: the few platform specifics (logging, casts, `lock`), plus
   the `@JsExport`ed JS entry points (`Factory.kt`).
 - Targets: JVM, JS, and every non-deprecated Kotlin/Native target (listed in `build.gradle.kts`).
+- One top-level type per file, named after it (`expect`/`actual` objects included: `BigIntegers.kt` in `commonMain` and
+  in each platform source set). Top-level functions and constants may share a file with the type that uses them, or
+  live in `*Utils.kt`/`*Factories.kt`/`Conversions.kt`.
 - `BigInteger` implementations: `java.math` on the JVM (`JavaBigIntegerAdapter`), native JS BigInts on JS
   (`JsBigInteger`, `src/jsMain`), `CommonBigInteger` on native targets. `BigDecimal`: `java.math` on the JVM, the
   Kotlin `CommonBigDecimal` elsewhere, which works with *any* `BigInteger` through its interface (created with
@@ -72,11 +75,12 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
 ## Testing
 
 - On the JVM, `BigInteger.of`/`BigDecimal.of` delegate to `java.math` (`JavaBigIntegerAdapter`/`JavaBigDecimalAdapter`),
-  so the common implementation only runs in JS tests and in `src/jvmTest/.../TestAgainstJavaMath.kt`. That test runs
-  every operation through the shared interfaces on both `Common*` and the adapters, and compares results and
-  exception types; failures are reported as one example per operation. Extend it (inputs or operations) rather than
-  writing hand-picked expectations. The file holds a `sealed` base class (helpers, shared inputs) and one subclass per
-  type, to stay under detekt's `LargeClass`/`LongMethod` limits.
+  so the common implementation only runs in JS tests and in the JVM tests against `java.math`
+  (`src/jvmTest/.../TestIntegersAgainstJavaMath.kt`, `TestDecimalsAgainstJavaMath.kt`). They run every operation
+  through the shared interfaces on both `Common*` and the adapters, and compare results and exception types; failures
+  are reported as one example per operation. Extend them (inputs or operations) rather than writing hand-picked
+  expectations. They extend the `sealed` class `TestAgainstJavaMath` (helpers, shared inputs), one subclass per type, to
+  stay under detekt's `LargeClass`/`LongMethod` limits.
 - Expectations come from the JDK running the tests, and CI runs 17, 21 and 25: the port follows JDK 17 (the
   `sqrt` algorithm, exponent limits in string parsing), so cases where JDK versions disagree among themselves are skipped
   or compared by value (e.g. `movePointLeft(0)` on negative scales, the scale of exact `sqrt` results; JDK 26+
