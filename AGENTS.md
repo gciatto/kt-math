@@ -67,7 +67,7 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
 - **Docs**: `dokkaGenerateHtml` (per module); the website is `:documentation:assembleSite` (MkDocs Material pages
   from `documentation/docs/` plus the aggregated Dokka API under `/api/`; needs `pip install mkdocs-material`), built
   by `.github/workflows/docs.yml` on every run and published on GitHub Pages from `master`. Its code examples are
-  quoted from the usage tests (`--8<-- [start:x]` markers in `TestKotlinUsage`, `TestJavaUsage`, `usage.test.cjs`,
+  quoted from the usage tests (`--8<-- [start:x]` markers in `TestKotlinUsage`, `TestJavaUsage`, `usage.test.mjs`,
   `usage.c`, big-math's `TestKnownValues`): keep the markers when editing those tests. `mkdocs build --strict` fails on
   broken links and missing snippets. **Publishing dry-run**: `publishAllPublicationsToProjectLocalRepository
   zipMavenCentralPortalPublication releaseMavenCentralPortalPublication --dry-run`.
@@ -100,14 +100,27 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   is true for every JS number. Catch `Throwable`, not `Exception`, to see native errors. Kotlin has no BigInt type:
   `JsBigInteger` stores a `dynamic`, whose arithmetic operators compile to JS ones, and uses `js()` for the rest; `js()`
   supports neither BigInt literals (`0n`: use `BigInt(0)`) nor `**`.
-- Usage tests: the API as other languages see it, part of `check`: `src/jvmTest/java` (JUnit 4, compiled with the
-  Kotlin JVM tests: needs `@JvmStatic`/`@JvmField`/`@JvmOverloads` where Java would otherwise see `Companion` or miss
-  default arguments), `src/jsUsageTest` (`jsUsageTest`: Node's test runner on the npm package from
-  `assembleJsPackage`; `Comparable` isn't exported to JS, hence the `compare` members, `compareTo` in JS; it first
-  runs `tsUsageTest`, which type-checks `usage.ts` against the package's `kt-math.d.ts` with Kotlin's own `tsc`), and
-  `src/nativeUsageTest/c` (`nativeUsageTest`: the host's `cc` against the Kotlin/Native shared library and header of
-  linuxX64 or macosArm64; overloads get trailing underscores in C, so adding an overload may rename others there).
-  Without Xcode, cross-link `linkKtmathDebugSharedLinuxX64` and build the C file in a container (e.g. `gcc` image).
+- Usage tests: the API as other languages see it, part of `check`, each covering the *whole* public API of its
+  language: one `// api:<Type>` section per type, which must mention every member of the type (checked by
+  `TestJavaUsageCoverage` via reflection, by the last test of `usage.test.mjs` via `api-coverage.mjs` on the `.d.mts`,
+  by `api_coverage.py` on the C header, as `KT_MATH.<path>(` calls). A new public declaration means a new line in the
+  Java, JS and C usage tests.
+  - `src/jvmTest/java` (JUnit 4, compiled with the Kotlin JVM tests: needs `@JvmStatic`/`@JvmField`/`@JvmOverloads`
+    where Java would otherwise see `Companion` or miss default arguments).
+  - `src/jsUsageTest` (`jsUsageTest`: Node's test runner, with the npm package from `assembleJsPackage` copied into
+    `build/jsUsageTest/node_modules/kt-math`, so the tests `import ... from "kt-math"`; it first runs `tsUsageTest`,
+    which type-checks `usage.mts` with Kotlin's own `tsc`). The package is an ES module (`useEsModules()`), exporting
+    every declaration flat, under its own (`@JsName`) name: exported names must be unique across packages. Companion
+    members are `@JsStatic` (`BigInteger.of(1)`; Kotlin/JS emits invalid TypeScript for a static named `default`,
+    hence `BigFactory.DEFAULT`). Members JS can't use are `@JsExport.Ignore`d (`toChar`, `Random` and `Iterator` ones),
+    and overrides of non-exported Kotlin interfaces are minified in JS (hence `BigIntegerRange.first`/`last`).
+    `Comparable` isn't exported to JS, hence the `compare` members, `compareTo` in JS.
+  - `src/nativeUsageTest/c` (`nativeUsageTest`: the host's `cc` against the Kotlin/Native shared library and header of
+    linuxX64 or macosArm64; overloads get trailing underscores in C, so adding an overload may rename others there).
+    Without Xcode, cross-link `linkKtmathDebugSharedLinuxX64` and build the C file in an amd64 container, e.g.
+    `docker run --rm --platform linux/amd64 -v $PWD/build/bin/linuxX64/ktmathDebugShared:/ktlib -v
+    $PWD/src/nativeUsageTest/c:/src gcc:14 sh -c 'cc -Wall -Werror -I /ktlib -o /tmp/u /src/usage.c -L /ktlib -lktmath
+    -Wl,-rpath,/ktlib && /tmp/u'` (don't mount on `/lib`), and run `api_coverage.py <header> <usage.c>`.
 - Coverage: `./gradlew jvmTest koverXmlReport` (or `koverHtmlReport`), reports under `build/reports/kover/`. JVM-only:
   JS coverage is not measured.
 - Bug patterns found in the port, worth grepping for when something diverges from the JDK: Java expressions with

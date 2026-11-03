@@ -45,6 +45,19 @@ of the interfaces:
 --8<-- "src/jvmTest/java/org/gciatto/kt/math/TestJavaUsage.java:bigRationals"
 ```
 
+## Complex numbers and functions
+
+big-math's functions are static methods of the `BigDecimalMath` class, as in big-math; `BigComplex` has them as
+methods:
+
+```java
+--8<-- "src/jvmTest/java/org/gciatto/kt/math/TestJavaUsage.java:bigDecimalMath"
+```
+
+```java
+--8<-- "src/jvmTest/java/org/gciatto/kt/math/TestJavaUsage.java:bigComplexes"
+```
+
 ## Factories and conversions
 
 The factory is `BigFactory.getDefault()`; the conversions of Java numbers and strings are static methods of the
@@ -60,7 +73,8 @@ The factory is `BigFactory.getDefault()`; the conversions of Java numbers and st
 
 ## With the Java standard library
 
-`BigInteger`s, `BigDecimal`s and `BigRational`s are `Comparable`, and integer ranges are `Iterable`:
+`BigInteger`s, `BigDecimal`s and `BigRational`s are `Comparable`, and integer ranges are `Iterable`; `JvmUtils`
+converts to and from `java.math`:
 
 ```java
 --8<-- "src/jvmTest/java/org/gciatto/kt/math/TestJavaUsage.java:javaInterop"
