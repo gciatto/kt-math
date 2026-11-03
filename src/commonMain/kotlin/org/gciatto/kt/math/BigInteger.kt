@@ -502,6 +502,13 @@ interface BigInteger : Comparable<BigInteger> {
     override operator fun compareTo(other: BigInteger): Int
 
     /**
+     * The same as [compareTo] (negative, zero or positive as this is less than, equal to or greater than [other]),
+     * callable from JS as `compareTo`: [Comparable] isn't exported to JS (KT-83009), so [compareTo] isn't either.
+     */
+    @JsName("compareTo")
+    fun compare(other: BigInteger): Int = compareTo(other)
+
+    /**
      * Compares this BigInteger with the specified Object for equality.
      *
      * @param other Object to which this BigInteger is to be compared.
