@@ -11,8 +11,8 @@ comes from the `io.github.gciatto.kt-mpp.*` plugins (see `build.gradle.kts`), co
 - `src/jvmMain`: adapters delegating to `java.math` (`JavaBigIntegerAdapter`, `JavaBigDecimalAdapter`) and the
   `actual` factories (`JvmUtils.kt`); `src/nonJvmMain` (shared by JS and every native target, a custom group of
   the default hierarchy template in `build.gradle.kts`): the `actual` factories using the Kotlin implementation
-  (`NonJvmUtils.kt`); `src/jsMain` and `src/nativeMain`: the few platform specifics (logging, casts, `lock`), plus
-  the `@JsExport`ed JS entry points (`Factory.kt`).
+  (`NonJvmUtils.kt`); `src/jsMain` and `src/nativeMain`: the few platform specifics (logging, casts, `lock`, the
+  native C kernels), plus the `@JsExport`ed JS entry points (`Factory.kt`).
 - Targets: JVM, JS, and every non-deprecated Kotlin/Native target (listed in `build.gradle.kts`).
 - `BigInteger` implementations: `java.math` on the JVM (`JavaBigIntegerAdapter`), native JS BigInts on JS
   (`JsBigInteger`, `src/jsMain`), `CommonBigInteger` on native targets. `BigDecimal`: `java.math` on the JVM, the
@@ -83,9 +83,18 @@ Don't run `./gradlew tasks --all`; these names (from `.github/workflows/`, the a
   cross-linked (`./gradlew linkDebugTestLinuxArm64`) and run in a container, passing the differential cases:
   `docker run --rm -e KT_MATH_DIFFERENTIAL_CASES=/c.tsv -v $PWD/build/differential/cases.tsv:/c.tsv -v
   $PWD/build/bin/linuxArm64/debugTest:/t ubuntu /t/test.kexe` (with colima, mount paths under the home directory).
-- Apple klibs are cross-compiled on Linux (Kotlin's default), so releases keep running on Ubuntu; CI's build job
-  runs `assemble`, which builds every klib and shared-metadata jar as publishing does (without signing). Run it
-  locally too when touching source sets: the metadata compilations aren't part of `check`.
+- On native targets, `CommonBigInteger` hands the routines HotSpot intrinsifies in `java.math` (`implMultiplyToLen`,
+  `implSquareToLen`, `implMontgomeryMultiply`/`Square`) to C kernels on 64-bit limbs
+  (`src/nativeInterop/cinterop/kernels.def`, through the `*Kernel` expect functions of `Utils.kt`, which return
+  `false` on JVM/JS and where C lacks `unsigned __int128`, i.e. 32-bit targets). Their results must equal the Kotlin
+  code's bit by bit (e.g. Montgomery results fully reduced): the differential cases check them, so cover new kernel
+  paths there (lengths, odd moduli).
+- cinterop for Apple targets needs Xcode (their SDKs), so Apple klibs can't be cross-compiled on Linux: CI's build
+  and release jobs run on macOS. The build job runs `assemble`, which builds every klib and shared-metadata jar as
+  publishing does (without signing). Run it locally too when touching source sets: the metadata compilations aren't
+  part of `check`. On Linux, Apple targets are just skipped (`kotlin.native.ignoreDisabledTargets`); on a Mac without
+  Xcode, their cinterop tasks and `compileNativeMainKotlinMetadata` (the cinterops are commonized) fail: build the
+  other targets' tasks explicitly (e.g. `compileKotlinLinuxX64`, `linkDebugTestLinuxArm64`).
 - kt-mpp's `detektAll` only covers JVM and JS: `build.gradle.kts` adds `detektLinuxX64Main`/`Test`, which cover
   `commonMain`, `nonJvmMain` and `nativeMain`.
 

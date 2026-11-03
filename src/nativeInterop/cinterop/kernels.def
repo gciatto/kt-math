@@ -1,0 +1,170 @@
+# C versions of the CommonBigInteger routines that HotSpot replaces with intrinsics in java.math.BigInteger. They
+# take the Kotlin magnitudes (big-endian Int arrays) and compute on 64-bit limbs, with 128-bit products: Kotlin has no
+# 64x64->128 multiplication. Each returns 0, leaving the work to the Kotlin code, where unsigned __int128 is missing
+# (32-bit targets) or memory can't be allocated.
+package = org.gciatto.kt.math.kernels
+---
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef __SIZEOF_INT128__
+typedef unsigned __int128 ktm_u128;
+#define KTM_STACK_LIMBS 2048
+
+/* Big-endian 32-bit words s[0, len) into little-endian 64-bit limbs d[0, (len + 1) / 2). */
+static void ktm_load(uint64_t *d, const int32_t *s, int32_t len) {
+    for (int32_t i = 0, lo = len - 1; lo >= 0; i++, lo -= 2) {
+        d[i] = (uint32_t) s[lo] | (lo > 0 ? (uint64_t) (uint32_t) s[lo - 1] << 32 : 0);
+    }
+}
+
+/* The len least significant 32-bit words of the limbs s, big-endian, into d[0, len). */
+static void ktm_store(int32_t *d, const uint64_t *s, int32_t len) {
+    for (int32_t i = 0; i < len; i++) {
+        d[len - 1 - i] = (int32_t) (s[i >> 1] >> ((i & 1) << 5));
+    }
+}
+
+/* z[0, xn + yn) = x * y; z must not overlap x or y. */
+static void ktm_mul(uint64_t *z, const uint64_t *x, int32_t xn, const uint64_t *y, int32_t yn) {
+    memset(z, 0, (size_t) (xn + yn) * sizeof(uint64_t));
+    for (int32_t i = 0; i < xn; i++) {
+        uint64_t xi = x[i], carry = 0;
+        for (int32_t j = 0; j < yn; j++) {
+            ktm_u128 p = (ktm_u128) xi * y[j] + z[i + j] + carry;
+            z[i + j] = (uint64_t) p;
+            carry = (uint64_t) (p >> 64);
+        }
+        z[i + yn] = carry;
+    }
+}
+
+/* z[0, 2n) = x * x, computing each cross product once; z must not overlap x. */
+static void ktm_sqr(uint64_t *z, const uint64_t *x, int32_t n) {
+    memset(z, 0, (size_t) (2 * n) * sizeof(uint64_t));
+    for (int32_t i = 0; i < n; i++) {
+        uint64_t xi = x[i], carry = 0;
+        for (int32_t j = i + 1; j < n; j++) {
+            ktm_u128 p = (ktm_u128) xi * x[j] + z[i + j] + carry;
+            z[i + j] = (uint64_t) p;
+            carry = (uint64_t) (p >> 64);
+        }
+        z[i + n] = carry;
+    }
+    uint64_t shifted = 0, carry = 0;
+    for (int32_t i = 0; i < 2 * n; i++) { /* z = 2 * z + the squares of the limbs, on the diagonal */
+        uint64_t w = z[i], d = (i & 1) ? (uint64_t) (((ktm_u128) x[i >> 1] * x[i >> 1]) >> 64)
+                                       : (uint64_t) ((ktm_u128) x[i >> 1] * x[i >> 1]);
+        ktm_u128 s = (ktm_u128) ((w << 1) | shifted) + d + carry;
+        shifted = w >> 63;
+        z[i] = (uint64_t) s;
+        carry = (uint64_t) (s >> 64);
+    }
+}
+
+static uint64_t *ktm_alloc(uint64_t *stack, size_t limbs) {
+    return limbs <= KTM_STACK_LIMBS ? stack : (uint64_t *) malloc(limbs * sizeof(uint64_t));
+}
+
+static void ktm_free(uint64_t *stack, uint64_t *buffer) {
+    if (buffer != stack) free(buffer);
+}
+#endif
+
+/* z[0, xlen + ylen) = x[0, xlen) * y[0, ylen), as CommonBigInteger.implMultiplyToLen. */
+static int ktm_multiply_to_len(const int32_t *x, int32_t xlen, const int32_t *y, int32_t ylen, int32_t *z) {
+#ifdef __SIZEOF_INT128__
+    int32_t xn = (xlen + 1) / 2, yn = (ylen + 1) / 2;
+    uint64_t stack[KTM_STACK_LIMBS];
+    uint64_t *xs = ktm_alloc(stack, (size_t) 2 * (xn + yn));
+    if (xs == NULL) return 0;
+    uint64_t *ys = xs + xn, *zs = ys + yn;
+    ktm_load(xs, x, xlen);
+    ktm_load(ys, y, ylen);
+    ktm_mul(zs, xs, xn, ys, yn);
+    ktm_store(z, zs, xlen + ylen);
+    ktm_free(stack, xs);
+    return 1;
+#else
+    return 0;
+#endif
+}
+
+/* z[0, 2 * len) = x[0, len) squared, as CommonBigInteger.implSquareToLen. */
+static int ktm_square_to_len(const int32_t *x, int32_t len, int32_t *z) {
+#ifdef __SIZEOF_INT128__
+    int32_t n = (len + 1) / 2;
+    uint64_t stack[KTM_STACK_LIMBS];
+    uint64_t *xs = ktm_alloc(stack, (size_t) 3 * n);
+    if (xs == NULL) return 0;
+    uint64_t *zs = xs + n;
+    ktm_load(xs, x, len);
+    ktm_sqr(zs, xs, n);
+    ktm_store(z, zs, 2 * len);
+    ktm_free(stack, xs);
+    return 1;
+#else
+    return 0;
+#endif
+}
+
+/*
+ * product[0, len) = a * b / 2^(32 * len) mod n, fully reduced, as CommonBigInteger.implMontgomeryMultiply: len is even,
+ * n odd, inv = -n^-1 mod 2^64. Coarsely integrated operand scanning, on len / 2 limbs.
+ */
+static int ktm_montgomery_multiply(
+    const int32_t *a, const int32_t *b, const int32_t *n, int32_t len, int64_t inv, int32_t *product
+) {
+#ifdef __SIZEOF_INT128__
+    int32_t s = len / 2;
+    uint64_t stack[KTM_STACK_LIMBS];
+    uint64_t *as = ktm_alloc(stack, (size_t) 4 * s + 2);
+    if (as == NULL) return 0;
+    uint64_t *bs = as + s, *ns = bs + s, *t = ns + s;
+    ktm_load(as, a, len);
+    ktm_load(bs, b, len);
+    ktm_load(ns, n, len);
+    memset(t, 0, (size_t) (s + 2) * sizeof(uint64_t));
+    for (int32_t i = 0; i < s; i++) {
+        uint64_t bi = bs[i], carry = 0;
+        for (int32_t j = 0; j < s; j++) {
+            ktm_u128 p = (ktm_u128) as[j] * bi + t[j] + carry;
+            t[j] = (uint64_t) p;
+            carry = (uint64_t) (p >> 64);
+        }
+        ktm_u128 top = (ktm_u128) t[s] + carry;
+        t[s] = (uint64_t) top;
+        t[s + 1] = (uint64_t) (top >> 64);
+        uint64_t m = t[0] * (uint64_t) inv;
+        carry = (uint64_t) (((ktm_u128) m * ns[0] + t[0]) >> 64);
+        for (int32_t j = 1; j < s; j++) {
+            ktm_u128 p = (ktm_u128) m * ns[j] + t[j] + carry;
+            t[j - 1] = (uint64_t) p;
+            carry = (uint64_t) (p >> 64);
+        }
+        top = (ktm_u128) t[s] + carry;
+        t[s - 1] = (uint64_t) top;
+        t[s] = t[s + 1] + (uint64_t) (top >> 64);
+    }
+    for (;;) { /* while t >= n: t -= n */
+        int32_t cmp = t[s] != 0;
+        for (int32_t j = s - 1; !cmp && j >= 0; j--) {
+            cmp = t[j] > ns[j] ? 1 : t[j] < ns[j] ? -1 : 0;
+        }
+        if (cmp < 0) break;
+        uint64_t borrow = 0;
+        for (int32_t j = 0; j < s; j++) {
+            ktm_u128 d = (ktm_u128) t[j] - ns[j] - borrow;
+            t[j] = (uint64_t) d;
+            borrow = (uint64_t) (d >> 64) & 1;
+        }
+        t[s] -= borrow;
+    }
+    ktm_store(product, t, len);
+    ktm_free(stack, as);
+    return 1;
+#else
+    return 0;
+#endif
+}
