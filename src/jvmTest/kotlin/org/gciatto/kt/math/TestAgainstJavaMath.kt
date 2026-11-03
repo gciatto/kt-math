@@ -3,7 +3,6 @@ package org.gciatto.kt.math
 import java.lang.reflect.InvocationTargetException
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
-import kotlin.test.fail
 import java.math.BigInteger as JavaBigInteger
 
 /**
@@ -12,35 +11,15 @@ import java.math.BigInteger as JavaBigInteger
  * interfaces on both [CommonBigInteger]/[CommonBigDecimal] and the `java.math` adapters, then comparing
  * results (as strings) and thrown exception types.
  */
-sealed class TestAgainstJavaMath {
+sealed class TestAgainstJavaMath : DifferentialTest("java.math", maxExampleLength = 400) {
     protected val rnd = Random(42)
-    private val failures = mutableListOf<Pair<String, String>>()
 
-    protected fun outcome(f: () -> Any?): String =
-        try {
-            render(f())
-        } catch (e: RuntimeException) {
-            "throws ${e::class.simpleName}"
-        }
-
-    private fun render(x: Any?): String =
-        when (x) {
-            is Array<*> -> x.joinToString(prefix = "[", postfix = "]") { render(it) }
-            is Pair<*, *> -> "(${render(x.first)}, ${render(x.second)})"
-            is ByteArray -> x.contentToString()
-            is BigDecimal -> "$x@${x.scale}"
-            else -> x.toString()
-        }
-
+    /** Records a mismatch if [common] has another outcome than [java]. */
     protected fun same(
         what: String,
         common: () -> Any?,
         java: () -> Any?,
-    ) {
-        val expected = outcome(java)
-        val actual = outcome(common)
-        if (expected != actual) failures += what.substringBefore('(') to "$what: expected <$expected>, got <$actual>"
-    }
+    ) = compare(what, java, common)
 
     /**
      * Calls the JDK 9+ method [name] on [receiver] by reflection (kt-math compiles against the Java 8 API, and its
@@ -60,16 +39,6 @@ sealed class TestAgainstJavaMath {
     }
 
     protected val isJdk9OrLater = JavaBigInteger::class.java.methods.any { it.name == "sqrt" }
-
-    protected fun assertNoFailures() {
-        if (failures.isEmpty()) return
-        // One example per operation, so a single run shows every broken operation.
-        val report =
-            failures.groupBy({ it.first }, { it.second }).entries.joinToString("\n") { (op, cases) ->
-                "[${cases.size}x $op] ${cases.first().take(MAX_EXAMPLE_LENGTH)}"
-            }
-        fail("${failures.size} mismatches against java.math:\n$report")
-    }
 
     // --- BigInteger ---------------------------------------------------------------------------------------------
 
@@ -94,8 +63,4 @@ sealed class TestAgainstJavaMath {
             listOf("1" + "0".repeat(100), "-" + "9".repeat(300), JavaBigInteger.valueOf(2).pow(4_096).toString())
 
     protected val allInts = smallInts + bigInts
-
-    protected companion object {
-        const val MAX_EXAMPLE_LENGTH = 400
-    }
 }
