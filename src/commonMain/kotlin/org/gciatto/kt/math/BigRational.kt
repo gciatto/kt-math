@@ -29,6 +29,7 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.js.JsStatic
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.math.absoluteValue
@@ -448,19 +449,23 @@ class BigRational private constructor(
     companion object {
         /** The value 0 as [BigRational]. */
         @JvmField
+        @JsStatic
         val ZERO = BigRational(0)
 
         /** The value 1 as [BigRational]. */
         @JvmField
+        @JsStatic
         val ONE = BigRational(1)
 
         /** The value 2 as [BigRational]. */
         @JvmField
+        @JsStatic
         val TWO = BigRational(2)
 
         /** The value 10 as [BigRational]. */
         @JvmField
         @Suppress("MagicNumber")
+        @JsStatic
         val TEN = BigRational(10)
 
         private val bernoulliCache = mutableListOf<BigRational>()
@@ -477,6 +482,7 @@ class BigRational private constructor(
         /** Creates a rational number of the specified int value. */
         @JvmStatic
         @JsName("ofInt")
+        @JsStatic
         fun valueOf(value: Int): BigRational {
             if (value == 0) {
                 return ZERO
@@ -490,6 +496,7 @@ class BigRational private constructor(
         /** Creates a rational number of the specified numerator/denominator int values. */
         @JvmStatic
         @JsName("ofFraction")
+        @JsStatic
         fun valueOf(
             numerator: Int,
             denominator: Int,
@@ -498,6 +505,7 @@ class BigRational private constructor(
         /** Creates a rational number of the specified integer and fraction parts: `valueOf(3, 1, 2)` is 3½. */
         @JvmStatic
         @JsName("ofMixedFraction")
+        @JsStatic
         fun valueOf(
             integer: Int,
             fractionNumerator: Int,
@@ -515,6 +523,7 @@ class BigRational private constructor(
         /** Creates a rational number of the specified numerator/denominator BigInteger values. */
         @JvmStatic
         @JsName("ofBigIntegerFraction")
+        @JsStatic
         fun valueOf(
             numerator: BigInteger,
             denominator: BigInteger,
@@ -523,6 +532,7 @@ class BigRational private constructor(
         /** Creates a rational number of the specified [BigInteger] value. */
         @JvmStatic
         @JsName("ofBigInteger")
+        @JsStatic
         fun valueOf(value: BigInteger): BigRational {
             if (value.compareTo(BigInteger.ZERO) == 0) {
                 return ZERO
@@ -540,6 +550,7 @@ class BigRational private constructor(
          */
         @JvmStatic
         @JsName("ofDouble")
+        @JsStatic
         fun valueOf(value: Double): BigRational {
             if (value == 0.0) {
                 return ZERO
@@ -559,6 +570,7 @@ class BigRational private constructor(
         /** Creates a rational number of the specified [BigDecimal] value. */
         @JvmStatic
         @JsName("ofBigDecimal")
+        @JsStatic
         fun valueOf(value: BigDecimal): BigRational {
             if (value.compareTo(BigDecimal.ZERO) == 0) {
                 return ZERO
@@ -586,6 +598,7 @@ class BigRational private constructor(
          */
         @JvmStatic
         @JsName("parse")
+        @JsStatic
         fun valueOf(string: String): BigRational {
             // as Java's String.split, drop trailing empty strings
             val strings =
@@ -611,6 +624,7 @@ class BigRational private constructor(
         @Suppress("CyclomaticComplexMethod")
         @JvmStatic
         @JsName("ofParts")
+        @JsStatic
         fun valueOf(
             positive: Boolean,
             integerPart: String?,
@@ -655,6 +669,7 @@ class BigRational private constructor(
         /** Creates a rational number of the specified numerator/denominator [BigDecimal] values. */
         @JvmStatic
         @JsName("ofBigDecimalFraction")
+        @JsStatic
         fun valueOf(
             numerator: BigDecimal,
             denominator: BigDecimal,
@@ -676,6 +691,7 @@ class BigRational private constructor(
         /** Returns the smallest of the specified rational numbers, or zero if none. */
         @JvmStatic
         @JsName("min")
+        @JsStatic
         fun min(vararg values: BigRational): BigRational {
             if (values.isEmpty()) {
                 return ZERO
@@ -690,6 +706,7 @@ class BigRational private constructor(
         /** Returns the largest of the specified rational numbers, or zero if none. */
         @JvmStatic
         @JsName("max")
+        @JsStatic
         fun max(vararg values: BigRational): BigRational {
             if (values.isEmpty()) {
                 return ZERO
@@ -713,6 +730,7 @@ class BigRational private constructor(
          */
         @JvmStatic
         @JsName("bernoulli")
+        @JsStatic
         fun bernoulli(n: Int): BigRational {
             if (n < 0) {
                 throw ArithmeticException("Illegal bernoulli(n) for n < 0: n = $n")
