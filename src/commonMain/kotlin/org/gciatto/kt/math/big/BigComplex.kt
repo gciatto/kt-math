@@ -501,7 +501,33 @@ class BigComplex private constructor(
         return x.pow(ONE.div(n, mc), mc).round(mathContext)
     }
 
-    // TODO add root() for the k'th root - https://math.stackexchange.com/questions/322481/principal-nth-root-of-a-complex-number
+    /**
+     * Calculates the [k]'th of the [n] [n]'th roots of this, *|this|<sup>1/n</sup> e<sup>i (angle + 2πk) / n</sup>*:
+     * `k = 0` is the principal root (as by [root]), the others follow counterclockwise; [k] is taken modulo [n].
+     *
+     * @throws ArithmeticException if [n] is not positive
+     */
+    @JsName("rootInt")
+    fun root(
+        n: Int,
+        k: Int,
+        mathContext: MathContext,
+    ): BigComplex {
+        // as asked by big-math: https://math.stackexchange.com/questions/322481/principal-nth-root-of-a-complex-number
+        if (n <= 0) {
+            throw ArithmeticException("Illegal root(x, n, k) for n <= 0: n = $n")
+        }
+        if (this == ZERO) {
+            return ZERO
+        }
+        val mc = MathContext(mathContext.precision + 4, mathContext.roundingMode)
+
+        val bigN = BigDecimal.of(n)
+        val branch = BigDecimal.of(k.mod(n)).times(pi(mc), mc).times(TWO, mc)
+        val radius = abs(mc).root(bigN, mc)
+        val angle = angle(mc).plus(branch, mc).divide(bigN, mc)
+        return valueOfPolar(radius, angle, mc).round(mathContext)
+    }
 
     override fun hashCode(): Int = 31 * re.stripTrailingZeros().hashCode() + im.stripTrailingZeros().hashCode()
 
