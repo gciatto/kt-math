@@ -16,7 +16,7 @@ on Java 8, 17, 21 and 25.
 named operations of `DifferentialOps` on `java.math` and writes cases and outcomes to a file, which the JS and native
 tests replay on Kt-Math. CI runs them on Node.js, Linux, Windows, macOS and the iOS, watchOS and tvOS simulators.
 
-The big-math module is compared with big-math itself in the same way.
+`BigDecimalMath` and `BigRational` are compared with big-math itself in the same way.
 
 ## Usage tests
 

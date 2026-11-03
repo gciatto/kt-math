@@ -56,5 +56,4 @@ gitHooks {
 
 rootProject.name = "kt-math"
 
-include(":big-math")
 include(":documentation")

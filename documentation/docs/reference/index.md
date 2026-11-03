@@ -1,7 +1,7 @@
 # Reference
 
 - [API reference](https://gciatto.github.io/kt-math/api/): every public class and function, generated from the
-  KDoc of the sources (both modules: `kt-math` and `kt-math-big-math`).
+  KDoc of the sources.
 - [Platforms](platforms.md): supported targets, and the implementation each one uses.
 
 ## Main types

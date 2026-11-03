@@ -3,7 +3,7 @@
 The website at <https://gciatto.github.io/kt-math/>: [MkDocs Material](https://squidfunk.github.io/mkdocs-material/)
 pages (`docs/`, organised per the [Divio system](https://docs.divio.com/documentation-system/): tutorials, how-to
 guides, reference, explanation) plus the [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) API reference
-of every module, mounted at `/api/`.
+mounted at `/api/`.
 
 ```bash
 pip install mkdocs-material
