@@ -1,10 +1,14 @@
 comments:
+  # The public API is documented (Dokka, on the website): tests and internal code need not be
   UndocumentedPublicClass:
-    active: false
+    active: true
+    excludes: ['**/*Test/**']
   UndocumentedPublicFunction:
-    active: false
+    active: true
+    excludes: ['**/*Test/**']
   UndocumentedPublicProperty:
-    active: false
+    active: true
+    excludes: ['**/*Test/**']
 
 complexity:
   TooManyFunctions:

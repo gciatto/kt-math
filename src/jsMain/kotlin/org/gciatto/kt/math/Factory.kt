@@ -1,5 +1,11 @@
 package org.gciatto.kt.math
 
+/**
+ * Converts any JS value into a [BigInteger]: a `bigint` (taken as is), a number (truncated towards zero), a string
+ * (as by [BigInteger.of]) or an array `[string, radix]`.
+ *
+ * @throws IllegalArgumentException if [x] is none of those, or a non-finite number
+ */
 @Suppress("USELESS_CAST")
 @JsName("bigInteger")
 @JsExport
@@ -23,6 +29,12 @@ fun bigInteger(x: dynamic): BigInteger {
     }
 }
 
+/**
+ * Converts any JS value into a [BigDecimal], through its string representation (so `0.1` is 0.1, unlike
+ * `BigDecimal.ofDouble(0.1)`), or an array `[value, mathContext]`, rounding `value` with `mathContext`.
+ *
+ * @throws NumberFormatException if the string representation isn't a number
+ */
 @JsName("bigDecimal")
 @JsExport
 fun bigDecimal(x: dynamic): BigDecimal =
@@ -38,6 +50,10 @@ fun bigDecimal(x: dynamic): BigDecimal =
         else -> throw IllegalArgumentException("Cannot convert $x into a BigDecimal")
     }
 
+/**
+ * Converts any JS value into a [BigRational], through its string representation (as by [BigRational.valueOf], e.g.
+ * `"1/3"` or `0.25`), or an array `[numerator, denominator]` of values accepted by [bigInteger].
+ */
 @JsName("bigRational")
 @JsExport
 fun bigRational(x: dynamic): BigRational =
