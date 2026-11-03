@@ -25,12 +25,11 @@
  */
 @file:Suppress("TooManyFunctions")
 
-package org.gciatto.kt.math.big
+package org.gciatto.kt.math
 
-import org.gciatto.kt.math.BigDecimal
-import org.gciatto.kt.math.BigInteger
-import org.gciatto.kt.math.MathContext
-import org.gciatto.kt.math.RoundingMode
+import kotlin.js.JsExport
+import kotlin.js.JsName
+import kotlin.jvm.JvmStatic
 import kotlin.math.absoluteValue
 import kotlin.math.ln
 import kotlin.math.max
@@ -55,6 +54,7 @@ import kotlin.math.max
  * Unlike the Java original, it doesn't extend `Number` (kt-math's numbers are interfaces): it has the same `toInt`,
  * `toLong`, `toFloat` and `toDouble` conversions, though.
  */
+@JsExport
 class BigRational private constructor(
     num: BigDecimal,
     denom: BigDecimal,
@@ -130,6 +130,7 @@ class BigRational private constructor(
     fun decrement(): BigRational = of(numerator.minus(denominator), denominator)
 
     /** Calculates the addition (+) of this rational number and the specified argument. */
+    @JsName("plus")
     operator fun plus(value: BigRational): BigRational {
         if (denominator == value.denominator) {
             return of(numerator.plus(value.numerator), denominator)
@@ -143,6 +144,7 @@ class BigRational private constructor(
     private fun plus(value: BigDecimal): BigRational = of(numerator.plus(value.times(denominator)), denominator)
 
     /** Calculates the addition (+) of this rational number and the specified argument. */
+    @JsName("plusBigInteger")
     operator fun plus(value: BigInteger): BigRational {
         if (value == BigInteger.ZERO) {
             return this
@@ -151,6 +153,7 @@ class BigRational private constructor(
     }
 
     /** Calculates the addition (+) of this rational number and the specified argument. */
+    @JsName("plusInt")
     operator fun plus(value: Int): BigRational {
         if (value == 0) {
             return this
@@ -159,6 +162,7 @@ class BigRational private constructor(
     }
 
     /** Calculates the subtraction (-) of this rational number and the specified argument. */
+    @JsName("minus")
     operator fun minus(value: BigRational): BigRational {
         if (denominator == value.denominator) {
             return of(numerator.minus(value.numerator), denominator)
@@ -172,6 +176,7 @@ class BigRational private constructor(
     private fun minus(value: BigDecimal): BigRational = of(numerator.minus(value.times(denominator)), denominator)
 
     /** Calculates the subtraction (-) of this rational number and the specified argument. */
+    @JsName("minusBigInteger")
     operator fun minus(value: BigInteger): BigRational {
         if (value == BigInteger.ZERO) {
             return this
@@ -180,6 +185,7 @@ class BigRational private constructor(
     }
 
     /** Calculates the subtraction (-) of this rational number and the specified argument. */
+    @JsName("minusInt")
     operator fun minus(value: Int): BigRational {
         if (value == 0) {
             return this
@@ -188,6 +194,7 @@ class BigRational private constructor(
     }
 
     /** Calculates the multiplication (*) of this rational number and the specified argument. */
+    @JsName("times")
     operator fun times(value: BigRational): BigRational {
         if (isZero || value.isZero) {
             return ZERO
@@ -212,6 +219,7 @@ class BigRational private constructor(
     }
 
     /** Calculates the multiplication (*) of this rational number and the specified argument. */
+    @JsName("timesBigInteger")
     operator fun times(value: BigInteger): BigRational {
         if (isZero || value.signum == 0) {
             return ZERO
@@ -227,9 +235,11 @@ class BigRational private constructor(
     }
 
     /** Calculates the multiplication (*) of this rational number and the specified argument. */
+    @JsName("timesInt")
     operator fun times(value: Int): BigRational = times(BigInteger.of(value))
 
     /** Calculates the division (/) of this rational number and the specified argument. */
+    @JsName("div")
     operator fun div(value: BigRational): BigRational {
         if (value == ONE) {
             return this
@@ -247,6 +257,7 @@ class BigRational private constructor(
     }
 
     /** Calculates the division (/) of this rational number and the specified argument. */
+    @JsName("divBigInteger")
     operator fun div(value: BigInteger): BigRational {
         if (value == BigInteger.ONE) {
             return this
@@ -256,6 +267,7 @@ class BigRational private constructor(
     }
 
     /** Calculates the division (/) of this rational number and the specified argument. */
+    @JsName("divInt")
     operator fun div(value: Int): BigRational = div(BigInteger.of(value))
 
     /** Whether this rational number is zero. */
@@ -310,6 +322,9 @@ class BigRational private constructor(
         return toBigDecimal().toDouble()
     }
 
+    /** Returns this rational number as a [BigInteger] (truncating the fraction part, as [toLong]). */
+    fun toBigInteger(): BigInteger = numeratorBigInteger / denominatorBigInteger
+
     /** Returns this rational number as a float value. */
     fun toFloat(): Float = toBigDecimal().toFloat()
 
@@ -323,13 +338,15 @@ class BigRational private constructor(
      * Returns this rational number as a [BigDecimal]: as many digits as the numerator and denominator have together,
      * at least 34 (`MathContext.DECIMAL128`).
      */
+    @JsName("toBigDecimal")
     fun toBigDecimal(): BigDecimal {
         val precision = max(precision(), MathContext.DECIMAL128.precision)
         return toBigDecimal(MathContext(precision))
     }
 
     /** Returns this rational number as a [BigDecimal] with the precision specified by the [MathContext]. */
-    fun toBigDecimal(mc: MathContext): BigDecimal = numerator.divide(denominator, mc)
+    @JsName("toBigDecimalWithContext")
+    fun toBigDecimal(mc: MathContext): BigDecimal = numerator.div(denominator, mc)!!
 
     override fun compareTo(other: BigRational): Int {
         if (this === other) {
@@ -435,8 +452,6 @@ class BigRational private constructor(
 
         private val bernoulliCache = mutableListOf<BigRational>()
 
-        private val bernoulliCacheLock = CacheLock()
-
         private fun countDigits(number: BigInteger): Int {
             val factor = ln(2.0) / ln(10.0)
             val digitCount = (factor * number.bitLength + 1).toInt()
@@ -447,6 +462,8 @@ class BigRational private constructor(
         }
 
         /** Creates a rational number of the specified int value. */
+        @JvmStatic
+        @JsName("ofInt")
         fun valueOf(value: Int): BigRational {
             if (value == 0) {
                 return ZERO
@@ -458,12 +475,16 @@ class BigRational private constructor(
         }
 
         /** Creates a rational number of the specified numerator/denominator int values. */
+        @JvmStatic
+        @JsName("ofFraction")
         fun valueOf(
             numerator: Int,
             denominator: Int,
         ): BigRational = of(BigDecimal.of(numerator), BigDecimal.of(denominator))
 
         /** Creates a rational number of the specified integer and fraction parts: `valueOf(3, 1, 2)` is 3½. */
+        @JvmStatic
+        @JsName("ofMixedFraction")
         fun valueOf(
             integer: Int,
             fractionNumerator: Int,
@@ -479,12 +500,16 @@ class BigRational private constructor(
         }
 
         /** Creates a rational number of the specified numerator/denominator BigInteger values. */
+        @JvmStatic
+        @JsName("ofBigIntegerFraction")
         fun valueOf(
             numerator: BigInteger,
             denominator: BigInteger,
         ): BigRational = of(BigDecimal.of(numerator), BigDecimal.of(denominator))
 
         /** Creates a rational number of the specified [BigInteger] value. */
+        @JvmStatic
+        @JsName("ofBigInteger")
         fun valueOf(value: BigInteger): BigRational {
             if (value.compareTo(BigInteger.ZERO) == 0) {
                 return ZERO
@@ -500,6 +525,8 @@ class BigRational private constructor(
          *
          * @throws NumberFormatException if the double value is infinite or NaN.
          */
+        @JvmStatic
+        @JsName("ofDouble")
         fun valueOf(value: Double): BigRational {
             if (value == 0.0) {
                 return ZERO
@@ -513,13 +540,12 @@ class BigRational private constructor(
             if (value.isNaN()) {
                 throw NumberFormatException("NaN")
             }
-            return valueOf(
-                org.gciatto.kt.math.big
-                    .valueOf(value),
-            )
+            return valueOf(BigDecimal.valueOf(value))
         }
 
         /** Creates a rational number of the specified [BigDecimal] value. */
+        @JvmStatic
+        @JsName("ofBigDecimal")
         fun valueOf(value: BigDecimal): BigRational {
             if (value.compareTo(BigDecimal.ZERO) == 0) {
                 return ZERO
@@ -545,15 +571,17 @@ class BigRational private constructor(
          * Creates a rational number of the specified string representation: a decimal number as accepted by
          * [BigDecimal.of], or the division of two of them (`"1/3"`, `"1.5/2.5"`).
          */
+        @JvmStatic
+        @JsName("parse")
         fun valueOf(string: String): BigRational {
             // as Java's String.split, drop trailing empty strings
-            // (an array, as in Java: "/" has no parts, and strings[0] throws ArrayIndexOutOfBoundsException on the JVM)
             val strings =
                 string
                     .split("/")
                     .dropLastWhile { it.isEmpty() }
                     .ifEmpty { if (string.isEmpty()) listOf("") else emptyList() }
-                    .toTypedArray()
+            // Java throws ArrayIndexOutOfBoundsException on "/" (no parts): JS doesn't check array bounds
+            if (strings.isEmpty()) throw NumberFormatException("Not a rational number: $string")
             var result = valueOfSimple(strings[0])
             for (i in 1 until strings.size) {
                 result = result.div(valueOfSimple(strings[i]))
@@ -568,6 +596,8 @@ class BigRational private constructor(
          * e.g. `valueOf(true, "3", "14", "15", "2")` is 314.1515... (3.1415... × 10²).
          */
         @Suppress("CyclomaticComplexMethod")
+        @JvmStatic
+        @JsName("ofParts")
         fun valueOf(
             positive: Boolean,
             integerPart: String?,
@@ -610,6 +640,8 @@ class BigRational private constructor(
         private const val DECIMAL_RADIX = 10
 
         /** Creates a rational number of the specified numerator/denominator [BigDecimal] values. */
+        @JvmStatic
+        @JsName("ofBigDecimalFraction")
         fun valueOf(
             numerator: BigDecimal,
             denominator: BigDecimal,
@@ -629,6 +661,8 @@ class BigRational private constructor(
         }
 
         /** Returns the smallest of the specified rational numbers, or zero if none. */
+        @JvmStatic
+        @JsName("min")
         fun min(vararg values: BigRational): BigRational {
             if (values.isEmpty()) {
                 return ZERO
@@ -641,6 +675,8 @@ class BigRational private constructor(
         }
 
         /** Returns the largest of the specified rational numbers, or zero if none. */
+        @JvmStatic
+        @JsName("max")
         fun max(vararg values: BigRational): BigRational {
             if (values.isEmpty()) {
                 return ZERO
@@ -662,6 +698,8 @@ class BigRational private constructor(
          *
          * @throws ArithmeticException if x < 0
          */
+        @JvmStatic
+        @JsName("bernoulli")
         fun bernoulli(n: Int): BigRational {
             if (n < 0) {
                 throw ArithmeticException("Illegal bernoulli(n) for n < 0: n = $n")
@@ -672,7 +710,7 @@ class BigRational private constructor(
                 return ZERO
             }
 
-            return bernoulliCacheLock.withLock {
+            return lock(bernoulliCache) {
                 val index = n / 2
 
                 if (bernoulliCache.size <= index) {

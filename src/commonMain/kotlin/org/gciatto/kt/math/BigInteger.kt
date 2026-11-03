@@ -581,6 +581,20 @@ interface BigInteger : Comparable<BigInteger> {
     @JsName("toByteArray")
     fun toByteArray(): ByteArray
 
+    /** This [BigInteger] as a [BigDecimal] with scale 0. */
+    @JsName("toBigDecimal")
+    fun toBigDecimal(): BigDecimal = BigDecimal.of(this)
+
+    /**
+     * The [BigDecimal] `this × 10^-scale`: this [BigInteger] as the unscaled value of a [BigDecimal] with [scale].
+     */
+    @JsName("toBigDecimalWithScale")
+    fun toBigDecimal(scale: Int): BigDecimal = BigDecimal.of(this, scale, 0)
+
+    /** This [BigInteger] as a [BigRational]. */
+    @JsName("toBigRational")
+    fun toBigRational(): BigRational = BigRational.valueOf(this)
+
     /**
      * Converts this BigInteger to an `int`.  This
      * conversion is analogous to a

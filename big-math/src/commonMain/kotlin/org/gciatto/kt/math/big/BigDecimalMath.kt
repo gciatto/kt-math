@@ -31,6 +31,7 @@ import org.gciatto.kt.math.BigDecimal
 import org.gciatto.kt.math.BigDecimal.Companion.ONE
 import org.gciatto.kt.math.BigDecimal.Companion.TEN
 import org.gciatto.kt.math.BigDecimal.Companion.ZERO
+import org.gciatto.kt.math.BigRational
 import org.gciatto.kt.math.MathContext
 import org.gciatto.kt.math.RoundingMode
 import org.gciatto.kt.math.big.internal.AsinCalculator
@@ -52,10 +53,10 @@ object BigDecimalMath {
     private val TWO = BigDecimal.of(2)
     private val THREE = BigDecimal.of(3)
     private val MINUS_ONE = BigDecimal.of(-1)
-    private val ONE_HALF = valueOf(0.5)
+    private val ONE_HALF = BigDecimal.valueOf(0.5)
     private val ONE_HUNDRED_EIGHTY = BigDecimal.of(180)
 
-    private val DOUBLE_MAX_VALUE = valueOf(Double.MAX_VALUE)
+    private val DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE)
 
     private var log2Cache: BigDecimal? = null
     private val log2CacheLock = CacheLock()
@@ -454,7 +455,7 @@ object BigDecimalMath {
             negative = !negative
         }
 
-        var result = pow(x.plus(bigA), x.plus(valueOf(0.5)), mc)
+        var result = pow(x.plus(bigA), x.plus(BigDecimal.valueOf(0.5)), mc)
         result = result.times(exp((-x).minus(bigA), mc))
         result = result.times(factor)
 
@@ -664,7 +665,7 @@ object BigDecimalMath {
         var result: BigDecimal
         var adaptivePrecision: Int
         if (isDoubleValue(x)) {
-            result = valueOf(sqrt(x.toDouble()))
+            result = BigDecimal.valueOf(sqrt(x.toDouble()))
             adaptivePrecision = EXPECTED_INITIAL_PRECISION
         } else {
             result = x.times(ONE_HALF, mathContext)
@@ -717,7 +718,7 @@ object BigDecimalMath {
         if (isDoubleValue(x) && isDoubleValue(n)) {
             val initialResult = x.toDouble().pow(1.0 / n.toDouble())
             if (initialResult.isFinite()) {
-                return rootUsingNewtonRaphson(x, n, valueOf(initialResult), mathContext)
+                return rootUsingNewtonRaphson(x, n, BigDecimal.valueOf(initialResult), mathContext)
             }
         }
 
@@ -838,7 +839,7 @@ object BigDecimalMath {
         var adaptivePrecision: Int
         val doubleX = x.toDouble()
         if (doubleX > 0.0 && isDoubleValue(x)) {
-            result = valueOf(ln(doubleX))
+            result = BigDecimal.valueOf(ln(doubleX))
             adaptivePrecision = EXPECTED_INITIAL_PRECISION
         } else {
             result = x.divide(TWO, mathContext)
@@ -1222,7 +1223,7 @@ object BigDecimalMath {
 
         val mc = MathContext(mathContext.precision + 6, mathContext.roundingMode)
 
-        if (x >= valueOf(0.707107)) {
+        if (x >= BigDecimal.valueOf(0.707107)) {
             val xTransformed = sqrt(ONE.minus(x.times(x)), mc)
             return acos(xTransformed, mathContext)
         }

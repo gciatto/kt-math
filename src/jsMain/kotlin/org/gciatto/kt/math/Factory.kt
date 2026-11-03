@@ -37,3 +37,16 @@ fun bigDecimal(x: dynamic): BigDecimal =
         is Any -> BigDecimal.of(x.toString())
         else -> throw IllegalArgumentException("Cannot convert $x into a BigDecimal")
     }
+
+@JsName("bigRational")
+@JsExport
+fun bigRational(x: dynamic): BigRational =
+    when (x) {
+        // [numerator, denominator], each as accepted by bigInteger
+        is Array<dynamic> -> {
+            require(x.size == 2) { "Expected [numerator, denominator], got $x" }
+            BigRational.valueOf(bigInteger(x[0]), bigInteger(x[1]))
+        }
+        is Any -> BigRational.valueOf(x.toString())
+        else -> throw IllegalArgumentException("Cannot convert $x into a BigRational")
+    }
