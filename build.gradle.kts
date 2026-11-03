@@ -168,51 +168,47 @@ kotlin.targets
         tasks.named("check") { dependsOn(run) }
     }
 
-// The JS API as plain JavaScript sees it: src/jsUsageTest runs on Node's test runner against the npm package as
-// published (assembleJsPackage)
-// The TypeScript definitions as TypeScript sees them: src/jsUsageTest/usage.ts, type-checked (not run) with the
-// TypeScript compiler of Kotlin's own npm dependencies
+// The JS API as JavaScript and TypeScript see it: src/jsUsageTest, next to the npm package as published
+// (assembleJsPackage) in node_modules/kt-math, so that the tests `import ... from "kt-math"` as users do
+val jsUsageTestDir = layout.buildDirectory.dir("jsUsageTest")
+val prepareJsUsageTest =
+    tasks.register<Sync>("prepareJsUsageTest") {
+        dependsOn("assembleJsPackage")
+        from(layout.projectDirectory.dir("src/jsUsageTest"))
+        from(layout.buildDirectory.dir("packages/js")) { into("node_modules/${project.name}") }
+        into(jsUsageTestDir)
+    }
+
+// usage.mts type-checked (not run) with the TypeScript compiler of Kotlin's own npm dependencies
 val tsUsageTest =
     tasks.register<Exec>("tsUsageTest") {
         group = "verification"
         description = "Type-checks the TypeScript usage test against the definitions of the npm package"
-        dependsOn("assembleJsPackage", "kotlinNpmInstall", "kotlinNodeJsSetup")
-        val tests = layout.projectDirectory.dir("src/jsUsageTest")
-        inputs.dir(tests)
+        dependsOn(prepareJsUsageTest, "kotlinNpmInstall", "kotlinNodeJsSetup")
         val tsc = rootProject.layout.buildDirectory.file("js/node_modules/typescript/bin/tsc")
         val node = project.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec>().executable
         doFirst {
-            commandLine(
-                node.get(),
-                tsc.get().asFile.absolutePath,
-                "-p",
-                tests.file("tsconfig.json").asFile.absolutePath,
-            )
+            commandLine(node.get(), tsc.get().asFile.absolutePath, "-p", jsUsageTestDir.get().file("tsconfig.json"))
         }
     }
 
+// *.test.mjs run on Node's test runner
 val jsUsageTest =
     tasks.register<Exec>("jsUsageTest") {
-        dependsOn(tsUsageTest)
         group = "verification"
-        description = "Runs the plain-JavaScript usage tests against the npm package"
-        dependsOn("assembleJsPackage", "kotlinNodeJsSetup")
-        val tests = layout.projectDirectory.dir("src/jsUsageTest")
-        val jsPackage = layout.buildDirectory.file("packages/js/${project.name}.js")
-        inputs.dir(tests)
+        description = "Runs the JavaScript usage tests against the npm package"
+        dependsOn(tsUsageTest, "kotlinNodeJsSetup")
         val node = project.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec>().executable
         doFirst {
-            environment("KT_MATH_JS_PACKAGE", jsPackage.get().asFile.absolutePath)
-            commandLine(
-                listOf(node.get(), "--test") +
-                    tests.asFileTree.matching { include("**/*.test.cjs") }.map { it.absolutePath },
-            )
+            val tests = jsUsageTestDir.get().asFileTree.matching { include("*.test.mjs") }
+            commandLine(listOf(node.get(), "--test") + tests.map { it.absolutePath })
         }
     }
 tasks.named("check") { dependsOn(jsUsageTest) }
 
 // TypeScript definitions (.d.ts) of the @JsExport-ed API, shipped in the npm package
 kotlin.js().generateTypeScriptDefinitions()
+kotlin.js().useEsModules()
 
 kotlin.js().nodejs {
     testTask {

@@ -28,6 +28,7 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.js.JsStatic
 import kotlin.jvm.JvmStatic
 
 /**
@@ -171,6 +172,7 @@ enum class RoundingMode(
          */
         @JvmStatic
         @JsName("valueOfInt")
+        @JsStatic
         fun valueOf(rm: Int): RoundingMode =
             entries.getOrNull(rm) ?: throw IllegalArgumentException("argument out of range: $rm")
     }

@@ -2,6 +2,7 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.js.JsStatic
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -30,7 +31,6 @@ import kotlin.jvm.JvmStatic
  */
 @JsExport
 @Suppress(
-    "NON_EXPORTABLE_TYPE",
     "EXPOSED_NOT_EXPORTED_SUPER_INTERFACE_WARNING",
     "ktlint:standard:backing-property-naming",
 )
@@ -693,7 +693,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      *
      * @return this [BigDecimal] converted to a [Char].
      */
-    @JsName("toChar")
+    @JsExport.Ignore // a Kotlin Char is no JS type
     fun toChar(): Char
 
     /**
@@ -773,6 +773,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("ZERO")
+        @JsStatic
         val ZERO: BigDecimal = BigDecimals.zero
 
         /**
@@ -780,6 +781,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("ONE")
+        @JsStatic
         val ONE: BigDecimal = BigDecimals.one
 
         /**
@@ -787,6 +789,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("TWO")
+        @JsStatic
         val TWO: BigDecimal = BigDecimals.two
 
         /**
@@ -794,6 +797,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("TEN")
+        @JsStatic
         val TEN: BigDecimal = BigDecimals.ten
 
         /**
@@ -801,6 +805,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("ONE_TENTH")
+        @JsStatic
         val ONE_TENTH: BigDecimal = BigDecimals.oneTenth
 
         /**
@@ -808,6 +813,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("ONE_HALF")
+        @JsStatic
         val ONE_HALF: BigDecimal = BigDecimals.oneHalf
 
         /**
@@ -815,6 +821,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("PI")
+        @JsStatic
         val PI: BigDecimal = BigDecimals.pi
 
         /**
@@ -822,6 +829,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmField
         @JsName("E")
+        @JsStatic
         val E: BigDecimal = BigDecimals.e
 
         /**
@@ -834,6 +842,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmStatic
         @JsName("ofScaledLong")
+        @JsStatic
         fun of(
             unscaledVal: Long,
             scale: Int,
@@ -865,7 +874,8 @@ interface BigDecimal : Comparable<BigDecimal> {
          * @return a [BigDecimal] whose value is `val`.
          */
         @JvmStatic
-        @JsName("ofInt")
+        @JsName("of")
+        @JsStatic
         fun of(`val`: Int): BigDecimal = bigDecimalOf(`val`)
 
         /**
@@ -875,7 +885,8 @@ interface BigDecimal : Comparable<BigDecimal> {
          * @return a [BigDecimal] whose value is `val`.
          */
         @JvmStatic
-        @JsName("of")
+        @JsName("ofLong")
+        @JsStatic
         fun of(`val`: Long): BigDecimal = bigDecimalOf(`val`)
 
         /**
@@ -917,6 +928,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JvmStatic
         @JsName("ofDouble")
         @JvmOverloads
+        @JsStatic
         fun of(
             `val`: Double,
             ctx: MathContext? = null,
@@ -935,6 +947,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          */
         @JvmStatic
         @JsName("valueOfDouble")
+        @JsStatic
         fun valueOf(value: Double): BigDecimal {
             if (value == 0.0) return ZERO.setScale(1)
             if (value.isNaN() || value.isInfinite()) throw NumberFormatException("Infinite or NaN")
@@ -964,6 +977,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JvmStatic
         @JsName("ofFloat")
         @JvmOverloads
+        @JsStatic
         fun of(
             `val`: Float,
             ctx: MathContext? = null,
@@ -994,6 +1008,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JvmStatic
         @JsName("parse")
         @JvmOverloads
+        @JsStatic
         fun of(
             `val`: String,
             ctx: MathContext? = null,
@@ -1011,6 +1026,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JvmStatic
         @JsName("ofBigInteger")
         @JvmOverloads
+        @JsStatic
         fun of(
             `val`: BigInteger,
             ctx: MathContext? = null,
@@ -1026,7 +1042,8 @@ interface BigDecimal : Comparable<BigDecimal> {
          * [RoundingMode.UNNECESSARY].
          */
         @JvmStatic
-        @JsName("ofIntWithContext")
+        @JsName("ofWithContext")
+        @JsStatic
         fun of(
             `val`: Int,
             ctx: MathContext,
@@ -1042,7 +1059,8 @@ interface BigDecimal : Comparable<BigDecimal> {
          * [RoundingMode.UNNECESSARY].
          */
         @JvmStatic
-        @JsName("ofWithContext")
+        @JsName("ofLongWithContext")
+        @JsStatic
         fun of(
             `val`: Long,
             ctx: MathContext,

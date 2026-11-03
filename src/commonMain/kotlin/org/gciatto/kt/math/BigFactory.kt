@@ -2,6 +2,7 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.js.JsStatic
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
 
@@ -250,7 +251,9 @@ interface BigFactory {
         const val DEFAULT_RADIX: Int = 10
 
         /** The most efficient implementation of the platform: the one of [BigInteger.of], [BigDecimal.of]. */
-        @JvmStatic // BigFactory.getDefault() in Java, BigFactory.Companion.default in JS
+        @JvmStatic // BigFactory.getDefault() in Java
+        @JsStatic
+        @JsName("DEFAULT") // BigFactory.DEFAULT in JS: `default` is a reserved word there
         val default: BigFactory get() = DefaultBigFactory
     }
 }

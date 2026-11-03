@@ -2,6 +2,7 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.js.JsStatic
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.random.Random
@@ -18,7 +19,7 @@ import kotlin.random.Random
  * use two's complement semantics, as if the value were sign-extended indefinitely.
  */
 @JsExport
-@Suppress("NON_EXPORTABLE_TYPE", "EXPOSED_NOT_EXPORTED_SUPER_INTERFACE_WARNING")
+@Suppress("EXPOSED_NOT_EXPORTED_SUPER_INTERFACE_WARNING")
 interface BigInteger : Comparable<BigInteger> {
     /**
      * The absolute value of this [BigInteger].
@@ -608,7 +609,7 @@ interface BigInteger : Comparable<BigInteger> {
     /**
      * Converts this [BigInteger] to a [Char] whose code is given by its low-order 16 bits: `toInt().toChar()`.
      */
-    @JsName("toChar")
+    @JsExport.Ignore // a Kotlin Char is no JS type
     fun toChar(): Char
 
     /**
@@ -680,26 +681,31 @@ interface BigInteger : Comparable<BigInteger> {
         /** The [BigInteger] constant 0. */
         @JvmField
         @JsName("ZERO")
+        @JsStatic
         val ZERO: BigInteger = BigIntegers.zero
 
         /** The [BigInteger] constant 1. */
         @JvmField
         @JsName("ONE")
+        @JsStatic
         val ONE: BigInteger = BigIntegers.one
 
         /** The [BigInteger] constant 2. */
         @JvmField
         @JsName("TWO")
+        @JsStatic
         val TWO: BigInteger = BigIntegers.two
 
         /** The [BigInteger] constant -1. */
         @JvmField
         @JsName("NEGATIVE_ONE")
+        @JsStatic
         val NEGATIVE_ONE: BigInteger = BigIntegers.negativeOne
 
         /** The [BigInteger] constant 10. */
         @JvmField
         @JsName("TEN")
+        @JsStatic
         val TEN: BigInteger = BigIntegers.ten
 
         /**
@@ -712,7 +718,7 @@ interface BigInteger : Comparable<BigInteger> {
          * @throws ArithmeticException if [bitLength] is less than 2 or too large.
          */
         @JvmStatic
-        @JsName("probablePrime")
+        @JsExport.Ignore // Random isn't exportable: see BigFactory.probablePrime(bitLength)
         fun probablePrime(
             bitLength: Int,
             rnd: Random,
@@ -726,6 +732,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JsName("ofLong")
         @JvmStatic
+        @JsStatic
         fun of(value: Long): BigInteger = bigIntegerOf(value)
 
         /**
@@ -736,6 +743,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JsName("of")
         @JvmStatic
+        @JsStatic
         fun of(value: Int): BigInteger = bigIntegerOf(value)
 
         /**
@@ -748,6 +756,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JsName("parse")
         @JvmStatic
+        @JsStatic
         fun of(value: String): BigInteger = bigIntegerOf(value)
 
         /**
@@ -762,6 +771,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JsName("parseWithRadix")
         @JvmStatic
+        @JsStatic
         fun of(
             value: String,
             radix: Int,
@@ -776,6 +786,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JsName("ofIntArray")
         @JvmStatic
+        @JsStatic
         fun of(value: IntArray): BigInteger = bigIntegerOf(value)
 
         /**
@@ -792,6 +803,7 @@ interface BigInteger : Comparable<BigInteger> {
          */
         @JsName("ofSignMagnitudeSlice")
         @JvmStatic
+        @JsStatic
         fun of(
             signum: Int,
             magnitude: ByteArray,
