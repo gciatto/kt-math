@@ -2,10 +2,10 @@ package org.gciatto.kt.math.big
 
 import org.gciatto.kt.math.BigDecimal
 import org.gciatto.kt.math.BigRational
+import org.gciatto.kt.math.DifferentialTest
 import org.gciatto.kt.math.MathContext
 import org.gciatto.kt.math.RoundingMode
 import java.util.stream.Stream
-import kotlin.test.fail
 import ch.obermuhlner.math.big.BigComplex as JavaBigComplex
 import ch.obermuhlner.math.big.BigRational as JavaBigRational
 import java.math.BigDecimal as JavaBigDecimal
@@ -15,52 +15,24 @@ import java.math.BigDecimal as JavaBigDecimal
  * on java.math's, one subclass per big-math class. Both keep caches (pi, e, logarithms, factorial constants, series
  * factors), filled in the same order here, since every case runs on big-math first, then on the port.
  */
-sealed class TestAgainstBigMath {
-    protected val failures = mutableListOf<Pair<String, String>>()
-
-    protected fun outcome(f: () -> Any?): String =
-        try {
-            render(f())
-        } catch (e: RuntimeException) {
-            "throws ${e::class.simpleName}"
-        }
-
-    protected fun render(x: Any?): String =
+sealed class TestAgainstBigMath : DifferentialTest("big-math", maxExampleLength = 600) {
+    override fun render(x: Any?): String =
         when (x) {
-            is BigDecimal -> "$x@${x.scale}"
             is JavaBigDecimal -> "$x@${x.scale()}"
             is BigRational -> x.toRationalString()
             is JavaBigRational -> x.toRationalString()
             is BigComplex -> "(${render(x.re)}, ${render(x.im)})"
             is JavaBigComplex -> "(${render(x.re)}, ${render(x.im)})"
-            is Sequence<*> -> x.toList().joinToString(prefix = "[", postfix = "]") { render(it) }
-            is Stream<*> ->
-                x
-                    .iterator()
-                    .asSequence()
-                    .toList()
-                    .joinToString(prefix = "[", postfix = "]") { render(it) }
-            else -> x.toString()
+            is Stream<*> -> render(x.iterator().asSequence())
+            else -> super.render(x)
         }
 
+    /** Records a mismatch if [kotlin] has another outcome than [java]. */
     protected fun same(
         what: String,
         java: () -> Any?,
         kotlin: () -> Any?,
-    ) {
-        val expected = outcome(java)
-        val actual = outcome(kotlin)
-        if (expected != actual) failures += what.substringBefore('(') to "$what: expected <$expected>, got <$actual>"
-    }
-
-    protected fun assertNoFailures() {
-        if (failures.isEmpty()) return
-        val report =
-            failures.groupBy({ it.first }, { it.second }).entries.joinToString("\n") { (op, cases) ->
-                "[${cases.size}x $op] ${cases.first().take(MAX_EXAMPLE_LENGTH)}"
-            }
-        fail("${failures.size} mismatches against big-math:\n$report")
-    }
+    ) = compare(what, java, kotlin)
 
     protected fun dec(s: String): BigDecimal = BigDecimal.of(s)
 
@@ -108,8 +80,4 @@ sealed class TestAgainstBigMath {
             MathContext(50),
             MathContext(7, RoundingMode.DOWN),
         )
-
-    protected companion object {
-        const val MAX_EXAMPLE_LENGTH = 600
-    }
 }
