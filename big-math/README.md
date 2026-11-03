@@ -1,7 +1,7 @@
 # kt-math-big-math
 
-Kotlin multi-platform port of [big-math](https://github.com/eobermuhlner/big-math) 2.3.2's `BigDecimalMath` and
-`BigRational`, on top of Kt-Math's `BigDecimal`/`BigInteger`: exp, log, pow, roots, trigonometric and hyperbolic
+Kotlin multi-platform port of [big-math](https://github.com/eobermuhlner/big-math) 2.3.2's `BigDecimalMath`, on top
+of Kt-Math's `BigDecimal`/`BigInteger` (big-math's `BigRational` is ported in Kt-Math itself): exp, log, pow, roots, trigonometric and hyperbolic
 functions (and their inverses), factorial, gamma, Bernoulli numbers, pi, e, on every platform Kt-Math supports.
 
 ```kotlin

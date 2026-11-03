@@ -1,6 +1,7 @@
 package org.gciatto.kt.math.big
 
 import org.gciatto.kt.math.BigDecimal
+import org.gciatto.kt.math.BigRational
 import org.gciatto.kt.math.MathContext
 import kotlin.test.Test
 import kotlin.test.assertEquals

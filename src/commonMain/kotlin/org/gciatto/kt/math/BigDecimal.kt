@@ -914,6 +914,10 @@ interface BigDecimal : Comparable<BigDecimal> {
     @JsName("toBigInteger")
     fun toBigInteger(): BigInteger
 
+    /** This [BigDecimal] as a [BigRational], exactly: `1.25` is `5/4` (`125/100`, not reduced). */
+    @JsName("toBigRational")
+    fun toBigRational(): BigRational = BigRational.valueOf(this)
+
     /**
      * Converts this [BigDecimal] to a [BigInteger],
      * checking for lost information.  An exception is thrown if this
@@ -1224,6 +1228,34 @@ interface BigDecimal : Comparable<BigDecimal> {
             ctx: MathContext? = null,
         ): BigDecimal = bigDecimalOf(`val`, ctx)
 
+        /**
+         * Translates a `double` into a [BigDecimal] using its shortest decimal representation, as Java's
+         * `BigDecimal.valueOf(double)` (i.e. `new BigDecimal(Double.toString(value))`): `valueOf(0.1)` is `0.1`, while
+         * [of] gives the exact value of the binary `double` (`0.1000000000000000055511151231257827...`). The scale
+         * is the one of Java's `Double.toString` on every platform: plain notation with at least one fractional digit
+         * in `[10^-3, 10^7)`, else scientific notation with at least one fractional digit.
+         *
+         * @param value `double` to convert to a [BigDecimal].
+         * @return a [BigDecimal] whose value is equal to or approximately equal to the value of [value].
+         * @throws NumberFormatException if [value] is infinite or NaN.
+         */
+        @JvmStatic
+        @JsName("valueOfDouble")
+        fun valueOf(value: Double): BigDecimal {
+            if (value == 0.0) return ZERO.setScale(1)
+            if (value.isNaN() || value.isInfinite()) throw NumberFormatException("Infinite or NaN")
+            val stripped = of(value.toString()).stripTrailingZeros()
+            val exponent = stripped.precision - stripped.scale - 1
+            val magnitude = kotlin.math.abs(value)
+            val scale =
+                if (magnitude >= PLAIN_MIN && magnitude < PLAIN_MAX) {
+                    maxOf(1, stripped.scale)
+                } else {
+                    maxOf(2, stripped.precision) - 1 - exponent
+                }
+            return stripped.setScale(scale)
+        }
+
         @JvmStatic
         @JsName("ofFloat")
         @JvmOverloads
@@ -1263,3 +1295,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         ): BigDecimal = bigDecimalOf(`val`, ctx)
     }
 }
+
+// Java's Double.toString uses plain notation in [PLAIN_MIN, PLAIN_MAX), see BigDecimal.valueOf
+private const val PLAIN_MIN = 1e-3
+private const val PLAIN_MAX = 1e7

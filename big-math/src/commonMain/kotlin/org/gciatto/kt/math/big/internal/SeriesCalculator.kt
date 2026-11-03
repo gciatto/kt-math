@@ -26,9 +26,9 @@
 package org.gciatto.kt.math.big.internal
 
 import org.gciatto.kt.math.BigDecimal
+import org.gciatto.kt.math.BigRational
 import org.gciatto.kt.math.MathContext
 import org.gciatto.kt.math.big.BigDecimalMath
-import org.gciatto.kt.math.big.BigRational
 import org.gciatto.kt.math.big.CacheLock
 import org.gciatto.kt.math.big.divide
 import org.gciatto.kt.math.big.rounded
