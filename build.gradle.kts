@@ -85,6 +85,12 @@ tasks.named("detektAll") {
 }
 
 kotlin {
+    // The C kernels of CommonBigInteger (src/nativeInterop/cinterop/kernels.def): cinterop for Apple targets needs
+    // their SDKs, hence a macOS host with Xcode, also to publish
+    targets.withType<KotlinNativeTarget>().configureEach {
+        compilations.getByName("main").cinterops.create("kernels")
+    }
+
     sourceSets {
         jvmTest {
             dependencies {

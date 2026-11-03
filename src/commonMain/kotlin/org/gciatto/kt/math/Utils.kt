@@ -41,6 +41,32 @@ internal expect fun logImpl(lazyObject: () -> Any)
 
 internal expect inline fun <T, reified U : T> T?.castTo(): U
 
+// Platform versions of the CommonBigInteger routines HotSpot replaces with intrinsics (see their callers): each returns
+// false when the platform has none, and the Kotlin code runs instead.
+
+internal expect fun multiplyToLenKernel(
+    x: IntArray,
+    xlen: Int,
+    y: IntArray,
+    ylen: Int,
+    z: IntArray,
+): Boolean
+
+internal expect fun squareToLenKernel(
+    x: IntArray,
+    len: Int,
+    z: IntArray,
+): Boolean
+
+internal expect fun montgomeryMultiplyKernel(
+    a: IntArray,
+    b: IntArray,
+    n: IntArray,
+    len: Int,
+    inv: Long,
+    product: IntArray,
+): Boolean
+
 internal expect fun bigProbablePrimeInteger(
     bitLength: Int,
     rnd: Random,
