@@ -77,9 +77,9 @@ internal expect fun bigDecimalOf(
     prec: Int,
 ): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Int): BigDecimal
+internal expect fun bigDecimalOf(value: Int): BigDecimal
 
-internal expect fun bigDecimalOf(`val`: Long): BigDecimal
+internal expect fun bigDecimalOf(value: Long): BigDecimal
 
 internal expect fun bigDecimalOf(
     intVal: BigInteger,
@@ -88,32 +88,32 @@ internal expect fun bigDecimalOf(
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
-    `val`: Double,
+    value: Double,
     ctx: MathContext? = null,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
-    `val`: Float,
+    value: Float,
     ctx: MathContext? = null,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
-    `val`: String,
+    value: String,
     ctx: MathContext? = null,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
-    `val`: BigInteger,
+    value: BigInteger,
     ctx: MathContext? = null,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
-    `val`: Int,
+    value: Int,
     ctx: MathContext,
 ): BigDecimal
 
 internal expect fun bigDecimalOf(
-    `val`: Long,
+    value: Long,
     ctx: MathContext,
 ): BigDecimal
 

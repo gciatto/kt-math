@@ -1,3 +1,6 @@
+// one actual per expect factory declared in commonMain's Utils.kt
+@file:Suppress("TooManyFunctions")
+
 package org.gciatto.kt.math
 
 import kotlin.random.Random
@@ -37,9 +40,9 @@ internal actual fun bigDecimalOf(
     prec: Int,
 ): BigDecimal = CommonBigDecimal.of(unscaledVal, scale, prec)
 
-internal actual fun bigDecimalOf(`val`: Int): BigDecimal = CommonBigDecimal.of(`val`)
+internal actual fun bigDecimalOf(value: Int): BigDecimal = CommonBigDecimal.of(value)
 
-internal actual fun bigDecimalOf(`val`: Long): BigDecimal = CommonBigDecimal.of(`val`)
+internal actual fun bigDecimalOf(value: Long): BigDecimal = CommonBigDecimal.of(value)
 
 internal actual fun bigDecimalOf(
     intVal: BigInteger,
@@ -50,35 +53,35 @@ internal actual fun bigDecimalOf(
 private val exceptionalDoubles = setOf(Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
 
 internal actual fun bigDecimalOf(
-    `val`: Double,
+    value: Double,
     ctx: MathContext?,
 ): BigDecimal =
     when {
-        `val` in exceptionalDoubles -> throw NumberFormatException("Infinite or NaN")
-        ctx == null -> CommonBigDecimal(`val`)
-        else -> CommonBigDecimal.of(`val`, ctx)
+        value in exceptionalDoubles -> throw NumberFormatException("Infinite or NaN")
+        ctx == null -> CommonBigDecimal(value)
+        else -> CommonBigDecimal.of(value, ctx)
     }
 
 internal actual fun bigDecimalOf(
-    `val`: Float,
+    value: Float,
     ctx: MathContext?,
-): BigDecimal = bigDecimalOf(`val`.toDouble(), ctx)
+): BigDecimal = bigDecimalOf(value.toDouble(), ctx)
 
 internal actual fun bigDecimalOf(
-    `val`: String,
+    value: String,
     ctx: MathContext?,
 ): BigDecimal =
     if (ctx == null) {
-        CommonBigDecimal(`val`)
+        CommonBigDecimal(value)
     } else {
-        CommonBigDecimal.of(`val`, ctx)
+        CommonBigDecimal.of(value, ctx)
     }
 
 internal actual fun bigDecimalOf(
-    `val`: BigInteger,
+    value: BigInteger,
     ctx: MathContext?,
 ): BigDecimal {
-    val value: CommonBigInteger = `val`.castTo()
+    val value: CommonBigInteger = value.castTo()
     return if (ctx == null) {
         CommonBigDecimal(value)
     } else {
@@ -87,14 +90,14 @@ internal actual fun bigDecimalOf(
 }
 
 internal actual fun bigDecimalOf(
-    `val`: Int,
+    value: Int,
     ctx: MathContext,
-): BigDecimal = CommonBigDecimal.of(`val`, ctx)
+): BigDecimal = CommonBigDecimal.of(value, ctx)
 
 internal actual fun bigDecimalOf(
-    `val`: Long,
+    value: Long,
     ctx: MathContext,
-): BigDecimal = CommonBigDecimal.of(`val`, ctx)
+): BigDecimal = CommonBigDecimal.of(value, ctx)
 
 internal actual object BigDecimals {
     actual val zero: BigDecimal = CommonBigDecimal.ZERO

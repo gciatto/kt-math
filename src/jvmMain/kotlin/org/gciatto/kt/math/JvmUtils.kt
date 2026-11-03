@@ -1,4 +1,6 @@
+// one actual per expect factory declared in commonMain's Utils.kt
 @file:JvmName("JvmUtils")
+@file:Suppress("TooManyFunctions")
 
 package org.gciatto.kt.math
 
@@ -83,9 +85,9 @@ internal actual fun bigDecimalOf(
         ),
     )
 
-internal actual fun bigDecimalOf(`val`: Int): BigDecimal = JavaBigDecimalAdapter(JavaBigDecimal.valueOf(`val`.toLong()))
+internal actual fun bigDecimalOf(value: Int): BigDecimal = JavaBigDecimalAdapter(JavaBigDecimal.valueOf(value.toLong()))
 
-internal actual fun bigDecimalOf(`val`: Long): BigDecimal = JavaBigDecimalAdapter(JavaBigDecimal.valueOf(`val`))
+internal actual fun bigDecimalOf(value: Long): BigDecimal = JavaBigDecimalAdapter(JavaBigDecimal.valueOf(value))
 
 internal actual fun bigDecimalOf(
     intVal: BigInteger,
@@ -101,49 +103,49 @@ internal actual fun bigDecimalOf(
     )
 
 internal actual fun bigDecimalOf(
-    `val`: Double,
+    value: Double,
     ctx: MathContext?,
 ): BigDecimal =
     if (ctx == null) {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`))
+        JavaBigDecimalAdapter(JavaBigDecimal(value))
     } else {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`, ctx.toJava()))
+        JavaBigDecimalAdapter(JavaBigDecimal(value, ctx.toJava()))
     }
 
 internal actual fun bigDecimalOf(
-    `val`: Float,
+    value: Float,
     ctx: MathContext?,
-): BigDecimal = bigDecimalOf(`val`.toDouble(), ctx)
+): BigDecimal = bigDecimalOf(value.toDouble(), ctx)
 
 internal actual fun bigDecimalOf(
-    `val`: String,
-    ctx: MathContext?,
-): BigDecimal =
-    if (ctx == null) {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`))
-    } else {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`, ctx.toJava()))
-    }
-
-internal actual fun bigDecimalOf(
-    `val`: BigInteger,
+    value: String,
     ctx: MathContext?,
 ): BigDecimal =
     if (ctx == null) {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toJava()))
+        JavaBigDecimalAdapter(JavaBigDecimal(value))
     } else {
-        JavaBigDecimalAdapter(JavaBigDecimal(`val`.toJava(), ctx.toJava()))
+        JavaBigDecimalAdapter(JavaBigDecimal(value, ctx.toJava()))
     }
 
 internal actual fun bigDecimalOf(
-    `val`: Int,
+    value: BigInteger,
+    ctx: MathContext?,
+): BigDecimal =
+    if (ctx == null) {
+        JavaBigDecimalAdapter(JavaBigDecimal(value.toJava()))
+    } else {
+        JavaBigDecimalAdapter(JavaBigDecimal(value.toJava(), ctx.toJava()))
+    }
+
+internal actual fun bigDecimalOf(
+    value: Int,
     ctx: MathContext,
-): BigDecimal = bigDecimalOf(`val`.toLong(), ctx)
+): BigDecimal = bigDecimalOf(value.toLong(), ctx)
 
 internal actual fun bigDecimalOf(
-    `val`: Long,
+    value: Long,
     ctx: MathContext,
-): BigDecimal = JavaBigDecimalAdapter(JavaBigDecimal(`val`, ctx.toJava()))
+): BigDecimal = JavaBigDecimalAdapter(JavaBigDecimal(value, ctx.toJava()))
 
 internal actual object BigDecimals {
     actual val zero: BigDecimal = JavaBigDecimal.ZERO.toKotlin()

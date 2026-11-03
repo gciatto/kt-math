@@ -6,8 +6,10 @@ import java.time.format.DateTimeFormatter
 
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
+        // Google mirror of Maven Central, used for resolution only (avoids Maven Central rate-limits)
+        maven("https://maven-central.storage-download.googleapis.com/maven2/")
+        gradlePluginPortal()
         mavenCentral()
     }
 }

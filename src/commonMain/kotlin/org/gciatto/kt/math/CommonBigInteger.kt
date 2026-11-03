@@ -3775,7 +3775,7 @@ internal class CommonBigInteger : BigInteger {
                     return result
                 } else {
                     result = IntArray(xIndex)
-                    sum = (x[--xIndex].toLong() and LONG_MASK) + (other.toLong() and LONG_MASK)
+                    sum = (x[--xIndex].toLong() and LONG_MASK) + (other and LONG_MASK)
                     result[xIndex] = sum.toInt()
                     sum = (x[--xIndex].toLong() and LONG_MASK) + (highWord.toLong() and LONG_MASK) + sum.ushr(32)
                     result[xIndex] = sum.toInt()

@@ -6,4 +6,9 @@ comments:
   UndocumentedPublicProperty:
     active: false
 
+complexity:
+  TooManyFunctions:
+    # JavaBigIntegerAdapter/JavaBigDecimalAdapter implement the (large) BigInteger/BigDecimal interfaces
+    ignoreOverridden: true
+
 style: {}

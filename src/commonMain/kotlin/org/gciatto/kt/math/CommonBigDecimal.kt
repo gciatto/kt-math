@@ -4773,7 +4773,7 @@ internal class CommonBigDecimal : BigDecimal {
             }
 
             val shift = divisor.numberOfLeadingZeros()
-            divisor = divisor shl shift.toInt()
+            divisor = divisor shl shift
 
             val v1 = divisor.ushr(32)
             val v0 = divisor and LONG_MASK
