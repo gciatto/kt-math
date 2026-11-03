@@ -15,32 +15,42 @@ internal actual fun logImpl(lazyObject: () -> Any) {
     System.err.println(lazyObject())
 }
 
+/** Returns this as a `java.math.BigInteger`: the one it wraps, or a copy if backed by the Kotlin implementation. */
 fun BigInteger.toJava(): JavaBigInteger =
     when (this) {
         is JavaBigIntegerAdapter -> value
         else -> JavaBigInteger(this.toByteArray())
     }
 
+/** Returns this as a `java.math.BigDecimal`: the one it wraps, or a copy if backed by the Kotlin implementation. */
 fun BigDecimal.toJava(): JavaBigDecimal =
     when (this) {
         is JavaBigDecimalAdapter -> value
         else -> JavaBigDecimal(unscaledValue.toJava(), scale, JavaMathContext(precision, JavaRoundingMode.UNNECESSARY))
     }
 
+/** Returns this `java.math.RoundingMode` as kt-math's [RoundingMode]. */
 fun JavaRoundingMode.toKotlin(): RoundingMode = RoundingMode.valueOf(ordinal)
 
+/** Returns this as a `java.math.RoundingMode`. */
 fun RoundingMode.toJava(): JavaRoundingMode = JavaRoundingMode.valueOf(value)
 
+/** Returns this `java.math.MathContext` as kt-math's [MathContext]. */
 fun JavaMathContext.toKotlin(): MathContext = MathContext(precision, roundingMode.toKotlin())
 
+/** Returns this as a `java.math.MathContext`. */
 fun MathContext.toJava(): JavaMathContext = JavaMathContext(precision, roundingMode.toJava())
 
+/** Returns the [BigInteger] wrapping [value], with no copy (see [toKotlin]). */
 fun fromJava(value: JavaBigInteger): BigInteger = JavaBigIntegerAdapter(value)
 
+/** Returns this `java.math.BigInteger` as a kt-math [BigInteger], wrapping it with no copy. */
 fun JavaBigInteger.toKotlin(): BigInteger = fromJava(this)
 
+/** Returns the [BigDecimal] wrapping [value], with no copy (see [toKotlin]). */
 fun fromJava(value: JavaBigDecimal): BigDecimal = JavaBigDecimalAdapter(value)
 
+/** Returns this `java.math.BigDecimal` as a kt-math [BigDecimal], wrapping it with no copy. */
 fun JavaBigDecimal.toKotlin(): BigDecimal = fromJava(this)
 
 internal actual inline fun <T, reified U : T> T?.castTo(): U = this as U

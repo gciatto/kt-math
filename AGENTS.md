@@ -19,8 +19,9 @@ port of Java's `BigInteger`/`BigDecimal`, plus a port of big-math's `BigDecimalM
   Kotlin `Sequence`s (not exported to JS). `BigFloat` and `DefaultBigDecimalMath` are deliberately not ported.
 - Mapping notes: `BigDecimal.valueOf(Double)` is `java.math.BigDecimal.valueOf(double)` (Java's `Double.toString`
   scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded` (`big/Utils.kt`);
-  big-math's `synchronized` caches use `CacheLock` (`synchronized` on the JVM, a non-reentrant spin lock elsewhere:
-  never fill a cache while holding its own lock, never take the locks in a cycle).
+  big-math's `synchronized` caches use `CacheLock` (root package, guarding every cache of the library: `synchronized`
+  on the JVM, a non-reentrant spin lock elsewhere: never fill a cache while holding its own lock, never take the locks
+  in a cycle).
 - Tests: the subclasses of `TestAgainstBigMath` (jvmTest, one per big-math class) compare every function with big-math itself
   (`libs.big.math`), results and exception types; both libraries keep caches, filled in the same order since each
   case runs on big-math first. Avoid inputs that make both compute huge powers (e.g. `root(x, 1E-10)`): they run for
@@ -34,7 +35,7 @@ port of Java's `BigInteger`/`BigDecimal`, plus a port of big-math's `BigDecimalM
 - `src/jvmMain`: adapters delegating to `java.math` (`JavaBigIntegerAdapter`, `JavaBigDecimalAdapter`) and the
   `actual` factories (`JvmUtils.kt`); `src/nonJvmMain` (shared by JS and every native target, a custom group of
   the default hierarchy template in `build.gradle.kts`): the `actual` factories using the Kotlin implementation
-  (`NonJvmUtils.kt`); `src/jsMain` and `src/nativeMain`: the few platform specifics (logging, casts, `lock`), plus
+  (`NonJvmUtils.kt`); `src/jsMain` and `src/nativeMain`: the few platform specifics (logging, casts), plus
   the `@JsExport`ed JS entry points (`Factory.kt`).
 - Targets: JVM, JS, and every non-deprecated Kotlin/Native target (listed in `build.gradle.kts`).
 - One top-level type per file, named after it (`expect`/`actual` objects included: `BigIntegers.kt` in `commonMain` and
@@ -189,6 +190,9 @@ why. Things already learned:
 ## detekt
 
 Config: `.detekt.yml` (deltas over the defaults).
+
+- **KDoc**: `UndocumentedPublicClass`/`Function`/`Property` are active outside tests: every public declaration needs
+  a KDoc (the API reference on the website is generated from them). Don't link internal declarations from public KDoc.
 
 - **JDK compatibility**: detekt's embedded compiler can crash with a bare version-number error on JDKs newer
   than it supports (seen with JDK 25/26). Run it on JDK 21–22 then:
