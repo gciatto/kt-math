@@ -86,15 +86,12 @@ tasks.named("detektAll") {
 
 kotlin {
     sourceSets {
-        commonMain {
-            dependencies {
-                api(libs.kotlin.reflect)
-            }
-        }
         jvmTest {
             dependencies {
                 // the original Java library ported in org.gciatto.kt.math.big: the oracle of TestAgainstBigMath
                 implementation(libs.big.math)
+                // TestJavaUsageCoverage tells public declarations from internal ones
+                implementation(libs.kotlin.reflect)
             }
         }
     }
