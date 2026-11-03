@@ -26,8 +26,8 @@
 package org.gciatto.kt.math.big.internal
 
 import org.gciatto.kt.math.BigDecimal
+import org.gciatto.kt.math.BigRational
 import org.gciatto.kt.math.MathContext
-import org.gciatto.kt.math.big.BigRational
 
 /**
  * Calculates exp using the Maclaurin series.

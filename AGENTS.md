@@ -6,11 +6,13 @@ the `big-math` module (a port of big-math's `BigDecimalMath`, see below). Build 
 
 ## The big-math module
 
-- `big-math/` (artifact and npm package `kt-math-big-math`, package `org.gciatto.kt.math.big`): `BigDecimalMath`,
-  `BigRational` and the series calculators of big-math 2.3.2 (MIT, Eric Obermühlner; the license header stays in every
-  ported file), on kt-math's multiplatform API. Ported line by line, with the original names: keep it diffable.
-- Mapping notes: `valueOf(Double)` in `Utils.kt` is `java.math.BigDecimal.valueOf(double)` (Java's `Double.toString`
-  scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded`; big-math's
+- `big-math/` (artifact and npm package `kt-math-big-math`, package `org.gciatto.kt.math.big`): `BigDecimalMath` and
+  the series calculators of big-math 2.3.2 (MIT, Eric Obermühlner; the license header stays in every ported file), on
+  kt-math's multiplatform API. Ported line by line, with the original names: keep it diffable. big-math's
+  `BigRational` lives in the core module (`org.gciatto.kt.math.BigRational`, ported the same way), so that
+  `BigFactory` and the conversions can build it; `TestAgainstBigMath` still compares it with big-math's.
+- Mapping notes: `BigDecimal.valueOf(Double)` (core) is `java.math.BigDecimal.valueOf(double)` (Java's
+  `Double.toString` scale) on every platform; kt-math's `div(_, mc)`/`round(mc)` are nullable, hence `divide`/`rounded`; big-math's
   `synchronized` caches use `CacheLock` (`synchronized` on the JVM, a non-reentrant spin lock elsewhere: never fill a
   cache while holding its own lock, never take the locks in a cycle).
 - Tests: `TestAgainstBigMath` (jvmTest) compares every function with big-math itself (`libs.big.math`), results and
@@ -41,6 +43,11 @@ the `big-math` module (a port of big-math's `BigDecimalMath`, see below). Build 
   from relies on `BigInteger` package-private methods and `MutableBigInteger`; their interface-based equivalents
   are at the top of `CommonBigDecimal.kt`). On the JVM it's only used by tests and the Java 8 `sqrt` fallback, on top
   of `java.math`-backed `BigInteger`s: don't mix in `CommonBigInteger`s there.
+- Creating numbers: the companions (`BigInteger.of`, `BigDecimal.of`/`valueOf`, `BigRational.valueOf`), gathered (plus
+  `parse*OrNull` variants) by the `BigFactory` interface, whose `BigFactory.default` delegates to them; conversions
+  among the three are members (`toBigDecimal`, `toBigRational`, `toBigInteger`), and `Conversions.kt` has
+  `toBigInteger`/`toBigDecimal`/`toBigRational` extensions on Kotlin numbers and strings. A new factory method goes in
+  the companion, `BigFactory`, `DefaultBigFactory` and `TestBigFactory`.
 - `BigInteger`/`BigDecimal` are `@JsExport`ed interfaces: any change to them is a change of the public JS API too.
 
 ## Gradle tasks: known task names, don't rediscover them
