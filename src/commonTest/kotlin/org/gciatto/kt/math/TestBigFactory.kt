@@ -20,6 +20,9 @@ class TestBigFactory {
         assertEquals("9223372036854775807", factory.bigIntegerOf(Long.MAX_VALUE).toString())
         assertEquals("-1", factory.bigIntegerOf(intArrayOf(-1)).toString())
         assertEquals("4294967296", factory.bigIntegerOf(intArrayOf(1, 0)).toString())
+        assertEquals("255", factory.bigIntegerOf(byteArrayOf(0, -1)).toString())
+        assertEquals("-1", factory.bigIntegerOf(byteArrayOf(-1)).toString())
+        assertFailsWith<NumberFormatException> { factory.bigIntegerOf(byteArrayOf()) }
         assertEquals("256", factory.bigIntegerOf(1, byteArrayOf(1, 0)).toString())
         assertEquals("-256", factory.bigIntegerOf(-1, byteArrayOf(1, 0)).toString())
         assertEquals("1", factory.bigIntegerOf(1, byteArrayOf(9, 1, 0), 1, 1).toString())

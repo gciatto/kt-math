@@ -131,7 +131,9 @@ static void api_BigInteger(void) {
     expect("of(String, radix)", BI_S(KT_MATH.BigInteger.Companion.of___(c, "-ff", 16)), "-255");
     // byte arrays come from toByteArray: C can't create Kotlin arrays
     BI ff = KT_MATH.BigInteger.Companion.of__(c, "65535");
-    expect("of(signum, bytes, off, len)", BI_S(KT_MATH.BigInteger.Companion.of_____(c, -1, KT_MATH.BigInteger.toByteArray(ff), 1, 2)), "-65535");
+    expect("of(bytes)", BI_S(KT_MATH.BigInteger.Companion.of_____(c, KT_MATH.BigInteger.toByteArray(ff))), "65535");
+    expect("of(signum, bytes)", BI_S(KT_MATH.BigInteger.Companion.of______(c, -1, KT_MATH.BigInteger.toByteArray(ff))), "-65535");
+    expect("of(signum, bytes, off, len)", BI_S(KT_MATH.BigInteger.Companion.of_______(c, -1, KT_MATH.BigInteger.toByteArray(ff), 1, 2)), "-65535");
 
     BI n = KT_MATH.BigInteger.Companion.of_(c, -12);
     expect("absoluteValue", BI_S(KT_MATH.BigInteger.get_absoluteValue(n)), "12");
@@ -527,7 +529,8 @@ static void api_BigFactory(libktmath_kref_org_gciatto_kt_math_BigFactory f) {
     expect("bigDecimalOf(Long unscaled, scale)", BD_S(KT_MATH.BigFactory.bigDecimalOf_____(f, 1234LL, 3)), "1.234");
     expect("bigDecimalValueOf", BD_S(KT_MATH.BigFactory.bigDecimalValueOf(f, 0.1)), "0.1");
     expect("bigIntegerOf(Long)", BI_S(KT_MATH.BigFactory.bigIntegerOf_(f, 2LL)), "2");
-    expect("bigIntegerOf(signum, bytes)", BI_S(KT_MATH.BigFactory.bigIntegerOf___(f, -1, KT_MATH.BigInteger.toByteArray(KT_MATH.BigInteger.Companion.of_(ic, 256)), 0, 2)), "-256");
+    expect("bigIntegerOf(bytes)", BI_S(KT_MATH.BigFactory.bigIntegerOf___(f, KT_MATH.BigInteger.toByteArray(ten))), "10");
+    expect("bigIntegerOf(signum, bytes)", BI_S(KT_MATH.BigFactory.bigIntegerOf____(f, -1, KT_MATH.BigInteger.toByteArray(KT_MATH.BigInteger.Companion.of_(ic, 256)), 0, 2)), "-256");
     expect("bigRationalOf(Int)", BR_S(KT_MATH.BigFactory.bigRationalOf(f, 1)), "1");
     expect("bigRationalOf(Long)", BR_S(KT_MATH.BigFactory.bigRationalOf_(f, 2LL)), "2");
     expect("bigRationalOf(BigInteger)", BR_S(KT_MATH.BigFactory.bigRationalOf__(f, ten)), "10");
