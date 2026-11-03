@@ -82,6 +82,7 @@ test("BigInteger", () => {
   assert.deepEqual([b.xor(BigInteger.of(10)), b.xorInt(10), b.xorLong(10n)].map(str), ["6", "6", "6"]);
   assert.deepEqual([b.andNot(BigInteger.of(4)), b.andNotInt(4), b.andNotLong(4n)].map(str), ["8", "8", "8"]);
   assert.ok(b.testBit(2) && b.get(3) && !b.get(0));
+  assert.deepEqual([b.getIntBits(2, 2), BigInteger.NEGATIVE_ONE.getIntBits(0, 32), b.getLongBits(1, 64)], [3, -1, 6n]);
   assert.deepEqual([b.set(0, true), b.setBit(1), b.clearBit(2), b.flipBit(3)].map(str), ["13", "14", "8", "4"]);
 
   // conversions
