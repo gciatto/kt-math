@@ -1,4 +1,5 @@
 import io.github.gciatto.kt.mpp.utils.log
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 buildscript {
     configurations.classpath {
@@ -71,6 +72,12 @@ kotlin {
                 withNative()
             }
         }
+    }
+
+    // The C kernels of CommonBigInteger (src/nativeInterop/cinterop/kernels.def): cinterop for Apple targets needs
+    // their SDKs, hence a macOS host with Xcode, also to publish
+    targets.withType<KotlinNativeTarget>().configureEach {
+        compilations.getByName("main").cinterops.create("kernels")
     }
 
     sourceSets {

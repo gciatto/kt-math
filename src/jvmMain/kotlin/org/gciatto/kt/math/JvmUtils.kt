@@ -183,3 +183,28 @@ internal actual fun bigIntegerOf(
     off: Int,
     len: Int,
 ): BigInteger = CommonBigInteger(signum, magnitude, off, len).toJava().toKotlin()
+
+// No kernels: BigIntegers delegate to java.math here, CommonBigInteger only runs in tests
+internal actual fun multiplyToLenKernel(
+    x: IntArray,
+    xlen: Int,
+    y: IntArray,
+    ylen: Int,
+    z: IntArray,
+): Boolean = false
+
+internal actual fun squareToLenKernel(
+    x: IntArray,
+    len: Int,
+    z: IntArray,
+): Boolean = false
+
+@Suppress("LongParameterList") // implMontgomeryMultiply's
+internal actual fun montgomeryMultiplyKernel(
+    a: IntArray,
+    b: IntArray,
+    n: IntArray,
+    len: Int,
+    inv: Long,
+    product: IntArray,
+): Boolean = false
