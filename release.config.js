@@ -11,7 +11,7 @@ rm -rf build/packages/github && cp -R build/packages/js build/packages/github &&
 (cd build/packages/github &&
   npm pkg set "name=@$GITHUB_REPOSITORY_OWNER/$(npm pkg get name | tr -d '"')" &&
   npm publish --registry=https://npm.pkg.github.com "--//npm.pkg.github.com/:_authToken=$GITHUB_PACKAGES_TOKEN")
-`
+`.trim()
 
 // kt-math is a single Maven Central Portal deployment: if zip/release fails (e.g. a flaky upload), the
 // deployment is dead and nothing of it got published, so retrying exactly those two tasks once is safe.
@@ -23,12 +23,12 @@ var publishCmd = `
 ./gradlew ${forceVersion} publishJsPackageToNpmjsRegistry || true
 ${githubNpmCmd} || true
 ${recordVersionCmd}
-`
+`.trim()
 // releaseAssets: the files attached to the GitHub release below (see build.gradle.kts)
 var prepareCmd = `
 ./gradlew ${forceVersion} dokkaGenerateHtml || true
 ./gradlew ${forceVersion} releaseAssets || exit 4
-`
+`.trim()
 
 var config = require('semantic-release-preconfigured-conventional-commits');
 config.plugins.push(
