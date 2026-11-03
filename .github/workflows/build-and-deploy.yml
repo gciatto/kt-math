@@ -1,6 +1,16 @@
 name: CI/CD Process
 on:
   workflow_call:
+    inputs:
+      summary-check-run:
+        description: "Id of the run's \"CI summary\" check run, which each job updates as it finishes (see dispatcher.yml)."
+        required: false
+        type: string
+        default: ''
+    outputs:
+      version:
+        description: "The version semantic-release released this run, if any (empty if no release happened)."
+        value: ${{ jobs.release.outputs.version }}
   workflow_dispatch:
 
 jobs:
@@ -8,6 +18,8 @@ jobs:
     runs-on: ubuntu-26.04
     permissions:
       contents: write
+      actions: read
+      checks: write
     steps:
       - name: Checkout
         # Not DanySK/action-checkout here: on pull_request events it checks out the read-only merge-ref
@@ -49,6 +61,7 @@ jobs:
         # ktlintFormat itself errors, committing whatever partial changes it left would push a new commit
         # that retriggers CI, which fails the same way again -- an infinite loop of auto-commits.
         # Skipped for fork PRs: GITHUB_TOKEN can't push to a fork's branch.
+        id: autocommit
         if: >-
           always() &&
           steps.autoformat.outcome == 'success' &&
@@ -56,6 +69,15 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(style): automatically apply ktlintFormat repo-wise"
+      - name: CI summary
+        if: always()
+        uses: ./.github/actions/ci-summary
+        with:
+          kind: lint
+          name: ci-digest-lint
+          dims: autoformat=${{ steps.autocommit.outputs.changes_detected || 'false' }}
+          outcome: ${{ job.status }}
+          check-run: ${{ inputs.summary-check-run }}
   build:
     # macOS: the C kernels of the native targets go through cinterop, which needs Xcode (the Apple SDKs) for the
     # Apple targets, so their klibs can't be cross-compiled on Linux. The other native targets build on macOS too.
@@ -76,29 +98,46 @@ jobs:
             --dry-run
           # assemble builds the klibs of every native target and the metadata of every shared source set, as
           # publishing does: the release job runs on this same OS.
-          check-command: ./gradlew check assemble --parallel --continue
+          # koverXmlReport only aggregates the coverage the JVM tests in `check` already recorded (for the CI summary)
+          check-command: ./gradlew check assemble koverXmlReport --parallel --continue
           should-deploy: true
           should-run-codecov: false
           maven-central-username: ${{ secrets.MAVEN_USERNAME }}
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
           signing-key: ${{ secrets.SIGNING_KEY }}
           signing-password: ${{ secrets.SIGNING_PASSWORD }}
+      - name: CI summary
+        if: always()
+        uses: ./.github/actions/ci-summary
+        with:
+          kind: build
+          # also the coverage baseline of later runs (see the action)
+          name: ci-digest-build
+          retention-days: '90'
+          outcome: ${{ job.status }}
+          check-run: ${{ inputs.summary-check-run }}
   test-extensively:
     needs:
       - lint
       - build
     # if: github.ref_name != 'master' || github.event.commits[0].author.name != 'renovate[bot]'
     uses: ./.github/workflows/test-extensively.yml
+    with:
+      summary-check-run: ${{ inputs.summary-check-run }}
   release:
     permissions:
       contents: write
       packages: write
       id-token: write  # Required for OIDC on npmjs
+      actions: read
+      checks: write
     needs:
       - lint
       - build
       - test-extensively
     runs-on: macos-latest # as the build job: publishing needs the klibs of the Apple targets
+    outputs:
+      version: ${{ steps.released-version.outputs.version }}
     steps:
       - name: Checkout
         uses: DanySK/action-checkout@0.2.31
@@ -131,6 +170,27 @@ jobs:
           maven-central-password: ${{ secrets.MAVEN_PASSWORD }}
           signing-key: ${{ secrets.SIGNING_KEY }}
           signing-password: ${{ secrets.SIGNING_PASSWORD }}
+      - name: Record the released version for downstream jobs
+        # semantic-release's deploy step has no output build-check-deploy-gradle-action exposes, so
+        # release.config.js drops the version into a $RUNNER_TEMP file instead (see its recordVersionCmd)
+        id: released-version
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/last-release-version.txt" ]; then
+            echo "version=$(cat "$RUNNER_TEMP/last-release-version.txt")" >> "$GITHUB_OUTPUT"
+          else
+            echo "No release version recorded (no release happened this run)."
+          fi
+      - name: CI summary
+        if: always()
+        uses: ./.github/actions/ci-summary
+        with:
+          kind: release
+          name: ci-digest-release
+          version: ${{ steps.released-version.outputs.version }}
+          outcome: ${{ job.status }}
+          retention-days: '90'
+          check-run: ${{ inputs.summary-check-run }}
   success:
     runs-on: ubuntu-26.04
     needs:
