@@ -1,5 +1,11 @@
 import io.github.gciatto.kt.mpp.utils.log
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import org.jetbrains.kotlin.konan.target.HostManager
 
 buildscript {
     configurations.classpath {
@@ -87,6 +93,59 @@ kotlin {
             }
         }
     }
+}
+
+// Benchmarks (src/commonBenchmark, src/{jvm,js,native}Benchmark): a "benchmark" compilation per target, on top of main,
+// run manually with `./gradlew benchmark` (JVM, JS and the native target of the host, e.g. to update the README), which
+// prints one Markdown table per platform. Not part of `check`.
+val commonBenchmark = kotlin.sourceSets.create("commonBenchmark")
+val nativeBenchmark = kotlin.sourceSets.create("nativeBenchmark") { dependsOn(commonBenchmark) }
+val benchmarkRuns = mutableListOf<Any>()
+
+kotlin.targets.matching { it.platformType != KotlinPlatformType.common }.all {
+    val main = compilations.getByName("main")
+    val benchmark =
+        compilations.create("benchmark") {
+            associateWith(main)
+            defaultSourceSet.dependsOn(if (this@all is KotlinNativeTarget) nativeBenchmark else commonBenchmark)
+        }
+    when (this) {
+        is KotlinNativeTarget -> {
+            binaries.executable("benchmark", listOf(NativeBuildType.RELEASE)) {
+                compilation = compilations.getByName("benchmark")
+                entryPoint = "org.gciatto.kt.math.main"
+            }
+            if (konanTarget == HostManager.host) {
+                benchmarkRuns += "runBenchmarkReleaseExecutable${targetName.replaceFirstChar { it.uppercase() }}"
+            }
+        }
+        is KotlinJsIrTarget -> {
+            binaries.executable(compilations.getByName("benchmark"))
+            benchmarkRuns +=
+                tasks.register<Exec>("jsBenchmarkRun") {
+                    dependsOn("jsBenchmarkBenchmarkProductionExecutableCompileSync", "kotlinNodeJsSetup")
+                    val script =
+                        layout.buildDirectory.file(
+                            "compileSync/js/benchmark/benchmarkProductionExecutable/kotlin/${project.name}-benchmark.js",
+                        )
+                    val node = project.the<NodeJsEnvSpec>().executable
+                    doFirst { commandLine(node.get(), script.get().asFile.absolutePath) }
+                }
+        }
+        is KotlinJvmTarget -> {
+            benchmarkRuns +=
+                tasks.register<JavaExec>("jvmBenchmarkRun") {
+                    classpath(benchmark.output.allOutputs, benchmark.runtimeDependencyFiles)
+                    mainClass.set("org.gciatto.kt.math.BenchmarksKt")
+                }
+        }
+    }
+}
+
+tasks.register("benchmark") {
+    group = "verification"
+    description = "Runs the benchmarks on the JVM, JS and the native target of the host"
+    dependsOn(benchmarkRuns)
 }
 
 // Differential tests on JS and native: the JVM computes the expected outcomes of the DifferentialOps cases with
