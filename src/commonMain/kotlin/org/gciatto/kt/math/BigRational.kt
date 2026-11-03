@@ -317,11 +317,12 @@ class BigRational private constructor(
 
     private fun precision(): Int = countDigits(numerator.toBigInteger()) + countDigits(denominator.toBigInteger())
 
-    /** Returns this rational number as a double value. */
-    fun toDouble(): Double {
-        // TODO best accuracy or maybe bigDecimalValue(MathContext.DECIMAL64).doubleValue() is enough?
-        return toBigDecimal().toDouble()
-    }
+    /**
+     * Returns this rational number as a double value: the nearest one to [toBigDecimal], which has at least 34
+     * significant digits (a double needs 17), hence the nearest one to this number too, but for halfway cases of
+     * that decimal approximation.
+     */
+    fun toDouble(): Double = toBigDecimal().toDouble()
 
     /** Returns this rational number as a [BigInteger] (truncating the fraction part, as [toLong]). */
     fun toBigInteger(): BigInteger = numeratorBigInteger / denominatorBigInteger

@@ -62,6 +62,10 @@ private val ONE_HALF = BigDecimal.valueOf(0.5)
 private val ONE_HUNDRED_EIGHTY = BigDecimal.of(180)
 
 private val DOUBLE_MAX_VALUE = BigDecimal.valueOf(Double.MAX_VALUE)
+private val INT_MIN_VALUE = BigDecimal.of(Int.MIN_VALUE)
+private val INT_MAX_VALUE = BigDecimal.of(Int.MAX_VALUE)
+private val LONG_MIN_VALUE = BigDecimal.of(Long.MIN_VALUE)
+private val LONG_MAX_VALUE = BigDecimal.of(Long.MAX_VALUE)
 
 private var log2Cache: BigDecimal? = null
 private val log2CacheLock = CacheLock()
@@ -259,30 +263,14 @@ private fun toBigDecimalRecursive(
 }
 
 /** Returns whether the specified [BigDecimal] value can be represented as `int`. */
-fun BigDecimal.isIntValue(): Boolean {
-    val value = this
-    // TODO impl isIntValue() without exceptions
-    try {
-        value.toIntExact()
-        return true
-    } catch (_: ArithmeticException) {
-        // ignored
-    }
-    return false
-}
+fun BigDecimal.isIntValue(): Boolean = isIntegral() && this >= INT_MIN_VALUE && this <= INT_MAX_VALUE
 
 /** Returns whether the specified [BigDecimal] value can be represented as `long`. */
-fun BigDecimal.isLongValue(): Boolean {
-    val value = this
-    // TODO impl isLongValue() without exceptions
-    try {
-        value.toLongExact()
-        return true
-    } catch (_: ArithmeticException) {
-        // ignored
-    }
-    return false
-}
+fun BigDecimal.isLongValue(): Boolean = isIntegral() && this >= LONG_MIN_VALUE && this <= LONG_MAX_VALUE
+
+// big-math's isIntValue and isLongValue caught the exceptions of intValueExact and longValueExact: these are the same
+// checks, without exceptions
+private fun BigDecimal.isIntegral(): Boolean = signum == 0 || scale <= 0 || stripTrailingZeros().scale <= 0
 
 /**
  * Returns whether the specified [BigDecimal] value can be represented as `double` (without being infinite;
@@ -531,13 +519,11 @@ fun BigDecimal.pow(
         }
     }
 
-    // TODO optimize y=0, y=1, y=10^k, y=-1, y=-10^k
-
-    try {
-        val longValue = y.toLongExact()
-        return x.pow(longValue, mathContext)
-    } catch (_: ArithmeticException) {
-        // ignored
+    // big-math's note to optimize y=0, y=1, y=10^k, y=-1, y=-10^k: they are integers, hence computed by repeated
+    // squaring, in O(log |y|) multiplications. Shortcuts (e.g. round(x, mathContext) for y=1) would skip the
+    // intermediate rounding to a larger precision, changing some results.
+    if (y.isLongValue()) {
+        return x.pow(y.toLong(), mathContext)
     }
 
     if (y.fractionalPart().signum == 0) {
@@ -571,8 +557,7 @@ fun BigDecimal.pow(
             MathContext(mathContext.precision + 10, mathContext.roundingMode)
         }
 
-    // TODO optimize y=0, y=1, y=10^k, y=-1, y=-10^k
-
+    // y=0, y=1, y=10^k, y=-1, y=-10^k need no shortcut: see pow(BigDecimal, MathContext)
     if (y < 0) {
         val value = x.pow(-y, mc).reciprocal(mc)
         return round(value, mathContext)
