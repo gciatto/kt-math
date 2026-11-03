@@ -852,9 +852,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          * @param prec the number of decimal digits of [unscaledVal], or `0` if unknown.
          * @return a [BigDecimal] whose value is `unscaledVal × 10^-scale`.
          */
-        @JvmStatic
-        @JsName("ofScaledLongWithPrecision")
-        fun of(
+        internal fun of(
             unscaledVal: Long,
             scale: Int,
             prec: Int,
@@ -893,9 +891,7 @@ interface BigDecimal : Comparable<BigDecimal> {
          * @param prec the number of decimal digits of [intVal], or `0` if unknown.
          * @return a [BigDecimal] whose value is `intVal × 10^-scale`.
          */
-        @JvmStatic
-        @JsName("ofScaledBigIntegerWithPrecision")
-        fun of(
+        internal fun of(
             intVal: BigInteger,
             scale: Int,
             prec: Int,

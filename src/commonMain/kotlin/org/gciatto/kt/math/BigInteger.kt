@@ -165,21 +165,21 @@ interface BigInteger : Comparable<BigInteger> {
 
     /**
      * Returns `this % other`, whose sign is the one of this value (as [rem]).
-     * Exported to JS as `reminder`.
+     * Exported to JS as `remainder`.
      *
      * @param other the value by which this [BigInteger] is to be divided, and the remainder computed.
      * @return `this % other`
      * @throws ArithmeticException if [other] is zero.
      */
-    @JsName("reminder")
+    @JsName("remainder")
     fun remainder(other: BigInteger): BigInteger
 
     /** As [remainder], with an [Int] operand. */
-    @JsName("reminderInt")
+    @JsName("remainderInt")
     fun remainder(other: Int): BigInteger = remainder(of(other))
 
     /** As [remainder], with a [Long] operand. */
-    @JsName("reminderLong")
+    @JsName("remainderLong")
     fun remainder(other: Long): BigInteger = remainder(of(other))
 
     /**
@@ -780,7 +780,7 @@ interface BigInteger : Comparable<BigInteger> {
 
         /**
          * Returns the [BigInteger] whose sign is [signum] and whose magnitude is the unsigned big-endian number
-         * held by the [len] bytes of [magnitude] starting at index [off]. Exported to JS as `ofSlideIntArray`.
+         * held by the [len] bytes of [magnitude] starting at index [off]. Exported to JS as `ofSignMagnitudeSlice`.
          *
          * @param signum the sign of the result: -1, 0 or 1.
          * @param magnitude the bytes holding the magnitude, most significant first.
@@ -790,7 +790,7 @@ interface BigInteger : Comparable<BigInteger> {
          * @throws NumberFormatException if [signum] is not -1, 0 or 1, or it is 0 and the magnitude is not zero.
          * @throws IndexOutOfBoundsException if [off] and [len] do not designate a range within [magnitude].
          */
-        @JsName("ofSlideIntArray")
+        @JsName("ofSignMagnitudeSlice")
         @JvmStatic
         fun of(
             signum: Int,
