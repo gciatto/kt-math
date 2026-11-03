@@ -1,3 +1,17 @@
+## [2.1.0](https://github.com/gciatto/kt-math/compare/2.0.0...2.1.0) (2026-11-03)
+
+### Features
+
+* GitHub releases attach the JVM jars, the npm tarball and the C shared libraries; npm package on GitHub Packages ([048fd2a](https://github.com/gciatto/kt-math/commit/048fd2a710a2cc0c2039657b76f5750b5809a18f))
+
+### Documentation
+
+* getting started in C with the prebuilt libraries, Kotlin/Native and GitHub Packages dependencies ([ec19157](https://github.com/gciatto/kt-math/commit/ec19157947447fd884e853a66602685ae48dc9cf))
+
+### Build and continuous integration
+
+* a CI summary, as in 2p-kt, filled in by every job as it finishes ([82d5be0](https://github.com/gciatto/kt-math/commit/82d5be0f9349905f3208a0dd156604e49d187d04))
+
 ## [2.0.0](https://github.com/gciatto/kt-math/compare/1.0.0...2.0.0) (2026-11-03)
 
 ### ⚠ BREAKING CHANGES
