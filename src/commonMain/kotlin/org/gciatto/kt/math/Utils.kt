@@ -5,7 +5,7 @@ package org.gciatto.kt.math
 import kotlin.jvm.JvmName
 import kotlin.random.Random
 
-const val DEBUG = false
+internal const val DEBUG = false
 
 internal fun log(lazyObject: () -> Any) {
     if (DEBUG) {
