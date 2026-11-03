@@ -169,8 +169,30 @@ kotlin.targets
 
 // The JS API as plain JavaScript sees it: src/jsUsageTest runs on Node's test runner against the npm package as
 // published (assembleJsPackage)
+// The TypeScript definitions as TypeScript sees them: src/jsUsageTest/usage.ts, type-checked (not run) with the
+// TypeScript compiler of Kotlin's own npm dependencies
+val tsUsageTest =
+    tasks.register<Exec>("tsUsageTest") {
+        group = "verification"
+        description = "Type-checks the TypeScript usage test against the definitions of the npm package"
+        dependsOn("assembleJsPackage", "kotlinNpmInstall", "kotlinNodeJsSetup")
+        val tests = layout.projectDirectory.dir("src/jsUsageTest")
+        inputs.dir(tests)
+        val tsc = rootProject.layout.buildDirectory.file("js/node_modules/typescript/bin/tsc")
+        val node = project.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec>().executable
+        doFirst {
+            commandLine(
+                node.get(),
+                tsc.get().asFile.absolutePath,
+                "-p",
+                tests.file("tsconfig.json").asFile.absolutePath,
+            )
+        }
+    }
+
 val jsUsageTest =
     tasks.register<Exec>("jsUsageTest") {
+        dependsOn(tsUsageTest)
         group = "verification"
         description = "Runs the plain-JavaScript usage tests against the npm package"
         dependsOn("assembleJsPackage", "kotlinNodeJsSetup")
@@ -187,6 +209,9 @@ val jsUsageTest =
         }
     }
 tasks.named("check") { dependsOn(jsUsageTest) }
+
+// TypeScript definitions (.d.ts) of the @JsExport-ed API, shipped in the npm package
+kotlin.js().generateTypeScriptDefinitions()
 
 kotlin.js().nodejs {
     testTask {
