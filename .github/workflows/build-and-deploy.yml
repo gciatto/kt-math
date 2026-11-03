@@ -154,6 +154,8 @@ jobs:
           # `permissions:` block above), so no separate PAT is needed.
           ORG_GRADLE_PROJECT_otherMavenUsername: ${{ github.actor }}
           ORG_GRADLE_PROJECT_otherMavenPassword: ${{ secrets.GITHUB_TOKEN }}
+          # the npm package on GitHub Packages (see release.config.js)
+          GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           retries-on-failure: '1'
           build-command: ./gradlew clean

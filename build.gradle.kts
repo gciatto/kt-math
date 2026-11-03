@@ -187,13 +187,36 @@ tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
     environment("SIMCTL_CHILD_KT_MATH_DIFFERENTIAL_CASES", differentialCases.get().asFile.absolutePath)
 }
 
+// Everything attached to the GitHub release (see release.config.js): the JVM jars, the npm tarball, and a zip of the
+// C shared library and header of each desktop native target
+val releaseAssets =
+    tasks.register("releaseAssets") {
+        group = "distribution"
+        description = "Builds the files attached to the GitHub release"
+        dependsOn("jvmJar", "jvmSourcesJar", "packJsPackage")
+    }
+
 // The C API (the shared library and header Kotlin/Native generates) as C code sees it: src/nativeUsageTest/c, compiled
 // with the host's `cc` against the library of the host's target, then run
 val usageLibraryTargets = setOf("linuxX64", "macosArm64")
+val sharedLibraryTargets = usageLibraryTargets + setOf("linuxArm64", "mingwX64")
 kotlin.targets
     .withType<KotlinNativeTarget>()
-    .matching { it.name in usageLibraryTargets }
-    .configureEach { binaries.sharedLib("ktmath", listOf(NativeBuildType.DEBUG)) }
+    .matching { it.name in sharedLibraryTargets }
+    .configureEach {
+        val buildTypes =
+            listOf(NativeBuildType.RELEASE) + listOf(NativeBuildType.DEBUG).filter { name in usageLibraryTargets }
+        binaries.sharedLib("ktmath", buildTypes)
+        val library = binaries.getSharedLib("ktmath", NativeBuildType.RELEASE)
+        val zip =
+            tasks.register<Zip>("zipKtmathReleaseShared${targetName.replaceFirstChar { it.uppercase() }}") {
+                group = "distribution"
+                description = "Zips the C shared library and header of $targetName"
+                from(library.linkTaskProvider.flatMap { it.destinationDirectory })
+                archiveClassifier.set(targetName)
+            }
+        releaseAssets { dependsOn(zip) }
+    }
 kotlin.targets
     .withType<KotlinNativeTarget>()
     .firstOrNull { it.name in usageLibraryTargets && it.konanTarget == HostManager.host }
