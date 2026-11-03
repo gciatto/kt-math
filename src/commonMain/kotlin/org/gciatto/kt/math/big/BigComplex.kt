@@ -32,6 +32,7 @@ import org.gciatto.kt.math.BigDecimal
 import org.gciatto.kt.math.MathContext
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.js.JsStatic
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -561,20 +562,24 @@ class BigComplex private constructor(
 
         /** The value 0 as [BigComplex]. */
         @JvmField
+        @JsStatic
         val ZERO = BigComplex(BigDecimal.ZERO, BigDecimal.ZERO)
 
         /** The value 1 as [BigComplex]. */
         @JvmField
+        @JsStatic
         val ONE = BigComplex(BigDecimal.ONE, BigDecimal.ZERO)
 
         /** The imaginary unit *i* as [BigComplex]. */
         @JvmField
+        @JsStatic
         val I = BigComplex(BigDecimal.ZERO, BigDecimal.ONE)
 
         /** Returns the [BigComplex] with the [real] and [imaginary] parts (by default, a real number). */
         @JvmStatic
         @JvmOverloads
         @JsName("valueOf")
+        @JsStatic
         fun valueOf(
             real: BigDecimal,
             imaginary: BigDecimal = BigDecimal.ZERO,
@@ -597,11 +602,13 @@ class BigComplex private constructor(
         /** Returns the real [BigComplex] with the [real] part, converted as by [BigDecimal.valueOf]. */
         @JvmStatic
         @JsName("valueOfDouble")
+        @JsStatic
         fun valueOf(real: Double): BigComplex = valueOf(BigDecimal.valueOf(real), BigDecimal.ZERO)
 
         /** Returns the [BigComplex] with the [real] and [imaginary] parts, converted as by [BigDecimal.valueOf]. */
         @JvmStatic
         @JsName("valueOfDoubles")
+        @JsStatic
         fun valueOf(
             real: Double,
             imaginary: Double,
@@ -610,6 +617,7 @@ class BigComplex private constructor(
         /** Returns the [BigComplex] with polar coordinates [radius] and [angle] (in radians). */
         @JvmStatic
         @JsName("valueOfPolar")
+        @JsStatic
         fun valueOfPolar(
             radius: BigDecimal,
             angle: BigDecimal,
@@ -628,6 +636,7 @@ class BigComplex private constructor(
         /** As the other [valueOfPolar], converting [radius] and [angle] as by [BigDecimal.valueOf]. */
         @JvmStatic
         @JsName("valueOfPolarDouble")
+        @JsStatic
         fun valueOfPolar(
             radius: Double,
             angle: Double,

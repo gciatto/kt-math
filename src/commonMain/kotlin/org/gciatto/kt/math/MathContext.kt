@@ -29,6 +29,7 @@ package org.gciatto.kt.math
 
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlin.js.JsStatic
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
 
@@ -70,6 +71,7 @@ data class MathContext
              */
             @JvmField
             @JsName("UNLIMITED")
+            @JsStatic
             val UNLIMITED = MathContext(0, RoundingMode.HALF_UP)
 
             /**
@@ -80,6 +82,7 @@ data class MathContext
              */
             @JvmField
             @JsName("DECIMAL32")
+            @JsStatic
             val DECIMAL32 = MathContext(7, RoundingMode.HALF_EVEN)
 
             /**
@@ -90,6 +93,7 @@ data class MathContext
              */
             @JvmField
             @JsName("DECIMAL64")
+            @JsStatic
             val DECIMAL64 = MathContext(16, RoundingMode.HALF_EVEN)
 
             /**
@@ -100,6 +104,7 @@ data class MathContext
              */
             @JvmField
             @JsName("DECIMAL128")
+            @JsStatic
             val DECIMAL128 = MathContext(34, RoundingMode.HALF_EVEN)
         }
     }

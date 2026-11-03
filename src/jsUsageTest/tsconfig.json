@@ -4,8 +4,7 @@
     "noEmit": true,
     "target": "ES2020",
     "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "paths": { "kt-math": ["../../build/packages/js/kt-math.d.ts"] }
+    "moduleResolution": "nodenext"
   },
-  "files": ["usage.ts"]
+  "files": ["usage.mts"]
 }

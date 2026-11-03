@@ -11,13 +11,13 @@ import kotlin.js.JsExport
  * @property endInclusive the upper bound of the range (included).
  */
 @JsExport
-@Suppress("NON_EXPORTABLE_TYPE")
 data class BigIntegerRange(
     override val start: BigInteger,
     override val endInclusive: BigInteger,
 ) : ClosedRange<BigInteger>,
     Iterable<BigInteger> {
     /** Returns an iterator over the values of this range, in increasing order from [start] to [endInclusive]. */
+    @JsExport.Ignore // a Kotlin Iterator is no JS iterator: see toArray
     override fun iterator(): Iterator<BigInteger> =
         object : Iterator<BigInteger> {
             private var current = start
@@ -30,4 +30,13 @@ data class BigIntegerRange(
                 return temp
             }
         }
+
+    /** The first value of this range, [start] (which, as an override, JS can't see). */
+    val first: BigInteger get() = start
+
+    /** The last value of this range, [endInclusive] (which, as an override, JS can't see). */
+    val last: BigInteger get() = endInclusive
+
+    /** Returns the values of this range, in increasing order from [start] to [endInclusive]: an array in JS. */
+    fun toArray(): Array<BigInteger> = toList().toTypedArray()
 }
