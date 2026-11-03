@@ -263,10 +263,10 @@ private fun toBigDecimalRecursive(
     return BigDecimal.of(string.substring(offset, offset + length)).movePointRight(scale)
 }
 
-/** Returns whether the specified [BigDecimal] value can be represented as `int`. */
+/** Returns whether this [BigDecimal] can be represented as `int`. */
 fun BigDecimal.isIntValue(): Boolean = isIntegral() && this >= INT_MIN_VALUE && this <= INT_MAX_VALUE
 
-/** Returns whether the specified [BigDecimal] value can be represented as `long`. */
+/** Returns whether this [BigDecimal] can be represented as `long`. */
 fun BigDecimal.isLongValue(): Boolean = isIntegral() && this >= LONG_MIN_VALUE && this <= LONG_MAX_VALUE
 
 // big-math's isIntValue and isLongValue caught the exceptions of intValueExact and longValueExact: these are the same
@@ -274,7 +274,7 @@ fun BigDecimal.isLongValue(): Boolean = isIntegral() && this >= LONG_MIN_VALUE &
 private fun BigDecimal.isIntegral(): Boolean = signum == 0 || scale <= 0 || stripTrailingZeros().scale <= 0
 
 /**
- * Returns whether the specified [BigDecimal] value can be represented as `double` (without being infinite;
+ * Returns whether this [BigDecimal] can be represented as `double` (without being infinite;
  * precision may be lost).
  */
 fun BigDecimal.isDoubleValue(): Boolean {
@@ -290,7 +290,7 @@ fun BigDecimal.isDoubleValue(): Boolean {
 }
 
 /**
- * Returns the mantissa of the specified [BigDecimal] written as *mantissa * 10<sup>exponent</sup>*: always
+ * Returns the mantissa of this [BigDecimal] written as *mantissa * 10<sup>exponent</sup>*: always
  * between 1 (inclusive) and 10 (exclusive) in absolute value, unless the value is 0.
  */
 fun BigDecimal.mantissa(): BigDecimal {
@@ -303,10 +303,10 @@ fun BigDecimal.mantissa(): BigDecimal {
     return value.movePointLeft(exponent)
 }
 
-/** Returns the exponent of the specified [BigDecimal] written as *mantissa * 10<sup>exponent</sup>*. */
+/** Returns the exponent of this [BigDecimal] written as *mantissa * 10<sup>exponent</sup>*. */
 fun BigDecimal.exponent(): Int = precision - scale - 1
 
-/** Returns the number of significant digits of the specified [BigDecimal] (trailing zeros excluded). */
+/** Returns the number of significant digits of this [BigDecimal] (trailing zeros excluded). */
 fun BigDecimal.significantDigits(): Int {
     val value = this
     val stripped = value.stripTrailingZeros()
@@ -317,10 +317,10 @@ fun BigDecimal.significantDigits(): Int {
     }
 }
 
-/** Returns the integral part of the specified [BigDecimal] (left of the decimal point). */
+/** Returns the integral part of this [BigDecimal] (left of the decimal point). */
 fun BigDecimal.integralPart(): BigDecimal = setScale(0, RoundingMode.DOWN)
 
-/** Returns the fractional part of the specified [BigDecimal] (right of the decimal point). */
+/** Returns the fractional part of this [BigDecimal] (right of the decimal point). */
 fun BigDecimal.fractionalPart(): BigDecimal = minus(integralPart())
 
 /** Rounds the specified [BigDecimal] to the precision of the specified [MathContext]. */
@@ -330,8 +330,8 @@ internal fun round(
 ): BigDecimal = value.rounded(mathContext)
 
 /**
- * Rounds the specified [BigDecimal] to the precision of the specified [MathContext], including trailing zeroes:
- * `roundWithTrailingZeroes(1.0, MathContext(4))` is `1.000`.
+ * Rounds this [BigDecimal] to the precision of [mathContext], including trailing zeroes:
+ * `"1.0".toBigDecimal().roundWithTrailingZeroes(MathContext(4))` is `1.000`.
  */
 fun BigDecimal.roundWithTrailingZeroes(mathContext: MathContext): BigDecimal {
     val value = this
@@ -358,7 +358,7 @@ fun BigDecimal.roundWithTrailingZeroes(mathContext: MathContext): BigDecimal {
     }
 }
 
-/** Calculates the reciprocal of the specified [BigDecimal]: 1/x. */
+/** Calculates the reciprocal of this [BigDecimal]: 1/x. */
 fun BigDecimal.reciprocal(mathContext: MathContext): BigDecimal = ONE.divide(this, mathContext)
 
 /**
@@ -411,7 +411,7 @@ private fun factorialRecursion(
 }
 
 /**
- * Calculates the factorial of the specified [BigDecimal], with Spouge's approximation for non-integer values
+ * Calculates the factorial of this [BigDecimal], with Spouge's approximation for non-integer values
  * (see [Wikipedia: Spouge's approximation](https://en.wikipedia.org/wiki/Spouge%27s_approximation)).
  *
  * @throws ArithmeticException if x is a negative integer value (-1, -2, -3, ...)
@@ -477,7 +477,7 @@ internal fun getSpougeFactorialConstants(a: Int): List<BigDecimal> =
     }
 
 /**
- * Calculates the gamma function of the specified [BigDecimal]: Γ(x) = (x-1)!.
+ * Calculates the gamma function of this [BigDecimal]: Γ(x) = (x-1)!.
  *
  * @throws ArithmeticException if x-1 is a negative integer value (-1, -2, -3, ...)
  * @throws UnsupportedOperationException if x is a non-integer value and the [MathContext] has unlimited precision
@@ -502,7 +502,7 @@ fun bernoulli(
 }
 
 /**
- * Calculates [BigDecimal] x to the power of [BigDecimal] y (x<sup>y</sup>).
+ * Calculates this [BigDecimal] x to the power of [BigDecimal] y (x<sup>y</sup>).
  *
  * @throws ArithmeticException if the result can't be calculated (e.g. x < 0 and y non-integer)
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -539,7 +539,7 @@ fun BigDecimal.pow(
 }
 
 /**
- * Calculates [BigDecimal] x to the power of `long` y (x<sup>y</sup>): unlike [BigDecimal.pow], y may be
+ * Calculates this [BigDecimal] x to the power of `long` y (x<sup>y</sup>): unlike [BigDecimal.pow], y may be
  * negative or larger than `Int.MAX_VALUE`.
  *
  * @throws ArithmeticException if y is negative and the result can't be calculated (e.g. x is 0)
@@ -674,7 +674,7 @@ internal fun sqrt(
 }
 
 /**
- * Calculates the n'th root of [BigDecimal] x
+ * Calculates the n'th root of this [BigDecimal] x
  * (see [Wikipedia: Nth root](https://en.wikipedia.org/wiki/Nth_root)).
  *
  * @throws ArithmeticException if n <= 0 or x < 0
@@ -743,7 +743,7 @@ private fun rootUsingNewtonRaphson(
 }
 
 /**
- * Calculates the natural logarithm of [BigDecimal] x
+ * Calculates the natural logarithm of this [BigDecimal] x
  * (see [Wikipedia: Natural logarithm](http://en.wikipedia.org/wiki/Natural_logarithm)).
  *
  * @throws ArithmeticException if x <= 0
@@ -770,7 +770,7 @@ fun BigDecimal.log(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the logarithm of [BigDecimal] x to the base 2.
+ * Calculates the logarithm of this [BigDecimal] x to the base 2.
  *
  * @throws ArithmeticException if x <= 0
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -785,7 +785,7 @@ fun BigDecimal.log2(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the logarithm of [BigDecimal] x to the base 10.
+ * Calculates the logarithm of this [BigDecimal] x to the base 10.
  *
  * @throws ArithmeticException if x <= 0
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1095,7 +1095,7 @@ private fun logThree(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the natural exponent of [BigDecimal] x: e<sup>x</sup>
+ * Calculates the natural exponent of this [BigDecimal] x: e<sup>x</sup>
  * (see [Wikipedia: Exponent](https://en.wikipedia.org/wiki/Exponent)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1147,7 +1147,7 @@ private fun expTaylor(
 }
 
 /**
- * Calculates the sine (sinus) of [BigDecimal] x
+ * Calculates the sine (sinus) of this [BigDecimal] x
  * (see [Wikipedia: Sine](http://en.wikipedia.org/wiki/Sine)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1168,7 +1168,7 @@ fun BigDecimal.sin(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the arc sine (inverted sine) of [BigDecimal] x
+ * Calculates the arc sine (inverted sine) of this [BigDecimal] x
  * (see [Wikipedia: Arcsine](http://en.wikipedia.org/wiki/Arcsine)).
  *
  * @throws ArithmeticException if x > 1 or x < -1
@@ -1200,7 +1200,7 @@ fun BigDecimal.asin(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the cosine (cosinus) of [BigDecimal] x
+ * Calculates the cosine (cosinus) of this [BigDecimal] x
  * (see [Wikipedia: Cosine](http://en.wikipedia.org/wiki/Cosine)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1221,7 +1221,7 @@ fun BigDecimal.cos(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the arc cosine (inverted cosine) of [BigDecimal] x
+ * Calculates the arc cosine (inverted cosine) of this [BigDecimal] x
  * (see [Wikipedia: Arccosine](http://en.wikipedia.org/wiki/Arccosine)).
  *
  * @throws ArithmeticException if x > 1 or x < -1
@@ -1244,7 +1244,7 @@ fun BigDecimal.acos(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the tangens of [BigDecimal] x
+ * Calculates the tangens of this [BigDecimal] x
  * (see [Wikipedia: Tangens](http://en.wikipedia.org/wiki/Tangens)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1262,7 +1262,7 @@ fun BigDecimal.tan(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the arc tangens (inverted tangens) of [BigDecimal] x
+ * Calculates the arc tangens (inverted tangens) of this [BigDecimal] x
  * (see [Wikipedia: Arctangens](http://en.wikipedia.org/wiki/Arctangens)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1315,7 +1315,7 @@ fun atan2(
 }
 
 /**
- * Calculates the cotangens of [BigDecimal] x
+ * Calculates the cotangens of this [BigDecimal] x
  * (see [Wikipedia: Cotangens](http://en.wikipedia.org/wiki/Cotangens)).
  *
  * @throws ArithmeticException if x = 0
@@ -1334,7 +1334,7 @@ fun BigDecimal.cot(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the inverse cotangens (arc cotangens) of [BigDecimal] x
+ * Calculates the inverse cotangens (arc cotangens) of this [BigDecimal] x
  * (see [Wikipedia: Arccotangens](http://en.wikipedia.org/wiki/Arccotangens)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1348,7 +1348,7 @@ fun BigDecimal.acot(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the hyperbolic sine of [BigDecimal] x
+ * Calculates the hyperbolic sine of this [BigDecimal] x
  * (see [Wikipedia: Hyperbolic function](https://en.wikipedia.org/wiki/Hyperbolic_function)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1362,7 +1362,7 @@ fun BigDecimal.sinh(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the hyperbolic cosine of [BigDecimal] x
+ * Calculates the hyperbolic cosine of this [BigDecimal] x
  * (see [Wikipedia: Hyperbolic function](https://en.wikipedia.org/wiki/Hyperbolic_function)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1376,7 +1376,7 @@ fun BigDecimal.cosh(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the hyperbolic tangens of [BigDecimal] x
+ * Calculates the hyperbolic tangens of this [BigDecimal] x
  * (see [Wikipedia: Hyperbolic function](https://en.wikipedia.org/wiki/Hyperbolic_function)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1390,7 +1390,7 @@ fun BigDecimal.tanh(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the hyperbolic cotangens of [BigDecimal] x
+ * Calculates the hyperbolic cotangens of this [BigDecimal] x
  * (see [Wikipedia: Hyperbolic function](https://en.wikipedia.org/wiki/Hyperbolic_function)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1404,7 +1404,7 @@ fun BigDecimal.coth(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the arc hyperbolic sine (inverse hyperbolic sine) of [BigDecimal] x
+ * Calculates the arc hyperbolic sine (inverse hyperbolic sine) of this [BigDecimal] x
  * (see [Wikipedia: Inverse hyperbolic function](https://en.wikipedia.org/wiki/Inverse_hyperbolic_function)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1418,7 +1418,7 @@ fun BigDecimal.asinh(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the arc hyperbolic cosine (inverse hyperbolic cosine) of [BigDecimal] x
+ * Calculates the arc hyperbolic cosine (inverse hyperbolic cosine) of this [BigDecimal] x
  * (see [Wikipedia: Inverse hyperbolic function](https://en.wikipedia.org/wiki/Inverse_hyperbolic_function)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
@@ -1432,7 +1432,7 @@ fun BigDecimal.acosh(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the arc hyperbolic tangens (inverse hyperbolic tangens) of [BigDecimal] x
+ * Calculates the arc hyperbolic tangens (inverse hyperbolic tangens) of this [BigDecimal] x
  * (see [Wikipedia: Inverse hyperbolic function](https://en.wikipedia.org/wiki/Inverse_hyperbolic_function)).
  *
  * @throws ArithmeticException if x >= 1 or x <= -1
@@ -1459,7 +1459,7 @@ fun BigDecimal.atanh(mathContext: MathContext): BigDecimal {
 }
 
 /**
- * Calculates the arc hyperbolic cotangens (inverse hyperbolic cotangens) of [BigDecimal] x
+ * Calculates the arc hyperbolic cotangens (inverse hyperbolic cotangens) of this [BigDecimal] x
  * (see [Wikipedia: Inverse hyperbolic function](https://en.wikipedia.org/wiki/Inverse_hyperbolic_function)).
  *
  * @throws UnsupportedOperationException if the [MathContext] has unlimited precision
