@@ -31,31 +31,31 @@ internal object DefaultBigFactory : BigFactory {
 
     override fun bigDecimalOf(
         value: Int,
-        context: MathContext?,
-    ): BigDecimal = if (context == null) BigDecimal.of(value) else BigDecimal.of(value, context)
+        context: MathContext,
+    ): BigDecimal = if (context.precision == 0) BigDecimal.of(value) else BigDecimal.of(value, context)
 
     override fun bigDecimalOf(
         value: Long,
-        context: MathContext?,
-    ): BigDecimal = if (context == null) BigDecimal.of(value) else BigDecimal.of(value, context)
+        context: MathContext,
+    ): BigDecimal = if (context.precision == 0) BigDecimal.of(value) else BigDecimal.of(value, context)
 
     override fun bigDecimalOf(
         value: Double,
-        context: MathContext?,
+        context: MathContext,
     ): BigDecimal = BigDecimal.of(value, context)
 
     override fun bigDecimalValueOf(value: Double): BigDecimal = BigDecimal.valueOf(value)
 
     override fun bigDecimalOf(
         value: BigInteger,
-        context: MathContext?,
+        context: MathContext,
     ): BigDecimal = BigDecimal.of(value, context)
 
     override fun bigDecimalOf(
         unscaledValue: BigInteger,
         scale: Int,
-        context: MathContext?,
-    ): BigDecimal = BigDecimal.of(unscaledValue, scale, 0).let { if (context == null) it else it.round(context) }
+        context: MathContext,
+    ): BigDecimal = BigDecimal.of(unscaledValue, scale, 0).let { if (context.precision == 0) it else it.round(context) }
 
     override fun bigDecimalOf(
         unscaledValue: Long,
@@ -64,7 +64,7 @@ internal object DefaultBigFactory : BigFactory {
 
     override fun parseBigDecimal(
         value: String,
-        context: MathContext?,
+        context: MathContext,
     ): BigDecimal = BigDecimal.of(value, context)
 
     override fun bigRationalOf(value: Int): BigRational = BigRational.valueOf(value)

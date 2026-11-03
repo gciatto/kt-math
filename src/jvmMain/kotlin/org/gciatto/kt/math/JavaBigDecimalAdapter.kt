@@ -32,13 +32,13 @@ internal class JavaBigDecimalAdapter(
     override val unscaledValue: BigInteger
         get() = JavaBigIntegerAdapter(value.unscaledValue())
 
-    override fun plus(augend: BigDecimal?): BigDecimal =
+    override fun plus(augend: BigDecimal): BigDecimal =
         adapt(augend) {
             value.add(it)
         }
 
     override fun plus(
-        augend: BigDecimal?,
+        augend: BigDecimal,
         mc: MathContext,
     ): BigDecimal =
         adapt(augend) {
@@ -58,7 +58,7 @@ internal class JavaBigDecimalAdapter(
             value.subtract(it, mc.toJava())
         }
 
-    override fun times(multiplicand: BigDecimal?): BigDecimal =
+    override fun times(multiplicand: BigDecimal): BigDecimal =
         adapt(multiplicand) {
             value.multiply(it)
         }

@@ -77,7 +77,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return `this + augend`
      */
     @JsName("plus")
-    operator fun plus(augend: BigDecimal?): BigDecimal
+    operator fun plus(augend: BigDecimal): BigDecimal
 
     /**
      * As [plus], rounding according to [mc].
@@ -92,7 +92,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      */
     @JsName("plusWithContext")
     fun plus(
-        augend: BigDecimal?,
+        augend: BigDecimal,
         mc: MathContext,
     ): BigDecimal
 
@@ -131,7 +131,7 @@ interface BigDecimal : Comparable<BigDecimal> {
      * @return `this * multiplicand`
      */
     @JsName("times")
-    operator fun times(multiplicand: BigDecimal?): BigDecimal
+    operator fun times(multiplicand: BigDecimal): BigDecimal
 
     /**
      * As [times], rounding according to [mc].
@@ -910,7 +910,7 @@ interface BigDecimal : Comparable<BigDecimal> {
 
         /**
          * Translates a [Double] into a [BigDecimal] which is the exact decimal representation of its binary
-         * floating-point value, rounded according to [ctx] if any. The scale of the result (before rounding) is the
+         * floating-point value, rounded according to [ctx]. The scale of the result (before rounding) is the
          * smallest non-negative value such that `10^scale × val` is an integer.
          *
          * The result can be somewhat unpredictable: since `0.1` cannot be represented exactly as a [Double],
@@ -918,8 +918,8 @@ interface BigDecimal : Comparable<BigDecimal> {
          * instead, or the [of] overload parsing a [String].
          *
          * @param val [Double] to convert to a [BigDecimal].
-         * @param ctx the context to use for rounding, or `null` not to round.
-         * @return a [BigDecimal] whose value is equal to `val`, rounded according to [ctx] if any.
+         * @param ctx the context to use for rounding (by default, `MathContext.UNLIMITED`: no rounding).
+         * @return a [BigDecimal] whose value is equal to `val`, rounded according to [ctx].
          * @throws NumberFormatException if `val` is infinite or NaN.
          * @throws ArithmeticException if the result is inexact but the rounding mode of [ctx] is
          * [RoundingMode.UNNECESSARY].
@@ -931,7 +931,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JsStatic
         fun of(
             `val`: Double,
-            ctx: MathContext? = null,
+            ctx: MathContext = MathContext.UNLIMITED,
         ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         /**
@@ -968,8 +968,8 @@ interface BigDecimal : Comparable<BigDecimal> {
          * value of the binary [Float], e.g. `0.100000001490116119384765625` for `0.1f`.
          *
          * @param val [Float] to convert to a [BigDecimal].
-         * @param ctx the context to use for rounding, or `null` not to round.
-         * @return a [BigDecimal] whose value is equal to `val`, rounded according to [ctx] if any.
+         * @param ctx the context to use for rounding (by default, `MathContext.UNLIMITED`: no rounding).
+         * @return a [BigDecimal] whose value is equal to `val`, rounded according to [ctx].
          * @throws NumberFormatException if `val` is infinite or NaN.
          * @throws ArithmeticException if the result is inexact but the rounding mode of [ctx] is
          * [RoundingMode.UNNECESSARY].
@@ -980,11 +980,11 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JsStatic
         fun of(
             `val`: Float,
-            ctx: MathContext? = null,
+            ctx: MathContext = MathContext.UNLIMITED,
         ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         /**
-         * Parses the string representation of a [BigDecimal], rounding it according to [ctx] if any, as Java's
+         * Parses the string representation of a [BigDecimal], rounding it according to [ctx], as Java's
          * `new BigDecimal(String)`.
          *
          * The string consists of an optional sign (`+` or `-`), followed by a sequence of zero or more decimal digits
@@ -998,8 +998,8 @@ interface BigDecimal : Comparable<BigDecimal> {
          * returned by `toString()`, [toPlainString] and [toEngineeringString] can be parsed back.
          *
          * @param val the string representation of a [BigDecimal].
-         * @param ctx the context to use for rounding, or `null` not to round.
-         * @return the parsed [BigDecimal], rounded according to [ctx] if any.
+         * @param ctx the context to use for rounding (by default, `MathContext.UNLIMITED`: no rounding).
+         * @return the parsed [BigDecimal], rounded according to [ctx].
          * @throws NumberFormatException if `val` is not a valid representation of a [BigDecimal], or the scale would
          * overflow.
          * @throws ArithmeticException if the result is inexact but the rounding mode of [ctx] is
@@ -1011,15 +1011,15 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JsStatic
         fun of(
             `val`: String,
-            ctx: MathContext? = null,
+            ctx: MathContext = MathContext.UNLIMITED,
         ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         /**
-         * Translates a [BigInteger] into a [BigDecimal] with a scale of zero, rounded according to [ctx] if any.
+         * Translates a [BigInteger] into a [BigDecimal] with a scale of zero, rounded according to [ctx].
          *
          * @param val [BigInteger] to convert to a [BigDecimal].
-         * @param ctx the context to use for rounding, or `null` not to round.
-         * @return a [BigDecimal] whose value is `val`, rounded according to [ctx] if any.
+         * @param ctx the context to use for rounding (by default, `MathContext.UNLIMITED`: no rounding).
+         * @return a [BigDecimal] whose value is `val`, rounded according to [ctx].
          * @throws ArithmeticException if the result is inexact but the rounding mode of [ctx] is
          * [RoundingMode.UNNECESSARY].
          */
@@ -1029,7 +1029,7 @@ interface BigDecimal : Comparable<BigDecimal> {
         @JsStatic
         fun of(
             `val`: BigInteger,
-            ctx: MathContext? = null,
+            ctx: MathContext = MathContext.UNLIMITED,
         ): BigDecimal = bigDecimalOf(`val`, ctx)
 
         /**

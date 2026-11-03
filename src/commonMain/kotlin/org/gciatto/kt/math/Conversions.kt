@@ -25,13 +25,15 @@ fun String.toBigInteger(radix: Int = BigFactory.DEFAULT_RADIX): BigInteger =
 fun String.toBigIntegerOrNull(radix: Int = BigFactory.DEFAULT_RADIX): BigInteger? =
     BigFactory.default.parseBigIntegerOrNull(this, radix)
 
-/** This number as a [BigDecimal], rounded according to [context] if any. */
+/** This number as a [BigDecimal], rounded according to [context] (not rounded by default). */
 @JvmOverloads
-fun Int.toBigDecimal(context: MathContext? = null): BigDecimal = BigFactory.default.bigDecimalOf(this, context)
+fun Int.toBigDecimal(context: MathContext = MathContext.UNLIMITED): BigDecimal =
+    BigFactory.default.bigDecimalOf(this, context)
 
-/** This number as a [BigDecimal], rounded according to [context] if any. */
+/** This number as a [BigDecimal], rounded according to [context] (not rounded by default). */
 @JvmOverloads
-fun Long.toBigDecimal(context: MathContext? = null): BigDecimal = BigFactory.default.bigDecimalOf(this, context)
+fun Long.toBigDecimal(context: MathContext = MathContext.UNLIMITED): BigDecimal =
+    BigFactory.default.bigDecimalOf(this, context)
 
 /**
  * This number as a [BigDecimal]: its shortest decimal representation (`0.1` is `0.1`), as Kotlin's
@@ -41,11 +43,12 @@ fun Double.toBigDecimal(): BigDecimal = BigFactory.default.bigDecimalValueOf(thi
 
 /** Parses this string as a [BigDecimal], see [BigFactory.parseBigDecimal]. */
 @JvmOverloads
-fun String.toBigDecimal(context: MathContext? = null): BigDecimal = BigFactory.default.parseBigDecimal(this, context)
+fun String.toBigDecimal(context: MathContext = MathContext.UNLIMITED): BigDecimal =
+    BigFactory.default.parseBigDecimal(this, context)
 
 /** Parses this string as a [BigDecimal], or returns `null`, see [BigFactory.parseBigDecimalOrNull]. */
 @JvmOverloads
-fun String.toBigDecimalOrNull(context: MathContext? = null): BigDecimal? =
+fun String.toBigDecimalOrNull(context: MathContext = MathContext.UNLIMITED): BigDecimal? =
     BigFactory.default.parseBigDecimalOrNull(this, context)
 
 /** This number as a [BigRational]. */
