@@ -803,6 +803,13 @@ interface BigDecimal : Comparable<BigDecimal> {
     override fun compareTo(other: BigDecimal): Int
 
     /**
+     * The same as [compareTo] (negative, zero or positive as this is less than, equal to or greater than [other]),
+     * callable from JS as `compareTo`: [Comparable] isn't exported to JS (KT-83009), so [compareTo] isn't either.
+     */
+    @JsName("compareTo")
+    fun compare(other: BigDecimal): Int = compareTo(other)
+
+    /**
      * Returns the minimum of this [BigDecimal] and
      * `val`.
      *
