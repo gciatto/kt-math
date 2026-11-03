@@ -66,6 +66,7 @@ public class TestJavaUsage {
             BigInteger.of("-ff", 16), BigInteger.of(new int[] {1, 0}), BigInteger.of(-1, new byte[] {9, 1, 0, 9}, 1, 2)));
         assertEquals(strings("0", "1", "2", "-1"),
             strings(BigInteger.ZERO, BigInteger.ONE, BigInteger.TWO, BigInteger.NEGATIVE_ONE));
+        assertEquals(strings("255", "-256"), strings(BigInteger.of(new byte[] {0, -1}), BigInteger.of(-1, new byte[] {1, 0})));
         assertEquals(64, BigInteger.probablePrime(64, Random.Default).getBitLength());
 
         // properties
@@ -268,6 +269,7 @@ public class TestJavaUsage {
         assertEquals(10, BigFactory.DEFAULT_RADIX);
         assertEquals(64, factory.probablePrime(64, Random.Default).getBitLength());
         assertEquals(strings("1", "2", "4", "-256"), strings(factory.bigIntegerOf(1), factory.bigIntegerOf(2L), factory.bigIntegerOf(new int[] {4}), factory.bigIntegerOf(-1, new byte[] {1, 0}, 0, 2)));
+        assertEquals("-1", factory.bigIntegerOf(new byte[] {-1}).toString());
         assertEquals(strings("1", "2", "0.5", "0.1", "10", "12.34", "1.234"), strings(factory.bigDecimalOf(1, null), factory.bigDecimalOf(2L, MC), factory.bigDecimalOf(0.5, null), factory.bigDecimalValueOf(0.1), factory.bigDecimalOf(BigInteger.TEN, null), factory.bigDecimalOf(BigInteger.of(1234), 2, null), factory.bigDecimalOf(1234L, 3)));
         assertEquals(strings("1", "2", "10", "5/10", "15/10", "1/2", "1/4"), strings(factory.bigRationalOf(1), factory.bigRationalOf(2L), factory.bigRationalOf(BigInteger.TEN), factory.bigRationalOf(0.5).toRationalString(), factory.bigRationalOf(BigDecimal.of("1.5")).toRationalString(), factory.bigRationalOf(BigInteger.ONE, BigInteger.TWO).toRationalString(), factory.bigRationalOf(BigDecimal.ONE, BigDecimal.of(4)).reduce().toRationalString()));
         assertEquals(strings("2/3", "2/3", "1.5"), strings(factory.parseBigRational("2/3").toRationalString(), factory.parseBigRationalOrNull("2/3").toRationalString(), factory.parseBigDecimalOrNull("1.5", null)));

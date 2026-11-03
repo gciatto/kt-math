@@ -42,6 +42,8 @@ test("BigInteger", () => {
   assert.equal(str(BigInteger.parse("0x1f")), "31");
   assert.equal(str(BigInteger.ofIntArray(new Int32Array([1, 0]))), "4294967296"); // big-endian 32-bit words
   assert.equal(str(BigInteger.ofSignMagnitudeSlice(-1, new Int8Array([9, 1, 0, 9]), 1, 2)), "-256");
+  assert.equal(str(BigInteger.ofBytes(new Int8Array([0, -1]))), "255"); // big-endian two's complement
+  assert.equal(str(BigInteger.ofSignMagnitude(-1, new Int8Array([1, 0]))), "-256");
   assert.deepEqual([BigInteger.ZERO, BigInteger.ONE, BigInteger.TWO, BigInteger.NEGATIVE_ONE].map(str), ["0", "1", "2", "-1"]);
 
   // properties
@@ -259,6 +261,7 @@ test("BigFactory", () => {
 
   assert.deepEqual([factory.bigIntegerOfInt(1), factory.bigIntegerOfLong(2n), factory.parseBigInteger("3"), factory.bigIntegerOfIntArray(new Int32Array([4]))].map(str), ["1", "2", "3", "4"]);
   assert.equal(str(factory.bigIntegerOfSignMagnitude(-1, new Int8Array([1, 0]))), "-256");
+  assert.equal(str(factory.bigIntegerOfBytes(new Int8Array([-1]))), "-1");
   assert.deepEqual([factory.bigDecimalOfInt(1), factory.bigDecimalOfLong(2n, mc), factory.bigDecimalOfDouble(0.5), factory.bigDecimalValueOf(0.1)].map(str), ["1", "2", "0.5", "0.1"]);
   assert.deepEqual([factory.bigDecimalOfBigInteger(BigInteger.TEN), factory.bigDecimalOfScaled(BigInteger.of(1234), 2), factory.bigDecimalOfScaledLong(1234n, 3)].map(str), ["10", "12.34", "1.234"]);
   assert.deepEqual([str(factory.parseBigDecimalOrNull("1.5")), factory.parseBigDecimalOrNull("1..5")], ["1.5", null]);
