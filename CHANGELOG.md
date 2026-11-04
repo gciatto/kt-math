@@ -1,3 +1,9 @@
+## [2.1.2](https://github.com/gciatto/kt-math/compare/2.1.1...2.1.2) (2026-11-04)
+
+### Bug Fixes
+
+* **release:** the native zips depend on their link tasks, so that the GitHub release gets the C libraries ([9f8aff0](https://github.com/gciatto/kt-math/commit/9f8aff054e76eedf1c63d6f8116ecf41cadaef48))
+
 ## [2.1.1](https://github.com/gciatto/kt-math/compare/2.1.0...2.1.1) (2026-11-03)
 
 ### Bug Fixes
