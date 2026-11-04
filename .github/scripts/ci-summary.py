@@ -272,8 +272,9 @@ def column_order(column):
     return ({"JDK": 0, "Native": 1, "Node": 2}[column.split()[0]], column)
 
 
-# job names of test-extensively.yml, as GitHub renders matrix jobs: `test-jvm (ubuntu-latest, 17, oracle)`
-MATRIX_JOB = re.compile(r"test-(jvm-8|jvm|native|js) \(([^)]*)\)$")
+# job names of test-extensively.yml, as GitHub renders matrix jobs: `test-jvm (ubuntu-latest, 17, oracle)`; long ones
+# are cut to `test-native (macos-latest, macosArm64Test ...`, hence the `...` (only the os is read from native jobs)
+MATRIX_JOB = re.compile(r"test-(jvm-8|jvm|native|js) \(([^)]*?)(?:\)|\.\.\.)$")
 
 
 def matrix_jobs(jobs):
